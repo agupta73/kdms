@@ -9,7 +9,6 @@
     include_once("header.php");
     //include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsDevoteeSearch.php");
     include_once("../Logic/clsDevoteeSearch.php");
-
   ?>
 
     <?php
@@ -81,7 +80,6 @@
         if(!empty($response['Devotee_Remarks'])){
             $devotee_remarks= $response['Devotee_Remarks']; //  ""
         }
-
 
         //$devotee_accommodation_id="";
         //$response['Devotee_Gender']; // ""
