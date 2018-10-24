@@ -32,7 +32,7 @@
     $loadAccommodation = new clsOptionHandler("Accommodation");
     $accommodations = $loadAccommodation->getOptions();
     unset($loadAccommodations);
-//var_dump($response);die;
+//var_dump($accommodations);die;
     
     //Pre-populate devotee record in case of edit
     if (!empty($requestData['devotee_key'])) {

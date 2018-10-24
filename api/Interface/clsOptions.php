@@ -22,8 +22,8 @@ class clsOptions {
 
     public function loadOption($requestData) {
         $option = "";
-        if(!empty($requestData['option_type'])){
-            $option=$requestData['option_type'];
+        if(!empty($requestData)){
+            $option=$requestData;
         }
         else{
             $option = "not provided";
