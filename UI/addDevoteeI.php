@@ -224,8 +224,8 @@ function validateInput(){
                         <div class="form-group">
                           <label class="bmd-label-floating">Devotee Type</label>
                           <select type="text" class="form-control" name="devotee_type" id="devotee_type" value="<?php print_r($devotee_type); ?>">
-                            <option value="p">Permanent</option>
-                            <option value="t">Temporary</option>
+                            <option value="P" <?php if($devotee_type=="p" || empty($devotee_type) || $devotee_type == "P" ){print_r("selected");} ?>>Permanent</option>
+                            <option value="T" <?php if($devotee_type=="t" || $devotee_type == "T" ){print_r("selected");} ?>>Temporary</option>
                           </select>
                         </div>
                       </div>

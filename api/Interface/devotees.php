@@ -155,7 +155,7 @@ Class Devotee {
 //                Devotee_Record_Update_Date_Time=:devotee_record_update_date_time,
 //                Devotee_Record_Updated_By=:devotee_record_updated_by" ;
 
-        $query = "CALL INSERT_DEVOTEE(
+        $query = "CALL PROC_INSERT_DEVOTEE(
                 :id,
                 :devotee_type,
                 :devotee_first_name,
