@@ -13,7 +13,7 @@
  */
 class clsOptionHandler {
     private $url = "http://localhost/KDMS/api/loadOptions.php";
-    private $request = array();
+    private $request = "";
     //put your code here
      public function __construct($requestObject) {
         $this->request = $requestObject;
@@ -21,7 +21,7 @@ class clsOptionHandler {
     }
     public function getOptions(){
         
-        $response = $this->curl_rest($this->request['option_type']);
+        $response = $this->curl_rest($this->request);
         return $response;
     }
     
