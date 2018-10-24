@@ -128,31 +128,50 @@ Class Devotee {
             $Devotee_Accommodation_ID=htmlspecialchars(strip_tags($requestData['devotee_accommodation_id']));
         }
 
+        $Devotee_Accomodation_Year = date('y');
+        $Devotee_Accomodation_Status = "Allocated";
+        
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
             return $res;
         }
 
+//
+//        $query = "INSERT INTO
+//                " . $this->table_name . "
+//            SET
+//                Devotee_Key=:id,
+//                Devotee_Type=:devotee_type,
+//                Devotee_First_Name=:devotee_first_name,
+//                Devotee_Last_Name=:devotee_last_name,
+//                Devotee_Gender=:devotee_gender,
+//                Devotee_ID_Type=:devotee_id_type,
+//                Devotee_ID_Number=:devotee_id_number,
+//                Devotee_Station=:devotee_station,
+//                Devotee_Cell_Phone_Number=:devotee_cell_phone_number,
+//                Devotee_Status=:devotee_status,
+//                Devotee_Remarks=:devotee_remarks,
+//                Devotee_Record_Update_Date_Time=:devotee_record_update_date_time,
+//                Devotee_Record_Updated_By=:devotee_record_updated_by" ;
 
-//var_dump($id);die;
-        $query = "INSERT INTO
-                " . $this->table_name . "
-            SET
-                Devotee_Key=:id,
-                Devotee_Type=:devotee_type,
-                Devotee_First_Name=:devotee_first_name,
-                Devotee_Last_Name=:devotee_last_name,
-                Devotee_Gender=:devotee_gender,
-                Devotee_ID_Type=:devotee_id_type,
-                Devotee_ID_Number=:devotee_id_number,
-                Devotee_Station=:devotee_station,
-                Devotee_Cell_Phone_Number=:devotee_cell_phone_number,
-                Devotee_Status=:devotee_status,
-                Devotee_Remarks=:devotee_remarks,
-                Devotee_Record_Update_Date_Time=:devotee_record_update_date_time,
-                Devotee_Record_Updated_By=:devotee_record_updated_by" ;
-
+        $query = "CALL INSERT_DEVOTEE(
+                :id,
+                :devotee_type,
+                :devotee_first_name,
+                :devotee_last_name,
+                :devotee_gender,
+                :devotee_id_type,
+                :devotee_id_number,
+                :devotee_station,
+                :devotee_cell_phone_number,
+                :devotee_status,
+                :devotee_remarks,
+                :devotee_record_update_date_time,
+                :devotee_record_updated_by,
+                :devotee_accommodation_id,
+                :devotee_accommodation_year,
+                :devotee_accommodation_status)" ;
 
 // prepare query
         $stmt = $this->conn->prepare($query);
@@ -176,26 +195,35 @@ Class Devotee {
         $stmt->bindParam(":devotee_remarks", $Devotee_Remarks);
         $stmt->bindParam(":devotee_record_update_date_time", $now);
         $stmt->bindParam(":devotee_record_updated_by", $Devotee_Record_Updated_By);
+        $stmt->bindParam(":devotee_accommodation_id", $Devotee_Accommodation_ID);
+        $stmt->bindParam(":devotee_accommodation_year", $Devotee_Accomodation_Year);
+        $stmt->bindParam(":devotee_accommodation_status", $Devotee_Accomodation_Status);
 
         //var_dump($query); die;
- 
-        if (!$stmt->execute()) {
-            $res['status'] = false;
-            $res['message'] = "[Devotees] Adding Devotee Record Failed at API!";
-            $res['info'] = $stmt;
-            return $res;
-            die;
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = "";
         }
-        
-        $UpdateDevoteeAccommodationRes = array();   
-        
-        $UpdateDevoteeAccommodationRes = $this->updateDevoteeAccommodation($unique_id,$Devotee_Accommodation_ID);
-        
-        $res['status'] = $UpdateDevoteeAccommodationRes['status'];
-        $res['message'] = $UpdateDevoteeAccommodationRes['message'];
-        $res['info'] = $UpdateDevoteeAccommodationRes['info'];
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Devotees] Adding Devotee Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
         return $res;
+  
+        
+        
+        //$UpdateDevoteeAccommodationRes = array();   
+        
+        //$UpdateDevoteeAccommodationRes = $this->updateDevoteeAccommodation($unique_id,$Devotee_Accommodation_ID);
+        
+        //$res['status'] = $UpdateDevoteeAccommodationRes['status'];
+        //$res['message'] = $UpdateDevoteeAccommodationRes['message'];
+        //$res['info'] = $UpdateDevoteeAccommodationRes['info'];
+        //return $res;
     }
+    
 
     private function updateDevoteeAccommodation($Devotee_Key, $Devotee_Accommodation_ID) {
         $res = array();
@@ -498,11 +526,12 @@ Class Devotee {
         }
         
         $query = "select d.*, did.Devotee_ID_Image, did.Devotee_ID_XML, 
-                    did.Devotee_ID_Type as DID_Devotee_ID_Type, dp.Photo_type, dp.Devotee_Photo 
+                    did.Devotee_ID_Type as DID_Devotee_ID_Type, dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key 
                  from 
                     devotee d 
                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
+                    left outer join Devotee_accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = '2018' 
                  where 
                     d.Devotee_Key = '" . $devotee_key . "'";
         
@@ -510,10 +539,10 @@ Class Devotee {
         
         $DevoteeDetails = array();
         
-        if(!empty($row = $results->fetch())){
+        if(!empty($row = $results->fetchObject())){
             
             $DevoteeDetails=$row;
-            //var_dump(json_decode($DevoteeDetails)['Devotee_Key']);
+            //var_dump($DevoteeDetails);
         }
         else{
             $DevoteeDetails['status'] = false;

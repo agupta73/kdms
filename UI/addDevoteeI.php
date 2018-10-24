@@ -7,14 +7,14 @@
   </title>
   <?php
     include_once("header.php");
-    //include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsDevoteeSearch.php");
-    include_once("../Logic/clsDevoteeSearch.php");
+    include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsDevoteeSearch.php");
+    include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsOptionHandler.php");
   ?>
-
+    
     <?php
-
+    
     $requestData = $_GET;
-
+    
     $devotee_key = "";
     $devotee_type="P";
     $devotee_first_name="";
@@ -26,72 +26,79 @@
     $devotee_status="A";
     $devotee_remarks="";
     $devotee_accommodation_id="";
-
-
+    
+    
     //load accommodation options and available spots
-
-
+    $loadAccommodation = new clsOptionHandler("Accommodation");
+    $accommodations = $loadAccommodation->getOptions();
+    unset($loadAccommodations);
+//var_dump($response);die;
+    
     //Pre-populate devotee record in case of edit
     if (!empty($requestData['devotee_key'])) {
-
-        $devoteeSearch = new clsDevoteeSearch($requestData);
+        
+        $devoteeSearch = new clsDevoteeSearch($requestData);    
         $response = $devoteeSearch->getDevoteeDetails();
         //var_dump($response); die;
         //$response = json_decode($response);
         //var_dump($response);
-
+        
         //assign values
         if(!empty($response['Devotee_Key'])){
-            $devotee_key = $response['Devotee_Key']; //"P1810142093"
+            $devotee_key = $response['Devotee_Key']; //"P1810142093" 
         }
-
+        
         if(!empty($response['Devotee_Type'])){
             $devotee_type=$response['Devotee_Type']; // "p" "P";
         }
-
+        
         if(!empty($response['Devotee_First_Name'])){
             $devotee_first_name= $response['Devotee_First_Name']; // "Anil+6" ;
         }
-
+        
         if(!empty($response['Devotee_Last_Name'])){
-            $devotee_last_name=  $response['Devotee_Last_Name']; // "Gupta"
+            $devotee_last_name=  $response['Devotee_Last_Name']; // "Gupta" 
         }
-
+        
         if(!empty($response['Devotee_ID_Type'])){
-            $devotee_id_type= $response['Devotee_ID_Type']; // NULL
+            $devotee_id_type= $response['Devotee_ID_Type']; // NULL     
         }
-
+        
         if(!empty($response['Devotee_ID_Number'])){
-            $devotee_id_number= $response['Devotee_ID_Number']; // ""
+            $devotee_id_number= $response['Devotee_ID_Number']; // "" 
         }
-
+        
         if(!empty($response['Devotee_Station'])) {
-            $devotee_station= $response['Devotee_Station']; // "New+Delhi"
+            $devotee_station= $response['Devotee_Station']; // "New+Delhi" 
         }
-
+        
         if(!empty($response['Devotee_Cell_Phone_Number'])) {
-               $devotee_cell_phone_number= $response['Devotee_Cell_Phone_Number']; //  "4156227879"
+               $devotee_cell_phone_number= $response['Devotee_Cell_Phone_Number']; //  "4156227879" 
         }
-
+        
         if(!empty($response['Devotee_Status'])){
             $devotee_status= $response['Devotee_Status']; // "A" ;
         }
-
+        
         if(!empty($response['Devotee_Remarks'])){
-            $devotee_remarks= $response['Devotee_Remarks']; //  ""
+            $devotee_remarks= $response['Devotee_Remarks']; //  "" 
         }
-
+        
+        if(!empty($response['Accomodation_Key'])){
+            $devotee_accommodation_id = $response['Accomodation_Key']; //  "" 
+        }
+   
         //$devotee_accommodation_id="";
-        //$response['Devotee_Gender']; // ""
-        ////$response['Devotee_Record_Update_Date_Time']; // "2018-10-14 07:23:23"
-        //$response['Devotee_Record_Updated_By']; //  "0"
-        //$response['Devotee_ID_Image']; // NULL
-        //$response['Devotee_ID_XML']; // NULL
-        //$response['Photo_type']; // NULL
+        //$response['Devotee_Gender']; // "" 
+        ////$response['Devotee_Record_Update_Date_Time']; // "2018-10-14 07:23:23" 
+        //$response['Devotee_Record_Updated_By']; //  "0" 
+        //$response['Devotee_ID_Image']; // NULL 
+        //$response['Devotee_ID_XML']; // NULL 
+        //$response['Photo_type']; // NULL 
         //$response['Devotee_Photo']; // NULL
     }
-
-
+ 
+    
     ?>
   <script>
 
@@ -102,25 +109,25 @@
 
 //javascript function for ajax call
   function saveFormData(formId, flag){
-
+    
     var formData = $(formId).serialize();
-
-    if(validateInput()){
+    
+    if(validateInput()){ 
          $.ajax({
           url:'/KDMS/Logic/requestManager.php',
           type:'POST',
           data:formData,
           success:function(response){
-
+		
                 var r = JSON.parse(response);
-
+                
 		if(r['flag'] == true){
                     alert("Devotee record updated successfully!");
-                    window.location.assign("/KDMS/UI/adddevoteeI.php");;
+                    window.location.assign("/KDMS/UI/adddevoteei.php");;
                 }
 		else{
                     alert(r['message']);
-                }
+                }   
           }
         });
 
@@ -239,10 +246,28 @@ function validateInput(){
                       <div class="col-md-4">
                         <div class="form-group">
                           <label class="bmd-label-floating">Location</label>
-                          <select type="text" class="form-control" name="devotee_accommodation_id" id="devotee_accommodation_id" value="<?php print_r($devotee_accommodation_id); ?>">
+<!--                          <select type="text" class="form-control" name="devotee_accommodation_id" id="devotee_accommodation_id" value="<?php print_r($devotee_accommodation_id); ?>">
                             <option value="OWN" selected>--Own Arrangement--</option>
                             <option value="RK1">Radha Kuti 1</option>
                             <option value="GA1">Gargachal 1</option>
+                          </select>-->
+                          <select type="text" class="form-control" name="devotee_accommodation_id" id="devotee_accommodation_id" >
+                            <?php
+                            foreach ($accommodations as $accommodation){
+                                print_r("<option value='" . $accommodation['accomodation_key'] . "'");
+                                if(empty($devotee_accommodation_id)){
+                                    $devotee_accommodation_id = 'OWN';
+                                }
+                                if($devotee_accommodation_id == $accommodation['accomodation_key']){
+                                    print_r("selected");
+                                }
+                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+                            } 
+                            
+//                            <option value="OWN" selected>--Own Arrangement--</option>
+//                            <option value="RK1">Radha Kuti 1</option>
+//                            <option value="GA1">Gargachal 1</option>
+                            ?>
                           </select>
                         </div>
                       </div>
