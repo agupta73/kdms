@@ -304,7 +304,6 @@ Class Devotee {
         return $res;
     }
     
-//********* Edit - To be completed *********
     private function edit($requestData) {
         $res = array();
         $res['status'] = false;
@@ -555,6 +554,188 @@ Class Devotee {
     
     private function searchDevotee($requestData){
         
+    }
+    
+    private function upsertDevotee($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+
+        $Devotee_Record_Updated_By=1; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+
+        if (empty($requestData['devotee_type'])) {
+            $errormsg .= " Devotee Type is missing.";
+            $status = false;
+        }
+        else{
+            $Devotee_Type=htmlspecialchars(strip_tags($requestData['devotee_type']));
+        }
+
+        if (empty($requestData['devotee_first_name'])) {
+            $errormsg .= " First name missing.";
+            $status = false;
+        }
+        else{
+            $Devotee_First_Name=htmlspecialchars(strip_tags($requestData['devotee_first_name']));
+        }
+
+        if (empty($requestData['devotee_last_name'])) {
+            $errormsg .= " Devotee last name misssing.";
+            $status = false;
+        }
+        else {
+            $Devotee_Last_Name=htmlspecialchars(strip_tags($requestData['devotee_last_name']));
+        }
+
+
+
+        if (empty($requestData['devotee_gender'])){
+            $Devotee_Gender="";
+        }
+        else{
+            $Devotee_Gender=htmlspecialchars(strip_tags($requestData['devotee_gender']));
+        }
+
+        if (empty($requestData['devotee_id_type'])){
+            $Devotee_ID_Type="";
+        }
+        else{
+            $Devotee_ID_Type=htmlspecialchars(strip_tags($requestData['devotee_id_type']));
+        }
+
+        if (empty($requestData['devotee_id_number'])){
+            $Devotee_ID_Number="";
+        }
+        else{
+            $Devotee_ID_Number=htmlspecialchars(strip_tags($requestData['devotee_id_number']));
+        }
+
+        if (empty($requestData['devotee_station'])){
+            $Devotee_Station= "";
+        }
+        else{
+            $Devotee_Station=htmlspecialchars(strip_tags($requestData['devotee_station']));
+        }
+
+        if (empty($requestData['devotee_cell_phone_number'])){
+            $Devotee_Cell_Phone_Number="";
+        }
+        else {
+            $Devotee_Cell_Phone_Number=htmlspecialchars(strip_tags($requestData['devotee_cell_phone_number']));
+        }
+
+        if (empty($requestData['devotee_status'])){
+            $Devotee_Status="A";
+        }
+        else {
+            $Devotee_Status=htmlspecialchars(strip_tags($requestData['devotee_status']));
+        }
+
+        if (empty($requestData['devotee_remarks'])){
+            $Devotee_Remarks="";
+        }
+        else {
+            $Devotee_Remarks=htmlspecialchars(strip_tags($requestData['devotee_remarks']));
+        }
+
+        if (empty($requestData['devotee_accommodation_id'])){
+            $Devotee_Accommodation_ID="0";
+        }
+        else {
+            $Devotee_Accommodation_ID=htmlspecialchars(strip_tags($requestData['devotee_accommodation_id']));
+        }
+
+        $Devotee_Accomodation_Year = date('y');
+        $Devotee_Accomodation_Status = "Allocated";
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "";
+        
+        if (!empty($requestData['devotee_key'])) {
+            // Edit
+            $query = "CALL PROC_UPDATE_DEVOTEE(";
+        } else {
+            // Add
+            // Generate unique ID
+            $unique_id = $this->generateId();
+            $query = "CALL PROC_INSERT_DEVOTEE(";
+        }
+        $query = $query . "
+                :id,
+                :devotee_type,
+                :devotee_first_name,
+                :devotee_last_name,
+                :devotee_gender,
+                :devotee_id_type,
+                :devotee_id_number,
+                :devotee_station,
+                :devotee_cell_phone_number,
+                :devotee_status,
+                :devotee_remarks,
+                :devotee_record_update_date_time,
+                :devotee_record_updated_by,
+                :devotee_accommodation_id,
+                :devotee_accommodation_year,
+                :devotee_accommodation_status)" ;
+
+// prepare query
+        $stmt = $this->conn->prepare($query);
+
+
+// sanitize
+//        $firstName = htmlspecialchars(strip_tags($requestData['first_name']));
+//        $lastName = htmlspecialchars(strip_tags($requestData['last_name']));
+//        $lmbDate = htmlspecialchars(strip_tags($requestData['last_modified_by']));
+
+        $stmt->bindParam(":id", $unique_id);
+        $stmt->bindParam(":devotee_type", $Devotee_Type);
+        $stmt->bindParam(":devotee_first_name", $Devotee_First_Name);
+        $stmt->bindParam(":devotee_last_name", $Devotee_Last_Name);
+        $stmt->bindParam(":devotee_gender", $Devotee_Gender);
+        $stmt->bindParam(":devotee_id_type", $Devotee_ID_Type);
+        $stmt->bindParam(":devotee_id_number", $Devotee_ID_Number);
+        $stmt->bindParam(":devotee_station", $Devotee_Station);
+        $stmt->bindParam(":devotee_cell_phone_number", $Devotee_Cell_Phone_Number);
+        $stmt->bindParam(":devotee_status", $Devotee_Status);
+        $stmt->bindParam(":devotee_remarks", $Devotee_Remarks);
+        $stmt->bindParam(":devotee_record_update_date_time", $now);
+        $stmt->bindParam(":devotee_record_updated_by", $Devotee_Record_Updated_By);
+        $stmt->bindParam(":devotee_accommodation_id", $Devotee_Accommodation_ID);
+        $stmt->bindParam(":devotee_accommodation_year", $Devotee_Accomodation_Year);
+        $stmt->bindParam(":devotee_accommodation_status", $Devotee_Accomodation_Status);
+
+        //var_dump($query); die;
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = "";
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Devotees] Adding Devotee Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+  
+        
+        
+        //$UpdateDevoteeAccommodationRes = array();   
+        
+        //$UpdateDevoteeAccommodationRes = $this->updateDevoteeAccommodation($unique_id,$Devotee_Accommodation_ID);
+        
+        //$res['status'] = $UpdateDevoteeAccommodationRes['status'];
+        //$res['message'] = $UpdateDevoteeAccommodationRes['message'];
+        //$res['info'] = $UpdateDevoteeAccommodationRes['info'];
+        //return $res;
     }
     
         }
