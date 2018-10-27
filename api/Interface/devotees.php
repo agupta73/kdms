@@ -530,9 +530,9 @@ Class Devotee {
                     devotee d 
                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
-                    left outer join Devotee_accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = '2018' 
+                    left outer join Devotee_accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  
                  where 
-                    d.Devotee_Key = '" . $devotee_key . "'";
+                    d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
         
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -556,7 +556,7 @@ Class Devotee {
         
     }
     
-    private function upsertDevotee($requestData) {
+    public function upsertDevotee($requestData) {
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -564,7 +564,7 @@ Class Devotee {
         $errormsg = "";
         $status = true;
 
-        $Devotee_Record_Updated_By=1; //to be fixed userid
+        $Devotee_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
 
         if (empty($requestData['devotee_type'])) {
@@ -659,9 +659,11 @@ Class Devotee {
         }
 
         $query = "";
+        $unique_id = "";
         
         if (!empty($requestData['devotee_key'])) {
             // Edit
+            $unique_id = $requestData['devotee_key'];
             $query = "CALL PROC_UPDATE_DEVOTEE(";
         } else {
             // Add
@@ -669,51 +671,59 @@ Class Devotee {
             $unique_id = $this->generateId();
             $query = "CALL PROC_INSERT_DEVOTEE(";
         }
-        $query = $query . "
-                :id,
-                :devotee_type,
-                :devotee_first_name,
-                :devotee_last_name,
-                :devotee_gender,
-                :devotee_id_type,
-                :devotee_id_number,
-                :devotee_station,
-                :devotee_cell_phone_number,
-                :devotee_status,
-                :devotee_remarks,
-                :devotee_record_update_date_time,
-                :devotee_record_updated_by,
-                :devotee_accommodation_id,
-                :devotee_accommodation_year,
-                :devotee_accommodation_status)" ;
+        
+//        $query = $query . "
+//                :id,
+//                :devotee_type,
+//                :devotee_first_name,
+//                :devotee_last_name,
+//                :devotee_gender,
+//                :devotee_id_type,
+//                :devotee_id_number,
+//                :devotee_station,
+//                :devotee_cell_phone_number,
+//                :devotee_status,
+//                :devotee_remarks,
+//                :devotee_record_updated_by,
+//                :devotee_accommodation_id,
+//                :devotee_accommodation_status)" ;
 
+         $query = $query . "'" .
+                $unique_id . "', '" . //:id,
+                $Devotee_Type . "', '" . //:devotee_type,
+                $Devotee_First_Name . "', '" . //:devotee_first_name,
+                $Devotee_Last_Name . "', '" . //:devotee_last_name,
+                $Devotee_Gender . "', '" . //:devotee_gender,
+                $Devotee_ID_Type . "', '" . //:devotee_id_type,
+                $Devotee_ID_Number . "', '" . //:devotee_id_number,
+                $Devotee_Station . "', '" . //:devotee_station,
+                $Devotee_Cell_Phone_Number . "', '" . //:devotee_cell_phone_number,
+                $Devotee_Status . "', '" . //:devotee_status,
+                $Devotee_Remarks . "', '" . //:devotee_remarks,
+                $Devotee_Record_Updated_By . "', '" . //:devotee_record_updated_by,
+                $Devotee_Accommodation_ID . "', '" . //:devotee_accommodation_id,
+                $Devotee_Accomodation_Status . "')" ; //:devotee_accommodation_status)" ;
 // prepare query
         $stmt = $this->conn->prepare($query);
 
+//        $stmt->bindParam(":id", $unique_id);
+//        $stmt->bindParam(":devotee_type", $Devotee_Type);
+//        $stmt->bindParam(":devotee_first_name", $Devotee_First_Name);
+//        $stmt->bindParam(":devotee_last_name", $Devotee_Last_Name);
+//        $stmt->bindParam(":devotee_gender", $Devotee_Gender);
+//        $stmt->bindParam(":devotee_id_type", $Devotee_ID_Type);
+//        $stmt->bindParam(":devotee_id_number", $Devotee_ID_Number);
+//        $stmt->bindParam(":devotee_station", $Devotee_Station);
+//        $stmt->bindParam(":devotee_cell_phone_number", $Devotee_Cell_Phone_Number);
+//        $stmt->bindParam(":devotee_status", $Devotee_Status);
+//        $stmt->bindParam(":devotee_remarks", $Devotee_Remarks);
 
-// sanitize
-//        $firstName = htmlspecialchars(strip_tags($requestData['first_name']));
-//        $lastName = htmlspecialchars(strip_tags($requestData['last_name']));
-//        $lmbDate = htmlspecialchars(strip_tags($requestData['last_modified_by']));
+//        $stmt->bindParam(":devotee_record_updated_by", $Devotee_Record_Updated_By);
+//        $stmt->bindParam(":devotee_accommodation_id", $Devotee_Accommodation_ID);
 
-        $stmt->bindParam(":id", $unique_id);
-        $stmt->bindParam(":devotee_type", $Devotee_Type);
-        $stmt->bindParam(":devotee_first_name", $Devotee_First_Name);
-        $stmt->bindParam(":devotee_last_name", $Devotee_Last_Name);
-        $stmt->bindParam(":devotee_gender", $Devotee_Gender);
-        $stmt->bindParam(":devotee_id_type", $Devotee_ID_Type);
-        $stmt->bindParam(":devotee_id_number", $Devotee_ID_Number);
-        $stmt->bindParam(":devotee_station", $Devotee_Station);
-        $stmt->bindParam(":devotee_cell_phone_number", $Devotee_Cell_Phone_Number);
-        $stmt->bindParam(":devotee_status", $Devotee_Status);
-        $stmt->bindParam(":devotee_remarks", $Devotee_Remarks);
-        $stmt->bindParam(":devotee_record_update_date_time", $now);
-        $stmt->bindParam(":devotee_record_updated_by", $Devotee_Record_Updated_By);
-        $stmt->bindParam(":devotee_accommodation_id", $Devotee_Accommodation_ID);
-        $stmt->bindParam(":devotee_accommodation_year", $Devotee_Accomodation_Year);
-        $stmt->bindParam(":devotee_accommodation_status", $Devotee_Accomodation_Status);
+//        $stmt->bindParam(":devotee_accommodation_status", $Devotee_Accomodation_Status);
 
-        //var_dump($query); die;
+//      
         if ($stmt->execute()) {
             $res['status'] = true;
             $res['message'] = "";

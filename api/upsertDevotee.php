@@ -8,7 +8,7 @@
 
   $devotee = new Devotee($db);
   $requestData = $_POST;
-  $res=$devotee->upsert($requestData);
+  $res=$devotee->upsertDevotee($requestData);
   if ($res['status']) {
       $response = array('flag' => true);
   } else {
