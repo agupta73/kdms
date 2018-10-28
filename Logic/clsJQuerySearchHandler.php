@@ -21,7 +21,7 @@ class DevoteeSearch{
 			$result ="" ;
 			if ($Count  > 0){
 				while($data=$stmt->fetch(PDO::FETCH_ASSOC)) {
-				   $result = $result .'<a href="addDevoteeI.php?devotee_key='.$data['Devotee_Key'].'" target="_blank"><div class="search-result">'.$data['Devotee_First_Name'].' '.$data['Devotee_Last_Name'].' - ('.$data['Devotee_Station'].') - '.$data['Devotee_Cell_Phone_Number'].'</div></a>';
+				   $result = $result .'<a href="addDevoteeI.php?devotee_key='.$data['Devotee_Key'].'"><div class="search-result">'.$data['Devotee_First_Name'].' '.$data['Devotee_Last_Name'].' - ('.$data['Devotee_Station'].') - '.$data['Devotee_Cell_Phone_Number'].'</div></a>';
 				}
 				return $result ;
 			}
