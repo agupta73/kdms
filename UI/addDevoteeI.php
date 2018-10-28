@@ -6,13 +6,10 @@
     KDMS (Add Devotee I)
   </title>
   <?php
-    include_once("header.php");
-    include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsDevoteeSearch.php");
-    include_once("/Users/agupta/Box Sync/Personal/KDMS/kdms/Logic/clsOptionHandler.php");
-  ?>
-    
-    <?php
-    
+    include_once("header.php");  
+    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+
     $requestData = $_GET;
     
     $devotee_key = "";
@@ -32,7 +29,7 @@
     $loadAccommodation = new clsOptionHandler("Accommodation");
     $accommodations = $loadAccommodation->getOptions();
     unset($loadAccommodations);
-//var_dump($accommodations);die;
+
     
     //Pre-populate devotee record in case of edit
     if (!empty($requestData['devotee_key'])) {
@@ -45,47 +42,47 @@
         
         //assign values
         if(!empty($response['Devotee_Key'])){
-            $devotee_key = $response['Devotee_Key']; //"P1810142093" 
+            $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093" 
         }
         
         if(!empty($response['Devotee_Type'])){
-            $devotee_type=$response['Devotee_Type']; // "p" "P";
+            $devotee_type=urldecode($response['Devotee_Type']); // "p" "P";
         }
         
         if(!empty($response['Devotee_First_Name'])){
-            $devotee_first_name= $response['Devotee_First_Name']; // "Anil+6" ;
+            $devotee_first_name= urldecode($response['Devotee_First_Name']); // "Anil+6" ;
         }
         
         if(!empty($response['Devotee_Last_Name'])){
-            $devotee_last_name=  $response['Devotee_Last_Name']; // "Gupta" 
+            $devotee_last_name=  urldecode($response['Devotee_Last_Name']); // "Gupta" 
         }
         
         if(!empty($response['Devotee_ID_Type'])){
-            $devotee_id_type= $response['Devotee_ID_Type']; // NULL     
+            $devotee_id_type= urldecode($response['Devotee_ID_Type']); // NULL     
         }
         
         if(!empty($response['Devotee_ID_Number'])){
-            $devotee_id_number= $response['Devotee_ID_Number']; // "" 
+            $devotee_id_number= urldecode($response['Devotee_ID_Number']); // "" 
         }
         
         if(!empty($response['Devotee_Station'])) {
-            $devotee_station= $response['Devotee_Station']; // "New+Delhi" 
+            $devotee_station= urldecode($response['Devotee_Station']); // "New+Delhi" 
         }
         
         if(!empty($response['Devotee_Cell_Phone_Number'])) {
-               $devotee_cell_phone_number= $response['Devotee_Cell_Phone_Number']; //  "4156227879" 
+               $devotee_cell_phone_number= urldecode($response['Devotee_Cell_Phone_Number']); //  "4156227879" 
         }
         
         if(!empty($response['Devotee_Status'])){
-            $devotee_status= $response['Devotee_Status']; // "A" ;
+            $devotee_status= urldecode($response['Devotee_Status']); // "A" ;
         }
         
         if(!empty($response['Devotee_Remarks'])){
-            $devotee_remarks= $response['Devotee_Remarks']; //  "" 
+            $devotee_remarks= urldecode($response['Devotee_Remarks']); //  "" 
         }
         
         if(!empty($response['Accomodation_Key'])){
-            $devotee_accommodation_id = $response['Accomodation_Key']; //  "" 
+            $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
         }
    
         
@@ -279,7 +276,7 @@ function validateInput(){
                           <label>Remarks</label>
                           <div class="form-group">
                             <label class="bmd-label-floating"> Add additional Information</label>
-                            <textarea class="form-control" rows="2" name="devotee_remarks" id="devotee_remarks" value="<?php print_r($devotee_remarks); ?>"></textarea>
+                            <textarea class="form-control" rows="2" name="devotee_remarks" id="devotee_remarks"> <?php print_r($devotee_remarks); ?></textarea>
                           </div>
                         </div>
                       </div>

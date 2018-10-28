@@ -5,27 +5,47 @@
 \margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\f0\fs24 \cf0 BEGIN\
+\f0\fs24 \cf0 DELIMITER $$\
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_INSERT_DEVOTEE`(IN `p_Devotee_Key` VARCHAR(10), IN `p_Devotee_Type` VARCHAR(30), IN `p_Devotee_First_Name` VARCHAR(50), IN `p_Devotee_Last_Name` VARCHAR(50), IN `p_Devotee_Gender` VARCHAR(6), IN `p_Devotee_ID_Type` VARCHAR(10), IN `p_Devotee_ID_Number` VARCHAR(50), IN `p_Devotee_Station` VARCHAR(50), IN `p_Devotee_Cell_Phone_Number` VARCHAR(15), IN `p_Devotee_Status` VARCHAR(20), IN `p_Devotee_Remarks` VARCHAR(250), IN `p_Devotee_Record_Updated_By` VARCHAR(10), IN `p_Devotee_Accommodation_ID` VARCHAR(10), IN `p_Devotee_Accomodation_Status` VARCHAR(10))\
+BEGIN\
 \
-    UPDATE devotee SET\
-        Devotee_Type = p_Devotee_Type,\
-        Devotee_First_Name = p_Devotee_First_Name,\
-        Devotee_Last_Name = p_Devotee_Last_Name,\
-        Devotee_Gender = p_Devotee_Gender,\
-        Devotee_ID_Type = p_Devotee_ID_Type,\
-        Devotee_ID_Number = p_Devotee_ID_Number,\
-        Devotee_Station = p_Devotee_Station,\
-        Devotee_Cell_Phone_Number = p_Devotee_Cell_Phone_Number,\
-        Devotee_Status = p_Devotee_Status,\
-        Devotee_Remarks = p_Devotee_Remarks,\
-        Devotee_Record_Update_Date_Time = p_Devotee_Record_Update_Date_Time,\
-        Devotee_Record_Updated_By = p_Devotee_Record_Updated_By;\
+    INSERT INTO devotee(\
+        Devotee_Key,\
+        Devotee_Type,\
+        Devotee_First_Name,\
+        Devotee_Last_Name,\
+        Devotee_Gender,\
+        Devotee_ID_Type,\
+        Devotee_ID_Number,\
+        Devotee_Station,\
+        Devotee_Cell_Phone_Number,\
+        Devotee_Status,\
+        Devotee_Remarks,\
+        Devotee_Record_Update_Date_Time,\
+        Devotee_Record_Updated_By\
+    )\
+VALUES(\
+    p_Devotee_Key,\
+    p_Devotee_Type,\
+    p_Devotee_First_Name,\
+    p_Devotee_Last_Name,\
+    p_Devotee_Gender,\
+    p_Devotee_ID_Type,\
+    p_Devotee_ID_Number,\
+    p_Devotee_Station,\
+    p_Devotee_Cell_Phone_Number,\
+    p_Devotee_Status,\
+    p_Devotee_Remarks,\
+    NOW(),\
+    p_Devotee_Record_Updated_By\
+);\
 \
 INSERT INTO Devotee_Accomodation(\
     Accomodation_Key,\
     Devotee_Key,\
     Accomodation_Year,\
     Arrival_Date_Time,\
+    Departure_Date_Time,\
     Accomodation_Status,\
     Devotee_Accomodation_Update_Date_Time,\
     Devotee_Accomodation_Updated_By\
@@ -33,11 +53,13 @@ INSERT INTO Devotee_Accomodation(\
 VALUES(\
     p_Devotee_Accommodation_ID,\
     p_Devotee_Key,\
-    p_Devotee_Accomodation_Year,\
-    p_Devotee_Record_Update_Date_Time,\
+    YEAR(NOW()),\
+    NOW(),\
+    NULL,\
     p_Devotee_Accomodation_Status,\
     NOW(),\
     p_Devotee_Accommodation_ID\
 );\
 \
-END}
+END$$\
+DELIMITER ;}
