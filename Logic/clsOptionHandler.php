@@ -20,15 +20,14 @@ class clsOptionHandler {
         
     }
     public function getOptions(){
-        
         $response = $this->curl_rest($this->request);
         return $response;
     }
     
-    public function refreshOptions(){
-        $response = $this->curl_rest($this->request);
-        return $response;
-    }
+//    public function refreshOptions(){
+//        $response = $this->curl_rest($this->request);
+//        return $response;
+//    }
 
 
     private function curl_rest($requestData) {
@@ -39,9 +38,9 @@ class clsOptionHandler {
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        
-        $response = json_decode($response, true);
         //var_dump($response);
+        $response = json_decode($response, true);
+        
         curl_close($ch);
         return $response;
     }

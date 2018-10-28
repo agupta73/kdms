@@ -42,10 +42,12 @@ switch ($requestType) {
 
         
     case "refreshAcco":
-        var_dump($requestType); die;
-        $optionHandler = new clsOptionHandler($requestData);
-        $response =  $optionHandler->refreshOptions();
-        echo $response;
+        
+        $optionHandler = new clsOptionHandler('RefreshAcco');
+        $response =  $optionHandler->getOptions();
+        //var_dump(json_encode($response));
+        
+        echo json_encode($response);
         die;
         break;
         

@@ -3,41 +3,33 @@
   function clickHandler(formId, flag){
         
         document.getElementById("requestType").value = "refreshAcco";
-                        var formData = $(formId).serialize();
-                        alert(formData);
-//    if(validateInput()){
-//        switch flag {
-//            
-//                case -1: //Refresh count
-                   
-//                    $.ajax({
-//                     url:'/KDMS/Logic/requestManager.php',
-//                     type:'POST',
-//                     data:formData,
-//                     success:function(response){
-//
-//                           var r = JSON.parse(response);
-//
-//                           if(r['flag'] == true){
-//                               alert("Accomodation count refreshed successfully!");
-//                               //window.location.assign("/KDMS/UI/adddevoteei.php");;
-//                           }
-//                           else{
-//                               alert(r['message']);
-//                           }   
-//                     }
-//                   });
+        var formData = $(formId).serialize();
+        
+    if(validateInput()){
+        
+       switch (flag) {       
+                case 1: //Refresh count
+                    $.ajax({
+                     url:'/KDMS/Logic/requestManager.php',
+                     type:'POST',
+                     data:formData,
+                     success:function(response){
+                           var r = JSON.parse(response);
+                           if(r['status'] == true){
+                               alert("Accomodation count refreshed successfully!");
+                           }
+                           else{
+                               alert(response);
+                           }   
+                        }
+                   });
                 
-//                   break;
-//                   
-//                default:
-//                    break;
-//               }
-//    }
-
-    document.getElementById("myFormID").action = "/KDMS/Logic/requestManager.php";
-   document.getElementById("myFormID").method = "POST";
-   document.getElementById("myFormID").submit();
+                   break;
+////                   
+                default:
+                    break;
+               }
+    }
   }
 
 function validateInput(){
@@ -119,9 +111,9 @@ function validateInput(){
                   <p class="card-category">Links</p>
                   <h3 class="card-title">Quick Links</h3>
                 </div>
-                <div class="card-footer" onclick="clickHandler('#myFormID', -1); return false;">
+                <div class="card-footer" onclick="clickHandler('#myFormID', 1); return false;">
                   <div class="stats">
-                    <i class="material-icons text-danger">Add</i>
+                    <i class="material-icons text-danger">face</i>
                     <a href>Refresh Accommodation Counts</a>
                   </div>
                 </div>

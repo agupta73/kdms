@@ -7,7 +7,7 @@
 \pard\pardeftab720\sl300\partightenfactor0
 
 \f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 DELIMITER $$\
+DELIMITER $$\
 CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_REFRESH_ACCO_COUNT`()\
 BEGIN\
 \
@@ -17,17 +17,16 @@ BEGIN\
     DECLARE v_accommodation_capacity INTEGER DEFAULT 0 ;\
 \
 	DECLARE csr_accomodation CURSOR FOR\
-        SELECT\
-            am.accomodation_key,\
-            COUNT(da.Accomodation_Key),\
-            am.accomodation_capacity\
-        FROM\
-            Accommodation_Master am\
-        LEFT OUTER JOIN Devotee_Accomodation da ON\
-            am.Accomodation_Key = da.Accomodation_Key AND da.accomodation_status = 'Allocated' AND da.Accomodation_Year = YEAR(NOW())\
-\
-        GROUP BY\
-            da.Accomodation_Key ;\
+      SELECT\
+    am.accomodation_key,\
+    COUNT(da.Accomodation_Key),\
+    am.accomodation_capacity\
+FROM\
+    Accommodation_Master am\
+LEFT OUTER JOIN Devotee_Accomodation da ON\
+    am.Accomodation_Key = da.Accomodation_Key AND da.Accomodation_Year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated'\
+GROUP BY\
+    am.Accomodation_Key;\
 \
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = 1 ;\
     \

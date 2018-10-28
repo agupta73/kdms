@@ -8,7 +8,8 @@
   $db = $database->getConnection();
 
   $options = new clsOptions($db);
-  $requestData = "Accommodation";
+  $requestData = $_GET['option_type'];
+  
   $res=$options->loadOption($requestData);
   //echo $res;   
   echo json_encode($res);
