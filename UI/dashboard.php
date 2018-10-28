@@ -1,3 +1,49 @@
+ <script>
+//javascript function for ajax call
+  function clickHandler(formId, flag){
+        
+        document.getElementById("requestType").value = "refreshAcco";
+                        var formData = $(formId).serialize();
+                        alert(formData);
+//    if(validateInput()){
+//        switch flag {
+//            
+//                case -1: //Refresh count
+                   
+//                    $.ajax({
+//                     url:'/KDMS/Logic/requestManager.php',
+//                     type:'POST',
+//                     data:formData,
+//                     success:function(response){
+//
+//                           var r = JSON.parse(response);
+//
+//                           if(r['flag'] == true){
+//                               alert("Accomodation count refreshed successfully!");
+//                               //window.location.assign("/KDMS/UI/adddevoteei.php");;
+//                           }
+//                           else{
+//                               alert(r['message']);
+//                           }   
+//                     }
+//                   });
+                
+//                   break;
+//                   
+//                default:
+//                    break;
+//               }
+//    }
+
+    document.getElementById("myFormID").action = "/KDMS/Logic/requestManager.php";
+   document.getElementById("myFormID").method = "POST";
+   document.getElementById("myFormID").submit();
+  }
+
+function validateInput(){
+    return true;
+}
+  </script>
   <div class="content">
         <div class="container-fluid">
           <div class="row">
@@ -60,8 +106,12 @@
                 </div>
               </div>
             </div>
+              
             <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
+                <form name="myForm" id="myFormID">
+                    <input type="hidden" name="requestType" id="requestType" value="none">
+                    
+                    <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                   <div class="card-icon">
                     <i class="material-icons">links</i>
@@ -69,10 +119,10 @@
                   <p class="card-category">Links</p>
                   <h3 class="card-title">Quick Links</h3>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer" onclick="clickHandler('#myFormID', -1); return false;">
                   <div class="stats">
-                    <i class="material-icons text-danger">edit</i>
-                    <a href="#pablo">Refresh Accommodation Counts</a>
+                    <i class="material-icons text-danger">Add</i>
+                    <a href>Refresh Accommodation Counts</a>
                   </div>
                 </div>
                 <div class="card-footer">
@@ -87,7 +137,8 @@
                     <a href="#pablo">Devotee by Location - Summary</a>
                   </div>
                 </div>
-                </div>
+                </div>             </form>
+
               </div>
             </div>
           </div>
