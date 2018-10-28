@@ -280,67 +280,7 @@ Class Devotee {
         }
         return strtoupper($id);
     }
-    
-    private function cleanseAccomodationRecord($Devotee_Key, $Devotee_Accommodation_ID){
-        $res = array();
-        $res['status'] = false;
-        $res['message'] = 'Error in cleasning Accomodation Record!';
-        $errormsg = "";
-        $status = false;
-//        $res['message'] = $Devotee_Key + $Devotee_Accommodation_ID ;
-                
-//      $result = ['1'];"
-//        // $id="KDHM15562AF1ACE";
-//        while (!empty($result)) {
-//            //$id = 'KDHM' . rand(0, 9999) . substr(md5(rand()), 0, 7);
-//            $id = 'P' . date('y') . date('m') . date('d') . rand(0, 9999) . substr(md5(rand()), 0, 7);
-//            $sql = "SELECT * FROM " . $this->table_name . " where devotee_key = '" . $id . "'";
-//            $result = [];
-//            foreach ($this->conn->query($sql) as $row) {
-//                //var_dump($row);
-//                if (!empty($row)) {
-//                   array_push($result, $row);
-//              }
-//            }
-//        }
-        $status = true;
-        if ($status) {
-            $res['status'] = true;
-            $res['message'] = ""; 
-            $res['info'] = "";
-        }
-        return $res;
-    }
-    
-    private function updateAccomodationCount($Devotee_Accommodation_ID){
-        $res = array();
-        $res['status'] = false;
-        $res['message'] = 'Error in cleasning Accomodation Record!';
-        $errormsg = "";
-        $status = false;
-        $res['message'] = $Devotee_Accommodation_ID;
-//        $result = ['1'];
-//        // $id="KDHM15562AF1ACE";
-//        while (!empty($result)) {
-//            //$id = 'KDHM' . rand(0, 9999) . substr(md5(rand()), 0, 7);
-//            $id = 'P' . date('y') . date('m') . date('d') . rand(0, 9999) . substr(md5(rand()), 0, 7);
-//            $sql = "SELECT * FROM " . $this->table_name . " where devotee_key = '" . $id . "'";
-//            $result = [];
-//            foreach ($this->conn->query($sql) as $row) {
-//                //var_dump($row);
-//                if (!empty($row)) {
-//                   array_push($result, $row);
-//              }
-//            }
-//        }
-        $status = true;
-        if ($status) {
-            $res['status'] = true;
-            $res['message'] = "";  
-            $res['info'] = "";
-        }
-        return $res;
-    }
+ 
     
 //    public function upsert($requestData) {
 //      //print_r($requestData);

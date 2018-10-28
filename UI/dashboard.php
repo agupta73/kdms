@@ -20,7 +20,7 @@
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">add</i>
-                    <a href="#pablo">Add Devotee</a>
+                    <a href="../UI/addDevoteeI.php">Add Devotee</a>
                   </div>
                 </div>
                 <div class="card-footer">
@@ -72,7 +72,7 @@
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">edit</i>
-                    <a href="#pablo">Change Devotee Location</a>
+                    <a href="#pablo">Refresh Accommodation Counts</a>
                   </div>
                 </div>
                 <div class="card-footer">

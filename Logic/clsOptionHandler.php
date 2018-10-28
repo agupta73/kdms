@@ -25,6 +25,12 @@ class clsOptionHandler {
         return $response;
     }
     
+    public function refreshOptions(){
+        $response = $this->curl_rest($this->request);
+        return $response;
+    }
+
+
     private function curl_rest($requestData) {
 
         $ch = curl_init();
