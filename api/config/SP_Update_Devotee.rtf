@@ -10,6 +10,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPDATE_DEVOTEE`(IN `p_Devotee_
 BEGIN\
 	\
     DECLARE v_past_accomodation varchar(10);\
+    DECLARE v_past_accomodation_Count varchar(10);    \
 \
     UPDATE devotee SET\
         Devotee_Type = p_Devotee_Type,\
@@ -23,19 +24,33 @@ BEGIN\
         Devotee_Status = p_Devotee_Status,\
         Devotee_Remarks = p_Devotee_Remarks,\
         Devotee_Record_Update_Date_Time = NOW(),\
-        Devotee_Record_Updated_By = p_Devotee_Record_Updated_By;\
+        Devotee_Record_Updated_By = p_Devotee_Record_Updated_By\
+     WHERE Devotee_Key = p_Devotee_Key;\
 \
-SELECT count(*) INTO v_past_accomodation  FROM Devotee_Accomodation WHERE\
+SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE\
 Devotee_Key = p_Devotee_Key AND\
 Accomodation_Status = 'Allocated' AND\
 Accomodation_Year = YEAR(NOW()) AND\
 Accomodation_key = p_Devotee_Accommodation_ID;\
 \
-IF (v_past_accomodation = 0) THEN\
+IF (v_past_accomodation_Count = 0) THEN\
+\
+SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE\
+Devotee_Key = p_Devotee_Key AND\
+Accomodation_Status = 'Allocated' AND\
+Accomodation_Year = YEAR(NOW()) \
+ORDER BY \
+Devotee_Accomodation_Update_Date_Time DESC\
+LIMIT 1;\
 \
 UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;\
 \
-\
+UPDATE Accommodation_Availability SET\
+	Allocated_Count = Allocated_Count - 1,\
+    Available_Count = Available_Count + 1\
+WHERE	\
+	Accomodation_Key = v_past_accomodation;\
+    \
 INSERT INTO Devotee_Accomodation(\
     Accomodation_Key,\
     Devotee_Key,\
@@ -57,17 +72,21 @@ VALUES(\
     p_Devotee_Record_Updated_By\
 );\
 \
+UPDATE Accommodation_Availability SET\
+	Allocated_Count = Allocated_Count + 1,\
+    Available_Count = Available_Count - 1\
+WHERE	\
+	Accomodation_Key = p_Devotee_Accommodation_ID;\
 END IF;\
 \
 \
 END$$\
 DELIMITER ;\
 \
-\
 call proc_update_devotee (	\
-    'P181027566', \
+    'P181028761', \
 	'P', \
-	'Anil', \
+	'Aayush', \
 	'Gupta', \
 	'M', \
 	'PAN', \
@@ -77,6 +96,6 @@ call proc_update_devotee (	\
 	'A', \
 	'TEsting', \
 	'Anil', \
-	\'91GA1\'92, \
+	'GA1', \
 	'Allocated')\
 }

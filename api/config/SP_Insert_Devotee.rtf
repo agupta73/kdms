@@ -58,8 +58,14 @@ VALUES(\
     NULL,\
     p_Devotee_Accomodation_Status,\
     NOW(),\
-    p_Devotee_Accommodation_ID\
+    p_Devotee_Record_Updated_By\
 );\
+\
+UPDATE Accommodation_Availability SET\
+	Allocated_Count = Allocated_Count + 1,\
+    Available_Count = Available_Count - 1\
+WHERE	\
+	Accomodation_Key = p_Devotee_Accommodation_ID;\
 \
 END$$\
 DELIMITER ;}
