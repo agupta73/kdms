@@ -112,6 +112,7 @@
             data:{image:dataUrl,api_type:3}
         }).done(function(){
             alert('Image uploaded !');
+            $('#CameraModalLong').modal('hide');
         });
        
     }
