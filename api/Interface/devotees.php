@@ -53,9 +53,8 @@ Class Devotee {
         $DevoteeDetails = array();
         
         if(!empty($row = $results->fetchObject())){
-            
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
             $DevoteeDetails=$row;
-            //var_dump($DevoteeDetails);
         }
         else{
             $DevoteeDetails['status'] = false;

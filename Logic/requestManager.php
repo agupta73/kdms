@@ -10,7 +10,7 @@ $requestType = "";
 $requestData = array();
 
 
-//var_dump($_POST);
+//var_dump($_POST);die;
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
@@ -32,7 +32,7 @@ switch ($requestType) {
                 $requestData[$fld] = urlencode($_POST[$fld]);
             }
         }
-
+        
         $devoteeHandler = new clsDevoteeHandler($requestData);
         $response =  $devoteeHandler->upsertDevotee();
 
