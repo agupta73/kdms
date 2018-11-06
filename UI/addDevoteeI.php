@@ -23,6 +23,7 @@
     $devotee_status="A";
     $devotee_remarks="";
     $devotee_accommodation_id="";
+    $devotee_photo="";
     
     
     //load accommodation options and available spots
@@ -93,7 +94,10 @@
         //$response['Devotee_ID_Image']; // NULL 
         //$response['Devotee_ID_XML']; // NULL 
         //$response['Photo_type']; // NULL 
-        //$response['Devotee_Photo']; // NULL
+        if(!empty($response['Devotee_Photo'])){  // NULL
+            $devotee_photo = $response['Devotee_Photo'];
+            //var_dump($devotee_photo);die;
+        }
     }
  
     
@@ -296,7 +300,15 @@ function validateInput(){
               <div class="card card-profile">
                 <div class="card-body" style="height:280px;">
                 </br>
-                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>
+<!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
+                <?php 
+                    if($devotee_photo==""){
+                       echo '<img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>';
+                    }
+                    else{
+                       echo '<img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="200px" width="200px"></img>';  
+                    }
+                ?> 
                 </div>
               </div>
               <div class="card card-profile">
