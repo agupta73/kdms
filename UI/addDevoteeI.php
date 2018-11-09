@@ -298,7 +298,7 @@ function validateInput(){
 
             <div class="col-md-4">
               <div class="card card-profile">
-                <div class="card-body" style="height:280px;">
+                <div class="card-body" style="height:280px;" data-toggle="modal" data-target="#CameraModalLong">
                 </br>
 <!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
                 <?php 
@@ -309,6 +309,7 @@ function validateInput(){
                        echo '<img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="200px" width="200px"></img>';  
                     }
                 ?> 
+                
                 </div>
               </div>
               <div class="card card-profile">
@@ -327,12 +328,92 @@ function validateInput(){
     </div>
   </div>
   </div>
+
+  <!-- Modal -->
+    <div class="modal fade" id="CameraModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document" >
+        <div class="modal-content" style="width:800px;height:500px;">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" >
+            <div class="row">
+              <div class="col-md-6">
+                <video id="video" width="300" height="250" autoplay></video>
+                <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
+              </div>
+
+              <div class="col-md-5">
+            <canvas id="canvas" ></canvas>
+            <div id="photo"></div>
+            </div>
+          </div>
+            <script>
+//            var video = document.getElementById('video');
+//              // Get access to the camera!
+//              if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+//                // Not adding `{ audio: true }` since we only want video now
+//                navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+//                    video.src = window.URL.createObjectURL(stream);
+//                    video.play();
+//                });
+//              }
+//              // Elements for taking the snapshot
+//              var canvas = document.getElementById('canvas');
+//              var context = canvas.getContext('2d');
+//              var video = document.getElementById('video');
+//
+//              // Trigger photo take
+//              document.getElementById("snap").addEventListener("click", function() {
+//              	context.drawImage(video, 0, 0, 300, 300);
+//              });
+//            </script>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
+            <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- id modial -->
+
+
+    <!-- Modal -->
+      <div class="modal fade" id="IDModalLong" tabindex="-2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Upload ID</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" >
+              <div class="row">
+                <div class="col-md-12">
+                  ...
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!--   Core JS Files   -->
   <?php
-  include_once("scriptJS.php")
-
-
-  ?>
+  include_once("scriptJS.php") ?>
+  <script src="../assets/js/pages/capture.js"></script>
+ 
 </body>
 
 </html>

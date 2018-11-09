@@ -83,7 +83,7 @@ Class Image {
         }
     }
 
-    public function upload($requestData, $devotee_id, $is_update = false) {
+    public function upload($requestData, $devotee_id, $is_update ) {
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
         $unencoded = base64_decode($filteredData[1]);
@@ -94,32 +94,21 @@ Class Image {
          */
         // To devotee table 
         if ($is_update) {  //
-            $status = 0; // Disable all old
-            $query0 = "UPDATE
-                	Devotee_Photo
-            SET
-                status=:status  Where Devotee_Key:id";
+             
+            $query0 = "UPDATE Devotee_Photo
+                        SET
+                        Devotee_Photo=:photo 
+                        WHERE 
+                        Devotee_Key=:id";
+                        
             $stmt = $this->conn->prepare($query0);
-            $stmt->bindParam(":status", $status);
+            $stmt->bindParam(":photo", $unencoded);
+            
             $stmt->bindParam(":id", $devotee_id);
             if (!$stmt->execute()) {
                 return false;
             }
-            // Insert new
 
-            $query1 = "INSERT INTO
-                	Devotee_Photo
-            SET
-                Devotee_Photo=:photo,
-                Devotee_Key:id";
-            $stmt1 = $this->conn->prepare($query1);
-            $stmt1->bindParam(":photo", $iname);
-            $stmt1->bindParam(":id", $devotee_id);
-            if (!$stmt1->execute()) {
-                return false;
-            } else {
-                return true;
-            }
         } else {
             // In devotee table
             $query02 = "INSERT INTO Devotee

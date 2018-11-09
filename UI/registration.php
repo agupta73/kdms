@@ -185,6 +185,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
+            <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php $devotee_key ?>">
           </div>
         </div>
       </div>

@@ -18,6 +18,7 @@
     var video = null;
     var canvas = null;
     var photo = null;
+    var devoteeID = null;
     var startbutton = null;
     var uploadbutton = null;
 
@@ -25,6 +26,7 @@
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
         photo = document.getElementById('photo');
+        devoteeID = document.getElementById('devotee_key_modal');
         startbutton = document.getElementById('click-pic');
         uploadbutton = document.getElementById('upload-pic');
 
@@ -106,15 +108,26 @@
 
     function uploadImage() {
         var dataUrl = canvas.toDataURL();
-        $.ajax({
-            url:'../api/RequestHandler.php',
-            method:'POST',
-            data:{image:dataUrl,api_type:3}
-        }).done(function(){
-            alert('Image uploaded !');
-            $('#CameraModalLong').modal('hide');
-        });
-       
+        if(devoteeID.value!=""){
+            $.ajax({
+                url:'../api/RequestHandler.php',
+                method:'POST',
+                data:{image:dataUrl,api_type:3,devotee_key:devoteeID.value}
+            }).done(function(){
+                alert('Devotee Image updated!!');
+                $('#CameraModalLong').modal('hide');
+                });
+            }
+        else{
+                $.ajax({
+                    url:'../api/RequestHandler.php',
+                    method:'POST',
+                    data:{image:dataUrl,api_type:3}
+                }).done(function(){
+                    alert('Image uploaded to new Devotee record!!');
+                    $('#CameraModalLong').modal('hide');
+               });
+            }  
     }
 
     $('#CameraModalLong').on('show.bs.modal', function () {
