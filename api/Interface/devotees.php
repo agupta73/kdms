@@ -240,7 +240,7 @@ Class Devotee {
         if ($stmt->execute()) {
             $res['status'] = true;
             $res['message'] = "";
-            $res['info'] = "";
+            $res['info'] = $unique_id;
         }
         else{
             $res['status'] = false;

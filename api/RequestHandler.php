@@ -17,7 +17,7 @@ if ($api_type == 3) {
     $database = new Database();
     $db = $database->getConnection();
     // Now check if request is for new devotee or existing
-   
+    
     if (empty($requestData['devotee_key'])) {  // new
         include_once $Interface_path . 'devotees.php';
         $devotee = new Devotee($db);
@@ -25,6 +25,7 @@ if ($api_type == 3) {
     } else { // Existing
         $is_update=true;
         $devotee_key = $requestData['devotee_key'];
+        
     }
     // Create database connection
     $imageClass = new Image($db);

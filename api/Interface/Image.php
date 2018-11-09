@@ -84,29 +84,39 @@ Class Image {
     }
 
     public function upload($requestData, $devotee_id, $is_update ) {
+        
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
         $unencoded = base64_decode($filteredData[1]);
+        
         // Now save this info to db
         /*
          * If it is update ,insert data to Devotee_photo table only.
          * Else create an empty row in Devotee table with given id
          */
         // To devotee table 
+        
         if ($is_update) {  //
              
-            $query0 = "UPDATE Devotee_Photo
+//            $query0 = "UPDATE Devotee_Photo
+//                        SET
+//                        Devotee_Photo=:photo 
+//                        WHERE 
+//                        Devotee_Key=:id";
+                 
+            $query0 = "REPLACE INTO Devotee_Photo
                         SET
-                        Devotee_Photo=:photo 
-                        WHERE 
+                        Devotee_Photo=:photo,
                         Devotee_Key=:id";
-                        
             $stmt = $this->conn->prepare($query0);
             $stmt->bindParam(":photo", $unencoded);
-            
             $stmt->bindParam(":id", $devotee_id);
+            
             if (!$stmt->execute()) {
                 return false;
+            }
+            else{
+                return true;
             }
 
         } else {

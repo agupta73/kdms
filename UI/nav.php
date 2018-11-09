@@ -30,6 +30,12 @@
           <p>Registered Devotees</p>
         </a>
       </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./AddDevoteeI.php">
+          <i class="material-icons">person</i>
+          <p>Register New Devotee</p>
+        </a>
+      </li>
     </ul>
   </div>
 </div>

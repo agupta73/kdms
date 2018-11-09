@@ -125,7 +125,7 @@
                 
 		if(r['flag'] == true){
                     alert("Devotee record updated successfully!");
-                    window.location.assign("/KDMS/UI/adddevoteei.php");;
+                    window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
                 }
 		else{
                     alert(r['message']);

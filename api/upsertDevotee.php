@@ -10,7 +10,7 @@
   $requestData = $_POST;
   $res=$devotee->upsertDevotee($requestData);
   if ($res['status']) {
-      $response = array('flag' => true);
+      $response = array('flag' => true, 'info'=>$res['info']);
   } else {
       $response = array('flag' => false,'message'=>$res['message'], 'info'=>$res['info']);
   }
