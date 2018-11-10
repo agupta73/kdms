@@ -97,7 +97,7 @@ Class Devotee {
         }
        
         $query = "select 
-                    d.devotee_key, CONCAT(d.devotee_first_name, ', ', d.devotee_last_name) as Devotee_Name, 
+                    d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name, 
                     d.devotee_station, d.devotee_cell_phone_number,
                     did.Devotee_ID_Image, 
                     dp.Devotee_Photo 

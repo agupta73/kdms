@@ -26,7 +26,15 @@
                 case "PWD":
                     $gridTitle = "Incomplete Devotee Records with photo or ID";
                 break;
-
+            
+                case "DWP":
+                    $gridTitle = "Devotee Records without photo or ID";
+                break;
+            
+                case "CTP":
+                    $gridTitle = "Devotee Cards to be Printed";
+                break;
+            
                 default :
                     $gridTitle = "Available Devotee Records";
                 break; 
@@ -43,7 +51,7 @@
         <div class="container-fluid">
           <div class="card">
             <div class="card-header card-header-primary">
-              <h4 class="card-title">
+                <h4 class="card-title" id="pageHeader">
                 <?php print_r($gridTitle); ?>
               </h4>
             </div>
@@ -51,7 +59,7 @@
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table">
-                    <thead class=" text-primary">
+                    <thead class="text-primary">
                       <th>
                         Name
                       </th>
@@ -74,6 +82,7 @@
                     </thead>
                     <tbody>
                       <?php
+                            $recordCount=0;
                             foreach ($response as $devoteeRecord){
                                $devoteeKey = "--Unavailable--"; 
                                $devoteeName = "--Unavailable--";
@@ -81,21 +90,22 @@
                                $devoteeCellNumber = "--Unavailable--";
                                $devoteePhoto = "";
                                $devoteeID = "";
+                               $recordCount = $recordCount+1;
                 
                                if(!empty($devoteeRecord['devotee_key'])){
-                                   $devoteeKey = $devoteeRecord['devotee_key'];
+                                   $devoteeKey = urldecode($devoteeRecord['devotee_key']);
                                }
                                
                                if(!empty($devoteeRecord['Devotee_Name'])){
-                                   $devoteeName = $devoteeRecord['Devotee_Name'];
+                                   $devoteeName = urldecode($devoteeRecord['Devotee_Name']);
                                }
                                
                                if(!empty($devoteeRecord['devotee_station'])){
-                                   $devoteeStation = $devoteeRecord['devotee_station'];
+                                   $devoteeStation = urldecode($devoteeRecord['devotee_station']);
                                }
                                
                                if(!empty($devoteeRecord['devotee_cell_phone_number'])){
-                                   $devoteeCellNumber = $devoteeRecord['devotee_cell_phone_number'];
+                                   $devoteeCellNumber = urldecode($devoteeRecord['devotee_cell_phone_number']);
                                }
                                
                                if(!empty($devoteeRecord['Devotee_Photo'])){
@@ -158,6 +168,9 @@
     <!-- id modial -->
   </div>
   <!--   Core JS Files   -->
+      <script>
+          document.getElementById('pageHeader').textContent = document.getElementById('pageHeader').textContent  + "(" + <?php print_r($recordCount); ?> + " records found!)";
+      </script>
   <?php
   include_once("scriptJS.php") ?>
 </body>
