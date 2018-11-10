@@ -34,7 +34,7 @@
             
             $devoteeSearch = new clsDevoteeSearch($_GET);    
             $response = $devoteeSearch->getDevoteeRecords();
-            var_dump($response);die;
+            //var_dump($response);die;
         }
        ?>
       <!-- End Navbar -->
