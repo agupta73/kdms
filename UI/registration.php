@@ -9,7 +9,7 @@
     include_once("header.php");
   ?>
 
-  <script src="../assets/js/jquery-3.2.1.min.js"></script>
+<!--  <script src="../assets/js/jquery-3.2.1.min.js"></script>
   <style>
     #search-data{
       padding: 10px;
@@ -60,7 +60,7 @@
       	});
       }
 
-  </script>
+  </script>-->
 
 
 </head>
@@ -79,14 +79,14 @@
       <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
-          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">
+<!--          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">
           <div id="search-box-container" >
           <input  type="text" id="search-data" name="searchData" placeholder="Search By name, phone or station ..." autocomplete="off" />
           </div>
           <div id="search-result-container" style="display:none;position:relative;">
-              <!-- search results comes over here -->
+               search results comes over here 
           </div>
-          </div>
+          </div>-->
           <div class="card"  style="z-index:0;">
             <div class="card-header card-header-primary">
               <h4 class="card-title">Photo and ID Scan</h4>
