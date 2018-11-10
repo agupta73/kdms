@@ -24,7 +24,7 @@
         
             switch ($DisplayMode){
                 case "PWD":
-                    $gridTitle = "Incomplete Records with photo/ID";
+                    $gridTitle = "Incomplete Devotee Records with photo or ID";
                 break;
 
                 default :
@@ -34,7 +34,7 @@
             
             $devoteeSearch = new clsDevoteeSearch($_GET);    
             $response = $devoteeSearch->getDevoteeRecords();
-            //var_dump($response);die;
+            var_dump($response);die;
         }
        ?>
       <!-- End Navbar -->

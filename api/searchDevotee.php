@@ -12,7 +12,7 @@
   //print_r($_POST);die;
   
   $res=$devotee->search($requestData);
-  //echo $res;   
+  //echo $res;   die;
   echo json_encode($res);
 //  switch (json_last_error()) {
 //        case JSON_ERROR_NONE:

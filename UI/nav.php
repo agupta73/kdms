@@ -42,6 +42,12 @@
           <p>Devotee Records with Photo</p>
         </a>
       </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./devoteeSearchResult.php?DisplayMode=DWP">
+          <i class="material-icons">person</i>
+          <p>Devotee Records without Photo</p>
+        </a>
+      </li>      
     </ul>
   </div>
 </div>

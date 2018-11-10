@@ -10,36 +10,36 @@ class clsDevoteeSearch {
     }
     public function getDevoteeDetails(){
         
-        $response = $this->get_details_from_API($this->request['devotee_key']);
+        $response = $this->get_records_from_API($this->request['devotee_key'], "KEY");
         return $response;
     }
     
     public function getDevoteeRecords() {
         $response = "";
         if(!empty($this->request['DisplayMode'])){
-            $response = $this->get_records_from_API($this->request['DisplayMode']);            
+            $response = $this->get_records_from_API($this->request['DisplayMode'],"SET");            
         }
         return $response;
     }
     
-    private function get_details_from_API($requestData) {
-
-        $ch = curl_init();
-        $this->url = $this->url . "?devotee_key=" . $requestData;
-        
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);       
-        $response = json_decode($response, true);
-        //var_dump($response);
-        curl_close($ch);
-        return $response;
-    }
+//    private function get_details_from_API($requestData,$mode) {
+//
+//        $ch = curl_init();
+//        $this->url = $this->url . "?devotee_key=" . $requestData . "&mode=" . $mode;
+//        
+//        curl_setopt($ch, CURLOPT_URL, $this->url);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        $response = curl_exec($ch);       
+//        $response = json_decode($response, true);
+//        //var_dump($response);
+//        curl_close($ch);
+//        return $response;
+//    }
     
-    private function get_records_from_API($requestData) {
+    private function get_records_from_API($requestData,$mode) {
 
         $ch = curl_init();
-        $this->url = $this->url . "?display_mode=" . $requestData;
+        $this->url = $this->url . "?key=" . $requestData . "&mode=" . $mode;
         
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
