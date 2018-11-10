@@ -21,13 +21,29 @@
       <!-- Navbar -->
       <?php
         include_once("navBottom.php");
+        $DisplayMode = "";
+        if(!empty($_GET['DisplayMode'])){
+            $DisplayMode = $_GET['DisplayMode'];
+        }
        ?>
       <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
           <div class="card">
             <div class="card-header card-header-primary">
-              <h4 class="card-title">Available Devotee Records</h4>
+              <h4 class="card-title">
+                <?php               
+                      switch ($DisplayMode){
+                        case "PWD":
+                            print_r("Incomplete Records with photo/ID");
+                        break;
+                        
+                        default :
+                            print_r("Available Devotee Records");
+                        break;                                 
+                      }                                                                                                   
+                ?>
+              </h4>
             </div>
             <div class="row">
               <div class="card-body">

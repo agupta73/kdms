@@ -36,6 +36,12 @@
           <p>Register New Devotee</p>
         </a>
       </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./devoteeSearchResult.php?DisplayMode=PWD">
+          <i class="material-icons">person</i>
+          <p>Devotee Records with Photo</p>
+        </a>
+      </li>
     </ul>
   </div>
 </div>

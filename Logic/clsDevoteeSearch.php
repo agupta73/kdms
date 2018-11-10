@@ -7,23 +7,43 @@ class clsDevoteeSearch {
     //put your code here
      public function __construct($requestObject) {
         $this->request = $requestObject;
-        
     }
     public function getDevoteeDetails(){
         
-        $response = $this->curl_rest($this->request['devotee_key']);
+        $response = $this->get_details_from_API($this->request['devotee_key']);
         return $response;
     }
     
-    private function curl_rest($requestData) {
+    public function getDevoteeRecords() {
+        $response = "";
+        if(!empty($this->request['DisplayMode'])){
+            $response = $this->get_records_from_API($this->request['DisplayMode']);            
+        }
+        return $response;
+    }
+    
+    private function get_details_from_API($requestData) {
 
         $ch = curl_init();
         $this->url = $this->url . "?devotee_key=" . $requestData;
         
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
+        $response = curl_exec($ch);       
+        $response = json_decode($response, true);
+        //var_dump($response);
+        curl_close($ch);
+        return $response;
+    }
+    
+    private function get_records_from_API($requestData) {
+
+        $ch = curl_init();
+        $this->url = $this->url . "?display_mode=" . $requestData;
         
+        curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);        
         $response = json_decode($response, true);
         //var_dump($response);
         curl_close($ch);
