@@ -110,7 +110,7 @@
         var dataUrl = canvas.toDataURL();
         if(devoteeID.value!=""){
             $.ajax({
-                url:'../api/RequestHandler.php',
+                url:'../api/managePhoto.php',
                 method:'POST',
                 data:{image:dataUrl,api_type:3,devotee_key:devoteeID.value}
             }).done(function(){
@@ -120,7 +120,7 @@
             }
         else{
                 $.ajax({
-                    url:'../api/RequestHandler.php',
+                    url:'../api/managePhoto.php',
                     method:'POST',
                     data:{image:dataUrl,api_type:3}
                 }).done(function(){
