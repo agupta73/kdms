@@ -17,12 +17,16 @@
        <?php
         include_once("navBottom.php");
         
-        $DisplayMode = "";
+        $searchKey = "";
         $gridTitle = "";
-        if(!empty($_GET['DisplayMode'])){
-            $DisplayMode = $_GET['DisplayMode'];
+        if(!empty($_GET['key'])){
+            $searchKey = $_GET['key'];
         
-            switch ($DisplayMode){
+            switch ($searchKey){
+                case "CUS": //Future use.. isn't used currently
+                    $gridTitle = "Devotee Search Result";
+                break;
+            
                 case "PWD":
                     $gridTitle = "Incomplete Devotee Records with photo or ID";
                 break;
@@ -36,13 +40,13 @@
                 break;
             
                 default :
-                    $gridTitle = "Available Devotee Records";
+                    $gridTitle = "Devotee Search Result";
                 break; 
             }
             
             $devoteeSearch = new clsDevoteeSearch($_GET);    
             $response = $devoteeSearch->getDevoteeRecords();
-            var_dump($response);die;
+            //var_dump($response);die;
             unset($devoteeSearch);
         }
        ?>
@@ -83,65 +87,67 @@
                     <tbody>
                       <?php
                             $recordCount=0;
-                            foreach ($response as $devoteeRecord){
-                               $devoteeKey = "--Unavailable--"; 
-                               $devoteeName = "--Unavailable--";
-                               $devoteeStation = "--Unavailable--";
-                               $devoteeCellNumber = "--Unavailable--";
-                               $devoteePhoto = "";
-                               $devoteeID = "";
-                               $recordCount = $recordCount+1;
-                
-                               if(!empty($devoteeRecord['devotee_key'])){
-                                   $devoteeKey = urldecode($devoteeRecord['devotee_key']);
-                               }
-                               
-                               if(!empty($devoteeRecord['Devotee_Name'])){
-                                   $devoteeName = urldecode($devoteeRecord['Devotee_Name']);
-                               }
-                               
-                               if(!empty($devoteeRecord['devotee_station'])){
-                                   $devoteeStation = urldecode($devoteeRecord['devotee_station']);
-                               }
-                               
-                               if(!empty($devoteeRecord['devotee_cell_phone_number'])){
-                                   $devoteeCellNumber = urldecode($devoteeRecord['devotee_cell_phone_number']);
-                               }
-                               
-                               if(!empty($devoteeRecord['Devotee_Photo'])){
-                                   $devoteePhoto = $devoteeRecord['Devotee_Photo'];
-                               }
-                                print_r("
-                                 <tr>
-                                 <td>
-                                     <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
-                                 </td>
-                                 <td>
-                                     <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey ."</a>
-                                 </td>
-                                 <td>
-                                     <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
-                                 </td>
-                                   <td>
-                                       <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
-                                 </td>
-                                 <td>
-                                 " );
-                                //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
-                                if($devoteePhoto==""){
-                                    print_r( '<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="70px"></img>');
-                                 }
-                                 else{
-                                    print_r('<img src="data:image/jpeg;base64,'. $devoteePhoto . '" alt="devotee image" height="70px" width="70px"></img>');  
-                                 }                                   
-                                 
-                                 print_r("</td>
-                                 <td>
-                                   <img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' />
-                                 </td>
+                            if(!empty($response)){
+                                foreach ($response as $devoteeRecord){
+                                   $devoteeKey = "--Unavailable--"; 
+                                   $devoteeName = "--Unavailable--";
+                                   $devoteeStation = "--Unavailable--";
+                                   $devoteeCellNumber = "--Unavailable--";
+                                   $devoteePhoto = "";
+                                   $devoteeID = "";
+                                   $recordCount = $recordCount+1;
 
-                               </tr>
-                               ");
+                                   if(!empty($devoteeRecord['devotee_key'])){
+                                       $devoteeKey = urldecode($devoteeRecord['devotee_key']);
+                                   }
+
+                                   if(!empty($devoteeRecord['Devotee_Name'])){
+                                       $devoteeName = urldecode($devoteeRecord['Devotee_Name']);
+                                   }
+
+                                   if(!empty($devoteeRecord['devotee_station'])){
+                                       $devoteeStation = urldecode($devoteeRecord['devotee_station']);
+                                   }
+
+                                   if(!empty($devoteeRecord['devotee_cell_phone_number'])){
+                                       $devoteeCellNumber = urldecode($devoteeRecord['devotee_cell_phone_number']);
+                                   }
+
+                                   if(!empty($devoteeRecord['Devotee_Photo'])){
+                                       $devoteePhoto = $devoteeRecord['Devotee_Photo'];
+                                   }
+                                    print_r("
+                                     <tr>
+                                     <td>
+                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
+                                     </td>
+                                     <td>
+                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey ."</a>
+                                     </td>
+                                     <td>
+                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
+                                     </td>
+                                       <td>
+                                           <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
+                                     </td>
+                                     <td>
+                                     " );
+                                    //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
+                                    if($devoteePhoto==""){
+                                        print_r( '<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="70px"></img>');
+                                     }
+                                     else{
+                                        print_r('<img src="data:image/jpeg;base64,'. $devoteePhoto . '" alt="devotee image" height="70px" width="70px"></img>');  
+                                     }                                   
+
+                                     print_r("</td>
+                                     <td>
+                                       <img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' />
+                                     </td>
+
+                                   </tr>
+                                   ");
+                                }
                             }
                       ?>
                     </tbody>

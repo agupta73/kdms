@@ -23,35 +23,36 @@
       <li class="nav-item ">
         <a class="nav-link" href="./registration.php">
           <i class="material-icons">person</i>
-          <p>Registration</p>
+          <p>Photo/ID Capture</p>
         </a>
       </li>
-      <li class="nav-item ">
-        <a class="nav-link" href="./displayDevotees.php">
-          <i class="material-icons">person</i>
-          <p>Registered Devotees</p>
-        </a>
-      </li>
-      <li class="nav-item ">
+       <li class="nav-item ">
         <a class="nav-link" href="./AddDevoteeI.php">
           <i class="material-icons">person</i>
           <p>Register New Devotee</p>
         </a>
-      </li>
+      </li>     
       <li class="nav-item ">
-        <a class="nav-link" href="./devoteeSearchResult.php?DisplayMode=PWD">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=CUS&key=">
+          <i class="material-icons">person</i>
+          <p>Search Devotees</p>
+        </a>
+      </li>
+
+      <li class="nav-item ">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=PWD">
           <i class="material-icons">person</i>
           <p>Devotee Records with Photo</p>
         </a>
       </li>
       <li class="nav-item ">
-        <a class="nav-link" href="./devoteeSearchResult.php?DisplayMode=DWP">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=DWP">
           <i class="material-icons">person</i>
           <p>Devotee Records w/o Photo</p>
         </a>
       </li>     
       <li class="nav-item ">
-        <a class="nav-link" href="./devoteeSearchResult.php?DisplayMode=CTP">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=CTP">
           <i class="material-icons">person</i>
           <p>Devotee Cards for Printing</p>
         </a>

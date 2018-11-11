@@ -16,8 +16,8 @@ class clsDevoteeSearch {
     
     public function getDevoteeRecords() {
         $response = "";
-        if(!empty($this->request['DisplayMode'])){
-            $response = $this->get_records_from_API($this->request['DisplayMode'],"SET");            
+        if(!empty($this->request['mode']) AND !empty($this->request['key'])){            
+                $response = $this->get_records_from_API($this->request['key'],$this->request['mode']);             
         }
         return $response;
     }

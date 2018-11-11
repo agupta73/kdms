@@ -108,7 +108,9 @@ Class Devotee {
                  from 
                     devotee d 
                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
-                    left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key";
+                    left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
+                    left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key 
+                        AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
@@ -136,7 +138,9 @@ Class Devotee {
                 $query = $query .
                             " WHERE " . $this->prepareSearchClause($requestData); 
                 break;
-        }    
+        }
+        
+        //var_dump($query);die;
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -165,26 +169,47 @@ Class Devotee {
 
         foreach(explode(",", $requestData) as $subClauses){
                 list($subKey, $subValue) = explode("=", $subClauses);
-                //var_dump($subKey);
-                //var_dump($subValue);
                 switch ($subKey) {
-                    case "devotee_first_name" :
+                    case "devotee_first_name":
+                    case "first_name":
+                    case "first name":
+                    case "First Name":
+                    case "FirstName":
                         $searchClause = $searchClause . "d.devotee_first_name = '" . $subValue . "' AND ";
                         break;
                     
                     case "devotee_last_name" :
+                    case "last_name" :
+                    case "last name" :
+                    case "Last Name" :
+                    case "LastName" :
                         $searchClause = $searchClause . "d.devotee_last_name = '" . $subValue . "' AND ";
                         break;
                     
                     case "devotee_station" :
+                    case "Station" :
+                    case "Devotee Station" :
+                    case "DevoteeStation" :
                         $searchClause = $searchClause . "d.devotee_station = '" . $subValue . "' AND ";
                         break;
                     
                     case "devotee_cell_phone_number" :
+                    case "cell phone number" :
+                    case "devotee cell phone number" :
+                    case "Cell Phone Number" :
+                    case "Devotee Cell Phone Number" :
                         $searchClause = $searchClause . "d.devotee_cell_phone_number = '" . $subValue . "' AND ";
                         break;
-               // }
-            }           
+                    
+                    case "devotee_accomodation" :
+                    case "devotee_accomodation_key" :
+                    case "Devotee Accomodation Key" :
+                    case "DevoteeAccomodationKey" :
+                    case "Accomodation" :
+                    case "Accomodation Key" :                        
+                        $searchClause = $searchClause . "da.accomodation_key = '" . $subValue . "' AND ";
+                        break;
+                }           
         }
         
         $searchClause = substr($searchClause, 0, strlen($searchClause)-5);
