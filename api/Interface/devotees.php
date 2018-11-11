@@ -13,11 +13,15 @@ Class Devotee {
     public function search($requestData){
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
-                    case "KEY":                                
+                    case "KEY": //Devotee key supplied
                             return $this->getDetails($requestData['key']);                    
                     break;
 
-                    case "SET":
+                    case "SET": //set query, like devotee without photo
+                            return $this->searchDevotee($requestData['key']);
+                    break;
+                
+                    case "CUS": //Custom query
                             return $this->searchDevotee($requestData['key']);
                     break;
 
@@ -123,12 +127,17 @@ Class Devotee {
                               AND 
                                 (did.Devotee_ID_Image is null OR dp.Devotee_Photo is  null)";
                 break;
+            
+            case "CTP": //Devotee records without Photo or ID
+                
+                break;
 
             default : //Search based on user supplied search criteria
-
+                $query = $query .
+                            " WHERE " . $this->prepareSearchClause($requestData); 
                 break;
         }    
-        
+                
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $devoteeSearchResult = array();
@@ -148,7 +157,41 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-   
+    private function prepareSearchClause($requestData) {
+        $searchClause = "";
+        $subClauses = "";
+        $subKey = "";
+        $subValue = "";
+
+        foreach(explode(",", $requestData) as $subClauses){
+                list($subKey, $subValue) = explode("=", $subClauses);
+                //var_dump($subKey);
+                //var_dump($subValue);
+                switch ($subKey) {
+                    case "devotee_first_name" :
+                        $searchClause = $searchClause . "d.devotee_first_name = '" . $subValue . "' AND ";
+                        break;
+                    
+                    case "devotee_last_name" :
+                        $searchClause = $searchClause . "d.devotee_last_name = '" . $subValue . "' AND ";
+                        break;
+                    
+                    case "devotee_station" :
+                        $searchClause = $searchClause . "d.devotee_station = '" . $subValue . "' AND ";
+                        break;
+                    
+                    case "devotee_cell_phone_number" :
+                        $searchClause = $searchClause . "d.devotee_cell_phone_number = '" . $subValue . "' AND ";
+                        break;
+               // }
+            }           
+        }
+        
+        $searchClause = substr($searchClause, 0, strlen($searchClause)-5);
+        //var_dump($searchClause);
+        //$searchClause = $requestData;
+        return $searchClause;
+    }
 
     public function upsertDevotee($requestData) {
         $res = array();
