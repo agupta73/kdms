@@ -171,22 +171,25 @@ Class Devotee {
         foreach(explode(",", $requestData) as $subClauses){
                 list($subKey, $subValue) = explode("=", $subClauses);
                 switch ($subKey) {
+                    // First Name
                     case "devotee_first_name":
                     case "first_name":
                     case "first name":
                     case "First Name":
                     case "FirstName":
-                        $searchClause = $searchClause . "d.devotee_first_name = '" . $subValue . "' AND ";
+                        $searchClause = $searchClause . "d.devotee_first_name like '%" . $subValue . "%' AND ";
                         break;
                     
+                    // Last Name
                     case "devotee_last_name" :
                     case "last_name" :
                     case "last name" :
                     case "Last Name" :
                     case "LastName" :
-                        $searchClause = $searchClause . "d.devotee_last_name = '" . $subValue . "' AND ";
+                        $searchClause = $searchClause . "d.devotee_last_name like '%" . $subValue . "%' AND ";
                         break;
                     
+                    // Station
                     case "devotee_station" :
                     case "Station" :
                     case "Devotee Station" :
@@ -194,14 +197,34 @@ Class Devotee {
                         $searchClause = $searchClause . "d.devotee_station = '" . $subValue . "' AND ";
                         break;
                     
+                    // Cell Phone Number
                     case "devotee_cell_phone_number" :
                     case "cell phone number" :
                     case "devotee cell phone number" :
                     case "Cell Phone Number" :
                     case "Devotee Cell Phone Number" :
-                        $searchClause = $searchClause . "d.devotee_cell_phone_number = '" . $subValue . "' AND ";
+                        $searchClause = $searchClause . "d.devotee_cell_phone_number like '%" . $subValue . "%' AND ";
                         break;
                     
+                    // Remarks
+                    case "devotee_remarks" :
+                    case "remarks" :
+                    case "devotee_remark" :
+                    case "remark" :
+                    case "Devotee Remark" :
+                        $searchClause = $searchClause . "d.devotee_remarks like '%" . $subValue . "%' AND ";
+                        break;                    
+                    
+                    // ID Number
+                    case "devotee_id_number" :
+                    case "Devotee_ID_Number" :
+                    case "id_number" :
+                    case "ID_Number" :
+                    case "Devotee ID Number" :
+                        $searchClause = $searchClause . "d.devotee_id_number like '%" . $subValue . "%' AND ";
+                        break; 
+                    
+                    // Accommodation
                     case "devotee_accommodation" :
                     case "devotee_accommodation_key" :
                     case "Devotee Accommodation Key" :
