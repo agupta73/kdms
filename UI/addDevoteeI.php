@@ -248,11 +248,7 @@ function validateInput(){
                       <div class="col-md-4">
                         <div class="form-group">
                           <label class="bmd-label-floating">Accommodation</label>
-<!--                          <select type="text" class="form-control" name="devotee_accommodation_id" id="devotee_accommodation_id" value="<?php print_r($devotee_accommodation_id); ?>">
-                            <option value="OWN" selected>--Own Arrangement--</option>
-                            <option value="RK1">Radha Kuti 1</option>
-                            <option value="GA1">Gargachal 1</option>
-                          </select>-->
+
                           <select type="text" class="form-control" name="devotee_accommodation_id" id="devotee_accommodation_id" >
                             <?php
                             foreach ($accommodations as $accommodation){
@@ -265,10 +261,7 @@ function validateInput(){
                                 }
                                 Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
                             } 
-                            
-//                            <option value="OWN" selected>--Own Arrangement--</option>
-//                            <option value="RK1">Radha Kuti 1</option>
-//                            <option value="GA1">Gargachal 1</option>
+
                             ?>
                           </select>
                         </div>

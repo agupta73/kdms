@@ -11,6 +11,7 @@ Class Devotee {
     }
 
     public function search($requestData){
+        
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
@@ -201,12 +202,20 @@ Class Devotee {
                         $searchClause = $searchClause . "d.devotee_cell_phone_number = '" . $subValue . "' AND ";
                         break;
                     
+                    case "devotee_accommodation" :
+                    case "devotee_accommodation_key" :
+                    case "Devotee Accommodation Key" :
+                    case "DevoteeAccommodationKey" :
+                    case "Accommodation" :
+                    case "accommodation" :                        
+                    case "Accommodation Key" :  
                     case "devotee_accomodation" :
                     case "devotee_accomodation_key" :
                     case "Devotee Accomodation Key" :
                     case "DevoteeAccomodationKey" :
                     case "Accomodation" :
-                    case "Accomodation Key" :                        
+                    case "accomodation" :                        
+                    case "Accomodation Key" :                          
                         $searchClause = $searchClause . "da.accomodation_key = '" . $subValue . "' AND ";
                         break;
                 }           
