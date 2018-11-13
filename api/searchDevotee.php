@@ -13,7 +13,12 @@
   
   $res=$devotee->search($requestData);
   //echo $res;   die;
-  echo json_encode($res);
+  if($requestData['mode'] != 'DYN'){
+    echo json_encode($res);
+  }
+  else {
+    echo $res;
+  }
 //  switch (json_last_error()) {
 //        case JSON_ERROR_NONE:
 //            echo ' - No errors';

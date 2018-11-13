@@ -22,7 +22,15 @@ class clsDevoteeSearch {
         return $response;
     }
     
-
+    public function dynamicSearchDevotees() {
+        $response = "";
+        if(!empty($this->request['key'])){            
+                $response = $this->get_records_from_API($this->request['key'],"DYN");             
+        }
+        return $response;
+    }
+    
+    
     private function get_records_from_API($requestData,$mode) {
 
         $ch = curl_init();
@@ -31,9 +39,11 @@ class clsDevoteeSearch {
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);        
-        $response = json_decode($response, true);
+        if($mode != 'DYN'){
+            $response = json_decode($response, true);
+        }
         //var_dump($response);
         curl_close($ch);
         return $response;
-    }
+    }        
 }

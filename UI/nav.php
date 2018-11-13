@@ -116,14 +116,14 @@
       });
 
       function searchData(val){
+          var reqType = "dynamicSearchDevotee";
       	$('#search-result-container').show();
       	$('#search-result-container').html('<div><img src="../assets/img/preloader.gif" width="50px;" height="50px"> <span style="font-size: 20px;">Please Wait...</span></div>');
-      	$.post('../api/jQuerySearchDevotee.php',{'search-data': val}, function(data){
-
+        $.post('/KDMS/Logic/requestManager.php',{'key': val, 'requestType': reqType}, function(data){
       		if(data != "")
       			$('#search-result-container').html(data);
               else
-      		$('#search-result-container').html("<div class='search-result'>No Result Found...</div>");
+      		$('#search-result-container').html("<div class='search-result'> Please wait.. </div>");
       	}).fail(function(xhr, ajaxOptions, thrownError) { //any errors?
 
       	   alert(thrownError); //alert with HTTP error

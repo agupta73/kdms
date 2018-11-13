@@ -25,6 +25,10 @@ Class Devotee {
                     case "CUS": //Custom query
                             return $this->searchDevotee($requestData['key']);
                     break;
+                                
+                    case "DYN": //Dynamic search
+                            return $this->dynamicSearchDevotee($requestData['key']);
+                    break;
 
                     default :
                         return $this->getDetails($requestData['key']);                    
@@ -250,6 +254,36 @@ Class Devotee {
         return $searchClause;
     }
 
+    private function dynamicSearchDevotee($requestData) {
+    
+        try {
+                $query = "SELECT * FROM `Devotee` WHERE "
+                        . "`Devotee_First_Name` like :requestData OR "
+                        . "`Devotee_Last_Name` like :requestData OR "
+                        . "`Devotee_Station` like :requestData OR "
+                        . "`Devotee_Cell_Phone_Number` like :requestData";
+
+                $stmt = $this->conn->prepare($query);
+                $val = "%$requestData%";
+                $stmt->bindParam(':requestData', $val , PDO::PARAM_STR);
+                $stmt->execute();
+
+                $Count = $stmt->rowCount();
+                //echo " Total Records Count : $Count .<br>" ;
+
+                $result ="" ;
+                if ($Count  > 0){
+                            while($data=$stmt->fetch(PDO::FETCH_ASSOC)) {
+                               $result = $result .'<a href="addDevoteeI.php?devotee_key='.$data['Devotee_Key'].'"><div class="search-result">'.$data['Devotee_First_Name'].' '.$data['Devotee_Last_Name'].' - ('.$data['Devotee_Station'].') - '.$data['Devotee_Cell_Phone_Number'].'</div></a>';
+                            }
+                        return $result ;
+                    }
+                }
+                catch (PDOException $e) {
+                        echo 'Connection failed: ' . $e->getMessage();
+                }
+    }
+    
     public function upsertDevotee($requestData) {
         $res = array();
         $res['status'] = false;

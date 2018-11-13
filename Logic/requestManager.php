@@ -51,6 +51,14 @@ switch ($requestType) {
         die;
         break;
         
+    case "dynamicSearchDevotee":
+        $devoteeSearch = new clsDevoteeSearch($_POST);
+        $response =  $devoteeSearch->dynamicSearchDevotees();
+
+        echo $response;
+        die;
+        break;
+    
     default:
         break;
 }
