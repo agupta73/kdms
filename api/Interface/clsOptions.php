@@ -20,6 +20,117 @@ class clsOptions {
         $this->conn = $db;
     }
 
+    
+    public function upsertOption($requestData) {
+        $option = "";
+        $res = array();
+        if(!empty($requestData['optionType'])){
+            $option=$requestData['optionType'];
+        }
+        else{
+            $option = "not provided";
+        }
+        
+        switch ($option) {
+            case "Accommodation":
+                $res=$this->upsertAccommodation($requestData);
+                break;
+            
+            default :
+                
+                break;
+        }
+        
+        return $res;
+    }
+    
+    private function upsertAccommodation($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "";
+        $Accommodation_Key="";
+        $Accommodation_Name="";
+        $Accomodation_Capacity=0;
+        $Reserved_Count=0;
+        $Out_of_Availability_Count=0;
+        $Accommodation_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+
+        if (empty($requestData['accommodation_key'])) {
+            $errormsg .= " Accommodation Key is missing.";
+            $status = false;
+        }
+        else{
+            $Accommodation_Key = htmlspecialchars(strip_tags($requestData['accommodation_key']));
+        }
+        
+        if (!empty($requestData['accommodation_name'])) {
+            $Accommodation_Name = htmlspecialchars(strip_tags($requestData['accommodation_name']));
+        }
+        else{
+            $Accommodation_Name=$Accommodation_Key;
+        }
+        
+        if (!empty($requestData['accommodation_capacity'])) {
+            $Accomodation_Capacity = htmlspecialchars(strip_tags($requestData['accommodation_capacity']));
+        }
+        
+        if (!empty($requestData['reserved_count'])) {
+            $Reserved_Count = htmlspecialchars(strip_tags($requestData['reserved_count']));
+        }
+        
+        if (!empty($requestData['out_of_availability_count'])) {
+            $Out_of_Availability_Count = htmlspecialchars(strip_tags($requestData['out_of_availability_count']));
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        
+        $query= "CALL PROC_UPSERT_ACCO(";
+//    IN `p_Accomodation_Key` VARCHAR(5),
+//    IN `p_Accomodation_Name` VARCHAR(100),
+//    IN `p_Accomodation_Capacity` INT(11),
+//    IN `p_Reserved_Count` INT(11),
+//    IN `p_Out_of_Availability_Count` INT(11),
+//    IN `p_Accomodation_Updated_By` VARCHAR(10)
+
+         $query = $query . "'" .
+                $Accommodation_Key . "', '" . 
+                $Accommodation_Name . "', " . 
+                $Accomodation_Capacity . ", " . 
+                $Reserved_Count . ", " . 
+                $Out_of_Availability_Count . ", '" . 
+                $Accommodation_Record_Updated_By . "')" ; 
+               
+// prepare query
+        $stmt = $this->conn->prepare($query);
+        
+        
+//      
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $Accommodation_Key;
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Accommodation] Upserting Accommodation Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+  
+    }
+    
     public function loadOption($requestData) {
         $option = "";
         
