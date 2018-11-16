@@ -114,33 +114,51 @@
   function saveFormData(formId, flag){
     
     var formData = $(formId).serialize();
+    var updateSuccess = true;
     
     if(validateInput()){ 
          $.ajax({
           url:'/KDMS/Logic/requestManager.php',
           type:'POST',
           data:formData,
+          async: false,
           success:function(response){
 		
                 var r = JSON.parse(response);
                 
 		if(r['flag'] == true){
                     alert("Devotee record updated successfully!");
-                    window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+                    //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
                 }
 		else{
                     alert(r['message']);
+                    updateSuccess=false;
                 }   
           }
         });
 
+        //Save and stay on the record
+        if(flag == 1 && updateSuccess){
+            window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+        }
         //save and exit
-        if(flag == -1)
-          window.location.assign("/KDMS/UI/printID.php");
-
+        if(flag == -1 && updateSuccess){
+          alert("generating card..")
+          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+          document.getElementById("myForm").method = "POST";
+          document.getElementById("requestType").value = "addToPrintQueue";
+//          var myInput = document.createElement("input");
+//          myInput.setAttribute("type", "hidden");
+//          myInput.setAttribute("name", "printAction");
+//          myInput.setAttribute("value", "Add");
+//          document.getElementById(formId).appendChild(myInput);
+          document.getElementById(formId).submit();
+          
+          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+      }
         //save and print
-        if(flag == 0)
-          window.location.assign("/KDMS/UI/index.php");
+        if(flag == 0 && updateSuccess)
+          window.location.assign("/KDMS/UI/dashboard.php");
     }
     /*
    document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
@@ -150,7 +168,28 @@
   }
 
 function validateInput(){
-    return true;
+    var response = true;
+    var message = "";
+    if(document.getElementById("devotee_first_name").value == ""){
+        message = "Devotee first name";
+            response = false;
+    }
+    
+    if(document.getElementById("devotee_last_name").value == ""){
+        if(message != "") {
+            message = message + " and last name";
+        }
+        else {
+            message = "Devotee last name";
+        }
+            response = false;
+    }
+    
+    if(!response){
+        alert(message + " missing!!");
+    }
+    
+    return response;
 }
   </script>
 </head>
@@ -281,7 +320,7 @@ function validateInput(){
                     </div>
                         <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
-                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Print Card</button>
+                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Generate Card</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                     </form>

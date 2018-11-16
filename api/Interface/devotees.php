@@ -476,6 +476,24 @@ Class Devotee {
         //return $res;
     }
 
+    public function manageCardPrinting($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "Error occured";
+        $status = true;
+
+        $Devotee_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+        $status = false;
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+    }
+    
     public function generateId() {
         $result = ['1'];
         // $id="KDHM15562AF1ACE";
