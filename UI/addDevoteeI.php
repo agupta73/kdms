@@ -31,7 +31,8 @@
     $accommodations = $loadAccommodation->getOptions();
     unset($loadAccommodations);
 
-    //var_dump($requestData);die;
+    
+        //var_dump($accommodations);die;
     //Pre-populate devotee record in case of edit
     if (!empty($requestData['devotee_key'])) {
         

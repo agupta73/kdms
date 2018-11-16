@@ -24,15 +24,16 @@ class clsOptions {
     public function upsertOption($requestData) {
         $option = "";
         $res = array();
-        if(!empty($requestData['optionType'])){
-            $option=$requestData['optionType'];
+        if(!empty($requestData['requestType'])){
+            $option=$requestData['requestType'];
         }
         else{
             $option = "not provided";
         }
         
         switch ($option) {
-            case "Accommodation":
+            case "upsertAcco":
+                
                 $res=$this->upsertAccommodation($requestData);
                 break;
             
@@ -61,6 +62,7 @@ class clsOptions {
         $Accommodation_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
 
+        
         if (empty($requestData['accommodation_key'])) {
             $errormsg .= " Accommodation Key is missing.";
             $status = false;
@@ -76,8 +78,8 @@ class clsOptions {
             $Accommodation_Name=$Accommodation_Key;
         }
         
-        if (!empty($requestData['accommodation_capacity'])) {
-            $Accomodation_Capacity = htmlspecialchars(strip_tags($requestData['accommodation_capacity']));
+        if (!empty($requestData['accomodation_capacity'])) {
+            $Accomodation_Capacity = htmlspecialchars(strip_tags($requestData['accomodation_capacity']));
         }
         
         if (!empty($requestData['reserved_count'])) {
@@ -110,12 +112,10 @@ class clsOptions {
                 $Reserved_Count . ", " . 
                 $Out_of_Availability_Count . ", '" . 
                 $Accommodation_Record_Updated_By . "')" ; 
-               
-// prepare query
+        
+  // prepare query
         $stmt = $this->conn->prepare($query);
         
-        
-//      
         if ($stmt->execute()) {
             //var_dump($stmt);
             $res['status'] = true;
@@ -132,23 +132,39 @@ class clsOptions {
     }
     
     public function loadOption($requestData) {
-        $option = "";
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        $optionType = "";
         
-        if(!empty($requestData)){
-            $option=$requestData;
+        if(!empty($requestData['option_type'])){
+            $optionType=$requestData['option_type'];
         }
-        else{
-            $option = "not provided";
+        else{            
+            $res['message'] = "Option type not provided";
+            return $res;
         }
         
-        switch ($option) {
+        switch ($optionType) {
             case "Accommodation":
                   return $this->getAccommodations();
                 break;
             
-            Case "RefreshAcco":
-                
+            Case "RefreshAcco":                
                 return $this->refreshAccommodations();
+                break;
+
+            Case "AccommodationDetail":                
+                if(!empty($requestData['option_type'])){
+                    return $this->getAccommodationDetail($requestData['key']);
+                }
+                else {
+                    $res['message'] = "Option key not provided";
+                    return $res;                    
+                }
+                break;
 
             default:
                 print_r("Not provided option");
@@ -190,6 +206,40 @@ class clsOptions {
         return $AccomodationDetail;
     }
   
+     private function getAccommodationDetail($accommodationKey){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+        
+        
+        $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, aa.Available_Count, 
+            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
+            FROM `Accommodation_Master` am 
+            LEFT OUTER JOIN accommodation_availability aa 
+            ON am.accomodation_key = aa.accomodation_key 
+            WHERE am.accomodation_key = '" . $accommodationKey . "'";
+        
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $AccomodationDetail = array();
+        
+        if($row = $results->fetchObject()){
+            //var_dump($row);
+            $AccomodationDetail=$row;           
+        }
+        //var_dump($AccomodationDetail);
+        else{
+            $AccomodationDetail['status'] = false;
+            $AccomodationDetail['message'] = "Accomodation details not found!";
+            $AccomodationDetail['info'] = $results;
+        }
+        
+        return $AccomodationDetail;
+    }
+    
     private function refreshAccommodations(){
         $res = array();
         $res['status'] = false;

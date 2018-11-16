@@ -13,33 +13,90 @@
  */
 class clsOptionHandler {
     private $url = "http://localhost/KDMS/api/loadOptions.php";
-    private $request = "";
+    private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
+    private $optionType = "";
+    private $optionKey = "";
     //put your code here
      public function __construct($requestObject) {
-        $this->request = $requestObject;
-        
-    }
-    public function getOptions(){
-        $response = $this->curl_rest($this->request);
-        return $response;
+        $this->optionType = $requestObject;        
     }
     
-//    public function refreshOptions(){
-//        $response = $this->curl_rest($this->request);
-//        return $response;
-//    }
+    public function setOptionKey($optKey){
+        $this->optionKey = $optKey;
+    }
+    
+    public function getOptions(){
+        
+        switch ($this->optionType){
+            case "Accommodation":
+                $response = $this->getOptionsFromAPI($this->optionType, "");
+                break;
 
+             case "RefreshAcco":
+                $response = $this->getOptionsFromAPI($this->optionType, "");
+                break;
+            
+            
+            case "AccommodationDetail":
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
+                break;
+            
+            default:
+                
+                break;
+        }
+        
+        return $response;
+    }    
 
-    private function curl_rest($requestData) {
+    public function upsertOption($requestData){
+        //$response
+        switch ($this->optionType){
+            case "upsertAcco":
+                $response = $this->upsertAccommodation($this->urlUpsert, $requestData);
+                break;
+            
+            default:
+                
+                break;
+        }
+        return $response;
+    }
+
+    
+        public function upsertAccommodation($url,  $post_fields = null) {
+         $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+           
+            curl_setopt($ch, CURLOPT_POST, count($post_fields));
+           
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+           // curl_setopt($ch, CURLOPT_USERPWD, "kdms_admin:oxwkV-3]S&{t");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            
+            
+            
+            $response = curl_exec($ch);
+            
+            //$response = json_decode($response, true);
+            
+            curl_close($ch);
+            return $response;
+        }
+    
+        
+         
+        private function getOptionsFromAPI($optionType, $optionKey) {
 
         $ch = curl_init();
-        $this->url = $this->url . "?option_type=" . $requestData;
+        $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey;
         
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        //var_dump($response);
-        $response = json_decode($response, true);
+        if($optionType !="RefreshAcco"){
+            $response = json_decode($response, true);
+        }
         
         curl_close($ch);
         return $response;

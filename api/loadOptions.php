@@ -8,8 +8,8 @@
   $db = $database->getConnection();
 
   $options = new clsOptions($db);
-  $requestData = $_GET['option_type'];
-  
+  //$requestData = $_GET['option_type'];
+  $requestData = $_GET;
   $res=$options->loadOption($requestData);
   //echo $res;   
   echo json_encode($res);
