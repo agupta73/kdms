@@ -85,7 +85,7 @@ function validateInput(){
                 $hideSearchArea=TRUE;
             
         }
-        else { //load accommodation options and available spots                
+        else { //If custom search and criteria has not been specified, load accommodation options and available spots                
                 $loadAccommodation = new clsOptionHandler("Accommodation");
                 $accommodations = $loadAccommodation->getOptions();
                 unset($loadAccommodations);

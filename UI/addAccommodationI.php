@@ -26,9 +26,6 @@
         $optionHandler = new clsOptionHandler("AccommodationDetail");  
         $optionHandler->setOptionKey($requestData['accommodation_key']);
         $response = $optionHandler->getOptions();
-      // var_dump($response); 
-
-
        
         //assign values
         if(!empty($response['Accomodation_Key'])){
@@ -44,7 +41,7 @@
         }
         
         if(!empty($response['Available_Count'])){
-            $devotee_first_name= urldecode($response['Available_Count']); // "Anil+6" ;
+            $available_count= urldecode($response['Available_Count']); // "Anil+6" ;
         }
         
         if(!empty($response['Allocated_Count'])){
@@ -81,24 +78,24 @@
     
     var formData = $(formId).serialize();
     
-//    if(validateInput()){ 
-//         $.ajax({
-//          url:'/KDMS/Logic/requestManager.php',
-//          type:'POST',
-//          data:formData,
-//          success:function(response){
-//		
-//                var r = JSON.parse(response);
-//                
-//		if(r['flag'] == true){
-//                    alert("Accommodation record updated successfully!");
-//                    window.location.assign("/KDMS/UI/addaccommodationi.php?accommodation_key=" + r['info'] );
-//                }
-//		else{
-//                    alert(r['message']);
-//                }   
-//          }
-//        });
+    if(validateInput()){ 
+         $.ajax({
+          url:'/KDMS/Logic/requestManager.php',
+          type:'POST',
+          data:formData,
+          success:function(response){
+		
+                var r = JSON.parse(response);
+                //alert(response);
+		if(r['status'] == true){
+                    alert("Accommodation record updated successfully!");
+                   window.location.assign("/KDMS/UI/addaccommodationi.php?accommodation_key=" + r['info'] );
+                }
+		else{
+                    alert(r['message']);
+                }   
+          }
+        });
 
         //save and exit
 //        if(flag == -1)
@@ -109,11 +106,12 @@
 //          window.location.assign("/KDMS/UI/index.php");
     }
     
-   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-   document.getElementById("myForm").method = "POST";
-   document.getElementById(formId).submit();
+//   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+//   document.getElementById("myForm").method = "POST";
+//   document.getElementById(formId).submit();
    
   }
+  
 
 function validateInput(){
     return true;
@@ -149,7 +147,7 @@ function validateInput(){
                       <div class="col-md-3">
                         <div class="form-group">
                           <label class="bmd-label-floating">Accommodation Key </label>
-                          <input type="text" name="accommodation_key" id="accommodation_key" class="form-control"  value="<?php print_r($accommodation_key); ?>" <?php if(!$accommodation_key=""){print_r("readonly=true");} ?>>
+                          <input type="text" name="accommodation_key" id="accommodation_key" class="form-control"  value="<?php print_r($accommodation_key); ?>" <?php if($accommodation_key!=""){print_r("readonly=true");} ?>>
                         </div>
                       </div>
                     

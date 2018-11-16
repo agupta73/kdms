@@ -181,7 +181,8 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, aa.Available_Count 
+        $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, aa.Available_Count, am.Accomodation_Capacity,
+            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
             FROM `Accommodation_Master` am 
             LEFT OUTER JOIN accommodation_availability aa 
             ON am.accomodation_key = aa.accomodation_key";

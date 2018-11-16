@@ -21,12 +21,15 @@
                            else{
                                alert(response);
                            }  
-                            //alert(response);
                         }
-                   });
-                
+                   });                
                    break;
-////                   
+                   
+//                case 2: //Manage accommodations
+//                    document.getElementById("myForm").action = "addAccommodationII.php";            
+//                    document.getElementById(formId).submit();
+//                    break;
+//                
                 default:
                     break;
                }
@@ -118,10 +121,10 @@ function validateInput(){
                     <a href>Refresh Accommodation Counts</a>
                   </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer" >
                   <div class="stats">
                     <i class="material-icons text-danger">add</i>
-                    <a href="#pablo">Add Amenity</a>
+                    <a href="addAccommodationII.php">Manage Accommodations</a>
                   </div>
                 </div>
                 <div class="card-footer">

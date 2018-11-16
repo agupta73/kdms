@@ -57,8 +57,8 @@ switch ($requestType) {
 
         $optionHandler = new clsOptionHandler($requestType);
         $response =  $optionHandler->upsertOption($requestData);
-        var_dump($response);
-       // echo $response;
+        
+        echo $response;
         die;
         break;
         
