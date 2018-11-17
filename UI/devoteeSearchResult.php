@@ -51,6 +51,7 @@ function validateInput(){
         
         $searchKey = "";
         $gridTitle = "";
+        $showSelection = FALSE;
         $hideSearchArea = FALSE;
        // var_dump($_GET);
         if(!empty($_GET['key'])){
@@ -71,6 +72,7 @@ function validateInput(){
             
                 case "CTP":
                     $gridTitle = "Devotee Cards to be Printed";
+                    $showSelection = TRUE;
                 break;
             
                 default :

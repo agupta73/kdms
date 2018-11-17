@@ -127,7 +127,7 @@
                 var r = JSON.parse(response);
                 
 		if(r['flag'] == true){
-                    alert("Devotee record updated successfully!");
+                    //alert("Devotee record updated successfully!");
                     //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
                 }
 		else{
@@ -139,6 +139,7 @@
 
         //Save and stay on the record
         if(flag == 1 && updateSuccess){
+            alert("Devotee record updated successfully!");
             window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
         }
         //save and Print
@@ -154,7 +155,7 @@
                 var r = JSON.parse(response);
                 
 		if(r['flag'] == true){
-                    alert("Record added to Print Queue!");
+                    alert("Devotee Record updated and card added to Print Queue!");
                     window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
                 }
 		else{
@@ -172,9 +173,10 @@
 //          
 //          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
       }
-        //save and print
-        if(flag == 0 && updateSuccess)
-          window.location.assign("/KDMS/UI/dashboard.php");
+        //save and exit
+        if(flag == 0 && updateSuccess){
+          alert("Devotee record updated successfully!");
+          window.location.assign("/KDMS/UI/index.php");
     }
     /*
    document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
@@ -182,7 +184,7 @@
    document.getElementById(formId).submit();
    */
   }
-
+  }
 function validateInput(){
     var response = true;
     var message = "";
@@ -335,9 +337,9 @@ function validateInput(){
                       </div>
                     </div>
                         <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
-                    <button type="reset" class="btn btn-success pull-right">Cancel</button>
-                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Generate Card</button>
+                    <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
+                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Generate Card</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                     </form>
                    <div class="clearfix"></div>
