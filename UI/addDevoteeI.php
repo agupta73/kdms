@@ -183,7 +183,7 @@ function validateInput(){
                     <div class="row">
                       <div class="col-md-5">
                         <div class="form-group">
-                          <label class="bmd-label-floating">Devotee ID (disabled)</label>
+                          <label class="bmd-label-floating">Devotee ID (non editable)</label>
                           <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">
                         </div>
                       </div>

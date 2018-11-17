@@ -100,7 +100,7 @@
 
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
-            uploadbutton.style.visibility='visible';
+            uploadbutton.style.visibility = 'visible';
         } else {
             clearphoto();
         }
@@ -108,34 +108,38 @@
 
     function uploadImage() {
         var dataUrl = canvas.toDataURL();
-        if(devoteeID.value!=""){
+        if (devoteeID.value != "") {
             $.ajax({
-                url:'../api/managePhoto.php',
-                method:'POST',
-                data:{image:dataUrl,api_type:3,devotee_key:devoteeID.value}
-            }).done(function(){
+                url: '../api/managePhoto.php',
+                method: 'POST',
+                data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
+            }).done(function () {
                 alert('Devotee Image updated!!');
                 $('#CameraModalLong').modal('hide');
-                });
-            }
-        else{
-                $.ajax({
-                    url:'../api/managePhoto.php',
-                    method:'POST',
-                    data:{image:dataUrl,api_type:3}
-                }).done(function(){
-                    alert('Image uploaded to new Devotee record!!');
-                    $('#CameraModalLong').modal('hide');
-               });
-            }  
+            });
+        } else {
+            $.ajax({
+                url: '../api/managePhoto.php',
+                method: 'POST',
+                data: {image: dataUrl, api_type: 3}
+            }).done(function (data) {
+                data = $.parseJSON(data);
+                var newId = data.message;
+                var url = window.location.href;
+                url = url + '?devotee_key=' + newId;
+                //alert('Image uploaded to new Devotee record!!');
+                //$('#CameraModalLong').modal('hide');
+                window.location = url;
+            });
+        }
     }
 
     $('#CameraModalLong').on('show.bs.modal', function () {
         startup();
     });
     $('#CameraModalLong').on('hidden.bs.modal', function () {
-        window.location.reload();
-                
+         window.location.reload();
+
     });
     // Set up our event listener to run the startup process
     // once loading is complete.

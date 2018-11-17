@@ -27,7 +27,7 @@
         </a>
       </li>
        <li class="nav-item ">
-        <a class="nav-link" href="./AddDevoteeI.php">
+        <a class="nav-link" href="./addDevoteeI.php">
           <i class="material-icons">person</i>
           <p>Register New Devotee</p>
         </a>

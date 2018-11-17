@@ -62,13 +62,12 @@ Class Devotee {
         $query = "select d.*, did.Devotee_ID_Image, did.Devotee_ID_XML, 
                     did.Devotee_ID_Type as DID_Devotee_ID_Type, dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key 
                  from 
-                    devotee d 
-                    left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
+                    Devotee d 
+                    left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
-                    left outer join Devotee_accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  
+                    left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  
                  where 
                     d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
-        
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $DevoteeDetails = array();
