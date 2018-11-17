@@ -134,7 +134,10 @@ Class Devotee {
                                 (did.Devotee_ID_Image is null OR dp.Devotee_Photo is  null)";
                 break;
             
-            case "CTP": //Devotee records without Photo or ID
+            case "CTP": //Card print queue
+                $query = $query .
+                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A'";
                 
                 break;
 
@@ -475,6 +478,56 @@ Class Devotee {
         //return $res;
     }
 
+    public function manageCardPrinting($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "Error occured";
+        $status = true;
+        $query = "";
+        $Print_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+        
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= " Devotee Key is missing.";
+            $status = false;
+        }
+        else{
+            $Devotee_Key=htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+        
+        
+        
+        if($requestData['requestType']== "addToPrintQueue"){
+            $query = "REPLACE INTO `Card_Print_Log`(
+                    `Devotee_Key`,
+                    `Print_Status`,
+                    `Print_Requested_Date_Time`,
+                    `Print_Requested_By_User`
+                )
+                VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";
+                      
+        }
+        else{
+            $query = "DELETE FROM `Card_Print_Log` WHERE `Devotee_Key` in ('" . $Devotee_Key . "')";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $Devotee_Key;
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Card Print] Adding/Removing Devotee Card to/from print queue failed at API!! Error INfo: " . $query;
+            $res['info'] = $stmt;
+        }
+        return $res;
+    }
+    
     public function generateId() {
         $result = ['1'];
         // $id="KDHM15562AF1ACE";
