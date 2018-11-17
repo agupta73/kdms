@@ -80,9 +80,7 @@ switch ($requestType) {
                 $response =  $devoteeHandler->manageCardPrint();
             }
         
-        var_dump($devoteeHandler);
-        var_dump($response);
-        //echo $response;
+        echo $response;
         die;
     
     default:

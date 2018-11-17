@@ -141,20 +141,36 @@
         if(flag == 1 && updateSuccess){
             window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
         }
-        //save and exit
+        //save and Print
         if(flag == -1 && updateSuccess){
-          alert("generating card..")
-          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-          document.getElementById("myForm").method = "POST";
-          document.getElementById("requestType").value = "addToPrintQueue";
-//          var myInput = document.createElement("input");
-//          myInput.setAttribute("type", "hidden");
-//          myInput.setAttribute("name", "printAction");
-//          myInput.setAttribute("value", "Add");
-//          document.getElementById(formId).appendChild(myInput);
-          document.getElementById(formId).submit();
           
-          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+          $.ajax({
+          url:'/KDMS/Logic/requestManager.php',
+          type:'POST',
+          data:{'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
+          async: false,
+          success:function(response){
+		
+                var r = JSON.parse(response);
+                
+		if(r['flag'] == true){
+                    alert("Record added to Print Queue!");
+                    window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                }
+		else{
+                    alert(r['message']);
+                    updateSuccess=false;
+                }   
+          }
+        });
+          
+//          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+//          document.getElementById("myForm").method = "POST";
+//          document.getElementById("requestType").value = "addToPrintQueue";
+//
+//          document.getElementById(formId).submit();
+//          
+//          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
       }
         //save and print
         if(flag == 0 && updateSuccess)
