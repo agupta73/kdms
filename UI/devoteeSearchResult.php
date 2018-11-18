@@ -216,6 +216,7 @@ function validateInput(){
                                               $devoteeStation = "--Unavailable--";
                                               $devoteeCellNumber = "--Unavailable--";
                                               $devoteePhoto = "";
+                                              $devoteeIdImage = "";
                                               $devoteeID = "";
                                               
 
@@ -238,6 +239,11 @@ function validateInput(){
                                               if (!empty($devoteeRecord['Devotee_Photo'])) {
                                                   $devoteePhoto = $devoteeRecord['Devotee_Photo'];
                                               }
+                                              
+                                              if (!empty($devoteeRecord['Devotee_ID_Image'])) {
+                                                  $devoteeIdImage = $devoteeRecord['Devotee_ID_Image'];
+                                              }
+                                              
                                               if($devoteeKey !="--Unavailable--" ){
                                                   $recordCount = $recordCount + 1;
                                               print_r("
@@ -253,9 +259,7 @@ function validateInput(){
                                      </td>
                                        <td>
                                            <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
-                                     </td>
-                                     <td>
-                                     ");
+                                     </td><td>");
                                               //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
                                               if ($devoteePhoto == "") {
                                                   print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="70px"></img>');
@@ -263,13 +267,16 @@ function validateInput(){
                                                   print_r('<img src="data:image/jpeg;base64,' . $devoteePhoto . '" alt="devotee image" height="70px" width="70px"></img>');
                                               }
 
-                                              print_r("</td>
-                                     <td>
-                                       <img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' />
-                                     </td>
+                                              print_r("</td> <td>") ;
+                                       //"<img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' /> " ;
+                                     
+                                        if ($devoteeIdImage == "") {
+                                                  print_r('<img src="../assets/img/faces/doc.png" alt="Devotee ID Image" height="70px" width="70px"></img>');
+                                              } else {
+                                                  print_r('<img src="data:image/jpeg;base64,' . $devoteeIdImage . '" alt="devotee image" height="70px" width="70px"></img>');
+                                              }
 
-                                   </tr>
-                                   ");
+                                              print_r("</td> </td> </tr>");
                                           }
                                       }
                                       }

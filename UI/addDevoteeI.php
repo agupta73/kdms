@@ -24,6 +24,7 @@
     $devotee_remarks="";
     $devotee_accommodation_id="";
     $devotee_photo="";
+    $devotee_id_image = "";
     
     
     //load accommodation options and available spots
@@ -91,15 +92,21 @@
         //$devotee_accommodation_id="";
         //$response['Devotee_Gender']; // "" 
         ////$response['Devotee_Record_Update_Date_Time']; // "2018-10-14 07:23:23" 
-        //$response['Devotee_Record_Updated_By']; //  "0" 
-        //$response['Devotee_ID_Image']; // NULL 
+        //$response['Devotee_Record_Updated_By']; //  "0"         
         //$response['Devotee_ID_XML']; // NULL 
         //$response['Photo_type']; // NULL 
         if(!empty($response['Devotee_Photo'])){  // NULL
             $devotee_photo = $response['Devotee_Photo'];
             //var_dump($devotee_photo);die;
         }
+        //var_dump($response);die;
+        if(!empty($response['Devotee_ID_Image'])){  // NULL
+            $devotee_id_image = $response['Devotee_ID_Image'];
+            
+        }
+        
     }
+    
  
     
     ?>
@@ -365,7 +372,16 @@ function validateInput(){
               </div>
               <div class="card card-profile">
                 <div class="card-body" style="height:280px;">
-                  </br><img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>
+                  </br>
+                  <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
+                   <?php 
+                    if($devotee_id_image==""){
+                       echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
+                    }
+                    else{
+                       echo '<img src="data:image/jpeg;base64,'. $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';  
+                    }
+                ?> 
                 </div>
               </div>
             </div>

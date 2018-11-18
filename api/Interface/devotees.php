@@ -59,21 +59,25 @@ Class Devotee {
             die;
         }
         
-        $query = "select d.*, did.Devotee_ID_Image, did.Devotee_ID_XML, 
-                    did.Devotee_ID_Type as DID_Devotee_ID_Type, dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key 
-                 from 
-                    Devotee d 
-                    left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
-                    left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
-                    left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  
-                 where 
-                    d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
+        $query = "SELECT " .
+                    "d.* " .
+                    ", did.Devotee_ID_Image, did.Devotee_ID_XML " .
+                    ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
+                    ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
+                 "from " .
+                    "Devotee d " .
+                    "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
+                    "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  " .
+                 "where " .
+                    " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $DevoteeDetails = array();
         
         if(!empty($row = $results->fetchObject())){
             $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
             $DevoteeDetails=$row;
         }
         else{
@@ -104,46 +108,48 @@ Class Devotee {
             die;
         }
        
-        $query = "select 
-                    d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name, 
-                    d.devotee_station, d.devotee_cell_phone_number,
-                    did.Devotee_ID_Image, 
-                    dp.Devotee_Photo 
-                 from 
-                    devotee d 
-                    left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
-                    left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
-                    left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key 
-                        AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
+        $query = "select " .
+                    "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
+                    ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", did.Devotee_ID_Image " .
+                    ", dp.Devotee_Photo ".
+                 "from " .
+                    " devotee d ".
+                    " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
                 $query = $query . 
-                            " WHERE
-                                (d.Devotee_First_Name is null OR d.Devotee_Last_Name is null) 
-                              AND 
-                                (did.Devotee_ID_Image is not null OR dp.Devotee_Photo is not null)";
+                            " WHERE  " .
+                                " (d.Devotee_First_Name is null OR d.Devotee_Last_Name is null)  " .
+                              "AND  " .
+                                "(did.Devotee_ID_Image is not null OR dp.Devotee_Photo is not null)  " .
+                                "ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                     
                 break;
 
             case "DWP": //Devotee records without Photo or ID
                 $query = $query . 
-                            " WHERE
-                                (d.Devotee_First_Name is not null OR d.Devotee_Last_Name is NOT null) 
-                              AND 
-                                (did.Devotee_ID_Image is null OR dp.Devotee_Photo is  null)";
+                            " WHERE " .
+                                "(d.Devotee_First_Name is not null OR d.Devotee_Last_Name is NOT null)  " .
+                              "AND  " .
+                                "(did.Devotee_ID_Image is null OR dp.Devotee_Photo is  null)  " .
+                                "ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 break;
             
             case "CTP": //Card print queue
                 $query = $query .
                             " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
-                          . " WHERE cpl.Print_Status = 'A'";
+                          . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 
                 break;
 
             default : //Search based on user supplied search criteria
                 $query = $query .
-                            " WHERE " . $this->prepareSearchClause($requestData); 
+                            " WHERE " . $this->prepareSearchClause($requestData) . " ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50"; 
                 break;
         }
         
@@ -155,6 +161,7 @@ Class Devotee {
         $i = 0;
         while($row = $results->fetchObject()){
             $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
             $devoteeSearchResult[]=$row;
             $i = $i+1;
         }
