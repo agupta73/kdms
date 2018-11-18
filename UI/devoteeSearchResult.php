@@ -34,6 +34,44 @@
         }
   }
 
+function submitPrint(formId, flag){
+      printForm = document.getElementById(formId);      
+      var I = 0;
+      var printString = ""
+        for(I = 0; I < printForm.length; I++) {
+            if(printForm[I].value != ""){
+                //alert(searchForm[I].id + ": " + searchForm[I].value);
+                    if(printForm[I].type == 'checkbox' && printForm[I].checked){
+                    printString = printString + "'" + encodeURI(printForm[I].value) + "',";
+                }
+            }
+        }
+        
+        if(printString.length > 1){            
+            //window.location = "./devoteeSearchResult.php?mode=CUS&key=" + searchString.substr(0,searchString.length-1);
+            alert(printString.substr(0,printString.length-1));
+            window.location = "./devoteeSearchResult.php?mode=SET&key=CTP";
+        }
+        else{
+            alert("Please select a card to print!");
+        }
+  }
+
+function checkAll()
+      {
+        var checktoggle = false;
+        var checkboxes = new Array();
+        if(document.getElementById("headerCheck").checked){
+            checktoggle = true;
+        }       
+        checkboxes = document.getElementsByTagName('input');
+        for (var i=0; i<checkboxes.length; i++)  {
+            if (checkboxes[i].type == 'checkbox')   {
+                checkboxes[i].checked = checktoggle;
+            }
+        }
+      }
+
 function validateInput(){
     return true;
 }
@@ -178,11 +216,17 @@ function validateInput(){
                           <?php print_r($gridTitle); ?>
                       </h4>
                   </div>
+                  <form id="printForm">
                   <div class="row">
                       <div class="card-body">
                           <div class="table-responsive">
                               <table class="table">
                                   <thead class="text-primary">
+                                  <?php if($showSelection) { Print_r("
+                                  <th>
+                                      Select <input type='checkbox' name='headerCheck' id='headerCheck' value='' onclick=checkAll(); return false;>
+                                  </th>");
+                                   } ?>
                                   <th>
                                       Name
                                   </th>
@@ -246,20 +290,23 @@ function validateInput(){
                                               
                                               if($devoteeKey !="--Unavailable--" ){
                                                   $recordCount = $recordCount + 1;
-                                              print_r("
-                                     <tr>
-                                     <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
-                                     </td>
-                                     <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
-                                     </td>
-                                     <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
-                                     </td>
-                                       <td>
-                                           <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
-                                     </td><td>");
+                                                  
+                                                  print_r("<tr>");
+                                                  if($showSelection) { 
+                                                      print_r("<td> <input type='checkbox' name='" . $recordCount . "' id='" . $recordCount . "' value='" . $devoteeKey . "'> </td>");
+                                                  }                                         
+                                              print_r(" <td>
+                                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
+                                                     </td>
+                                                     <td>
+                                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
+                                                     </td>
+                                                     <td>
+                                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
+                                                     </td>
+                                                       <td>
+                                                           <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
+                                                     </td><td>");
                                               //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
                                               if ($devoteePhoto == "") {
                                                   print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="70px"></img>');
@@ -285,18 +332,18 @@ function validateInput(){
                               </table>
                           </div>
                       </div>
-                  </div>
-
-              </div>
-              <div class="col-md-8" hidden="true">
+              
+              <div class="col-md-8" >
                   <div class="card-body">
-                      <form>
-                          <button type="submit" class="btn btn-success pull-right" style="margin-left:30px;">Cancel</button>
-                          <button type="submit" class="btn btn-success pull-right">Add Devotee without photo/image</button>
-                          <button type="submit" class="btn btn-success pull-right" style="margin-right:30px;">Add photo/ID image</button>
+                          <button type="submit" <?php if(!$showSelection) {print_r("hidden='true'");} ?> class="btn btn-success pull-right" >Cancel</button>
+                          <button type="submit" hidden='true' class="btn btn-success pull-right">Add Devotee without photo/image</button>
+                          <button type="submit" <?php if(!$showSelection) {print_r("hidden='true'");} ?> class="btn btn-success pull-right" onclick="submitPrint('printForm', 1); return false;">Print Selected Cards</button>
                           <div class="clearfix"></div>
-                      </form>
+                      
                   </div>
+              </div>
+                 </div>
+                </form>
               </div>
           </div>
       </div>                     
