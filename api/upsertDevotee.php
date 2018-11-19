@@ -9,7 +9,7 @@
   $devotee = new Devotee($db);
   $requestData = $_POST;
   
-  if(!empty($requestData['requestType']) && ($requestData['requestType']="addToPrintQueue" )){
+  if(!empty($requestData['requestType']) && ($requestData['requestType']=="addToPrintQueue" || $requestData['requestType']=="removeFromPrintQueue" )){
         $res=$devotee->manageCardPrinting($requestData);
   }
   else{

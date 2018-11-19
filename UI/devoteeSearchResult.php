@@ -47,10 +47,26 @@ function submitPrint(formId, flag){
             }
         }
         
-        if(printString.length > 1){            
-            //window.location = "./devoteeSearchResult.php?mode=CUS&key=" + searchString.substr(0,searchString.length-1);
-            alert(printString.substr(0,printString.length-1));
-            window.location = "./devoteeSearchResult.php?mode=SET&key=CTP";
+        if(printString.length > 1){                        
+            $.ajax({
+          url:'/KDMS/Logic/requestManager.php',
+          type:'POST',
+          data:{'devotee_key': printString.substr(0,printString.length-1), 'requestType': "removeFromPrintQueue"},
+          async: false,
+          success:function(response){
+		
+                var r = JSON.parse(response);
+                
+		if(r['flag'] == true){
+                    alert("Devotee Cards Printed!");
+                    window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                }
+		else{
+                    alert(r['message']);
+                    updateSuccess=false;
+                }   
+            }
+        });
         }
         else{
             alert("Please select a card to print!");

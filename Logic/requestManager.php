@@ -74,6 +74,7 @@ switch ($requestType) {
         break;
     
     case "addToPrintQueue":
+    case "removeFromPrintQueue":
          
         if (!empty($_POST['devotee_key'])) {
                 $devoteeHandler = new clsDevoteeHandler($_POST);
