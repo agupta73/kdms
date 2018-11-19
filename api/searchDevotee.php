@@ -10,15 +10,20 @@
   $devotee = new Devotee($db);
   $requestData = $_GET;
   //print_r($_POST);die;
-  
-  $res=$devotee->search($requestData);
-  //echo $res;   die;
-  if($requestData['mode'] != 'DYN'){
-    echo json_encode($res);
+  try{
+        $res=$devotee->search($requestData);
+        //var_dump($res);
+        if($requestData['mode'] != 'DYN'){
+          echo json_encode($res);
+        }
+        else {
+          echo $res;
+        }
   }
-  else {
-    echo $res;
-  }
+  catch (Exception $e) {
+        echo  $e->getMessage();                        
+        die;
+    }
 //  switch (json_last_error()) {
 //        case JSON_ERROR_NONE:
 //            echo ' - No errors';

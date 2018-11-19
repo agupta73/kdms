@@ -23,7 +23,7 @@ class clsDevoteeSearch {
     public function getDevoteeRecords() {
         $response = "";
         if (!empty($this->request['mode']) AND ! empty($this->request['key'])) {
-            $response = $this->get_records_from_API($this->request['key'], $this->request['mode']);
+            $response = $this->get_records_from_API($this->request['key'], $this->request['mode']);            
         }
         return $response;
     }
@@ -43,10 +43,18 @@ class clsDevoteeSearch {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        if ($mode != 'DYN') {
-            $response = json_decode($response, true);
+        //print_r("++++++++++++++++++++++++++++++++++++++++++++++++");
+            //var_dump($mode);die;
+        try{
+            if ($mode != 'DYN') {
+                $response = json_decode($response, true);
+                
+            }
         }
-        //var_dump($response);
+        catch (PDOException $e) {
+                        echo  $e->getMessage();
+                        die;
+                    }
         curl_close($ch);
         return $response;
     }
