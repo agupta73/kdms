@@ -21,6 +21,7 @@
     var devoteeID = null;
     var startbutton = null;
     var uploadbutton = null;
+    var camera = null;
 
     function startup() {
         video = document.getElementById('video');
@@ -39,6 +40,9 @@
                 .then(function (stream) {
                     video.srcObject = stream;
                     video.play();
+                    camera = stream.getTracks()[0];
+                    //console.log(stream.getTracks());
+
                 })
                 .catch(function (err) {
                     console.log("An error occurred! " + err);
@@ -138,8 +142,9 @@
         startup();
     });
     $('#CameraModalLong').on('hidden.bs.modal', function () {
-         window.location.reload();
-
+        camera.stop();
+//console.log(navigator.mediaDevices);//.getTracks());//.forEach(function(track) { track.stop(); })
+        //navigator.mediaDevices.
     });
     // Set up our event listener to run the startup process
     // once loading is complete.

@@ -338,9 +338,9 @@ function validateInput(){
                     </div>
                         <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
                     <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
-                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
-                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Generate Card</button>
-                    <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
+                    <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
+                    <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1); return false;">Save and Generate Card</button>
+                    <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                     </form>
                    <div class="clearfix"></div>
                 </div>

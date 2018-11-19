@@ -110,8 +110,8 @@ Class Devotee {
                     did.Devotee_ID_Image, 
                     dp.Devotee_Photo 
                  from 
-                    devotee d 
-                    left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key
+                    Devotee d 
+                    left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key 
                         AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";

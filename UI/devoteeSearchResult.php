@@ -243,16 +243,16 @@ function validateInput(){
                                               print_r("
                                      <tr>
                                      <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
+                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
                                      </td>
                                      <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
+                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
                                      </td>
                                      <td>
-                                         <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
+                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
                                      </td>
                                        <td>
-                                           <a href='adddevoteei.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
+                                           <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
                                      </td>
                                      <td>
                                      ");
