@@ -357,24 +357,28 @@ function validateInput(){
             <div class="col-md-4">
               <div class="card card-profile">
                 <div class="card-body" style="height:280px;" data-toggle="modal" data-target="#CameraModalLong">
-                </br>
+                  
+                 
+                    </br>
+                    
 <!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
                 <?php 
                     if($devotee_photo==""){
-                       echo '<img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>';
+                       echo '<div  id="photo2"><img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img></div>';
                     }
                     else{
-                       echo '<img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="200px" width="200px"></img>';  
+                       echo '<div  id="photo2"><img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="200px" width="200px"></img></div>';  
                     }
+                    
                 ?> 
-                
+                <canvas id="canvas2" style="margin-top:-5%;"></canvas>
                 </div>
               </div>
               <div class="card card-profile">
                 <div class="card-body" style="height:280px;">
                   </br>
                   <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
-                   <?php 
+                  <?php 
                     if($devotee_id_image==""){
                        echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
                     }
