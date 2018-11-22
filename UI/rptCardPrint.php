@@ -1,29 +1,12 @@
 <?php
-//    include_once("conn/conn.php");
-//
-//    $id = $_GET['id_no'];
-//    
-//    //Just seprate query for images and data
-//
-//    $query="SELECT d.* FROM devotee d WHERE d.devotee_key = '".$id."'"; 
-//        
-//	$result = $conn -> query($query);
-//	$row = $result -> fetch_array(MYSQLI_ASSOC);
-//
-//    $query1 = "SELECT * from output_images where kdmm_id = '".$id."'";
-//	$result1 = $conn -> query($query1);
-//	//var_dump($result1); die;
-//	$row1 = $result1 -> fetch_array(MYSQLI_ASSOC);
-//
-//       
-//    $sql = "select dl.*, l.* from devotee_location dl, location l where dl.loc_id = l.L_id and dl.kdmm_id = '".$id."'";
-//    $sql_res = $conn -> query($sql);
-//    $row_loc = $sql_res -> fetch_array();
-//    $x = "";
-//    if($row_loc['L_name'] != "")
-//        $x = $row_loc['L_name'];
-//    else
-//        $x = "Own";
+$devotee_key = "P12312312";
+$devotee_first_name = "Anil";
+$devotee_last_name = "Gupta";
+$devotee_id_type = "Passport";
+$devotee_station = "California";
+$accommodation_name = "Gargachal";
+$devotee_cell_phone_number="+1 415-622-7879";
+$devotee_photo = "";
 ?>
 
 <!DOCTYPE html>
@@ -31,71 +14,68 @@
 <html>
 <head>
     <title> Card Print </title>
-<style>
-    #card{
-            background-color: aliceblue;
-            border-radius: 3px;
-            border-style:double;
-            height: 190px;
-            width: 320px;   
+    <style>
+        #card{
+                background-color: aliceblue;
+                border-radius: 3px;
+                border-style:double;
+                height: 190px;
+                width: 320px;   
         
-    }
-    *{
-        font-family: sans-serif;
+        }
+        *{
+            font-family: sans-serif;
         
-    }
-</style>
+        }
+    </style>
 </head>
-    
-    <body>
-       <div id="printpage">
+
+<body>
+    <div id="printpage">
         <div id="card">
+
             
-            <span> <img src="image/banner.png"  height="35px" width="310px" style="position:absolute;top:10px;left:14px;"></span>
             
-<b>
-    
-    <center style="position:absolute;top:50px;margin-left:77px;"><?php echo $row['F_name'].' '.$row['L_name'].' - '.$row['Gender']; ?></center>
-            </b>
-		<table>
-			<tr><td><span style="position:absolute;top:80px;left:-50px;margin-left:77px;font-size:13px;"><?php echo '<b> Reg No.</b> '.$id.' &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  '.date(d).' '.date(M).' '.date(Y); ?></span></td></tr>
-            			<tr><td><span style="position:absolute;top:100px;left:-50px;margin-left:75px;font-size:13px;"><?php echo '<b> Station :</b> '.$row['Station']; ?></span></td></tr>
             
-    			<tr><td><span style="position:absolute;top:120px;left:-50px;margin-left:77px;font-size:13px;"><?php echo ' <b>Id Avail. :</b> '.$row['Id_type']; ?></span></td></tr>
-            
-            			<tr><td><span style="position:absolute;top:140px;left:-50px;margin-left:75px;font-size:13px;"><?php echo '<b> Stay at :</b> '.$x; ?></span></td></tr>
-            
-            			<tr><td><span style="position:absolute;top:160px;left:-50px;margin-left:77px;font-size:13px;"><?php echo '<b> Mobile :</b> '.$row['Mobile']; ?></span></td></tr>
-            
-            			<tr><td><span style="position:absolute;top:180px;left:20px;margin-left:65px;font-size:10px;">This Id is not valid after 15 June 2018</span></td></tr>    
+            <span> <img src="/kdms/assets/img/banner.png"  height="35px" width="310px" style="position:absolute;top:11px;left:14px;"></span>
+            <b><center style="position:absolute;top:50px;margin-left:77px;"><?php echo $devotee_first_name . ' ' . $devotee_last_name; ?></center></b>
+            <table>
+                <tr>
+                    <td>
+                        <span style="position:absolute;top:80px;left:-50px;margin-left:77px;font-size:13px;"><?php echo '<b> Reg No.</b> ' . $devotee_key; ?></span>
+                    </td>
+                    <td>
+                        <!--<img src="../assets/img/faces/devotee.ico" height="80px" width="60px" >--> 
+                    </td>
+                </tr>
+                <tr><td><span style="position:absolute;top:100px;left:-50px;margin-left:75px;font-size:13px;"><?php echo '<b> Station :</b> ' . $devotee_station; ?></span></td></tr>
+                <tr><td><span style="position:absolute;top:120px;left:-50px;margin-left:77px;font-size:13px;"><?php echo ' <b>Id Avail. :</b> ' . $devotee_id_type; ?></span></td></tr>
+                <tr><td><span style="position:absolute;top:140px;left:-50px;margin-left:75px;font-size:13px;"><?php echo '<b> Stay at :</b> ' . $accommodation_name; ?></span></td></tr>
+                <tr><td><span style="position:absolute;top:160px;left:-50px;margin-left:77px;font-size:13px;"><?php echo '<b> Mobile :</b> ' . $devotee_cell_phone_number; ?></span></td></tr>
+                <tr><td><span style="position:absolute;top:180px;left:20px;margin-left:65px;font-size:10px;">This Id is not valid after 15 June 2019</span></td></tr>    
             </table>
 
-                    <span style="position:absolute;top:75px;left:250px;">
-                <?php           
-                        
-                            if($row1['imageData'] != NULL){            
-                                echo '<img class=\"img-responsive\" style=\"position:absolute;align:right;top:105px;left:25px;width:73px;height:75px;\" src="data:image/jpeg;base64,'.base64_encode( $row1['imageData'] ).'"/>';
-                            }
-                            
-                            else{
-                            ?>                        
-                                       
-                                     <img src="image/member.png" height="80px" width="60px" > 
-                                       
-                                 
-                                        <?php
-                                        }
-                                        ?>
+            <span style="position:absolute;top:75px;left:250px;">
+                <?php
+                //if($row1['imageData'] != NULL){            
+                //  echo '<img class=\"img-responsive\" style=\"position:absolute;align:right;top:105px;left:25px;width:73px;height:75px;\" src="data:image/jpeg;base64,'.base64_encode( $devotee_photo ).'"/>';
+                //}
+                //else{
+                ?>
+                <img src="../assets/    img/faces/devotee.ico" height="80px" width="60px" > 
+                <?php
+                    // }
+                ?>
             </span>
-            
-           
-       
-           </div>
+
+
+
         </div>
-        
-        <br>
-         <a href = "#" onclick="printdiv()"><button >Print </button> </a>
-   
+    </div>
+
+    <br>
+    <a href = "#" onclick="printdiv()"><button >Print </button> </a>
+
     <script>
         function printdiv(){
             
@@ -113,5 +93,5 @@
             }
         
     </script>  
-    </body>
+</body>
 </html>
