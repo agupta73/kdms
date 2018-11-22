@@ -77,6 +77,7 @@ switch ($requestType) {
     case "removeFromPrintQueue":
          
         if (!empty($_POST['devotee_key'])) {
+            //print_r("reaching here..");
                 $devoteeHandler = new clsDevoteeHandler($_POST);
                 $response =  $devoteeHandler->manageCardPrint();
             }

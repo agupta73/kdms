@@ -49,27 +49,31 @@ function submitPrint(formId, flag){
         
         if(printString.length > 1){ 
             
-            window.open("./rptCardsPrint.php?key=" + printString.substr(0,printString.length-1) + "&mode=PCD");
+            window.open("./rptCardsPrint.php?key=" + printString.substr(0,printString.length-1) + "&mode=PCD" );
+            window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
             
-//            $.ajax({
-//                url:'/KDMS/Logic/requestManager.php',
-//                type:'POST',
-//                data:{'devotee_key': printString.substr(0,printString.length-1), 'requestType': "removeFromPrintQueue"},
-//                async: false,
-//                success:function(response){
-//
-//                      var r = JSON.parse(response);
-//
-//                      if(r['flag'] == true){
-//                          alert("Devotee Cards Printed!");
-//                          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-//                      }
-//                      else{
-//                          alert(r['message']);
-//                          updateSuccess=false;
-//                      }   
-//                  }
-//              });
+            //if(confirm("Card printed successfully?")){
+                $.ajax({
+                    url:'/KDMS/Logic/requestManager.php',
+                    type:'POST',
+                    data:{'devotee_key': printString.substr(0,printString.length-1), 'requestType': "removeFromPrintQueue"},
+                    async: false,
+                    success:function(response){
+
+                          var r = JSON.parse(response);
+
+                          if(r['flag'] == true){
+                              alert("Card removed from the printing queue!");
+                              window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                          }
+                          else{
+                              alert(r['message']);
+                              updateSuccess=false;
+                          }   
+                      }
+                  });        
+//            }
+            
         }
         else{
             alert("Please select a card to print!");
