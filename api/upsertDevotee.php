@@ -9,13 +9,20 @@
   $devotee = new Devotee($db);
   $requestData = $_POST;
   
-  if(!empty($requestData['requestType']) && ($requestData['requestType']=="addToPrintQueue" || $requestData['requestType']=="removeFromPrintQueue" )){
-        $res=$devotee->manageCardPrinting($requestData);
-  }
-  else{
-      $res=$devotee->upsertDevotee($requestData);
-  }
-  if ($res['status']) {
+  if (!empty($requestData['requestType'])) {
+    switch ($requestData['requestType']) {
+        case "addToPrintQueue":
+        case "removeFromPrintQueue":
+            $res = $devotee->manageCardPrinting($requestData);
+            break;
+
+        default:
+            $res = $devotee->upsertDevotee($requestData);
+            break;
+    }
+}
+
+if ($res['status']) {
       $response = array('flag' => true, 'info'=>$res['info']);
   } else {
       $response = array('flag' => false,'message'=>$res['message'], 'info'=>$res['info']);

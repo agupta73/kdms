@@ -43,8 +43,8 @@ class clsDevoteeSearch {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        //print_r("++++++++++++++++++++++++++++++++++++++++++++++++");
-            //var_dump($mode);die;
+//        print_r("++++++++++++++++++++++++++++++++++++++++++++++++");
+//            var_dump($url);die;
         try{
             if ($mode != 'DYN') {
                 $response = json_decode($response, true);

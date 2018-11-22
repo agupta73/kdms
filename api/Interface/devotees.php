@@ -25,7 +25,11 @@ Class Devotee {
                     case "CUS": //Custom query
                             return $this->searchDevotee($requestData['key']);
                     break;
-                                
+                       
+                    case "PCD": //Print Queue 
+                            return $this->getDevoteeDetailsForPrint($requestData['key']);
+                    break;
+                
                     case "DYN": //Dynamic search
                             return $this->dynamicSearchDevotee($requestData['key']);
                     break;
@@ -146,7 +150,14 @@ Class Devotee {
                           . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 
                 break;
-
+            
+//            case "PCD": //Print Cards
+//                $query = $query .
+//                            " LEFT OUTER JOIN accommodation_master acm on da.accomodation_key = acm.accomodation_key "
+//                          . " WHERE d.devotee_key in (" . $requestData . ")  ORDER BY d.Devotee_Record_update_date_time Desc";
+//                
+//                break;
+                
             default : //Search based on user supplied search criteria
                 $query = $query .
                             " WHERE " . $this->prepareSearchClause($requestData) . " ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50"; 
@@ -291,6 +302,64 @@ Class Devotee {
                 catch (PDOException $e) {
                         echo 'Connection failed: ' . $e->getMessage();
                 }
+    }
+    
+    private function getDevoteeDetailsForPrint($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($requestData)) {
+            $errormsg .= "Devotee keys for printing not supplied.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+       
+        $query = "select " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name " .
+                    ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", acm.accomodation_name " .
+                    ", dp.Devotee_Photo ".
+                 "from " .
+                    " Devotee d ".
+                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
+                    " left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key " .
+                 "where " .
+                    "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
+                
+        
+           
+        //var_dump($query);die;
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeSearchResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            
+            $devoteeSearchResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);die;
+        if($i==0){
+            $devoteeSearchResult['status'] = false;
+            $devoteeSearchResult['message'] = "No record found!";
+            $devoteeSearchResult['info'] = $results;
+        }
+        
+        return $devoteeSearchResult;
     }
     
     public function upsertDevotee($requestData) {

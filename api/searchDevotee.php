@@ -9,10 +9,9 @@
 
   $devotee = new Devotee($db);
   $requestData = $_GET;
-  //print_r($_POST);die;
+  //print_r($_GET);die;
   try{
         $res=$devotee->search($requestData);
-        //var_dump($res);
         if($requestData['mode'] != 'DYN'){
           echo json_encode($res);
         }
