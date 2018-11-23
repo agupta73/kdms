@@ -586,7 +586,8 @@ Class Devotee {
                       
         }
         else{
-            $query = "UPDATE `Card_Print_Log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+            //$query = "UPDATE `Card_Print_Log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+            $query = "DELETE from `Card_Print_Log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
         }                
         
         $stmt = $this->conn->prepare($query);

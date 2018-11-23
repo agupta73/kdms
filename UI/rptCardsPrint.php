@@ -28,12 +28,12 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-               // printdiv();
+                printdiv();
             }, false);
             
             function printdiv() {
             //alert(document.getElementById("requestType").value());
-            document.getElementById("printForm").submit();
+//            document.getElementById("printForm").submit();
             
 //            $.ajax({
 //                    url:'/KDMS/Logic/requestManager.php',
@@ -55,17 +55,17 @@
 //                      }
 //                  });   
                  
-//                var newstr = document.getElementById("printpage").innerHTML;
-//                var header = '<header><div align="center"><h3 style="color:#EB5005"> Card Print </h3></div><br></header><hr><br>'
-//
-//                var popupWin = window.open('', 'blank', 'width=800px,height=700px');
-//                popupWin.document.open();
-//                //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
-//                popupWin.document.write('<html><body>' + newstr + '</html></br>');
-//                popupWin.document.close();
-//                window.close();
-//                     
-//                return false;
+                var newstr = document.getElementById("printpage").innerHTML;
+                var header = '<header><div align="center"><h3 style="color:#EB5005"> Card Print </h3></div><br></header><hr><br>'
+
+                var popupWin = window.open('', 'blank', 'width=800px,height=700px');
+                popupWin.document.open();
+                //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
+                popupWin.document.write('<html><body>' + newstr + '</html></br>');
+                popupWin.document.close();
+                window.close();
+                     
+                return false;
 
             }
 
