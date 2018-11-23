@@ -27,12 +27,14 @@
         </style>
 
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+               // printdiv();
+            }, false);
+            
             function printdiv() {
-//            var url = "/KDMS/Logic/requestManager.php?devotee_key=";
-//            url= url.concat("<?php print_r($_GET['key']); ?>") ;
-//            url= url.concat("&requestType=removeFromPrintQueue");
-//            alert(url);
-//            window.location.assign(url);    
+            //alert(document.getElementById("requestType").value());
+            document.getElementById("printForm").submit();
+            
 //            $.ajax({
 //                    url:'/KDMS/Logic/requestManager.php',
 //                    type:'POST',
@@ -53,16 +55,17 @@
 //                      }
 //                  });   
                  
-                var newstr = document.getElementById("printpage").innerHTML;
-                var header = '<header><div align="center"><h3 style="color:#EB5005"> Your Header </h3></div><br></header><hr><br>'
-
-                var popupWin = window.open('', 'blank', 'width=800px,height=700px');
-                popupWin.document.open();
-                popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
-                popupWin.document.close();
-                
-                     
-                return false;
+//                var newstr = document.getElementById("printpage").innerHTML;
+//                var header = '<header><div align="center"><h3 style="color:#EB5005"> Card Print </h3></div><br></header><hr><br>'
+//
+//                var popupWin = window.open('', 'blank', 'width=800px,height=700px');
+//                popupWin.document.open();
+//                //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
+//                popupWin.document.write('<html><body>' + newstr + '</html></br>');
+//                popupWin.document.close();
+//                window.close();
+//                     
+//                return false;
 
             }
 
@@ -196,5 +199,11 @@
        </div>
         <br>
         <a href = "#" onclick="printdiv()"><button >Print </button> </a>
+        <form id="printForm" action="/KDMS/Logic/requestManager.php" method="POST">
+            <input type="hidden" id="requestType" value="removeFromPrintQueue">
+<!--            <input type="hidden" id="devotee_key" value=" <?php print_r($_GET); ?>">-->
+            <input type="hidden" id="devotee_key" value="Devotee_Key">
+        </form>
+        
     </body>
 </html>

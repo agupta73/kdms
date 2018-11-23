@@ -50,7 +50,7 @@ function submitPrint(formId, flag){
         if(printString.length > 1){ 
             
             window.open("./rptCardsPrint.php?key=" + printString.substr(0,printString.length-1) + "&mode=PCD" );
-            window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+            //window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
             
             //if(confirm("Card printed successfully?")){
                 $.ajax({

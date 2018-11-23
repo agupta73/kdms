@@ -10,12 +10,12 @@ $requestType = "";
 $requestData = array();
 
 
-//var_dump($_POST);die;
+
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
 else {
-
+    var_dump($_POST);die;
 }
 
 switch ($requestType) {
