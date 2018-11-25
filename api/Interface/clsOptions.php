@@ -32,9 +32,13 @@ class clsOptions {
         }
         
         switch ($option) {
-            case "upsertAcco":
-                
+            case "upsertAcco": 
                 $res=$this->upsertAccommodation($requestData);
+                break;
+            
+            case "upsertAmenity": 
+                //print_r("Reaching upsert option");
+                $res=$this->upsertAmenity($requestData);
                 break;
             
             default :
@@ -131,6 +135,98 @@ class clsOptions {
   
     }
     
+    private function upsertAmenity($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "";
+        $Amenity_Key="";
+        $Amenity_Name="";
+        $Amenity_Status="Available";
+        $Amenity_Quantity=0;
+        $Reserved_Count=0;
+        $Out_of_Availability_Count=0;
+        $Amenity_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+
+        
+        if (empty($requestData['amenity_key'])) {
+            $errormsg .= " Amenity Key is missing.";
+            $status = false;
+        }
+        else{
+            $Amenity_Key = htmlspecialchars(strip_tags($requestData['amenity_key']));
+        }
+        
+        if (!empty($requestData['amenity_name'])) {
+            $Amenity_Name = htmlspecialchars(strip_tags($requestData['amenity_name']));
+        }
+        else{
+            $Amenity_Name=$Amenity_Key;
+        }
+        
+        if (!empty($requestData['amenity_status'])) {
+            $Amenity_Status = htmlspecialchars(strip_tags($requestData['amenity_status']));
+        }
+        
+        if (!empty($requestData['amenity_quantity'])) {
+            $Amenity_Quantity = htmlspecialchars(strip_tags($requestData['amenity_quantity']));
+        }
+        
+        if (!empty($requestData['reserved_count'])) {
+            $Reserved_Count = htmlspecialchars(strip_tags($requestData['reserved_count']));
+        }
+        
+        if (!empty($requestData['out_of_availability_count'])) {
+            $Out_of_Availability_Count = htmlspecialchars(strip_tags($requestData['out_of_availability_count']));
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        
+        $query= "CALL PROC_UPSERT_AMENITY(";
+//    IN `p_Accomodation_Key` VARCHAR(5),
+//    IN `p_Accomodation_Name` VARCHAR(100),
+//    IN `p_Accomodation_Capacity` INT(11),
+//    IN `p_Reserved_Count` INT(11),
+//    IN `p_Out_of_Availability_Count` INT(11),
+//    IN `p_Accomodation_Updated_By` VARCHAR(10)
+
+         $query = $query . "'" .
+                $Amenity_Key . "', '" . 
+                $Amenity_Name . "', '" . 
+                $Amenity_Status . "', " . 
+                $Amenity_Quantity . ", " . 
+                $Reserved_Count . ", " . 
+                $Out_of_Availability_Count . ", '" . 
+                $Amenity_Record_Updated_By . "')" ; 
+        //var_dump($query);
+  // prepare query
+        $stmt = $this->conn->prepare($query);
+        
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $Amenity_Key;
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Amenity] Upserting Amenity Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+  
+    }
+    
     public function loadOption($requestData) {
         $res = array();
         $res['status'] = false;
@@ -150,11 +246,7 @@ class clsOptions {
         switch ($optionType) {
             case "Accommodation":
                   return $this->getAccommodations();
-                break;
-            
-            Case "RefreshAcco":                
-                return $this->refreshAccommodations();
-                break;
+                break;           
 
             Case "AccommodationDetail":                
                 if(!empty($requestData['option_type'])){
@@ -165,7 +257,29 @@ class clsOptions {
                     return $res;                    
                 }
                 break;
-
+                
+            case "Amenity":
+                  return $this->getAmenities();
+                break;
+            
+            Case "AmenityDetail":                
+                if(!empty($requestData['option_type'])){
+                    return $this->getAmenityDetail($requestData['key']);
+                }
+                else {
+                    $res['message'] = "Option key not provided";
+                    return $res;                    
+                }
+                break;
+                
+            Case "RefreshAcco":                
+                return $this->refreshAccommodations();
+                break;
+            
+            Case "RefreshAmenity":                
+                return $this->refreshAmenities();
+                break;
+            
             default:
                 print_r("Not provided option");
                 break;
@@ -207,6 +321,40 @@ class clsOptions {
         return $AccomodationDetail;
     }
   
+    private function getAmenities(){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+        
+        
+        $query = "SELECT am.amenity_key, am.`Amenity_Name`, aa.Available_Count, am.Amenity_Quantity,
+            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
+            FROM `Amenity_Master` am 
+            LEFT OUTER JOIN amenities_availability aa 
+            ON am.amenity_key = aa.amenity_key";
+        
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $AmenityDetail = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            //var_dump($row);
+            $AmenityDetail[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($AccomodationDetail);
+        if($i==0){
+            $AmenityDetail['status'] = false;
+            $AmenityDetail['message'] = "Accomodation details not found!";
+            $AmenityDetail['info'] = $results;
+        }
+        
+        return $AmenityDetail;
+    }
+  
      private function getAccommodationDetail($accommodationKey){
 //        $res = array();
 //        $res['status'] = false;
@@ -241,6 +389,40 @@ class clsOptions {
         return $AccomodationDetail;
     }
     
+    private function getAmenityDetail($amenityKey){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+        
+        
+        $query = "SELECT am.Amenity_Key, am.`Amenity_Name`, am.Amenity_Quantity, aa.Available_Count, 
+            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
+            FROM `Amenity_Master` am 
+            LEFT OUTER JOIN amenities_availability aa 
+            ON am.amenity_key = aa.amenity_key 
+            WHERE am.amenity_key = '" . $amenityKey . "'";
+        
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $AmenityDetail = array();
+        
+        if($row = $results->fetchObject()){
+            //var_dump($row);
+            $AmenityDetail=$row;           
+        }
+        //var_dump($AccomodationDetail);
+        else{
+            $AmenityDetail['status'] = false;
+            $AmenityDetail['message'] = "Amenity details not found!";
+            $AmenityDetail['info'] = $results;
+        }
+        
+        return $AmenityDetail;
+    }
+        
     private function refreshAccommodations(){
         $res = array();
         $res['status'] = false;
@@ -258,6 +440,28 @@ class clsOptions {
         else{
             $res['status'] = false;
             $res['message'] = "[Accommodation] Refreshing accomodation count failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+    }
+    
+    private function refreshAmenities(){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        
+        $query = "CALL PROC_REFRESH_AMENITY_COUNT()";
+        $stmt = $this->conn->prepare($query);
+        
+         if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = "";
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Amenity] Refreshing amenity count failed at API!!";
             $res['info'] = $stmt;
         }
         return $res;

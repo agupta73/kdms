@@ -1,0 +1,44 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_REFRESH_AMENITY_COUNT`()
+BEGIN
+
+	DECLARE v_finished INTEGER DEFAULT 0 ;
+    DECLARE v_amenity_key VARCHAR(10) DEFAULT "" ;
+    DECLARE v_amenity_count INTEGER DEFAULT 0 ;
+    DECLARE v_amenity_quantity INTEGER DEFAULT 0 ;
+
+	DECLARE csr_amenity CURSOR FOR
+      SELECT
+    am.amenity_key,
+    COUNT(da.Amenity_Key),
+    am.amenity_quantity
+FROM
+    Amenity_Master am
+LEFT OUTER JOIN Devotee_Amenities_Allocation da ON
+    am.Amenity_Key = da.Amenity_Key AND da.Amenity_Allocation_Year = YEAR(NOW()) AND da.Amenity_Allocation_Status = 'Allocated'
+GROUP BY
+    am.Amenity_Key;
+
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = 1 ;
+    
+	OPEN csr_amenity ;
+    
+		WHILE v_finished = 0 DO
+        	
+            FETCH csr_amenity INTO v_amenity_key, v_amenity_count, v_amenity_quantity ;
+            
+            IF v_finished = 0 THEN
+            	UPDATE
+                    Amenities_Availability
+                SET
+                    allocated_count = v_amenity_count,
+                    available_count = v_amenity_quantity - (reserved_count + out_of_availability_count + v_amenity_count)
+                WHERE
+                    amenity_key = v_amenity_key ;
+                END IF ;
+        	
+		END WHILE ;
+    
+    CLOSE csr_amenity ;
+END$$
+DELIMITER ;

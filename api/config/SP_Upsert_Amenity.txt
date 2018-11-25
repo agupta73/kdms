@@ -1,0 +1,36 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPSERT_AMENITY`(IN `p_Amenity_Key` VARCHAR(5), IN `p_Amenity_Name` VARCHAR(100), IN `p_Amenity_Status` VARCHAR(20), IN `p_Amenity_Quantity` INT(11), IN `p_Reserved_Count` INT(11), IN `p_Out_of_Availability_Count` INT(11), IN `p_Amenity_Updated_By` VARCHAR(10))
+BEGIN
+    REPLACE
+INTO `Amenity_Master`(
+    `Amenity_Key`,
+    `Amenity_Name`,
+    `Amenity_Status`,
+    `Amenity_Quantity`,
+    `Amenity_Record_Update_Date_Time`,
+    `Amenity_Record_Upated_by`
+)
+VALUES(
+    p_Amenity_Key,
+    p_Amenity_Name,
+    p_Amenity_Status,
+    p_Amenity_Quantity,
+    NOW(), p_Amenity_Updated_By) ;
+    
+REPLACE
+INTO `Amenities_Availability`(
+    `Amenity_Key`,
+    `Reserved_Count`,
+    `Out_of_Availability_Count`,
+    `Availability_Update_Date_Time`,
+    `Availability_Updated_By`
+)
+VALUES(
+    p_Amenity_Key,
+    p_Reserved_Count,
+    p_Out_of_Availability_Count,
+    NOW(), p_Amenity_Updated_By) ;
+CALL
+    PROC_REFRESH_AMENITY_COUNT() ;
+    END$$
+DELIMITER ;
