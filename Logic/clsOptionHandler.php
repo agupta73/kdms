@@ -29,18 +29,20 @@ class clsOptionHandler {
         
         switch ($this->optionType){
             case "Accommodation":
+            case "Amenity":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
-             case "RefreshAcco":
+            case "RefreshAcco":
+            case "RefreshAmenity":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
             
-            
             case "AccommodationDetail":
+            case "AmenityDetail":
                 $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
                 break;
-            
+                        
             default:
                 
                 break;
@@ -53,7 +55,8 @@ class clsOptionHandler {
         //$response
         switch ($this->optionType){
             case "upsertAcco":
-                $response = $this->upsertAccommodation($this->urlUpsert, $requestData);
+            case "upsertAmenity":
+                $response = $this->upsertOptionRecord($this->urlUpsert, $requestData);
                 break;
             
             default:
@@ -64,7 +67,7 @@ class clsOptionHandler {
     }
 
     
-        public function upsertAccommodation($url,  $post_fields = null) {
+        public function upsertOptionRecord($url,  $post_fields = null) {
          $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
            

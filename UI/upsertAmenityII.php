@@ -16,11 +16,11 @@
   <div class="wrapper ">
     <?php
         include_once("nav.php");
-        $accommodationSearch = new clsOptionHandler("Accommodation");    
-        $response = $accommodationSearch->getOptions();
+        $amenitySearch = new clsOptionHandler("Amenity");    
+        $response = $amenitySearch->getOptions();
         //var_dump($response);
         
-        unset($accommodationSearch);
+        unset($amenitySearch);
       ?>
 
     <div class="main-panel">
@@ -34,7 +34,7 @@
         <div class="container-fluid">
           <div class="card">
             <div class="card-header card-header-primary">
-              <h4 class="card-title">Accommodation Records</h4>
+              <h4 class="card-title">Amenity Records</h4>
             </div>
             <div class="row">
               <div class="card-body">
@@ -42,13 +42,16 @@
                   <table class="table">
                     <thead class=" text-primary">
                       <th>
-                        Accommodation Key
+                        Amenity Key
                       </th>
                       <th>
-                          Accommodation Name
+                          Name
+                      </th>
+                      <th>
+                          Status
                       </th>
                       <th align='right'>
-                         Capacity
+                         Quantity
                       </th>
                       <th align='right'>
                          Reserved
@@ -67,68 +70,76 @@
                          <?php
                               $recordCount = 0;
                               if (!empty($response) ) {
-                                      foreach ($response as $accommodationRecord) {
-                                      $accomodationKey = "--Unavailable--";
-                                      $accomodationName = "--Unavailable--";
-                                      $accomodationCapacity = "--";
+                                      foreach ($response as $amenityRecord) {
+                                      $amenityKey = "--Unavailable--";
+                                      $amenityName = "--Unavailable--";
+                                      $amenityStatus = "--";
+                                      $amenityCapacity = "--";
                                       $reservedCount = "--";
                                       $outOfAvailabilityCount = "--";
                                       $allocatedCount = "--";
                                       $availableCount = "--";
 
 
-                                      if (!empty($accommodationRecord['accomodation_key'])) {
-                                          $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
+                                      if (!empty($amenityRecord['amenity_key'])) {
+                                          $amenityKey = urldecode($amenityRecord['amenity_key']);
                                       }
 
-                                      if (!empty($accommodationRecord['Accomodation_Name'])) {
-                                          $accomodationName = urldecode($accommodationRecord['Accomodation_Name']);
+                                      if (!empty($amenityRecord['Amenity_Name'])) {
+                                          $amenityName = urldecode($amenityRecord['Amenity_Name']);
+                                      }
+                                      
+                                      if (!empty($amenityRecord['Amenity_Status'])) {
+                                          $amenityStatus = urldecode($amenityRecord['Amenity_Status']);
                                       }
 
-                                      if (!empty($accommodationRecord['Accomodation_Capacity'])) {
-                                          $accomodationCapacity = urldecode($accommodationRecord['Accomodation_Capacity']);
+                                      if (!empty($amenityRecord['Amenity_Quantity'])) {
+                                          $amenityQuantity = urldecode($amenityRecord['Amenity_Quantity']);
                                       }
 
-                                      if (!empty($accommodationRecord['Reserved_Count'])) {
-                                          $reservedCount = urldecode($accommodationRecord['Reserved_Count']);
+                                      if (!empty($amenityRecord['Reserved_Count'])) {
+                                          $reservedCount = urldecode($amenityRecord['Reserved_Count']);
                                       }
 
-                                      if (!empty($accommodationRecord['Out_Of_Availability_Count'])) {
-                                          $outOfAvailabilityCount = $accommodationRecord['Out_Of_Availability_Count'];
+                                      if (!empty($amenityRecord['Out_Of_Availability_Count'])) {
+                                          $outOfAvailabilityCount = $amenityRecord['Out_Of_Availability_Count'];
                                       }
 
-                                      if (!empty($accommodationRecord['Allocated_Count'])) {
-                                          $allocatedCount = $accommodationRecord['Allocated_Count'];
+                                      if (!empty($amenityRecord['Allocated_Count'])) {
+                                          $allocatedCount = $amenityRecord['Allocated_Count'];
                                       }
 
-                                      if (!empty($accommodationRecord['Available_Count'])) {
-                                          $availableCount = $accommodationRecord['Available_Count'];
+                                      if (!empty($amenityRecord['Available_Count'])) {
+                                          $availableCount = $amenityRecord['Available_Count'];
                                       }      
                                       
-                                      if($accomodationKey !="--Unavailable--" ){
+                                      if($amenityKey !="--Unavailable--" ){
                                           $recordCount = $recordCount + 1;
                                       print_r("
                              <tr>
                              <td>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityKey . "</a>
                              </td>
                              <td>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityName . "</a>
+                             </td>
+                             <td>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityStatus . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityQuantity . "</a>
                              </td>
                                <td align='right'>
-                                   <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                                   <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $reservedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $allocatedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                                 <a href='addAccommodationi.php?amenity_key=" . $amenityKey . "'>" . $availableCount . "</a>
                              </td>
                              </tr>
                              ");
@@ -144,10 +155,10 @@
                 </div>
                 <div class="card-body">
            <div class="col-md-12">                  
-               <form action="addaccommodationi.php">
+               <form action="upsertAmenityI.php">
 <!--                    <button type="submit" class="btn btn-success pull-right" style="margin-left:30px;">Cancel</button>
                     <button type="submit" class="btn btn-success pull-right">Add Devotee without photo/image</button>-->
-                    <button type="submit" class="btn btn-success pull-right" >Add New Accommodation</button>
+                    <button type="submit" class="btn btn-success pull-right" >Add/Update Amenity</button>
                     <div class="clearfix"></div>
                   </form>
                 </div>
@@ -169,3 +180,4 @@
 </body>
 
 </html>
+

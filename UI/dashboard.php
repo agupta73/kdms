@@ -130,7 +130,7 @@ function validateInput(){
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">face</i>
-                    <a href="#pablo">Devotee by Location - Summary</a>
+                    <a href="upsertAmenityII.php">Manage Amenities</a>
                   </div>
                 </div>
                 </div>             </form>

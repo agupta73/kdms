@@ -329,7 +329,7 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.amenity_key, am.`Amenity_Name`, aa.Available_Count, am.Amenity_Quantity,
+        $query = "SELECT am.amenity_key, am.`Amenity_Name`, am.Amenity_Status, aa.Available_Count, am.Amenity_Quantity,
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
             FROM `Amenity_Master` am 
             LEFT OUTER JOIN amenities_availability aa 
@@ -397,14 +397,14 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.Amenity_Key, am.`Amenity_Name`, am.Amenity_Quantity, aa.Available_Count, 
+        $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, aa.Available_Count, 
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
             FROM `Amenity_Master` am 
             LEFT OUTER JOIN amenities_availability aa 
             ON am.amenity_key = aa.amenity_key 
             WHERE am.amenity_key = '" . $amenityKey . "'";
         
-        
+        //var_dump($query);
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $AmenityDetail = array();
