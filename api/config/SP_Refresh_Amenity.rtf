@@ -10,7 +10,7 @@ BEGIN
 	DECLARE csr_amenity CURSOR FOR
       SELECT
     am.amenity_key,
-    COUNT(da.Amenity_Key),
+    IFNULL(SUM(da.Amenity_Quantity), 0),
     am.amenity_quantity
 FROM
     Amenity_Master am
