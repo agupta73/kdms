@@ -386,19 +386,21 @@ Class Devotee {
         }
        
         $query = "SELECT " .
+                    "AM.`Amenity_Key`, " . 
                     "AM.`Amenity_Name`, " . 
-                    "DAA.`Amenity_Quantity` " .
+                    "IFNULL(DAA.`Amenity_Quantity`,0) AS Amenity_Quantity " .
                 "FROM " . 
-                    "`Devotee_Amenities_Allocation` DAA " .
-                "LEFT OUTER JOIN `Amenity_Master` AM ON " .
+                    "`Amenity_Master` AM " .
+                "LEFT OUTER JOIN `Devotee_Amenities_Allocation` DAA ON " .
                     "DAA.Amenity_key = AM.Amenity_key " .
-                "WHERE " .
+                "AND " .
                     "DAA.Devotee_Key = '" . $requestData . "' AND " .
                     "DAA.`Amenity_Quantity` <> 0 AND " .
                     "DAA.`Amenity_Allocation_Year` = YEAR(NOW()) " .
                 "ORDER BY " .
                     "`Amenity_Allocation_Date_Time` DESC" ;
         
+           // var_dump($query);
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $devoteeAmenityResult = array();

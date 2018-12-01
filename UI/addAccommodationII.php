@@ -39,7 +39,7 @@
             <div class="row">
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table">
+                  <table class="table table-hover">
                     <thead class=" text-primary">
                       <th>
                         Accommodation Key
