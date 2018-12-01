@@ -605,6 +605,72 @@ Class Devotee {
         return $res;
     }
     
+    public function manageAmenityAllocation($requestData) {
+        $res = array();
+        $res['status'] = TRUE;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "Error occured";
+        $status = true;
+        $query = "";
+        $Amenity_Managed_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+        
+        $Devotee_Key="";
+        $Amenity_Keys="";
+        $Amenity_Quantities="";
+        $Amenity_Key = array();
+        $Amenity_Quantity = array();
+        
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= " Devotee Key is missing.";
+            $status = false;
+        }
+        else{
+            $Devotee_Key=htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+        
+        if (empty($requestData['amenity_key'])) {
+            $errormsg .= " Amenity Key is missing.";
+            $status = false;
+        }
+        else{
+            $Amenity_Keys=htmlspecialchars(strip_tags($requestData['amenity_key']));
+        }
+        
+        if (empty($requestData['amenity_quantity'])) {
+            $errormsg .= " Amenity quantity is missing.";
+            $status = false;
+        }
+        else{
+            $Amenity_Quantities=htmlspecialchars(strip_tags($requestData['amenity_quantity']));
+        }
+        
+        $Amenity_Key = explode(",", $Amenity_Keys);
+        $Amenity_Quantity = explode(",", $Amenity_Quantities);
+        
+        foreach ($Amenity_Key as $key => $Amenity_Key_Value) {
+            if(!empty($Amenity_Key[$key]) && !empty($Amenity_Quantity[$key])){
+                $query = "CALL `PROC_MANAGE_AMENITY`( '" .
+                    $Devotee_Key . "','" .
+                    $Amenity_Key[$key] . "'," .
+                    $Amenity_Quantity[$key] . ",'" .
+                    $Amenity_Managed_By . "')";
+                
+                $stmt = $this->conn->prepare($query);
+                if ($stmt->execute()) {                    
+                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", Amenity_Key: " . $Amenity_Key[$key] . " processed!" ;
+                }
+                else{
+                    $res['status'] = false;
+                    $res['message'] = "[Amenity Management] Adding/Removing Devotee Amenity failed at API!! Error Info: " . $query;
+                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", Amenity_Key: " . $Amenity_Key[$key] . " failed to process!" ;
+                }
+            }            
+        }        
+        return $res;
+    }
+    
     public function generateId() {
         $result = ['1'];
         // $id="KDHM15562AF1ACE";

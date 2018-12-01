@@ -16,6 +16,10 @@
             $res = $devotee->manageCardPrinting($requestData);
             break;
 
+        case "manageAmenity":
+            $res = $devotee->manageAmenityAllocation($requestData);
+            break;
+        
         default:
             $res = $devotee->upsertDevotee($requestData);
             break;
