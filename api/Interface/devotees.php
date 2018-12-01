@@ -30,6 +30,10 @@ Class Devotee {
                             return $this->getDevoteeDetailsForPrint($requestData['key']);
                     break;
                 
+                    case "DAD": //Devotee Amenity Details 
+                            return $this->getDevoteeAmenityDetails($requestData['key']);
+                    break;
+                
                     case "DYN": //Dynamic search
                             return $this->dynamicSearchDevotee($requestData['key']);
                     break;
@@ -362,6 +366,57 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
+    private function getDevoteeAmenityDetails($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($requestData)) {
+            $errormsg .= "Devotee keys for Amenity not supplied.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+       
+        $query = "SELECT " .
+                    "AM.`Amenity_Name`, " . 
+                    "DAA.`Amenity_Quantity` " .
+                "FROM " . 
+                    "`Devotee_Amenities_Allocation` DAA " .
+                "LEFT OUTER JOIN `Amenity_Master` AM ON " .
+                    "DAA.Amenity_key = AM.Amenity_key " .
+                "WHERE " .
+                    "DAA.Devotee_Key = '" . $requestData . "' AND " .
+                    "DAA.`Amenity_Quantity` <> 0 AND " .
+                    "DAA.`Amenity_Allocation_Year` = YEAR(NOW()) " .
+                "ORDER BY " .
+                    "`Amenity_Allocation_Date_Time` DESC" ;
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeAmenityResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $devoteeAmenityResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);die;
+        if($i==0){
+            $devoteeAmenityResult['status'] = false;
+            $devoteeAmenityResult['message'] = "No record found!";
+            $devoteeAmenityResult['info'] = $results;
+        }
+        
+        return $devoteeAmenityResult;
+    }
+       
     public function upsertDevotee($requestData) {
         $res = array();
         $res['status'] = false;

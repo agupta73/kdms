@@ -9,7 +9,9 @@
 
   $devotee = new Devotee($db);
   $requestData = $_GET;
-  //print_r($_GET);die;
+   //echo "--&&++++++++++++++++++++++++++++++++++++++++++++++++";
+   //var_dump($_GET);
+   //die;
   try{
         $res=$devotee->search($requestData);
         if($requestData['mode'] != 'DYN'){

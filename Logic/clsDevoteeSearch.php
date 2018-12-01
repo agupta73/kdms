@@ -20,6 +20,13 @@ class clsDevoteeSearch {
         return $response;
     }
 
+    public function getDevoteeAmenities() {
+
+        $response = $this->get_records_from_API($this->request['devotee_key'], "DAD");                
+        return $response;
+        
+    }
+    
     public function getDevoteeRecords() {
         $response = "";
         if (!empty($this->request['mode']) AND ! empty($this->request['key'])) {
@@ -43,8 +50,8 @@ class clsDevoteeSearch {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-//        print_r("++++++++++++++++++++++++++++++++++++++++++++++++");
-//            var_dump($url);die;
+       
+//        return $response;
         try{
             if ($mode != 'DYN') {
                 $response = json_decode($response, true);

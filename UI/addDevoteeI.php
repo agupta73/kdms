@@ -39,6 +39,7 @@
         
         $devoteeSearch = new clsDevoteeSearch($requestData);    
         $response = $devoteeSearch->getDevoteeDetails();
+        //unset($devoteeSearch);
         //var_dump($response); die;
         //$response = json_decode($response);
         //var_dump($response);
@@ -103,8 +104,7 @@
         if(!empty($response['Devotee_ID_Image'])){  // NULL
             $devotee_id_image = $response['Devotee_ID_Image'];
             
-        }
-        
+        }         
     }
     
  
@@ -388,6 +388,60 @@ function validateInput(){
                 ?> 
                 </div>
               </div>
+               <?php if($devotee_key != "") { ?>
+                <div class="card card-profile">
+                <div class="card-body" style="height:80px;" >
+                  
+                  <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
+                        Manage Amenities
+                    </button>
+
+                </div>
+              </div>
+                <!--Modal Window for Amenity Management-->
+                
+                 <div class="modal fade" id="AmenityModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                  <div class="modal-dialog" role="document" >
+                    <div class="modal-content" style="width:800px;height:300px;">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Allocated Amenities</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body" >
+                        <div class="row">
+                          <div class="col-md-6">
+                              <?php 
+                                $amenityResponse = $devoteeSearch->getDevoteeAmenities();
+                                if(empty($amenityResponse)){
+                              ?>
+
+                              <textarea rows="4" cols="90" name="amenityResponse" form="usrform">Response appears here...</textarea>
+                                <?php                                 
+                                }
+                                else { ?>
+                              <textarea rows="4" cols="90" name="amenityResponse" form="usrform"><?php print_r($amenityResponse) ?></textarea>
+                               <?php
+                               }
+                                
+                                ?>
+                          </div>
+
+                          <div class="col-md-5">
+
+                        </div>
+                      </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
+                        <input type="hidden" id="devotee_key_amenity_modal" name="devotee_key_amenity_modal" value="<?php print_r($devotee_key); ?>">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--END - Modal Window for Amenity Management-->                
+               <?php   }   ?>
             </div>
 
           </div>
@@ -422,26 +476,7 @@ function validateInput(){
             <div id="photo"></div>
             </div>
           </div>
-            <script>
-//            var video = document.getElementById('video');
-//              // Get access to the camera!
-//              if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-//                // Not adding `{ audio: true }` since we only want video now
-//                navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-//                    video.src = window.URL.createObjectURL(stream);
-//                    video.play();
-//                });
-//              }
-//              // Elements for taking the snapshot
-//              var canvas = document.getElementById('canvas');
-//              var context = canvas.getContext('2d');
-//              var video = document.getElementById('video');
-//
-//              // Trigger photo take
-//              document.getElementById("snap").addEventListener("click", function() {
-//              	context.drawImage(video, 0, 0, 300, 300);
-//              });
-//            </script>
+            
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -479,6 +514,10 @@ function validateInput(){
         </div>
       </div>
     </div>
+    
+    
+
+    
   </div>
   <!--   Core JS Files   -->
   <?php
