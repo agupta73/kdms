@@ -388,7 +388,8 @@ Class Devotee {
         $query = "SELECT " .
                     "AM.`Amenity_Key`, " . 
                     "AM.`Amenity_Name`, " . 
-                    "IFNULL(DAA.`Amenity_Quantity`,0) AS Amenity_Quantity " .
+                    "IFNULL(DAA.`Amenity_Quantity`,0) AS Amenity_Quantity, " .
+                    "IFNULL(AA.Available_Count, 0) AS Available_Count " .
                 "FROM " . 
                     "`Amenity_Master` AM " .
                 "LEFT OUTER JOIN `Devotee_Amenities_Allocation` DAA ON " .
@@ -397,6 +398,8 @@ Class Devotee {
                     "DAA.Devotee_Key = '" . $requestData . "' AND " .
                     "DAA.`Amenity_Quantity` <> 0 AND " .
                     "DAA.`Amenity_Allocation_Year` = YEAR(NOW()) " .
+                "LEFT OUTER JOIN Amenities_Availability AA ON " .
+                    "AM.Amenity_Key = AA.Amenity_Key " .
                 "ORDER BY " .
                     "`Amenity_Allocation_Date_Time` DESC" ;
         

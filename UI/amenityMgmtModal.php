@@ -7,7 +7,7 @@
                       <div class="modal-body" >
                           <div class="card">
                         <div class="row">
-                          <div class="col-md-4">
+                          <div class="col-md-12">
                               <div class="card-header card-header-primary">
                                     <h4 class="card-title">Allocated Amenities</h4>
                                   </div>
@@ -17,39 +17,48 @@
                                 if(!empty($amenityResponse) ){
                                     if(empty($amenityResponse['message'])){                              
                                ?>
-                              <table class="table" style="width: 200px"> 
+                             <div class="table-responsive">
+                              <table class="table table-hover"  > 
                                   <thead class=" text-primary">
                                     <th>
                                       Amenity Type
                                     </th>
-                                    <th align='right'>
-                                        Allocated Quantity
+                                    <th>
+                                        Allocated Qty
                                     </th>
+                                    <th>
+                                        Available Qty
+                                    </th>
+                                    <th>
+                                        Issue More
+                                    </th>
+                                    <th>
+                                        Return
+                                    </th>
+                                </thead>
                                   <tr>
                                   <?php  
-                                    foreach ($amenityResponse as $key => $amenityValue) { ?>
-                                      <td style="width: 50px">
-                                          <?php 
-                                            print_r($amenityValue['Amenity_Name'] . ": " );
-                                            print_r("</td><td style='width: 50px' align='right'>");
+                                    foreach ($amenityResponse as $key => $amenityValue) { 
+                                            print_r("<td style='width: 150px;font-weight: bold;font-size: medium'>");
+                                            print_r($amenityValue['Amenity_Name']  );
+                                            print_r("</td><td style='width: 150px' align='right'>");
                                             print_r($amenityValue['Amenity_Quantity']);
-                                          ?>
-                                      </td>                                        
-                                      <?php 
-                                        if($key < count($amenityResponse)){
-                                            print_r("</tr><tr>");
+                                            print_r("</td><td style='width: 150px' align='right'>" . $amenityValue['Available_Count']);
+                                            print_r("</td><td><input type='text' id='I" . $amenityValue['Amenity_Key'] . "'");
+                                            print_r("</td><td><input type='text' id='R" . $amenityValue['Amenity_Key'] . "'");
+                                            print_r("</td>");                                       
+                                            if($key < count($amenityResponse)){ print_r("</tr><tr>"); }
                                         }
-                                    }
-                                        ?>
+                                    ?>
                                   </tr>
                               </table>
-                              
+                             </div>
                                 <?php                                 
                                 }
                                 else { ?>
                               <table>
                                   <tr>
-                                      <td>
+                                      <td style="align-content: center">
                                           No amenities allocated yet..
                                       </td>
                                   </tr>

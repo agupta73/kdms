@@ -32,9 +32,9 @@
     $accommodations = $loadAccommodation->getOptions();
     unset($loadAccommodations);
 
-    $loadAmenity = new clsOptionHandler("Amenity");
-    $amenities = $loadAmenity->getOptions();
-    unset($loadAmenity);
+//    $loadAmenity = new clsOptionHandler("Amenity");
+//    $amenities = $loadAmenity->getOptions();
+//    unset($loadAmenity);
     //var_dump($amenities);
     //die;
         //var_dump($accommodations);die;
