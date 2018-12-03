@@ -1,3 +1,4 @@
+<form id="formAmenity">
 <div class="modal fade" id="AmenityModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                   <div class="modal-dialog" role="document" >
                     <div class="modal-content" style="width:800px;height:600px;">
@@ -125,9 +126,124 @@
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="save-amenity" type="button" class="btn btn-primary">Save Changes</button>
-                        <input type="hidden" id="devotee_key_amenity_modal" name="devotee_key_amenity_modal" value="<?php print_r($devotee_key); ?>">
+                        <button id="save-amenity" type="button" class="btn btn-primary" onclick="saveAmenityData('formAmenity'); return false;">Save Changes</button>
+<!--//                        <input type="hidden" id="devotee_key_amenity_modal" name="devotee_key_amenity_modal" value="<?php print_r($devotee_key); ?>">-->
                       </div>
                     </div>
                   </div>
                 </div>
+
+</form>
+<script>
+
+//javascript function for ajax call
+  function saveAmenityData(formId){
+    
+    //var formData = $(formId).serialize();
+    
+    if(validateAmenity(formId)){ 
+        var strKey="";
+        var strVal="";
+        for(i=0; i<document.getElementById(formId).length; i++){
+            if(document.getElementById(formId)[i].type == "text"){
+                
+                if(document.getElementById(formId)[i].id.substring(0,1) == "I" && document.getElementById(formId)[i].value.trim().length != 0){
+                    strKey = strKey + document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length) + ",";
+                    strVal = strVal + document.getElementById(formId)[i].value + ",";
+                }
+                else if (document.getElementById(formId)[i].id.substring(0,1) == "R" && document.getElementById(formId)[i].value.trim().length != 0){
+                    strKey = strKey + document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length) + ",";
+                    strVal = strVal + "-" + document.getElementById(formId)[i].value + ",";
+                }
+            }
+        }
+        alert(strKey);
+        alert(strVal);
+    }
+//         $.ajax({
+//          url:'/KDMS/Logic/requestManager.php',
+//          type:'POST',
+//          data:formData,
+//          async: false,
+//          success:function(response){
+//		
+//                var r = JSON.parse(response);
+//                
+//		if(r['flag'] == true){
+//                    //alert("Devotee record updated successfully!");
+//                    //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+//                }
+//		else{
+//                    alert(r['message']);
+//                    updateSuccess=false;
+//                }   
+//          }
+//        });
+
+        //Save and stay on the record
+//        if(flag == 1 && updateSuccess){
+//            alert("Devotee record updated successfully!");
+//            window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+//        }
+//        //save and Print
+//        if(flag == -1 && updateSuccess){
+//          
+//          $.ajax({
+//          url:'/KDMS/Logic/requestManager.php',
+//          type:'POST',
+//          data:{'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
+//          async: false,
+//          success:function(response){
+//		
+//                var r = JSON.parse(response);
+//                
+//		if(r['flag'] == true){
+//                    alert("Devotee Record updated and card added to Print Queue!");
+//                    window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+//                }
+//		else{
+//                    alert(r['message']);
+//                    updateSuccess=false;
+//                }   
+//          }
+//        });
+//          
+//          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+//          document.getElementById("myForm").method = "POST";
+//          document.getElementById("requestType").value = "addToPrintQueue";
+//
+//          document.getElementById(formId).submit();
+//          
+//          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+//      }
+        //save and exit
+//        if(flag == 0 && updateSuccess){
+//          alert("Devotee record updated successfully!");
+//          window.location.assign("/KDMS/UI/index.php");
+//    }
+    /*
+   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+   document.getElementById("myForm").method = "POST";
+   document.getElementById(formId).submit();
+   */
+  }
+  
+function validateAmenity(formId){
+    var valueEntered = false;
+    
+    for(i=0; i<document.getElementById(formId).length; i++){
+        if(document.getElementById(formId)[i].type == "text"){
+            if(document.getElementById(formId)[i].value.trim().length != 0){
+                //alert(document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length));
+                valueEntered = true;
+            }            
+        }
+    }
+    if(!valueEntered){
+        alert("Nothing issued or returned. Please check and click close button if nothing needs to be saved.");
+    }
+    return valueEntered;
+    }
+    
+    
+</script>
