@@ -46,6 +46,15 @@ class clsDevoteeHandler {
         return $response;
     }
     
+    public function manageAmenityAllocation() {
+        $response = array();
+        // Add or edit data
+        if(!empty($this->requestData)){
+            $response = $this->curl_rest($this->url, true, $this->requestData);
+        }
+        return $response;
+    }
+    
     private function curl_rest($url, $is_post = true, $post_fields = null, $request_type = null) {
 
             //open connection

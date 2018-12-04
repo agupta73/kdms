@@ -127,7 +127,11 @@
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button id="save-amenity" type="button" class="btn btn-primary" onclick="saveAmenityData('formAmenity'); return false;">Save Changes</button>
-<!--//                        <input type="hidden" id="devotee_key_amenity_modal" name="devotee_key_amenity_modal" value="<?php print_r($devotee_key); ?>">-->
+                        <input type="hidden" id="devotee_key" name="devotee_key" value="<?php print_r($devotee_key); ?>">
+                        <input type="hidden" id="requestType" name="requestType" value="manageAmenity">
+                        <input type="hidden" id="amenity_key" name="amenity_key">
+                        <input type="hidden" id="amenity_quantity" name="amenity_quantity">
+
                       </div>
                     </div>
                   </div>
@@ -144,21 +148,51 @@
     if(validateAmenity(formId)){ 
         var strKey="";
         var strVal="";
+        
+        var updateSuccess = true;
         for(i=0; i<document.getElementById(formId).length; i++){
             if(document.getElementById(formId)[i].type == "text"){
                 
                 if(document.getElementById(formId)[i].id.substring(0,1) == "I" && document.getElementById(formId)[i].value.trim().length != 0){
                     strKey = strKey + document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length) + ",";
-                    strVal = strVal + document.getElementById(formId)[i].value + ",";
+                    strVal = strVal + document.getElementById(formId)[i].value.trim() + ",";
                 }
                 else if (document.getElementById(formId)[i].id.substring(0,1) == "R" && document.getElementById(formId)[i].value.trim().length != 0){
                     strKey = strKey + document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length) + ",";
-                    strVal = strVal + "-" + document.getElementById(formId)[i].value + ",";
+                    strVal = strVal + "-" + document.getElementById(formId)[i].value.trim() + ",";
                 }
             }
         }
-        alert(strKey);
-        alert(strVal);
+        
+        document.getElementById("requestType").value = "manageAmenity";
+        document.getElementById("amenity_key").value = strKey.substring(0,strKey.length -1);
+        document.getElementById("amenity_quantity").value = strVal.substring(0,strVal.length -1);
+        
+        var formData = document.getElementById(formId).serialize();
+    
+         $.ajax({
+            url:'/KDMS/Logic/requestManager.php',
+            type:'POST',
+            data:formData,
+            async: false,
+            success:function(response){
+
+                  var r = JSON.parse(response);
+
+                  if(r['flag'] == true){
+                      //alert("Devotee record updated successfully!");
+                      //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+                  }
+                  else{
+                      alert(r['message']);
+                      updateSuccess=false;
+                  }   
+            }
+          });
+//          document.getElementById(formId).action = "/KDMS/Logic/requestManager.php";
+//          document.getElementById(formId).method = "POST";
+//          document.getElementById(formId).submit();
+        
     }
 //         $.ajax({
 //          url:'/KDMS/Logic/requestManager.php',
@@ -208,11 +242,7 @@
 //          }
 //        });
 //          
-//          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-//          document.getElementById("myForm").method = "POST";
-//          document.getElementById("requestType").value = "addToPrintQueue";
-//
-//          document.getElementById(formId).submit();
+        
 //          
 //          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
 //      }
@@ -230,20 +260,24 @@
   
 function validateAmenity(formId){
     var valueEntered = false;
+    var valueNonNumber = false;
     
     for(i=0; i<document.getElementById(formId).length; i++){
         if(document.getElementById(formId)[i].type == "text"){
             if(document.getElementById(formId)[i].value.trim().length != 0){
                 //alert(document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length));
                 valueEntered = true;
+                valueNonNumber = isNaN(document.getElementById(formId)[i].value.trim());
             }            
         }
     }
-    if(!valueEntered){
-        alert("Nothing issued or returned. Please check and click close button if nothing needs to be saved.");
+    if(!valueEntered || valueNonNumber){
+        alert("Please enter number to issue or return amenity.");
+        return false;
+    } else {    
+        return true;
     }
-    return valueEntered;
-    }
+}
     
     
 </script>

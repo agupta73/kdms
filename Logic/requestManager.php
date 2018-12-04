@@ -57,6 +57,16 @@ switch ($requestType) {
         die;
         break;
     
+    case "manageAmenity":
+        if (!empty($_POST['devotee_key'])) {
+            //print_r("reaching here..");
+                $devoteeHandler = new clsDevoteeHandler($_POST);                
+                $response =  $devoteeHandler->manageAmenityAllocation();
+            }
+        
+        echo $response;
+        break;
+    
     case "upsertAcco":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
@@ -101,7 +111,7 @@ switch ($requestType) {
             }
         
         echo $response;
-        die;
+        break;
     
     default:
         break;
