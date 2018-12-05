@@ -11,6 +11,7 @@
                           <div class="col-md-12">
                               <div class="card-header card-header-primary">
                                     <h4 class="card-title">Allocated Amenities</h4>
+                                    
                                   </div>
                               <?php 
                                 $amenityResponse = $devoteeSearch->getDevoteeAmenities();
@@ -143,15 +144,14 @@
 //javascript function for ajax call
   function saveAmenityData(formId){
     
-    //var formData = $(formId).serialize();
-    
     if(validateAmenity(formId)){ 
         var strKey="";
         var strVal="";
-        
         var updateSuccess = true;
-        for(i=0; i<document.getElementById(formId).length; i++){
-            if(document.getElementById(formId)[i].type == "text"){
+        
+            for(i=0; i < document.getElementById(formId).length; i++){
+                
+                if(document.getElementById(formId)[i].type == "text"){
                 
                 if(document.getElementById(formId)[i].id.substring(0,1) == "I" && document.getElementById(formId)[i].value.trim().length != 0){
                     strKey = strKey + document.getElementById(formId)[i].id.substring(1,document.getElementById(formId)[i].id.length) + ",";
@@ -163,25 +163,24 @@
                 }
             }
         }
+ 
+            var formData = {'devotee_key': document.getElementById("devotee_key").value, 
+                        'amenity_key': strKey.substring(0,strKey.length -1),
+                        'amenity_quantity': strVal.substring(0,strVal.length -1),
+                        'requestType': "manageAmenity",
+                            };
         
-        document.getElementById("requestType").value = "manageAmenity";
-        document.getElementById("amenity_key").value = strKey.substring(0,strKey.length -1);
-        document.getElementById("amenity_quantity").value = strVal.substring(0,strVal.length -1);
-        
-        var formData = document.getElementById(formId).serialize();
-    
          $.ajax({
             url:'/KDMS/Logic/requestManager.php',
             type:'POST',
             data:formData,
             async: false,
             success:function(response){
-
                   var r = JSON.parse(response);
-
-                  if(r['flag'] == true){
-                      //alert("Devotee record updated successfully!");
-                      //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+                  alert(response);
+                  if(r['flag'] == true){                      
+                      alert("Amenity successfully updated!");
+                      $('#AmenityModalLong').modal('hide');
                   }
                   else{
                       alert(r['message']);
@@ -189,73 +188,7 @@
                   }   
             }
           });
-//          document.getElementById(formId).action = "/KDMS/Logic/requestManager.php";
-//          document.getElementById(formId).method = "POST";
-//          document.getElementById(formId).submit();
-        
     }
-//         $.ajax({
-//          url:'/KDMS/Logic/requestManager.php',
-//          type:'POST',
-//          data:formData,
-//          async: false,
-//          success:function(response){
-//		
-//                var r = JSON.parse(response);
-//                
-//		if(r['flag'] == true){
-//                    //alert("Devotee record updated successfully!");
-//                    //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
-//                }
-//		else{
-//                    alert(r['message']);
-//                    updateSuccess=false;
-//                }   
-//          }
-//        });
-
-        //Save and stay on the record
-//        if(flag == 1 && updateSuccess){
-//            alert("Devotee record updated successfully!");
-//            window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
-//        }
-//        //save and Print
-//        if(flag == -1 && updateSuccess){
-//          
-//          $.ajax({
-//          url:'/KDMS/Logic/requestManager.php',
-//          type:'POST',
-//          data:{'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
-//          async: false,
-//          success:function(response){
-//		
-//                var r = JSON.parse(response);
-//                
-//		if(r['flag'] == true){
-//                    alert("Devotee Record updated and card added to Print Queue!");
-//                    window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-//                }
-//		else{
-//                    alert(r['message']);
-//                    updateSuccess=false;
-//                }   
-//          }
-//        });
-//          
-        
-//          
-//          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-//      }
-        //save and exit
-//        if(flag == 0 && updateSuccess){
-//          alert("Devotee record updated successfully!");
-//          window.location.assign("/KDMS/UI/index.php");
-//    }
-    /*
-   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-   document.getElementById("myForm").method = "POST";
-   document.getElementById(formId).submit();
-   */
   }
   
 function validateAmenity(formId){

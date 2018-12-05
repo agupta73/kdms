@@ -10,7 +10,7 @@ $requestType = "";
 $requestData = array();
 
 
-
+    //var_dump($_POST);die;
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
@@ -24,7 +24,7 @@ switch ($requestType) {
 
         $fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
             'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_accommodation_id',
-            'devotee_status', 'devotee_gender'];
+            'devotee_status', 'devotee_gender','requestType'];
 
         foreach ($fields_as_post as $fld) {
             if (!empty($_POST[$fld])) {
@@ -58,9 +58,11 @@ switch ($requestType) {
         break;
     
     case "manageAmenity":
+        
         if (!empty($_POST['devotee_key'])) {
             //print_r("reaching here..");
-                $devoteeHandler = new clsDevoteeHandler($_POST);                
+                $devoteeHandler = new clsDevoteeHandler($_POST);
+                
                 $response =  $devoteeHandler->manageAmenityAllocation();
             }
         

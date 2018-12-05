@@ -9,6 +9,9 @@
   $devotee = new Devotee($db);
   $requestData = $_POST;
   
+  $res = array();
+  $response = array('flag' => false,'message'=>"Request failed", 'info'=>"");
+  
   if (!empty($requestData['requestType'])) {
     switch ($requestData['requestType']) {
         case "addToPrintQueue":
@@ -20,17 +23,24 @@
             $res = $devotee->manageAmenityAllocation($requestData);
             break;
         
-        default:
+        case "upsertDevotee":
             $res = $devotee->upsertDevotee($requestData);
+            break;
+        
+        default :
+            $response = array('flag' => false,'message'=>"Request type not specified or incorrect", 'info'=>$requestData['requestType']);
             break;
     }
 }
-
+if(!empty($res['status'])){
+    
 if ($res['status']) {
       $response = array('flag' => true, 'info'=>$res['info']);
   } else {
       $response = array('flag' => false,'message'=>$res['message'], 'info'=>$res['info']);
   }
+  
+}
   echo json_encode($response);
   die;
 ?>

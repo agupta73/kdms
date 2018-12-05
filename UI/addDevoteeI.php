@@ -125,7 +125,7 @@
   function saveFormData(formId, flag){
     
     var formData = $(formId).serialize();
-    var updateSuccess = true;
+    var updateSuccess = false;
     
     if(validateInput()){ 
          $.ajax({
@@ -134,12 +134,13 @@
           data:formData,
           async: false,
           success:function(response){
-		
+//		alert(response);
                 var r = JSON.parse(response);
                 
 		if(r['flag'] == true){
-                    //alert("Devotee record updated successfully!");
-                    //window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+//                    alert("Devotee record updated successfully!");
+//                    window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
+                    updateSuccess = true;                    
                 }
 		else{
                     alert(r['message']);
