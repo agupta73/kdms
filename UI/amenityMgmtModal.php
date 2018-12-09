@@ -177,7 +177,7 @@
             async: false,
             success:function(response){
                   var r = JSON.parse(response);
-                  alert(response);
+                  //alert(response);
                   if(r['flag'] == true){                      
                       alert("Amenity successfully updated!");
                       $('#AmenityModalLong').modal('hide');

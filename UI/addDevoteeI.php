@@ -374,7 +374,7 @@ function validateInput(){
                        echo '<div  id="photo2"><img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img></div>';
                     }
                     else{
-                       echo '<div  id="photo2"><img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="200px" width="200px"></img></div>';  
+                       echo '<div  id="photo2"><img src="data:image/jpeg;base64,'. $devotee_photo . '" alt="devotee image" height="220px" width="260px"></img></div>';  
                     }
                     
                 ?> 

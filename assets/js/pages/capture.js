@@ -59,6 +59,7 @@
 
                 if (isNaN(height)) {
                     height = width / (4 / 3);
+                    //height = width;
                 }
 
                 video.setAttribute('width', width);
