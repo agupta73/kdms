@@ -56,6 +56,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         txtAccommodation.delegate = self
         txtRemarks.delegate = self
         
+        loadMasterData()
+        
         // Set up views if editing an existing Devotee.
         if let devotee = devotee {
             navigationItem.title = devotee.firstName! + " " + devotee.lastName!
@@ -73,7 +75,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             devoteeIDImage.image = devotee.devoteeIdImage
         }
         
-        //loadMasterData()
+        
+        
         updateSaveButtonState()
     }
 
@@ -120,7 +123,18 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     @IBAction func Cancel(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
+        // Depending on style of presentation (modal or push presentation), this view controller needs to be dismissed in two different ways.
+        let isPresentingInAddMealMode = presentingViewController is UINavigationController
+        
+        if isPresentingInAddMealMode {
+            dismiss(animated: true, completion: nil)
+        }
+        else if let owningNavigationController = navigationController{
+            owningNavigationController.popViewController(animated: true)
+        }
+        else {
+            fatalError("The DevoteeViewController is not inside a navigation controller.")
+        }
     }
     
     //MARK: Private Method
@@ -202,7 +216,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
                 
                 //Get back to the main queue
                 DispatchQueue.main.async {
-                    print(parsedData)
+                    print(parsedData[1])
                     //self.Accmmodation = articlesData
                     //self.collectionView?.reloadData()
                 }
