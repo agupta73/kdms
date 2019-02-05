@@ -15,6 +15,15 @@ class DevoteeTableViewController: UITableViewController {
     
     var devotees = [Devotee]()
     
+    struct DevoteeStructure: Codable {
+        var devotee_key: String
+        var Devotee_Name: String
+        var devotee_station: String
+        var devotee_cell_phone_number: String
+        var Devotee_ID_Image: String
+        var Devotee_Photo: String
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,8 +32,9 @@ class DevoteeTableViewController: UITableViewController {
         navigationItem.leftBarButtonItem = editButtonItem
         navigationItem.leftBarButtonItem?.title = "Print Card"
         
-        LoadSampleDevoteeRecords()
         LoadDevoteeRecords()
+        //LoadSampleDevoteeRecords()
+        
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -45,7 +55,7 @@ class DevoteeTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return devotees.count
+        return devotees.count 
     }
     
     
@@ -165,13 +175,54 @@ class DevoteeTableViewController: UITableViewController {
     }
     
     private func LoadDevoteeRecords() {
+        //http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP
+        let urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+        guard let url = URL(string: urlString) else { return }
         
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if error != nil {
+                print(error!.localizedDescription)
+            }
+            
+            guard let data = data else { return }
+            //Implement JSON decoding and parsing
+               do {
+                //Decode retrived data with JSONDecoder and assing type of Article object
+                let parsedData = try JSONDecoder().decode([DevoteeStructure].self, from: data)
+                
+                //Get back to the main queue
+                DispatchQueue.main.async {
+                    print(parsedData)
+                    for devoteeRecord in parsedData {
+                        /*guard let devotee = Devotee(firstName: devoteeRecord.Devotee_Name, lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station, devoteePhone: devoteeRecord.devotee_cell_phone_number, devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: photo1, devoteeIdImage: image1)
+                            else {
+                                fatalError("Unable to instantiate devotee 3")
+                        }*/
+                        //devotee =
+                        
+                        self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name, lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station, devoteePhone: devoteeRecord.devotee_cell_phone_number, devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image))!)
+                    }
+                    self.tableView.reloadData()
+                }
+                
+            } catch let jsonError {
+                print(jsonError)
+            }
+            }.resume()
+    }
+    
+    private func loadImage(imageData: String) -> UIImage? {
+            let unencodedData = Data(base64Encoded: imageData)
+            let image = UIImage(data: unencodedData!)
+            return image
     }
     
     //MARK: Action
     @IBAction func unwindToDevoteeList(sender: UIStoryboardSegue) {
-        
-        if let sourceViewController = sender.source as? DevoteeViewController, let devotee = sourceViewController.devotee {
+        devotees.removeAll()
+        LoadDevoteeRecords()
+        tableView.reloadData()
+        /*if let sourceViewController = sender.source as? DevoteeViewController, let devotee = sourceViewController.devotee {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 devotees[selectedIndexPath.row] = devotee
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
@@ -184,6 +235,6 @@ class DevoteeTableViewController: UITableViewController {
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
                 
             }
-        }
+        }*/
     }
 }
