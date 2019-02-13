@@ -15,6 +15,7 @@ class DevoteeTableViewController: UITableViewController {
     
     var devotees = [Devotee]()
     
+    
     struct DevoteeStructure: Codable {
         var devotee_key: String
         var Devotee_Name: String
@@ -27,7 +28,9 @@ class DevoteeTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        //var refreshControl = UIRefreshControl()
+        self.refreshControl?.addTarget(self, action: #selector(DevoteeTableViewController.LoadDevoteeRecords), for: UIControlEvents.valueChanged)
+        //tableView.refreshControl = refreshControl
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem
         navigationItem.leftBarButtonItem?.title = "Print Card"
@@ -174,8 +177,14 @@ class DevoteeTableViewController: UITableViewController {
         
     }
     
-    private func LoadDevoteeRecords() {
-        //http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP
+    @objc func Refresh(sender:AnyObject) {
+        LoadDevoteeRecords()
+    }
+    
+    @objc private func LoadDevoteeRecords() {
+        
+        devotees.removeAll()
+        
         let urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
         guard let url = URL(string: urlString) else { return }
         
@@ -203,6 +212,8 @@ class DevoteeTableViewController: UITableViewController {
                 print(jsonError)
             }
             }.resume()
+        
+        self.refreshControl?.endRefreshing()
     }
     
     private func loadImage(imageData: String) -> UIImage? {
@@ -213,7 +224,7 @@ class DevoteeTableViewController: UITableViewController {
     
     //MARK: Action
     @IBAction func unwindToDevoteeList(sender: UIStoryboardSegue) {
-        devotees.removeAll()
+        
         LoadDevoteeRecords()
         tableView.reloadData()
         /*if let sourceViewController = sender.source as? DevoteeViewController, let devotee = sourceViewController.devotee {

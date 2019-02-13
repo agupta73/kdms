@@ -43,23 +43,23 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     struct DevoteeStructure: Codable {
         var Devotee_Key: String
-        var Devotee_Type: String
-        var Devotee_First_Name: String
-        var Devotee_Last_Name: String
-        var Devotee_Gender: String
-        var Devotee_ID_Type: String
-        var Devotee_ID_Number: String
-        var Devotee_Station: String
-        var Devotee_Cell_Phone_Number: String
-        var Devotee_Status: String
-        var Devotee_Remarks: String
-        var Devotee_Record_Update_Date_Time: String
-        var Devotee_Record_Updated_By: String
-        var Devotee_ID_Image: String
-        var Devotee_ID_XML: String
-        var DID_Devotee_ID_Type: String
-        var Photo_type: String
-        var Devotee_Photo: String
+        var Devotee_Type: String?
+        var Devotee_First_Name: String?
+        var Devotee_Last_Name: String?
+        var Devotee_Gender: String?
+        var Devotee_ID_Type: String?
+        var Devotee_ID_Number: String?
+        var Devotee_Station: String?
+        var Devotee_Cell_Phone_Number: String?
+        var Devotee_Status: String?
+        var Devotee_Remarks: String?
+        var Devotee_Record_Update_Date_Time: String?
+        var Devotee_Record_Updated_By: String?
+        var Devotee_ID_Image: String?
+        var Devotee_ID_XML: String?
+        var DID_Devotee_ID_Type: String?
+        var Photo_type: String?
+        var Devotee_Photo: String?
         var Accomodation_Key: String
         
     }
@@ -245,7 +245,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
                 
                 //Get back to the main queue
                 DispatchQueue.main.async {
-                    print(parsedData[1])
+                    //print(parsedData[1])
                     //self.Accmmodation = articlesData
                     //self.collectionView?.reloadData()
                 }
@@ -325,6 +325,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         postData.append((txtDevoteeKey.text?.data(using: String.Encoding.utf8)!)!)
         postData.append("&requestType=upsertDevotee".data(using: String.Encoding.utf8)!)
         
+        //print(postData)
+        
         let todosEndpoint: String = "http://localhost/KDMS/api/upsertDevotee.php"
         guard let todosURL = URL(string: todosEndpoint) else {
             print("Error: cannot create URL")
@@ -361,11 +363,13 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
                     return
                 }
                 print("The todo is: " + receivedTodo.description)
-                guard let todoID = receivedTodo["info"] as? String else {
+                guard let saved = receivedTodo["flag"] as? Bool else {
                     print("Could not get todoID as string from JSON")
                     return
                 }
-                print("The ID is: \(todoID)")
+                if saved {
+                    print("The ID is: \(receivedTodo["info"] ?? "")")
+                }
             } catch  {
                 print("error parsing response from POST on /todos")
                 return
