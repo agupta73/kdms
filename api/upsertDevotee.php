@@ -10,9 +10,10 @@
   $requestData = $_POST;
   
   $res = array();
-  $response = array('flag' => false,'message'=>"Request failed", 'info'=>"");
+  $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData);
   
   if (!empty($requestData['requestType'])) {
+      $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData['requestType']);
     switch ($requestData['requestType']) {
         case "addToPrintQueue":
         case "removeFromPrintQueue":
@@ -32,6 +33,10 @@
             break;
     }
 }
+else {
+    $response = array('flag' => false,'message'=>"Request data empty", 'info'=>$requestData);
+}
+    
 if(!empty($res['status'])){
     
 if ($res['status']) {

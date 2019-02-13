@@ -192,14 +192,8 @@ class DevoteeTableViewController: UITableViewController {
                 
                 //Get back to the main queue
                 DispatchQueue.main.async {
-                    print(parsedData)
+                    //print(parsedData)
                     for devoteeRecord in parsedData {
-                        /*guard let devotee = Devotee(firstName: devoteeRecord.Devotee_Name, lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station, devoteePhone: devoteeRecord.devotee_cell_phone_number, devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: photo1, devoteeIdImage: image1)
-                            else {
-                                fatalError("Unable to instantiate devotee 3")
-                        }*/
-                        //devotee =
-                        
                         self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name, lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station, devoteePhone: devoteeRecord.devotee_cell_phone_number, devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image))!)
                     }
                     self.tableView.reloadData()

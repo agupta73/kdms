@@ -8,6 +8,7 @@
 
 import UIKit
 import os.log
+import Foundation
 
 class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     //MARK: Properties
@@ -39,6 +40,30 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         var Reserved_Count: String
         var Out_Of_Availability_Count: String
     }
+    
+    struct DevoteeStructure: Codable {
+        var Devotee_Key: String
+        var Devotee_Type: String
+        var Devotee_First_Name: String
+        var Devotee_Last_Name: String
+        var Devotee_Gender: String
+        var Devotee_ID_Type: String
+        var Devotee_ID_Number: String
+        var Devotee_Station: String
+        var Devotee_Cell_Phone_Number: String
+        var Devotee_Status: String
+        var Devotee_Remarks: String
+        var Devotee_Record_Update_Date_Time: String
+        var Devotee_Record_Updated_By: String
+        var Devotee_ID_Image: String
+        var Devotee_ID_XML: String
+        var DID_Devotee_ID_Type: String
+        var Photo_type: String
+        var Devotee_Photo: String
+        var Accomodation_Key: String
+        
+    }
+    
     var devotee: Devotee?
     
     override func viewDidLoad() {
@@ -55,8 +80,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         txtStation.delegate = self
         txtAccommodation.delegate = self
         txtRemarks.delegate = self
-        
-        loadMasterData()
         
         // Set up views if editing an existing Devotee.
         if let devotee = devotee {
@@ -76,7 +99,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         }
         
         
-        
+        loadMasterData()
         updateSaveButtonState()
     }
 
@@ -118,7 +141,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             return
         }
         
-        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "D1", devoteeType: txtDevoteeType.text ?? "P", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "",  devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage:devoteeIDImage.image)
+        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "", devoteeType: txtDevoteeType.text ?? "P", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "",  devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage:devoteeIDImage.image)
         os_log("Devotee Object created", log: OSLog.default, type: .debug)
     }
     
@@ -190,7 +213,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     @IBAction func btnSave(_ sender: UIButton) {
-        //lblTopMessage.text = "Devotee Record Saved!!"
+        saveDevotee()
     }
     @IBAction func btnSavePrint(_ sender: UIButton) {
         //lblTopMessage.text = txtFirstName.text! + ", " + txtLastName.text!
@@ -200,6 +223,12 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     private func loadMasterData() {
+        loadDevoteeRecord()
+        loadAccommodations()
+        
+    }
+    
+    private func loadAccommodations() {
         let urlString = "http://localhost/KDMS/api/loadoptions.php?option_type=Accommodation"
         guard let url = URL(string: urlString) else { return }
         
@@ -226,6 +255,125 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             }
             }.resume()
     }
+    private func loadDevoteeRecord() {
+        if(txtDevoteeKey.text != "") {
+            let urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+            //print(urlString)
+            guard let url = URL(string: urlString) else { return }
+            
+            URLSession.shared.dataTask(with: url) { (data, response, error) in
+                if error != nil {
+                    print(error!.localizedDescription)
+                }
+                
+                guard let data = data else { return }
+                //Implement JSON decoding and parsing
+                do {
+                    //Decode retrived data with JSONDecoder and assing type of Article object
+                    let parsedData = try JSONDecoder().decode(DevoteeStructure.self, from: data)
+                    
+                    //Get back to the main queue
+                    DispatchQueue.main.async {
+                        self.txtDevoteeKey.text = parsedData.Devotee_Key
+                        self.txtRemarks.text = parsedData.Devotee_Remarks
+                        self.txtFirstName.text = parsedData.Devotee_First_Name
+                        self.txtLastName.text = parsedData.Devotee_Last_Name
+                        self.txtDevoteeType.text = parsedData.Devotee_Type
+                        self.txtIDType.text = parsedData.Devotee_ID_Type
+                        self.txtIDNumber.text = parsedData.Devotee_ID_Number
+                        self.txtPhoneNumber.text = parsedData.Devotee_Cell_Phone_Number
+                        self.txtStation.text = parsedData.Devotee_Station
+                        self.txtAccommodation.text = parsedData.Accomodation_Key
+                    }
+                    
+                } catch let jsonError {
+                    print(jsonError)
+                }
+                }.resume()
+            
+            }
+        }
+
+    
+    
+    func saveDevotee() {
+        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+        let postData = NSMutableData(data: "devotee_type=".data(using: String.Encoding.utf8)!)
+        
+        postData.append((txtDevoteeType.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_first_name=".data(using: String.Encoding.utf8)!)
+        postData.append((txtFirstName.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_last_name=".data(using: String.Encoding.utf8)!)
+        postData.append((txtLastName.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_gender=".data(using: String.Encoding.utf8)!)
+        postData.append("".data(using: String.Encoding.utf8)!)
+        postData.append("&devotee_id_type=".data(using: String.Encoding.utf8)!)
+        postData.append((txtIDType.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_id_number=".data(using: String.Encoding.utf8)!)
+        postData.append((txtIDNumber.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_station=".data(using: String.Encoding.utf8)!)
+        postData.append((txtStation.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_cell_phone_number=".data(using: String.Encoding.utf8)!)
+        postData.append((txtPhoneNumber.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_status=".data(using: String.Encoding.utf8)!)
+        postData.append("A".data(using: String.Encoding.utf8)!)
+        postData.append("&devotee_remarks=".data(using: String.Encoding.utf8)!)
+        postData.append((txtRemarks.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_accommodation_id=".data(using: String.Encoding.utf8)!)
+        postData.append((txtAccommodation.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&devotee_key=".data(using: String.Encoding.utf8)!)
+        postData.append((txtDevoteeKey.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append("&requestType=upsertDevotee".data(using: String.Encoding.utf8)!)
+        
+        let todosEndpoint: String = "http://localhost/KDMS/api/upsertDevotee.php"
+        guard let todosURL = URL(string: todosEndpoint) else {
+            print("Error: cannot create URL")
+            return
+        }
+        
+        var todosUrlRequest = URLRequest(url: todosURL)
+        todosUrlRequest.httpMethod = "POST"
+        todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
+        todosUrlRequest.httpMethod = "POST"
+        todosUrlRequest.allHTTPHeaderFields = headers
+        todosUrlRequest.httpBody = postData as Data
+        
+        let session = URLSession.shared
+        
+        let task = session.dataTask(with: todosUrlRequest) {
+            (data, response, error) in
+            guard error == nil else {
+                print("error calling POST on /todos/1")
+                print(error!)
+                return
+            }
+            guard let responseData = data else {
+                print("Error: did not receive data")
+                return
+            }
+            
+            // parse the result as JSON, since that's what the API provides
+            do {
+                
+                guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
+                    print("Could not get JSON from responseData as dictionary")
+                    return
+                }
+                print("The todo is: " + receivedTodo.description)
+                guard let todoID = receivedTodo["info"] as? String else {
+                    print("Could not get todoID as string from JSON")
+                    return
+                }
+                print("The ID is: \(todoID)")
+            } catch  {
+                print("error parsing response from POST on /todos")
+                return
+            }
+        }
+        task.resume()
+    }
+    
 }
 
 
