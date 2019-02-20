@@ -14,28 +14,26 @@ class DevoteeTableViewController: UITableViewController {
     //MARK: Properties
     
     var devotees = [Devotee]()
-    
+    var selectedTabIndex: Int = 0
     
     struct DevoteeStructure: Codable {
         var devotee_key: String
-        var Devotee_Name: String
-        var devotee_station: String
-        var devotee_cell_phone_number: String
-        var Devotee_ID_Image: String
-        var Devotee_Photo: String
+        var Devotee_Name: String?
+        var devotee_station: String?
+        var devotee_cell_phone_number: String?
+        var Devotee_ID_Image: String?
+        var Devotee_Photo: String?
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //var refreshControl = UIRefreshControl()
         self.refreshControl?.addTarget(self, action: #selector(DevoteeTableViewController.LoadDevoteeRecords), for: UIControlEvents.valueChanged)
-        //tableView.refreshControl = refreshControl
         // Use the edit button item provided by the table view controller.
-        navigationItem.leftBarButtonItem = editButtonItem
-        navigationItem.leftBarButtonItem?.title = "Print Card"
+        //navigationItem.leftBarButtonItem = editButtonItem
+        //navigationItem.leftBarButtonItem?.title = "Print Card"
         
-        LoadDevoteeRecords()
+       
         //LoadSampleDevoteeRecords()
         
         
@@ -46,6 +44,26 @@ class DevoteeTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        selectedTabIndex = (tabBarController?.selectedIndex)!
+        //tabIndex =  (tabBarController?.selectedIndex)!
+        switch selectedTabIndex {
+        case 0:
+            navigationItem.leftBarButtonItem?.title = "Print Card"
+            navigationItem.title = "Print Queue"
+        case 1:
+            navigationItem.leftBarButtonItem?.title = "Take Photo"
+            navigationItem.title = "Photo Missing"
+        case 2:
+            navigationItem.leftBarButtonItem?.title = "Fill Information"
+            navigationItem.title = "Details Missing"
+        default:
+            navigationItem.leftBarButtonItem?.title = "Invalid Button"
+            navigationItem.title = "Inalid Button"
+        }
+        LoadDevoteeRecords()
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -177,15 +195,25 @@ class DevoteeTableViewController: UITableViewController {
         
     }
     
-    @objc func Refresh(sender:AnyObject) {
+     /* @objc func Refresh(sender:AnyObject) {
         LoadDevoteeRecords()
-    }
+    }*/
     
     @objc private func LoadDevoteeRecords() {
         
         devotees.removeAll()
+        var urlString: String
+        switch selectedTabIndex {
+        case 0:
+           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+        case 1:
+           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=DWP"
+        case 2:
+           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=PWD"
+        default:
+           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+        }
         
-        let urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -203,7 +231,7 @@ class DevoteeTableViewController: UITableViewController {
                 DispatchQueue.main.async {
                     //print(parsedData)
                     for devoteeRecord in parsedData {
-                        self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name, lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station, devoteePhone: devoteeRecord.devotee_cell_phone_number, devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image))!)
+                        self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name ?? "", lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station ?? "", devoteePhone: devoteeRecord.devotee_cell_phone_number ?? "", devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo!), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image ?? ""))!)
                     }
                     self.tableView.reloadData()
                 }
@@ -226,7 +254,7 @@ class DevoteeTableViewController: UITableViewController {
     @IBAction func unwindToDevoteeList(sender: UIStoryboardSegue) {
         
         LoadDevoteeRecords()
-        tableView.reloadData()
+        // tableView.reloadData()
         /*if let sourceViewController = sender.source as? DevoteeViewController, let devotee = sourceViewController.devotee {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 devotees[selectedIndexPath.row] = devotee

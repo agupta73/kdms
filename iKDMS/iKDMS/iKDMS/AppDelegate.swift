@@ -30,18 +30,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //let clockViewController = storyboard.instantiateViewControllerWithIdentifier("ClockViewController")
         //let stopWatchViewController = storyboard.instantiateViewControllerWithIdentifier("StopWatchViewController")
         let devoteeListViewController = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
+        let devoteeListViewController2 = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
+        let devoteeListViewController3 = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
         let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController")
         
-        devoteeListViewController.tabBarItem.title = "List"
+        devoteeListViewController.tabBarItem.title = "Print List"
+        devoteeListViewController2.tabBarItem.title = "Add Photo"
+        devoteeListViewController3.tabBarItem.title = "Add Detail"
         //devoteeListViewController.tabBarItem.image = UIImage(named: "List")
         
-        devoteeViewController.tabBarItem.title = "Detail"
+        devoteeViewController.tabBarItem.title = "Register"
         //devoteeViewController.tabBarItem.image = UIImage(named: "Detail")
         //devoteeViewController.tabBarItem.badgeColor = UIColor.clear
         
         // Set up the Tab Bar Controller to have two tabs
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [devoteeListViewController, devoteeViewController]
+        tabBarController.viewControllers = [devoteeListViewController,devoteeListViewController2,devoteeListViewController3, devoteeViewController]
         
         // Make the Tab Bar Controller the root view controller
         window?.rootViewController = tabBarController

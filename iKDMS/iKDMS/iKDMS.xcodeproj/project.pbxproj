@@ -15,6 +15,7 @@
 		262171DA21F9903700EBBAF9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 262171D821F9903700EBBAF9 /* LaunchScreen.storyboard */; };
 		262171E521F9903700EBBAF9 /* iKDMSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262171E421F9903700EBBAF9 /* iKDMSTests.swift */; };
 		262171F021F9903700EBBAF9 /* iKDMSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262171EF21F9903700EBBAF9 /* iKDMSUITests.swift */; };
+		26BB14BF2215230900CD91F1 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BB14BE2215230900CD91F1 /* ScannerViewController.swift */; };
 		26DA592221FAABC3001A6030 /* Devotee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592121FAABC3001A6030 /* Devotee.swift */; };
 		26DA592421FBD272001A6030 /* DevoteeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */; };
 		26DA592621FBDE5E001A6030 /* DevoteeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */; };
@@ -53,6 +54,7 @@
 		262171EB21F9903700EBBAF9 /* iKDMSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iKDMSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		262171EF21F9903700EBBAF9 /* iKDMSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iKDMSUITests.swift; sourceTree = "<group>"; };
 		262171F121F9903700EBBAF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26BB14BE2215230900CD91F1 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		26DA592121FAABC3001A6030 /* Devotee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devotee.swift; sourceTree = "<group>"; };
 		26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeTableViewCell.swift; sourceTree = "<group>"; };
 		26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeTableViewController.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				262171CC21F9903700EBBAF9 /* AppDelegate.swift */,
 				262171CE21F9903700EBBAF9 /* DevoteeViewController.swift */,
 				262171D021F9903700EBBAF9 /* Main.storyboard */,
+				26BB14BE2215230900CD91F1 /* ScannerViewController.swift */,
 				26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */,
 				26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */,
 				26DA592721FFF5BE001A6030 /* SwiftyJSON.swift */,
@@ -281,6 +284,7 @@
 				26DA592621FBDE5E001A6030 /* DevoteeTableViewController.swift in Sources */,
 				26DA592821FFF5BE001A6030 /* SwiftyJSON.swift in Sources */,
 				262171CD21F9903700EBBAF9 /* AppDelegate.swift in Sources */,
+				26BB14BF2215230900CD91F1 /* ScannerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

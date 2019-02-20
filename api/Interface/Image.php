@@ -88,7 +88,7 @@ Class Image {
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
         $unencoded = base64_decode($filteredData[1]);
-        
+        //$unencoded = base64_decode($rawData);
         $type="self";
         $status=1;
         // Now save this info to db
