@@ -267,6 +267,8 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
 
                                         <div class="form-group">
                                             <?php
+                                            echo '<input type="hidden" name="request_from" value="registration.php">';
+                                    
                                             // If devotee key is available , add key to update existing data
                                             if ($is_key_available) {
                                                 echo '<input type="hidden" name="devotee_key" value="' . $devotee_key . '">';

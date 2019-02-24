@@ -1,5 +1,4 @@
 <?php
-
 // Setting
 $Interface_path = "Interface/";
 $requestData = $_POST;
@@ -75,7 +74,13 @@ if ($api_type == 3) {
 
     if ($imageClass->uploadDocument($requestData, $devotee_key, $is_update)) {
         // Since it is normal post , So relaod page
-        header('Location: ' . '../UI/registration.php?devotee_key=' . $devotee_key);
+        if(!empty($requestData['request_from'])){
+            $redirect='../UI/'.$requestData['request_from'].'?devotee_key=' . $devotee_key;
+             header('Location: ' .$redirect);
+        }else{
+            res_success('Data updated !');
+        }
+       
         die;
     } else {
         res_error('Error while  updating devotee\'s document !');
