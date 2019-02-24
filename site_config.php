@@ -1,7 +1,7 @@
 <?php
 
 // User definded configuration
-$directoryName = "kdms";
+$directoryName = "kdms"; //name of main folder
 $directory_seprator = '/';
 $protocol = 'http://';
 //---------------------------------------

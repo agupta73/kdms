@@ -17,9 +17,9 @@
 
     var video = null;
     var canvas = null;
-    var canvas2 = null;
+    //var canvas2 = null;
     var photo = null;
-    var photo2 = null;
+    //var photo2 = null;
     var devoteeID = null;
     var startbutton = null;
     var uploadbutton = null;
@@ -28,9 +28,9 @@
     function startup() {
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
-        canvas2 = document.getElementById('canvas2');
+        //canvas2 = document.getElementById('canvas2');
         photo = document.getElementById('photo');
-        photo2 = document.getElementById('photo2');
+      //  photo2 = document.getElementById('photo2');
         devoteeID = document.getElementById('devotee_key_modal');
         startbutton = document.getElementById('click-pic');
         uploadbutton = document.getElementById('upload-pic');
@@ -66,8 +66,8 @@
                 video.setAttribute('height', height);
                 canvas.setAttribute('width', width);
                 canvas.setAttribute('height', height);
-                canvas2.setAttribute('width', width);
-                canvas2.setAttribute('height', height);
+               // canvas2.setAttribute('width', width);
+               // canvas2.setAttribute('height', height);
                 streaming = true;
             }
         }, false);
@@ -95,7 +95,7 @@
         var data = canvas.toDataURL('image/png');
         photo.setAttribute('src', data);
 
-        photo2.setAttribute('src', data);
+        //photo2.setAttribute('src', data);
     }
 
     // Capture a photo by fetching the current contents of the video
@@ -131,8 +131,10 @@
                 method: 'POST',
                 data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
             }).done(function () {
+                var url = window.location.href;
                 alert('Devotee Image updated!!');
                 $('#CameraModalLong').modal('hide');
+                window.location = url;
             });
         } else {
             $.ajax({
@@ -150,18 +152,18 @@
             });
         }
 
-        photo2.innerHTML = "";
-        var context2 = canvas2.getContext('2d');
-        if (width && height) {
-            canvas2.width = width;
-            canvas2.height = height;
-            context2.drawImage(video, 0, 0, width, height);
-
-            var data = canvas.toDataURL('image/png');
-            photo2.setAttribute('src', data);
-        } else {
-            clearphoto();
-        }
+        //photo2.innerHTML = "";
+//        var context2 = canvas2.getContext('2d');
+//        if (width && height) {
+//            canvas2.width = width;
+//            canvas2.height = height;
+//            context2.drawImage(video, 0, 0, width, height);
+//
+//            var data = canvas.toDataURL('image/png');
+//            photo2.setAttribute('src', data);
+//        } else {
+//            clearphoto();
+//        }
 
     }
 
