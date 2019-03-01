@@ -8,15 +8,38 @@
 
 import AVFoundation
 import UIKit
+import Alamofire
 
-class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
+class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate, XMLParserDelegate {
     var captureSession: AVCaptureSession!
     var previewLayer: AVCaptureVideoPreviewLayer!
+    
+//    var xmlString: String
+    @IBOutlet weak var testLabel: UILabel!
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.black
+        
+       
+        
+        /* Alamofire.Request("https://httpbin.org/get").responseJSON { response in
+            print("Request: \(String(describing: response.request))")   // original url request
+            print("Response: \(String(describing: response.response))") // http url response
+            print("Result: \(response.result)")                         // response serialization result
+            
+            if let json = response.result.value {
+                print("JSON: \(json)") // serialized json response
+            }
+            
+            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                print("Data: \(utf8Text)") // original server data as UTF8 string
+            }
+        }
+        */
+        //view.backgroundColor = UIColor.black
         captureSession = AVCaptureSession()
         
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
@@ -93,6 +116,16 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     
     func found(code: String) {
         print(code)
+        
+        let xmlData = code.data(using: String.Encoding.utf8)!
+        
+        let parser = XMLParser(data: xmlData)
+            parser.delegate = self
+            parser.parse()
+        
+        //XML from the QR code of Aadhar Card:
+        /* <?xml version="1.0" encoding="UTF-8"?>
+        <PrintLetterBarcodeData uid="501254195869" name="KUNDAN SINGH GAIRA" gender="M" yob="1988" co="S/O THAKUR SINGH GAIRA" house="." street="UPPER MALL WARD-8" loc="BASANT VIHAR LOWER DANDA" vtc="Nainital" dist="Nainital" state="Uttarakhand" pc="263002"/> */
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -102,4 +135,51 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
+    
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        let photo1 = UIImage(named:"Devotee1")
+        let image1 = UIImage(named:"ID1")
+        var name: String = ""
+        
+        var firstName: String = ""
+        var lastName: String = ""
+        var location: String = ""
+        var ID: String = ""
+        var IDType: String = ""
+        
+        name = attributeDict["name"] ?? ""
+        let fullName = name.split(separator: " ")
+        lastName = String(fullName[fullName.count - 1])
+        firstName = name.replacingOccurrences(of: lastName, with: "")
+        
+       // let gender = attributeDict["gender"] ?? ""
+        ID =  attributeDict["uid"] ?? ""
+        IDType =  "Adhaar"
+        location = attributeDict["dist"] ?? ""
+        var remark: String = "Address: "
+        remark += attributeDict["house"] ?? ""
+        remark += ", "
+        remark +=  attributeDict["street"] ?? ""
+        remark += ", "
+        remark +=  attributeDict["loc"] ?? ""
+        remark += ", "
+        remark +=  attributeDict["vtc"] ?? ""
+        remark += ", "
+        remark +=   attributeDict["state"] ?? ""
+        remark += ", "
+        remark +=  attributeDict["pc"] ?? ""
+        
+        let newDevotee = Devotee(firstName: firstName , lastName: lastName ?? "", devoteeKey: "", devoteeType: "P", devoteeIdType: IDType, devoteeIdNumber: ID ?? "", devoteeStation: location, devoteePhone: "", devoteeRemarks: remark , devoteeAccoId: "", devoteePhoto: photo1, devoteeIdImage: image1)
+    
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController") as? DevoteeViewController
+        
+        devoteeViewController?.devotee  = newDevotee
+        
+        self.navigationController?.pushViewController(devoteeViewController!, animated: true)
+    }
+    // 2
+    
+
 }

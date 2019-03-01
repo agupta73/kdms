@@ -13,7 +13,7 @@ class Devotee {
     //MARK: Properties
     var firstName: String?
     var lastName: String?
-    var devoteeKey: String
+    var devoteeKey: String?
     var devoteeType: String?
     var devoteeIdType: String?
     var devoteeIdNumber: String?
@@ -91,9 +91,9 @@ class Devotee {
     init?(firstName: String?, lastName: String?, devoteeKey: String, devoteeType: String?, devoteeIdType: String?, devoteeIdNumber: String?, devoteeStation: String?, devoteePhone: String?, devoteeRemarks: String?, devoteeAccoId: String?, devoteePhoto: UIImage?, devoteeIdImage: UIImage?){
         
         //Initilization should fail if there is no devotee Key or rating
-        guard !devoteeKey.isEmpty else {
-            return nil
-        }
+       // guard !devoteeKey.isEmpty  else {
+       //     return nil
+       // }
         
         //Add other validations here (like raiting must be between 0 and 5 inclusively)
         //

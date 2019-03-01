@@ -185,7 +185,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             txtAccommodation.resignFirstResponder()
             txtRemarks.resignFirstResponder()
             let imagePickerController = UIImagePickerController()
-            imagePickerController.sourceType = .photoLibrary
+            imagePickerController.sourceType = .camera
             
             // Make sure ViewController is notified when the user picks an image.
             imagePickerController.delegate = self
@@ -229,7 +229,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     private func loadAccommodations() {
-        let urlString = "http://localhost/KDMS/api/loadoptions.php?option_type=Accommodation"
+        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -257,7 +257,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     private func loadDevoteeRecord() {
         if(txtDevoteeKey.text != "") {
-            let urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+            let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
             //print(urlString)
             guard let url = URL(string: urlString) else { return }
             
@@ -327,7 +327,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         //print(postData)
         
-        let todosEndpoint: String = "http://localhost/KDMS/api/upsertDevotee.php"
+        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
         guard let todosURL = URL(string: todosEndpoint) else {
             print("Error: cannot create URL")
             return
@@ -389,7 +389,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         postData.append((devoteeKey.data(using: String.Encoding.utf8)!))
         postData.append("&requestType=addToPrintQueue".data(using: String.Encoding.utf8)!)
        
-        let todosEndpoint: String = "http://localhost/KDMS/api/upsertDevotee.php"
+        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
         guard let todosURL = URL(string: todosEndpoint) else {
             print("Error: cannot create URL")
             return
@@ -443,7 +443,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
-        let imageData = UIImageJPEGRepresentation(selectedImage,1.0)
+        let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
         //let imageData = UIImagePNGRepresentation(selectedImage)
         let base64String = imageData?.base64EncodedData()
         
@@ -452,12 +452,12 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         let headers = ["Content-Type": "application/x-www-form-urlencoded"]
         let postData = NSMutableData(data: "&devotee_key=".data(using: String.Encoding.utf8)!)
-        postData.append((self.devotee?.devoteeKey.data(using: String.Encoding.utf8) ?? "".data(using: String.Encoding.utf8)!))
+        postData.append((self.devotee?.devoteeKey?.data(using: String.Encoding.utf8) ?? "".data(using: String.Encoding.utf8)!))
         postData.append("&api_type=3".data(using: String.Encoding.utf8)!)
         postData.append("&image=".data(using: String.Encoding.utf8)!)
         postData.append(base64String!)
         
-        let todosEndpoint: String = "http://localhost/KDMS/api/managePhotoIOS.php"
+        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
         guard let todosURL = URL(string: todosEndpoint) else {
             print("Error: cannot create URL")
             return

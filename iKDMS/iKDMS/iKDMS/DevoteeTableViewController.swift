@@ -205,13 +205,13 @@ class DevoteeTableViewController: UITableViewController {
         var urlString: String
         switch selectedTabIndex {
         case 0:
-           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
         case 1:
-           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=DWP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=DWP"
         case 2:
-           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=PWD"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=PWD"
         default:
-           urlString = "http://localhost/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
         }
         
         guard let url = URL(string: urlString) else { return }
