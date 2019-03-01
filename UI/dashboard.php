@@ -56,7 +56,7 @@ function validateInput(){
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">image</i>
-                    <a href="#pablo">Photo and ID Scan</a>
+                    <a href="../UI/registration.php">Photo and ID Scan</a>
                   </div>
                 </div>
                 <div class="card-footer">
