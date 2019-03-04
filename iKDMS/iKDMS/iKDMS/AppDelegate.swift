@@ -39,13 +39,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         devoteeListViewController3.tabBarItem.title = "Add Detail"
         //devoteeListViewController.tabBarItem.image = UIImage(named: "List")
         
-        devoteeViewController.tabBarItem.title = "Register"
+        //devoteeViewController.tabBarItem.title = "Register"
         //devoteeViewController.tabBarItem.image = UIImage(named: "Detail")
         //devoteeViewController.tabBarItem.badgeColor = UIColor.clear
         
         // Set up the Tab Bar Controller to have two tabs
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [devoteeListViewController,devoteeListViewController2,devoteeListViewController3, devoteeViewController]
+        tabBarController.viewControllers = //[devoteeListViewController,devoteeListViewController2,devoteeListViewController3, devoteeViewController]
+        [devoteeListViewController,devoteeListViewController2,devoteeListViewController3]
         
         // Make the Tab Bar Controller the root view controller
         window?.rootViewController = tabBarController

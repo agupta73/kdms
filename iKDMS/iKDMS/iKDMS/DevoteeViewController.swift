@@ -10,7 +10,7 @@ import UIKit
 import os.log
 import Foundation
 
-class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     //MARK: Properties
     //@IBOutlet weak var lblTopMessage: UILabel!
     @IBOutlet weak var txtDevoteeKey: UITextField!
@@ -29,6 +29,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet weak var btnSavePrint: UIButton!
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var btnSaveExit: UIButton!
+    
     
   
     struct AccommodationStructure: Codable {
@@ -65,6 +66,14 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     var devotee: Devotee?
+    var accoDetailValues: [String] = Array()
+    var accoIDValues: [String] = Array()
+    var devoteeIDTypeValues: [String] = Array()
+    var devoteeTypeValues: [String] = Array()
+    
+    let accoPicker = UIPickerView()
+    let idTypePicker = UIPickerView()
+    let devoteeTypePicker = UIPickerView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,6 +89,18 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         txtStation.delegate = self
         txtAccommodation.delegate = self
         txtRemarks.delegate = self
+        accoPicker.delegate = self
+        accoPicker.dataSource = self
+        idTypePicker.delegate = self
+        idTypePicker.dataSource = self
+        devoteeTypePicker.delegate = self
+        devoteeTypePicker.dataSource = self
+        
+        loadMasterData()
+        
+        txtAccommodation.inputView = self.accoPicker
+        txtIDType.inputView = self.idTypePicker
+        txtDevoteeType.inputView = self.devoteeTypePicker
         
         // Set up views if editing an existing Devotee.
         if let devotee = devotee {
@@ -92,14 +113,13 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             txtIDNumber.text = devotee.devoteeIdNumber
             txtPhoneNumber.text = devotee.devoteePhone
             txtStation.text = devotee.devoteeStation
-            txtAccommodation.text = devotee.devoteeAccoId
+            txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
             txtRemarks.text = devotee.devoteeRemarks
             DevoteePhoto.image = devotee.devoteePhoto
             devoteeIDImage.image = devotee.devoteeIdImage
         }
         
         
-        loadMasterData()
         //updateSaveButtonState()
     }
 
@@ -108,6 +128,56 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         // Dispose of any resources that can be recreated.
     }
 
+    //MARK: Picker Control Delegates
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView == accoPicker {
+            return accoDetailValues.count
+        }
+        else if pickerView == idTypePicker {
+            return devoteeIDTypeValues.count
+        }
+        else if pickerView == devoteeTypePicker {
+            return devoteeTypeValues.count
+        }
+        else {
+            return 1
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView == accoPicker {
+            return accoDetailValues[row]
+        }
+        else if pickerView == idTypePicker {
+            return devoteeIDTypeValues[row]
+        }
+        else if pickerView == devoteeTypePicker {
+            return devoteeTypeValues[row]
+        }
+        else {
+            return ""
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
+        if pickerView == accoPicker {
+            txtAccommodation.text = accoDetailValues[row]
+            self.view.endEditing(true)
+        }
+        else if pickerView == idTypePicker {
+        txtIDType.text = devoteeIDTypeValues[row]
+        self.view.endEditing(true)
+    }
+        else if pickerView == devoteeTypePicker {
+            txtDevoteeType.text = devoteeTypeValues[row]
+            self.view.endEditing(true)
+        }
+    }
+    
     //MARK: Text Field Delegates
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -129,6 +199,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         btnSavePrint.isEnabled = false
         btnSave.isEnabled=false
         btnSaveExit.isEnabled=false */
+//        pickerDevoteeType.isHidden = false
     }
     
     //MARK: Navigation
@@ -226,8 +297,37 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         loadDevoteeRecord()
         loadAccommodations()
         
+        //Load deveotee ID Types
+        devoteeIDTypeValues.append("none")
+        devoteeIDTypeValues.append("Adhaar")
+        devoteeIDTypeValues.append("DL")
+        devoteeIDTypeValues.append("Other")
+        devoteeIDTypeValues.append("PAN")
+        devoteeIDTypeValues.append("Passport")
+        devoteeIDTypeValues.append("Voter ID")
+        
+        //Load deveotee Types
+        devoteeTypeValues.append("P")
+        devoteeTypeValues.append("T")
     }
     
+    private func getAccommodationValuefromKey(passedKey: String) -> String {
+        for i in 0..<self.accoIDValues.count {
+            if self.accoIDValues[i] == passedKey {
+                    return self.accoDetailValues[i]
+            }
+        }
+        return ""
+    }
+    
+    private func getAccommodationKeyfromValue(passedValue: String) -> String {
+        for i in 0..<self.accoDetailValues.count {
+            if self.accoDetailValues[i] == passedValue {
+                return self.accoIDValues[i]
+            }
+        }
+        return ""
+    }
     private func loadAccommodations() {
         let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
         guard let url = URL(string: urlString) else { return }
@@ -245,9 +345,11 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
                 
                 //Get back to the main queue
                 DispatchQueue.main.async {
-                    //print(parsedData[1])
-                    //self.Accmmodation = articlesData
-                    //self.collectionView?.reloadData()
+                    
+                    for i in 0..<parsedData.count {
+                        self.accoDetailValues.append(parsedData[i].Accomodation_Name + " - " + parsedData[i].Available_Count)
+                        self.accoIDValues.append(parsedData[i].accomodation_key)
+                    }
                 }
                 
             } catch let jsonError {
@@ -320,7 +422,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         postData.append("&devotee_remarks=".data(using: String.Encoding.utf8)!)
         postData.append((txtRemarks.text?.data(using: String.Encoding.utf8)!)!)
         postData.append("&devotee_accommodation_id=".data(using: String.Encoding.utf8)!)
-        postData.append((txtAccommodation.text?.data(using: String.Encoding.utf8)!)!)
+        postData.append((getAccommodationKeyfromValue(passedValue: txtAccommodation.text!).data(using: String.Encoding.utf8)!))
         postData.append("&devotee_key=".data(using: String.Encoding.utf8)!)
         postData.append((txtDevoteeKey.text?.data(using: String.Encoding.utf8)!)!)
         postData.append("&requestType=upsertDevotee".data(using: String.Encoding.utf8)!)
