@@ -1,0 +1,6 @@
+framework module Pods_iKDMSTests {
+  umbrella header "Pods-iKDMSTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

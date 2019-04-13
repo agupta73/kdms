@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20A75A9622388FB60AE13FAA /* Pods_iKDMS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CD94EC8FE360AA6D0590AF8 /* Pods_iKDMS.framework */; };
 		262171CD21F9903700EBBAF9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262171CC21F9903700EBBAF9 /* AppDelegate.swift */; };
 		262171CF21F9903700EBBAF9 /* DevoteeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262171CE21F9903700EBBAF9 /* DevoteeViewController.swift */; };
 		262171D221F9903700EBBAF9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 262171D021F9903700EBBAF9 /* Main.storyboard */; };
@@ -20,6 +21,8 @@
 		26DA592421FBD272001A6030 /* DevoteeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */; };
 		26DA592621FBDE5E001A6030 /* DevoteeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */; };
 		26DA592821FFF5BE001A6030 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592721FFF5BE001A6030 /* SwiftyJSON.swift */; };
+		7449D97FA79F030E74E62391 /* Pods_iKDMSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A9428C121EB4EDD81BF93DA /* Pods_iKDMSUITests.framework */; };
+		DA8F9B67391C097437DF22AD /* Pods_iKDMSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07158B42567FFE67F841A8A3 /* Pods_iKDMSTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +56,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0336542EDCA170043EC47C43 /* Pods-iKDMSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMSTests.release.xcconfig"; path = "Target Support Files/Pods-iKDMSTests/Pods-iKDMSTests.release.xcconfig"; sourceTree = "<group>"; };
+		07158B42567FFE67F841A8A3 /* Pods_iKDMSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iKDMSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		12516B41E520B3531F83C4D0 /* Pods-iKDMSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMSTests.debug.xcconfig"; path = "Target Support Files/Pods-iKDMSTests/Pods-iKDMSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		262171C921F9903700EBBAF9 /* iKDMS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iKDMS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		262171CC21F9903700EBBAF9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		262171CE21F9903700EBBAF9 /* DevoteeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeViewController.swift; sourceTree = "<group>"; };
@@ -72,6 +78,12 @@
 		26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeTableViewCell.swift; sourceTree = "<group>"; };
 		26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeTableViewController.swift; sourceTree = "<group>"; };
 		26DA592721FFF5BE001A6030 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		5CD94EC8FE360AA6D0590AF8 /* Pods_iKDMS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iKDMS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F12D2245765D193DDD56CF2 /* Pods-iKDMSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMSUITests.debug.xcconfig"; path = "Target Support Files/Pods-iKDMSUITests/Pods-iKDMSUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		92082035BBA2DC72EA21957C /* Pods-iKDMS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMS.release.xcconfig"; path = "Target Support Files/Pods-iKDMS/Pods-iKDMS.release.xcconfig"; sourceTree = "<group>"; };
+		9A9428C121EB4EDD81BF93DA /* Pods_iKDMSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iKDMSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFB1D1017DF823A697064940 /* Pods-iKDMS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMS.debug.xcconfig"; path = "Target Support Files/Pods-iKDMS/Pods-iKDMS.debug.xcconfig"; sourceTree = "<group>"; };
+		E55DA60F806A7D2EE4FD90EB /* Pods-iKDMSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iKDMSUITests.release.xcconfig"; path = "Target Support Files/Pods-iKDMSUITests/Pods-iKDMSUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20A75A9622388FB60AE13FAA /* Pods_iKDMS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA8F9B67391C097437DF22AD /* Pods_iKDMSTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7449D97FA79F030E74E62391 /* Pods_iKDMSUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +121,8 @@
 				262171E321F9903700EBBAF9 /* iKDMSTests */,
 				262171EE21F9903700EBBAF9 /* iKDMSUITests */,
 				262171CA21F9903700EBBAF9 /* Products */,
+				DC7B0C99DF2C92BF140D64F7 /* Pods */,
+				55DB7EC4B9AC0C883F22AC14 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -156,6 +173,30 @@
 			path = iKDMSUITests;
 			sourceTree = "<group>";
 		};
+		55DB7EC4B9AC0C883F22AC14 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5CD94EC8FE360AA6D0590AF8 /* Pods_iKDMS.framework */,
+				07158B42567FFE67F841A8A3 /* Pods_iKDMSTests.framework */,
+				9A9428C121EB4EDD81BF93DA /* Pods_iKDMSUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC7B0C99DF2C92BF140D64F7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				CFB1D1017DF823A697064940 /* Pods-iKDMS.debug.xcconfig */,
+				92082035BBA2DC72EA21957C /* Pods-iKDMS.release.xcconfig */,
+				12516B41E520B3531F83C4D0 /* Pods-iKDMSTests.debug.xcconfig */,
+				0336542EDCA170043EC47C43 /* Pods-iKDMSTests.release.xcconfig */,
+				6F12D2245765D193DDD56CF2 /* Pods-iKDMSUITests.debug.xcconfig */,
+				E55DA60F806A7D2EE4FD90EB /* Pods-iKDMSUITests.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -163,10 +204,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 262171F421F9903700EBBAF9 /* Build configuration list for PBXNativeTarget "iKDMS" */;
 			buildPhases = (
+				B9A9FD5943F7019E6DFE5EF6 /* [CP] Check Pods Manifest.lock */,
 				262171C521F9903700EBBAF9 /* Sources */,
 				262171C621F9903700EBBAF9 /* Frameworks */,
 				262171C721F9903700EBBAF9 /* Resources */,
 				265022B2221E46E0004897DF /* Embed Frameworks */,
+				082BB051AAC4B39B45D21463 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -181,6 +224,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 262171F721F9903700EBBAF9 /* Build configuration list for PBXNativeTarget "iKDMSTests" */;
 			buildPhases = (
+				8064094B05C6627F99F5D986 /* [CP] Check Pods Manifest.lock */,
 				262171DC21F9903700EBBAF9 /* Sources */,
 				262171DD21F9903700EBBAF9 /* Frameworks */,
 				262171DE21F9903700EBBAF9 /* Resources */,
@@ -199,6 +243,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 262171FA21F9903700EBBAF9 /* Build configuration list for PBXNativeTarget "iKDMSUITests" */;
 			buildPhases = (
+				ACBEA706431349C9DAF3CC9B /* [CP] Check Pods Manifest.lock */,
 				262171E721F9903700EBBAF9 /* Sources */,
 				262171E821F9903700EBBAF9 /* Frameworks */,
 				262171E921F9903700EBBAF9 /* Resources */,
@@ -285,6 +330,97 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		082BB051AAC4B39B45D21463 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iKDMS/Pods-iKDMS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iKDMS/Pods-iKDMS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8064094B05C6627F99F5D986 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iKDMSTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		ACBEA706431349C9DAF3CC9B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iKDMSUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B9A9FD5943F7019E6DFE5EF6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iKDMS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		262171C521F9903700EBBAF9 /* Sources */ = {
@@ -462,6 +598,7 @@
 		};
 		262171F521F9903700EBBAF9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFB1D1017DF823A697064940 /* Pods-iKDMS.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -478,6 +615,7 @@
 		};
 		262171F621F9903700EBBAF9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92082035BBA2DC72EA21957C /* Pods-iKDMS.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -494,6 +632,7 @@
 		};
 		262171F821F9903700EBBAF9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12516B41E520B3531F83C4D0 /* Pods-iKDMSTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -511,6 +650,7 @@
 		};
 		262171F921F9903700EBBAF9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0336542EDCA170043EC47C43 /* Pods-iKDMSTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -528,6 +668,7 @@
 		};
 		262171FB21F9903700EBBAF9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F12D2245765D193DDD56CF2 /* Pods-iKDMSUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -544,6 +685,7 @@
 		};
 		262171FC21F9903700EBBAF9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E55DA60F806A7D2EE4FD90EB /* Pods-iKDMSUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

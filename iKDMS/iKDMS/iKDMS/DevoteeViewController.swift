@@ -9,6 +9,7 @@
 import UIKit
 import os.log
 import Foundation
+import Alamofire
 
 class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     //MARK: Properties
@@ -62,7 +63,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         var Photo_type: String?
         var Devotee_Photo: String?
         var Accomodation_Key: String
-        
     }
     
     var devotee: Devotee?
@@ -241,6 +241,38 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         btnSavePrint.isEnabled = !text.isEmpty
     }
     
+    private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
+        if(passedDevotee.devoteeKey != "") {
+            Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+                //print("Request: \(String(describing: response.request))")   // original url request
+                //print("Response: \(String(describing: response.response))") // http url response
+                //print("Result: \(response.result)")                         // response serialization result
+                
+                if let json = response.result.value {
+                    let parsedData = json as! NSDictionary
+                    //print("JSON: \(json)") // serialized json response
+                    //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
+                    passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
+                    passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
+                    passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
+                    passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
+                    passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
+                    passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
+                    passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
+                    passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
+                    passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
+                }
+                
+                /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                 print("Data: \(utf8Text)") // original server data as UTF8 string
+                 }*/
+            }
+            
+        }
+        return passedDevotee
+    }
+    
+    
     //MARK: Action
     
     @IBAction func PhotoClicked(_ sender: UITapGestureRecognizer) {
@@ -401,7 +433,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     func saveDevotee(toPrintCard: Bool) {
         let headers = ["Content-Type": "application/x-www-form-urlencoded"]
         let postData = NSMutableData(data: "devotee_type=".data(using: String.Encoding.utf8)!)
-        
         postData.append((txtDevoteeType.text?.data(using: String.Encoding.utf8)!)!)
         postData.append("&devotee_first_name=".data(using: String.Encoding.utf8)!)
         postData.append((txtFirstName.text?.data(using: String.Encoding.utf8)!)!)

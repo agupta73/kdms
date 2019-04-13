@@ -8,7 +8,7 @@
 
   $devotee = new Devotee($db);
   $requestData = $_POST;
-  
+  //echo json_encode($requestData); die;
   $res = array();
   $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData);
   

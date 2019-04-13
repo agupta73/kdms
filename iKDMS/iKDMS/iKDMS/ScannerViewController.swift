@@ -25,7 +25,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         
        
         
-        /* Alamofire.Request("https://httpbin.org/get").responseJSON { response in
+         /* Alamofire.request("https://httpbin.org/get").responseJSON { response in
             print("Request: \(String(describing: response.request))")   // original url request
             print("Response: \(String(describing: response.response))") // http url response
             print("Result: \(response.result)")                         // response serialization result
@@ -38,7 +38,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
                 print("Data: \(utf8Text)") // original server data as UTF8 string
             }
         }
-        */
+ */
         //view.backgroundColor = UIColor.black
         captureSession = AVCaptureSession()
         

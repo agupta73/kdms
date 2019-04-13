@@ -8,6 +8,7 @@
 
 import UIKit
 import os.log
+import Alamofire
 
 class DevoteeTableViewController: UITableViewController {
     
@@ -24,6 +25,28 @@ class DevoteeTableViewController: UITableViewController {
         var Devotee_ID_Image: String?
         var Devotee_Photo: String?
     }
+    struct DevoteeDetailedStructure: Codable {
+        var Devotee_Key: String
+        var Devotee_Type: String?
+        var Devotee_First_Name: String?
+        var Devotee_Last_Name: String?
+        var Devotee_Gender: String?
+        var Devotee_ID_Type: String?
+        var Devotee_ID_Number: String?
+        var Devotee_Station: String?
+        var Devotee_Cell_Phone_Number: String?
+        var Devotee_Status: String?
+        var Devotee_Remarks: String?
+        var Devotee_Record_Update_Date_Time: String?
+        var Devotee_Record_Updated_By: String?
+        var Devotee_ID_Image: String?
+        var Devotee_ID_XML: String?
+        var DID_Devotee_ID_Type: String?
+        var Photo_type: String?
+        var Devotee_Photo: String?
+        var Accomodation_Key: String
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,11 +114,11 @@ class DevoteeTableViewController: UITableViewController {
         // Fetches the appropriate meal for the data source layout.
         let devotee = devotees[indexPath.row]
         
-        cell.lblName.text = devotee.firstName! + " " + devotee.lastName!
+        cell.lblName.text = (devotee.firstName ?? "" + " ")// + devotee.lastName ?? "" ?? "") ?? ""
         cell.imagePhoto.image = devotee.devoteePhoto
-        cell.lblStation.text = devotee.devoteeStation!
-        cell.lblDevoteeKey.text = devotee.devoteeKey
-        cell.lblAccommodation.text = devotee.devoteeAccoId!
+        cell.lblStation.text = devotee.devoteeStation ?? ""
+        cell.lblDevoteeKey.text = devotee.devoteeKey ?? ""
+        cell.lblAccommodation.text = devotee.devoteeAccoId ?? ""
         
         return cell
     }
@@ -162,8 +185,10 @@ class DevoteeTableViewController: UITableViewController {
                 fatalError("The selected cell is not being displayed by the table")
             }
             
-            let selectedDevotee = devotees[indexPath.row]
-            devoteeDetailViewController.devotee = selectedDevotee
+            //let selectedDevotee = devotees[indexPath.row]
+            //let updatedDevotee = loadDevoteeRecordDetail(passedDevotee: selectedDevotee)
+            devoteeDetailViewController.devotee = devotees[indexPath.row] // updatedDevotee
+            //print(devoteeDetailViewController.devotee?.devoteeAccoId)
         default:
             fatalError("Unexpected Segue Identifier; \(String(describing: segue.identifier))")
         }
@@ -195,23 +220,59 @@ class DevoteeTableViewController: UITableViewController {
         
     }
     
-     /* @objc func Refresh(sender:AnyObject) {
-        LoadDevoteeRecords()
-    }*/
+   
+    @objc private func LoadDevoteeRecords()  {
+        devotees.removeAll()
+        var urlString: String
+        switch selectedTabIndex {
+        case 0:
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+        case 1:
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
+        case 2:
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
+        default:
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+        }
+        
+        Alamofire.request(urlString).responseJSON { response in
+            if let json = response.result.value {
+                let parsedData = json as! NSArray
+                
+                for id in parsedData {
+                    let parsedDevotee = id as! NSDictionary
+                    self.devotees.append(Devotee(firstName: parsedDevotee.object(forKey: "devotee_first_name") as? String,
+                                                 lastName: parsedDevotee.object(forKey: "devotee_last_name") as? String,
+                                                 devoteeKey: (parsedDevotee.object(forKey: "devotee_key")  as? String)!,
+                                                 devoteeType: parsedDevotee.object(forKey: "Devotee_Type") as? String,
+                                                 devoteeIdType: parsedDevotee.object(forKey: "Devotee_ID_Type") as? String,
+                                                 devoteeIdNumber: parsedDevotee.object(forKey: "Devotee_ID_Number") as? String,
+                                                 devoteeStation: parsedDevotee.object(forKey: "Devotee_Station")  as? String,
+                                                 devoteePhone: parsedDevotee.object(forKey: "Devotee_Cell_Phone_Number")  as? String,
+                                                 devoteeRemarks: parsedDevotee.object(forKey: "Devotee_Remarks")  as? String,
+                                                 devoteeAccoId: parsedDevotee.object(forKey: "Accomodation_Key")  as? String,
+                                                 devoteePhoto: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_Photo")  as? String) ?? ""),
+                                                 devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))!)
+                    self.tableView.reloadData()
+                }
+            }
+        }
+        self.refreshControl?.endRefreshing()
+    }
     
-    @objc private func LoadDevoteeRecords() {
+     private func LoadDevoteeRecords_Old() {
         
         devotees.removeAll()
         var urlString: String
         switch selectedTabIndex {
         case 0:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
         case 1:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=DWP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
         case 2:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=PWD"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
         default:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=SET&key=CTP"
+           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
         }
         
         guard let url = URL(string: urlString) else { return }
@@ -270,4 +331,85 @@ class DevoteeTableViewController: UITableViewController {
             }
         }*/
     }
+    
+    //MARK: Commented code
+    /* @objc func Refresh(sender:AnyObject) {
+     LoadDevoteeRecords()
+     }
+     
+     private func loadDevoteeRecordDetail_Old(devotee: Devotee) -> Devotee {
+     if(devotee.devoteeKey != "") {
+     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + devotee.devoteeKey!
+     //print(urlString)
+     guard let url = URL(string: urlString) else { return devotee }
+     let sem = DispatchSemaphore(value: 0)
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode(DevoteeDetailedStructure.self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     //self.txtDevoteeKey.text = parsedData.Devotee_Key
+     devotee.devoteeRemarks = parsedData.Devotee_Remarks
+     devotee.firstName = parsedData.Devotee_First_Name
+     devotee.lastName = parsedData.Devotee_Last_Name
+     devotee.devoteeType = parsedData.Devotee_Type
+     devotee.devoteeIdType = parsedData.Devotee_ID_Type
+     devotee.devoteeIdNumber = parsedData.Devotee_ID_Number
+     devotee.devoteePhone = parsedData.Devotee_Cell_Phone_Number
+     devotee.devoteeStation = parsedData.Devotee_Station
+     devotee.devoteeAccoId = parsedData.Accomodation_Key
+     
+     
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     sem.wait()
+     //DispatchSemaphore.wait(sem, DISPATCH_TIME_FOREVER)
+     
+     }
+     return devotee
+     }
+     
+     private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
+     if(passedDevotee.devoteeKey != "") {
+     Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+     //print("Request: \(String(describing: response.request))")   // original url request
+     //print("Response: \(String(describing: response.response))") // http url response
+     //print("Result: \(response.result)")                         // response serialization result
+     
+     if let json = response.result.value {
+     let parsedData = json as! NSDictionary
+     //print("JSON: \(json)") // serialized json response
+     //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
+     passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
+     passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
+     passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
+     passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
+     passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
+     passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
+     passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
+     passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
+     passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
+     }
+     
+     /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+     print("Data: \(utf8Text)") // original server data as UTF8 string
+     }*/
+     }
+     
+     }
+     return passedDevotee
+     }
+     */
 }

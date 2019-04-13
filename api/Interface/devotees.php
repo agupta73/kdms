@@ -26,6 +26,10 @@ Class Devotee {
                             return $this->searchDevotee($requestData['key']);
                     break;
                        
+                    case "iSET": //set query, like devotee without photo
+                            return $this->iSearchDevotee($requestData['key']);
+                    break;
+                
                     case "PCD": //Print Queue 
                             return $this->getDevoteeDetailsForPrint($requestData['key']);
                     break;
@@ -119,6 +123,101 @@ Class Devotee {
         $query = "select " .
                     "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
                     ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", did.Devotee_ID_Image " .
+                    ", dp.Devotee_Photo ".
+                 "from " .
+                    " Devotee d ".
+                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
+                
+        switch ($requestData){
+            case "PWD": //Photo without Devotee Details                   
+                $query = $query . 
+                            " WHERE  " .
+                                " (d.Devotee_First_Name is null OR d.Devotee_Last_Name is null)  " .
+                              "AND  " .
+                                "(did.Devotee_ID_Image is not null OR dp.Devotee_Photo is not null)  " .
+                                "ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                    
+                break;
+
+            case "DWP": //Devotee records without Photo or ID
+                $query = $query . 
+                            " WHERE " .
+                                "(d.Devotee_First_Name is not null OR d.Devotee_Last_Name is NOT null)  " .
+                              "AND  " .
+                                "(did.Devotee_ID_Image is null OR dp.Devotee_Photo is  null)  " .
+                                "ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                break;
+            
+            case "CTP": //Card print queue
+                $query = $query .
+                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                
+                break;
+            
+//            case "PCD": //Print Cards
+//                $query = $query .
+//                            " LEFT OUTER JOIN accommodation_master acm on da.accomodation_key = acm.accomodation_key "
+//                          . " WHERE d.devotee_key in (" . $requestData . ")  ORDER BY d.Devotee_Record_update_date_time Desc";
+//                
+//                break;
+                
+            default : //Search based on user supplied search criteria
+                $query = $query .
+                            " WHERE " . $this->prepareSearchClause($requestData) . " ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50"; 
+                break;
+        }
+        
+        //var_dump($query);die;
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeSearchResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            $devoteeSearchResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);
+        if($i==0){
+            $devoteeSearchResult['status'] = false;
+            $devoteeSearchResult['message'] = "No record found!";
+            $devoteeSearchResult['info'] = $results;
+        }
+        
+        return $devoteeSearchResult;
+    }
+    
+    private function iSearchDevotee($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($requestData)) {
+            $errormsg .= "Set key is missing.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+       
+        $query = "select " .
+                    "d.devotee_key, d.devotee_first_name, ' ', d.devotee_last_name " .
+                    ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_type, d.devotee_id_type " .
+                    ", d.devotee_id_number, d.devotee_status, d.devotee_remarks " .
+                    ", da.accomodation_key " .
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
                  "from " .

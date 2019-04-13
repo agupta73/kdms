@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Alamofire
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-       
+        //Alamofire.request(<#T##url: URLConvertible##URLConvertible#>)
         // create UIWindow with the same size as main screen
         //window = UIWindow(frame: UIScreen.mainScreen().bounds)
         window = UIWindow(frame: UIScreen.main.bounds)
