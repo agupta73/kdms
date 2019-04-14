@@ -98,26 +98,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         loadMasterData()
         
-        txtAccommodation.inputView = self.accoPicker
-        txtIDType.inputView = self.idTypePicker
-        txtDevoteeType.inputView = self.devoteeTypePicker
-        
-        // Set up views if editing an existing Devotee.
-        if let devotee = devotee {
-            navigationItem.title = devotee.firstName! + " " + devotee.lastName!
-            txtFirstName.text = devotee.firstName
-            txtDevoteeKey.text = devotee.devoteeKey
-            txtLastName.text = devotee.lastName
-            txtDevoteeType.text = devotee.devoteeType
-            txtIDType.text = devotee.devoteeIdType
-            txtIDNumber.text = devotee.devoteeIdNumber
-            txtPhoneNumber.text = devotee.devoteePhone
-            txtStation.text = devotee.devoteeStation
-            txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
-            txtRemarks.text = devotee.devoteeRemarks
-            DevoteePhoto.image = devotee.devoteePhoto
-            devoteeIDImage.image = devotee.devoteeIdImage
-        }
+       
         
         
         //updateSaveButtonState()
@@ -240,38 +221,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         btnSave.isEnabled = !text.isEmpty
         btnSavePrint.isEnabled = !text.isEmpty
     }
-    
-    private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
-        if(passedDevotee.devoteeKey != "") {
-            Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
-                //print("Request: \(String(describing: response.request))")   // original url request
-                //print("Response: \(String(describing: response.response))") // http url response
-                //print("Result: \(response.result)")                         // response serialization result
-                
-                if let json = response.result.value {
-                    let parsedData = json as! NSDictionary
-                    //print("JSON: \(json)") // serialized json response
-                    //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
-                    passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
-                    passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
-                    passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
-                    passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
-                    passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
-                    passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
-                    passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
-                    passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
-                    passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
-                }
-                
-                /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                 print("Data: \(utf8Text)") // original server data as UTF8 string
-                 }*/
-            }
-            
-        }
-        return passedDevotee
-    }
-    
+  
     
     //MARK: Action
     
@@ -326,8 +276,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     
     private func loadMasterData() {
-        loadDevoteeRecord()
-        loadAccommodations()
         
         //Load deveotee ID Types
         devoteeIDTypeValues.append("none")
@@ -338,10 +286,60 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         devoteeIDTypeValues.append("Passport")
         devoteeIDTypeValues.append("Voter ID")
         
+        txtIDType.inputView = self.idTypePicker
+        
         //Load deveotee Types
         devoteeTypeValues.append("P")
         devoteeTypeValues.append("T")
+        txtDevoteeType.inputView = self.devoteeTypePicker
+        
+        loadAccommodations(completion: {
+            self.txtAccommodation.inputView = self.accoPicker
+            self.loadDevoteeRecord()
+        })
     }
+    private func loadAccommodations(completion: @escaping () -> ()) {
+        
+        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+        
+        Alamofire.request(urlString).responseJSON { response in
+            if let json = response.result.value {
+                let parsedData = json as! NSArray
+                
+                for id in parsedData {
+                    let parsedAcco = id as! NSDictionary
+                    var accoName = parsedAcco.object(forKey: "Accomodation_Name")  as? String ?? ""
+                    let accoAvail = parsedAcco.object(forKey: "Available_Count")  as? String ?? ""
+                    accoName = accoName.replacingOccurrences(of: "+", with: " ")
+                    self.accoDetailValues.append(accoName + " - " + accoAvail)
+                    self.accoIDValues.append(parsedAcco.object(forKey: "accomodation_key")  as? String ?? ""  )
+                }
+                
+            }
+            completion()
+        }
+    }
+    
+    private func loadDevoteeRecord() {
+        if let devotee = devotee {
+            navigationItem.title = devotee.firstName! + " " + devotee.lastName!
+            txtFirstName.text = devotee.firstName
+            txtDevoteeKey.text = devotee.devoteeKey
+            txtLastName.text = devotee.lastName
+            txtDevoteeType.text = devotee.devoteeType
+            txtIDType.text = devotee.devoteeIdType
+            txtIDNumber.text = devotee.devoteeIdNumber
+            txtPhoneNumber.text = devotee.devoteePhone
+            txtStation.text = devotee.devoteeStation
+            if devotee.devoteeAccoId != nil {
+                txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
+            }
+            txtRemarks.text = devotee.devoteeRemarks
+            DevoteePhoto.image = devotee.devoteePhoto
+            devoteeIDImage.image = devotee.devoteeIdImage
+        }
+    }
+    
     
     private func getAccommodationValuefromKey(passedKey: String) -> String {
         for i in 0..<self.accoIDValues.count {
@@ -360,75 +358,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         }
         return ""
     }
-    private func loadAccommodations() {
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
-        guard let url = URL(string: urlString) else { return }
-        
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if error != nil {
-                print(error!.localizedDescription)
-            }
-            
-            guard let data = data else { return }
-            //Implement JSON decoding and parsing
-            do {
-                //Decode retrived data with JSONDecoder and assing type of Article object
-                let parsedData = try JSONDecoder().decode([AccommodationStructure].self, from: data)
-                
-                //Get back to the main queue
-                DispatchQueue.main.async {
-                    
-                    for i in 0..<parsedData.count {
-                        self.accoDetailValues.append(parsedData[i].Accomodation_Name + " - " + parsedData[i].Available_Count)
-                        self.accoIDValues.append(parsedData[i].accomodation_key)
-                    }
-                }
-                
-            } catch let jsonError {
-                print(jsonError)
-            }
-            }.resume()
-    }
-    private func loadDevoteeRecord() {
-        if(txtDevoteeKey.text != "") {
-            let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
-            //print(urlString)
-            guard let url = URL(string: urlString) else { return }
-            
-            URLSession.shared.dataTask(with: url) { (data, response, error) in
-                if error != nil {
-                    print(error!.localizedDescription)
-                }
-                
-                guard let data = data else { return }
-                //Implement JSON decoding and parsing
-                do {
-                    //Decode retrived data with JSONDecoder and assing type of Article object
-                    let parsedData = try JSONDecoder().decode(DevoteeStructure.self, from: data)
-                    
-                    //Get back to the main queue
-                    DispatchQueue.main.async {
-                        self.txtDevoteeKey.text = parsedData.Devotee_Key
-                        self.txtRemarks.text = parsedData.Devotee_Remarks
-                        self.txtFirstName.text = parsedData.Devotee_First_Name
-                        self.txtLastName.text = parsedData.Devotee_Last_Name
-                        self.txtDevoteeType.text = parsedData.Devotee_Type
-                        self.txtIDType.text = parsedData.Devotee_ID_Type
-                        self.txtIDNumber.text = parsedData.Devotee_ID_Number
-                        self.txtPhoneNumber.text = parsedData.Devotee_Cell_Phone_Number
-                        self.txtStation.text = parsedData.Devotee_Station
-                        self.txtAccommodation.text = parsedData.Accomodation_Key
-                    }
-                    
-                } catch let jsonError {
-                    print(jsonError)
-                }
-                }.resume()
-            
-            }
-        }
-
-    
     
     func saveDevotee(toPrintCard: Bool) {
         let headers = ["Content-Type": "application/x-www-form-urlencoded"]
@@ -644,6 +573,112 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         //print(base64String as Any)
     }
+    
+    /*
+     private func loadAccommodations_old() {
+     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+     guard let url = URL(string: urlString) else { return }
+     
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode([AccommodationStructure].self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     
+     for i in 0..<parsedData.count {
+     self.accoDetailValues.append(parsedData[i].Accomodation_Name + " - " + parsedData[i].Available_Count)
+     self.accoIDValues.append(parsedData[i].accomodation_key)
+     }
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     }
+     */
+    
+    /*
+     private func loadDevoteeRecord() {
+     if(txtDevoteeKey.text != "") {
+     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+     //print(urlString)
+     guard let url = URL(string: urlString) else { return }
+     
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode(DevoteeStructure.self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     self.txtDevoteeKey.text = parsedData.Devotee_Key
+     self.txtRemarks.text = parsedData.Devotee_Remarks
+     self.txtFirstName.text = parsedData.Devotee_First_Name
+     self.txtLastName.text = parsedData.Devotee_Last_Name
+     self.txtDevoteeType.text = parsedData.Devotee_Type
+     self.txtIDType.text = parsedData.Devotee_ID_Type
+     self.txtIDNumber.text = parsedData.Devotee_ID_Number
+     self.txtPhoneNumber.text = parsedData.Devotee_Cell_Phone_Number
+     self.txtStation.text = parsedData.Devotee_Station
+     self.txtAccommodation.text = parsedData.Accomodation_Key
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     
+     }
+     }
+     */
+
+    /*
+     private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
+     if(passedDevotee.devoteeKey != "") {
+     Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+     //print("Request: \(String(describing: response.request))")   // original url request
+     //print("Response: \(String(describing: response.response))") // http url response
+     //print("Result: \(response.result)")                         // response serialization result
+     
+     if let json = response.result.value {
+     let parsedData = json as! NSDictionary
+     //print("JSON: \(json)") // serialized json response
+     //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
+     passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
+     passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
+     passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
+     passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
+     passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
+     passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
+     passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
+     passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
+     passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
+     }
+     
+     /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+     print("Data: \(utf8Text)") // original server data as UTF8 string
+     }*/
+     }
+     
+     }
+     return passedDevotee
+     }
+     */
 }
 
 

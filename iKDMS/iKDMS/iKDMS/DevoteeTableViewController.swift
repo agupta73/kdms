@@ -17,54 +17,40 @@ class DevoteeTableViewController: UITableViewController {
     var devotees = [Devotee]()
     var selectedTabIndex: Int = 0
     
-    struct DevoteeStructure: Codable {
-        var devotee_key: String
-        var Devotee_Name: String?
-        var devotee_station: String?
-        var devotee_cell_phone_number: String?
-        var Devotee_ID_Image: String?
-        var Devotee_Photo: String?
-    }
-    struct DevoteeDetailedStructure: Codable {
-        var Devotee_Key: String
-        var Devotee_Type: String?
-        var Devotee_First_Name: String?
-        var Devotee_Last_Name: String?
-        var Devotee_Gender: String?
-        var Devotee_ID_Type: String?
-        var Devotee_ID_Number: String?
-        var Devotee_Station: String?
-        var Devotee_Cell_Phone_Number: String?
-        var Devotee_Status: String?
-        var Devotee_Remarks: String?
-        var Devotee_Record_Update_Date_Time: String?
-        var Devotee_Record_Updated_By: String?
-        var Devotee_ID_Image: String?
-        var Devotee_ID_XML: String?
-        var DID_Devotee_ID_Type: String?
-        var Photo_type: String?
-        var Devotee_Photo: String?
-        var Accomodation_Key: String
-    }
+//    struct DevoteeStructure: Codable {
+//        var devotee_key: String
+//        var Devotee_Name: String?
+//        var devotee_station: String?
+//        var devotee_cell_phone_number: String?
+//        var Devotee_ID_Image: String?
+//        var Devotee_Photo: String?
+//    }
+//    struct DevoteeDetailedStructure: Codable {
+//        var Devotee_Key: String
+//        var Devotee_Type: String?
+//        var Devotee_First_Name: String?
+//        var Devotee_Last_Name: String?
+//        var Devotee_Gender: String?
+//        var Devotee_ID_Type: String?
+//        var Devotee_ID_Number: String?
+//        var Devotee_Station: String?
+//        var Devotee_Cell_Phone_Number: String?
+//        var Devotee_Status: String?
+//        var Devotee_Remarks: String?
+//        var Devotee_Record_Update_Date_Time: String?
+//        var Devotee_Record_Updated_By: String?
+//        var Devotee_ID_Image: String?
+//        var Devotee_ID_XML: String?
+//        var DID_Devotee_ID_Type: String?
+//        var Photo_type: String?
+//        var Devotee_Photo: String?
+//        var Accomodation_Key: String
+//    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.refreshControl?.addTarget(self, action: #selector(DevoteeTableViewController.LoadDevoteeRecords), for: UIControlEvents.valueChanged)
-        // Use the edit button item provided by the table view controller.
-        //navigationItem.leftBarButtonItem = editButtonItem
-        //navigationItem.leftBarButtonItem?.title = "Print Card"
-        
-       
-        //LoadSampleDevoteeRecords()
-        
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -122,16 +108,6 @@ class DevoteeTableViewController: UITableViewController {
         
         return cell
     }
-    
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
     
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -196,31 +172,7 @@ class DevoteeTableViewController: UITableViewController {
     
     
     //MARK: Private methods
-    private func LoadSampleDevoteeRecords(){
-        let photo1 = UIImage(named:"Devotee1")
-        let photo2 = UIImage(named:"Devotee2")
-        let photo3 = UIImage(named:"Devotee3")
-        let image1 = UIImage(named:"ID1")
-        let image2 = UIImage(named:"ID2")
-        let image3 = UIImage(named:"ID3")
-        
-        guard let devotee1 = Devotee(firstName: "firstName1", lastName: "lastName1", devoteeKey: "P18111759", devoteeType: "devoteeType1", devoteeIdType: "devoteeIdType", devoteeIdNumber: "devoteeIdNumber1",  devoteeStation: "devoteeStation1", devoteePhone: "devoteePhone1", devoteeRemarks: "devoteeRemarks", devoteeAccoId: "devoteeAccoID", devoteePhoto: photo1, devoteeIdImage:image1) else {
-            fatalError("Unable to instantiate devotee 1")
-        }
-        
-        guard let devotee2 = Devotee(firstName: "firstName2", lastName: "lastName2", devoteeKey: "P181120237", devoteeType: "devoteeType2", devoteeIdType: "devoteeIdType2", devoteeIdNumber: "devoteeIdNumber2",  devoteeStation: "devoteeStation2", devoteePhone: "devoteePhone2", devoteeRemarks: "devoteeRemarks2", devoteeAccoId: "devoteeAccoID2", devoteePhoto: photo2, devoteeIdImage:image2) else {
-            fatalError("Unable to instantiate devotee 2")
-        }
-        
-        guard let devotee3 = Devotee(firstName: "firstName3", lastName: "lastName3", devoteeKey: "P181029893", devoteeType: "devoteeType3", devoteeIdType: "devoteeIdType3", devoteeIdNumber: "devoteeIdNumber3",  devoteeStation: "devoteeStation3", devoteePhone: "devoteePhone3", devoteeRemarks: "devoteeRemarks3", devoteeAccoId: "devoteeAccoID3", devoteePhoto: photo3, devoteeIdImage:image3) else {
-            fatalError("Unable to instantiate devotee 3")
-        }
-        
-        devotees += [devotee1, devotee2, devotee3]
-        
-    }
-    
-   
+     
     @objc private func LoadDevoteeRecords()  {
         devotees.removeAll()
         var urlString: String
@@ -244,13 +196,13 @@ class DevoteeTableViewController: UITableViewController {
                     self.devotees.append(Devotee(firstName: parsedDevotee.object(forKey: "devotee_first_name") as? String,
                                                  lastName: parsedDevotee.object(forKey: "devotee_last_name") as? String,
                                                  devoteeKey: (parsedDevotee.object(forKey: "devotee_key")  as? String)!,
-                                                 devoteeType: parsedDevotee.object(forKey: "Devotee_Type") as? String,
-                                                 devoteeIdType: parsedDevotee.object(forKey: "Devotee_ID_Type") as? String,
-                                                 devoteeIdNumber: parsedDevotee.object(forKey: "Devotee_ID_Number") as? String,
-                                                 devoteeStation: parsedDevotee.object(forKey: "Devotee_Station")  as? String,
-                                                 devoteePhone: parsedDevotee.object(forKey: "Devotee_Cell_Phone_Number")  as? String,
-                                                 devoteeRemarks: parsedDevotee.object(forKey: "Devotee_Remarks")  as? String,
-                                                 devoteeAccoId: parsedDevotee.object(forKey: "Accomodation_Key")  as? String,
+                                                 devoteeType: parsedDevotee.object(forKey: "devotee_type") as? String,
+                                                 devoteeIdType: parsedDevotee.object(forKey: "devotee_id_type") as? String,
+                                                 devoteeIdNumber: parsedDevotee.object(forKey: "devotee_id_number") as? String,
+                                                 devoteeStation: parsedDevotee.object(forKey: "devotee_station")  as? String,
+                                                 devoteePhone: parsedDevotee.object(forKey: "devotee_cell_phone_number")  as? String,
+                                                 devoteeRemarks: parsedDevotee.object(forKey: "devotee_remarks")  as? String,
+                                                 devoteeAccoId: parsedDevotee.object(forKey: "accomodation_key")  as? String,
                                                  devoteePhoto: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_Photo")  as? String) ?? ""),
                                                  devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))!)
                     self.tableView.reloadData()
@@ -260,50 +212,7 @@ class DevoteeTableViewController: UITableViewController {
         self.refreshControl?.endRefreshing()
     }
     
-     private func LoadDevoteeRecords_Old() {
-        
-        devotees.removeAll()
-        var urlString: String
-        switch selectedTabIndex {
-        case 0:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
-        case 1:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
-        case 2:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
-        default:
-           urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
-        }
-        
-        guard let url = URL(string: urlString) else { return }
-        
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if error != nil {
-                print(error!.localizedDescription)
-            }
-            
-            guard let data = data else { return }
-            //Implement JSON decoding and parsing
-               do {
-                //Decode retrived data with JSONDecoder and assing type of Article object
-                let parsedData = try JSONDecoder().decode([DevoteeStructure].self, from: data)
-                
-                //Get back to the main queue
-                DispatchQueue.main.async {
-                    //print(parsedData)
-                    for devoteeRecord in parsedData {
-                        self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name ?? "", lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station ?? "", devoteePhone: devoteeRecord.devotee_cell_phone_number ?? "", devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo!), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image ?? ""))!)
-                    }
-                    self.tableView.reloadData()
-                }
-                
-            } catch let jsonError {
-                print(jsonError)
-            }
-            }.resume()
-        
-        self.refreshControl?.endRefreshing()
-    }
+    
     
     private func loadImage(imageData: String) -> UIImage? {
             let unencodedData = Data(base64Encoded: imageData)
@@ -410,6 +319,75 @@ class DevoteeTableViewController: UITableViewController {
      
      }
      return passedDevotee
+     }
+     
+     private func LoadSampleDevoteeRecords(){
+     let photo1 = UIImage(named:"Devotee1")
+     let photo2 = UIImage(named:"Devotee2")
+     let photo3 = UIImage(named:"Devotee3")
+     let image1 = UIImage(named:"ID1")
+     let image2 = UIImage(named:"ID2")
+     let image3 = UIImage(named:"ID3")
+     
+     guard let devotee1 = Devotee(firstName: "firstName1", lastName: "lastName1", devoteeKey: "P18111759", devoteeType: "devoteeType1", devoteeIdType: "devoteeIdType", devoteeIdNumber: "devoteeIdNumber1",  devoteeStation: "devoteeStation1", devoteePhone: "devoteePhone1", devoteeRemarks: "devoteeRemarks", devoteeAccoId: "devoteeAccoID", devoteePhoto: photo1, devoteeIdImage:image1) else {
+     fatalError("Unable to instantiate devotee 1")
+     }
+     
+     guard let devotee2 = Devotee(firstName: "firstName2", lastName: "lastName2", devoteeKey: "P181120237", devoteeType: "devoteeType2", devoteeIdType: "devoteeIdType2", devoteeIdNumber: "devoteeIdNumber2",  devoteeStation: "devoteeStation2", devoteePhone: "devoteePhone2", devoteeRemarks: "devoteeRemarks2", devoteeAccoId: "devoteeAccoID2", devoteePhoto: photo2, devoteeIdImage:image2) else {
+     fatalError("Unable to instantiate devotee 2")
+     }
+     
+     guard let devotee3 = Devotee(firstName: "firstName3", lastName: "lastName3", devoteeKey: "P181029893", devoteeType: "devoteeType3", devoteeIdType: "devoteeIdType3", devoteeIdNumber: "devoteeIdNumber3",  devoteeStation: "devoteeStation3", devoteePhone: "devoteePhone3", devoteeRemarks: "devoteeRemarks3", devoteeAccoId: "devoteeAccoID3", devoteePhoto: photo3, devoteeIdImage:image3) else {
+     fatalError("Unable to instantiate devotee 3")
+     }
+     
+     devotees += [devotee1, devotee2, devotee3]
+     
+     }
+     
+     private func LoadDevoteeRecords_Old() {
+     
+     devotees.removeAll()
+     var urlString: String
+     switch selectedTabIndex {
+     case 0:
+     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+     case 1:
+     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
+     case 2:
+     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
+     default:
+     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+     }
+     
+     guard let url = URL(string: urlString) else { return }
+     
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode([DevoteeStructure].self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     //print(parsedData)
+     for devoteeRecord in parsedData {
+     self.devotees.append(Devotee(firstName: devoteeRecord.Devotee_Name ?? "", lastName: "", devoteeKey: devoteeRecord.devotee_key, devoteeType: "", devoteeIdType: "", devoteeIdNumber: "", devoteeStation: devoteeRecord.devotee_station ?? "", devoteePhone: devoteeRecord.devotee_cell_phone_number ?? "", devoteeRemarks: "", devoteeAccoId: "", devoteePhoto: self.loadImage(imageData: devoteeRecord.Devotee_Photo!), devoteeIdImage: self.loadImage(imageData: devoteeRecord.Devotee_ID_Image ?? ""))!)
+     }
+     self.tableView.reloadData()
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     
+     self.refreshControl?.endRefreshing()
      }
      */
 }
