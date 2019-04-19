@@ -217,7 +217,7 @@ Class Devotee {
                     "d.devotee_key, d.devotee_first_name, ' ', d.devotee_last_name " .
                     ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_type, d.devotee_id_type " .
                     ", d.devotee_id_number, d.devotee_status, d.devotee_remarks " .
-                    ", da.accomodation_key " .
+                    ", da.accomodation_key, am.accomodation_name " .
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
                  "from " .
@@ -225,7 +225,9 @@ Class Devotee {
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
+                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
+                    " left outer join Accommodation_master am on da.accomodation_key=am.accomodation_key ";
+                
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
@@ -691,7 +693,7 @@ Class Devotee {
 //      
         if ($stmt->execute()) {
             $res['status'] = true;
-            $res['message'] = "";
+            $res['message'] = $stmt;
             $res['info'] = $unique_id;
         }
         else{

@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.270484"
+            timestampString = "577389089.347365"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "188"
-            endingLineNumber = "188"
+            startingLineNumber = "193"
+            endingLineNumber = "193"
             landmarkName = "prepare(for:sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.2709531"
+            timestampString = "577387845.1804349"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "225"
-            endingLineNumber = "225"
+            startingLineNumber = "228"
+            endingLineNumber = "228"
             landmarkName = "unwindToDevoteeList(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.271033"
+            timestampString = "577387845.180527"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "237"
-            endingLineNumber = "237"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
             landmarkName = "unwindToDevoteeList(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2711051"
+            timestampString = "577389089.347652"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "189"
-            endingLineNumber = "189"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
             landmarkName = "prepare(for:sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/Devotee.swift"
-            timestampString = "576823743.991779"
+            timestampString = "577387845.180926"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
             landmarkName = "init(coder:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/Devotee.swift"
-            timestampString = "576823743.9921809"
+            timestampString = "577387845.180976"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
             landmarkName = "Devotee"
             landmarkType = "3">
             <Locations>
@@ -153,11 +153,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.271446"
+            timestampString = "577389089.347999"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "190"
-            endingLineNumber = "190"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
             landmarkName = "prepare(for:sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -169,7 +169,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.271804"
+            timestampString = "577387845.1813149"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "54"
@@ -185,7 +185,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.271876"
+            timestampString = "577387845.181386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
@@ -201,11 +201,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.271945"
+            timestampString = "577387845.1814539"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "219"
-            endingLineNumber = "219"
+            startingLineNumber = "222"
+            endingLineNumber = "222"
             landmarkName = "loadImage(imageData:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -217,11 +217,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.2720129"
+            timestampString = "577387845.181519"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "229"
+            endingLineNumber = "229"
             landmarkName = "unwindToDevoteeList(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -233,11 +233,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.272081"
+            timestampString = "577389089.348304"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -249,12 +249,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.272397"
+            timestampString = "577389089.348534"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "413"
-            endingLineNumber = "413"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "477"
+            endingLineNumber = "477"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -297,12 +297,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2727081"
+            timestampString = "577389089.348768"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "426"
-            endingLineNumber = "426"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "490"
+            endingLineNumber = "490"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -313,11 +313,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.273006"
+            timestampString = "577389089.348998"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "229"
-            endingLineNumber = "229"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
             landmarkName = "PhotoClicked(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -329,11 +329,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.273315"
+            timestampString = "577389089.349306"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "Cancel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -345,11 +345,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.273604"
+            timestampString = "577389089.349643"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -361,7 +361,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.2739021"
+            timestampString = "577387845.183395"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "52"
@@ -377,7 +377,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.27399"
+            timestampString = "577387845.183465"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "147"
@@ -421,16 +421,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2740901"
+            timestampString = "577389089.3499629"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "473"
+            endingLineNumber = "473"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -441,12 +441,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.274437"
+            timestampString = "577389089.350266"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "395"
-            endingLineNumber = "395"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "459"
+            endingLineNumber = "459"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -457,7 +457,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.2747689"
+            timestampString = "577387845.184141"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "57"
@@ -473,7 +473,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.274842"
+            timestampString = "577387845.184209"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "60"
@@ -521,7 +521,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeTableViewController.swift"
-            timestampString = "576916022.274911"
+            timestampString = "577387845.1842721"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "53"
@@ -537,11 +537,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.274978"
+            timestampString = "577387845.184335"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -549,15 +549,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2750241"
+            timestampString = "577389089.350607"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "513"
-            endingLineNumber = "513"
+            startingLineNumber = "577"
+            endingLineNumber = "577"
             landmarkName = "saveDevoteePhoto(selectedImage:imageType:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -565,15 +565,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2753429"
+            timestampString = "577389089.350893"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "545"
-            endingLineNumber = "545"
+            startingLineNumber = "609"
+            endingLineNumber = "609"
             landmarkName = "saveDevoteePhoto(selectedImage:imageType:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -585,11 +585,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.275647"
+            timestampString = "577387845.184985"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -601,11 +601,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.275695"
+            timestampString = "577389089.351194"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "240"
-            endingLineNumber = "240"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
             landmarkName = "PhotoClicked(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -617,11 +617,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.276"
+            timestampString = "577387845.18533"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "found(code:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -633,11 +633,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.276044"
+            timestampString = "577387845.185396"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "parser(_:didStartElement:namespaceURI:qualifiedName:attributes:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -649,11 +649,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.276083"
+            timestampString = "577387845.185439"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "175"
-            endingLineNumber = "175"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
             landmarkName = "parser(_:didStartElement:namespaceURI:qualifiedName:attributes:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -665,11 +665,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "576916022.276121"
+            timestampString = "577387845.185479"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
             landmarkName = "parser(_:didStartElement:namespaceURI:qualifiedName:attributes:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -681,11 +681,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.27616"
+            timestampString = "577389089.351524"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "475"
-            endingLineNumber = "475"
+            startingLineNumber = "539"
+            endingLineNumber = "539"
             landmarkName = "printDevoteeCard(devoteeKey:)"
             landmarkType = "7">
             <Locations>
@@ -697,11 +697,11 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/KDMS/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "576916022.54222"
+                  timestampString = "577389089.522175"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "475"
-                  endingLineNumber = "475"
+                  startingLineNumber = "539"
+                  endingLineNumber = "539"
                   offsetFromSymbolStart = "2433">
                </Location>
                <Location
@@ -712,11 +712,11 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/KDMS/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "576916022.5440741"
+                  timestampString = "577389089.526528"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "477"
-                  endingLineNumber = "477"
+                  startingLineNumber = "541"
+                  endingLineNumber = "541"
                   offsetFromSymbolStart = "70">
                </Location>
             </Locations>
@@ -729,11 +729,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2764601"
+            timestampString = "577389089.351814"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "459"
-            endingLineNumber = "459"
+            startingLineNumber = "523"
+            endingLineNumber = "523"
             landmarkName = "printDevoteeCard(devoteeKey:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -745,12 +745,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2767611"
+            timestampString = "577389089.3520941"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "467"
+            endingLineNumber = "467"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -761,12 +761,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.277058"
+            timestampString = "577389089.352371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "428"
-            endingLineNumber = "428"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "492"
+            endingLineNumber = "492"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -777,11 +777,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.277357"
+            timestampString = "577389089.3526469"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "99"
-            endingLineNumber = "99"
+            startingLineNumber = "104"
+            endingLineNumber = "104"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -789,16 +789,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2776819"
+            timestampString = "577389089.352913"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "390"
-            endingLineNumber = "390"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "454"
+            endingLineNumber = "454"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -809,11 +809,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.278077"
+            timestampString = "577389089.353189"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "358"
-            endingLineNumber = "358"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
             landmarkName = "getAccommodationKeyfromValue(passedValue:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -825,28 +825,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.278427"
+            timestampString = "577389089.353513"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "356"
-            endingLineNumber = "356"
+            startingLineNumber = "364"
+            endingLineNumber = "364"
             landmarkName = "getAccommodationKeyfromValue(passedValue:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.278753"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "369"
-            endingLineNumber = "369"
-            landmarkName = "saveDevotee(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -857,12 +841,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/DevoteeViewController.swift"
-            timestampString = "576916022.2790641"
+            timestampString = "577389089.3538229"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "420"
-            endingLineNumber = "420"
-            landmarkName = "saveDevotee(toPrintCard:)"
+            startingLineNumber = "433"
+            endingLineNumber = "433"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iKDMS/DevoteeViewController.swift"
+            timestampString = "577389089.354112"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "484"
+            endingLineNumber = "484"
+            landmarkName = "saveDevotee_Old(toPrintCard:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

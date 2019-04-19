@@ -82,37 +82,35 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="HmP-p4-PHo">
-                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </refreshControl>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Byt-dp-XRg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="233" y="133"/>
         </scene>
-        <!--Scanner View Controller-->
+        <!--Scan ID-->
         <scene sceneID="Xd8-FP-cjc">
             <objects>
                 <viewController id="pcI-ov-Va6" customClass="ScannerViewController" customModule="iKDMS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="M6C-HO-4F2">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WqL-Ut-GAP">
-                                <rect key="frame" x="127" y="184" width="151" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <viewLayoutGuide key="safeArea" id="15f-O4-cin"/>
                     </view>
-                    <connections>
-                        <outlet property="testLabel" destination="WqL-Ut-GAP" id="Kdi-9O-z4t"/>
-                    </connections>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Scan ID" id="7iF-HG-RLz">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="PvP-T5-3d6">
+                            <connections>
+                                <action selector="Cancel:" destination="pcI-ov-Va6" id="SrY-G7-xZT"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Skip" id="uNV-fs-aYy">
+                            <connections>
+                                <segue destination="N8F-Sw-WIN" kind="show" id="Rnf-Uj-sEv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hDe-Pa-h3f" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

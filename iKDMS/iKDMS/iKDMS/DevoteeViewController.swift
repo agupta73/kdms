@@ -31,7 +31,12 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var btnSaveExit: UIButton!
     
-    
+    struct saveResponse: Codable {
+        var flag: Int?
+        var info: String?
+        var error: String?
+        
+    }
   
     struct AccommodationStructure: Codable {
         var accomodation_key: String
@@ -193,7 +198,10 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             return
         }
         
-        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "", devoteeType: txtDevoteeType.text ?? "P", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "",  devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage:devoteeIDImage.image)
+        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "", devoteeType: txtDevoteeType.text ?? "", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "", devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: getAccommodationKeyfromValue(passedValue: txtAccommodation.text ?? ""), devoteeAccoName: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage: devoteeIDImage.image)
+        
+
+        
         os_log("Devotee Object created", log: OSLog.default, type: .debug)
     }
     
@@ -359,7 +367,68 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         return ""
     }
     
-    func saveDevotee(toPrintCard: Bool) {
+    func saveDevotee(toPrintCard: Bool){
+        let accoID = getAccommodationKeyfromValue(passedValue: txtAccommodation.text ?? "")
+//        let parameters: Parameters = [
+//            "devotee_first_name": txtFirstName.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_last_name": txtLastName.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_gender": "",
+//            "devotee_id_type": txtIDType.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_id_number": txtIDNumber.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_type": txtDevoteeType.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_station": txtStation.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_cell_phone_number": txtPhoneNumber.text?.data(using: String.Encoding.utf8) ?? "",
+//            "devotee_status": "A",
+//            "devotee_remarks": txtRemarks.text?.data(using: String.Encoding.utf8) ?? "" ,
+//            "devotee_accommodation_id": accoID,
+//            "devotee_key": txtDevoteeKey.text?.data(using: String.Encoding.utf8) ?? "",
+//            "requestType": "upsertDevotee"
+//        ]
+        let parameters: Parameters = [
+            "devotee_first_name": txtFirstName.text ?? "",
+            "devotee_last_name": txtLastName.text ?? "",
+            "devotee_gender": "",
+            "devotee_id_type": txtIDType.text ?? "",
+            "devotee_id_number": txtIDNumber.text ?? "",
+            "devotee_type": txtDevoteeType.text ?? "",
+            "devotee_station": txtStation.text ?? "",
+            "devotee_cell_phone_number": txtPhoneNumber.text ?? "",
+            "devotee_status": "A",
+            "devotee_remarks": txtRemarks.text ?? "" ,
+            "devotee_accommodation_id": accoID,
+            "devotee_key": txtDevoteeKey.text ?? "",
+            "requestType": "upsertDevotee"
+        ]
+        let url = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+        self.postData(url: url, parameter: parameters,completion: { result, error in
+//            let decoder = JSONDecoder()
+            let jsonResult = result?.value as! NSDictionary
+            //let parsedResponse = decoder.decode(saveResponse, from: jsonResult)
+            print(jsonResult["message"] as Any)
+            let devoteeID = jsonResult["info"] as! String
+            if(devoteeID  != self.txtDevoteeKey.text) {
+                self.txtDevoteeKey.text = devoteeID
+            }
+        })
+    }
+    
+    func postData(url: String, parameter: [String: Any], completion:@escaping (_ responseData:Result<Any>?, _ error:Error?)->Void) {
+        
+        Alamofire.request(url, method: .post, parameters: parameter, encoding: URLEncoding.default).responseJSON { response in
+            guard response.result.isSuccess,
+                (response.result.value != nil) else {
+                    debugPrint("Error while fetching data: \(String(describing: response.result.error))")
+                    completion(nil,response.result.error)
+                    return
+            }
+            completion(response.result,nil)
+            
+        }
+        
+    }
+    
+    
+    func saveDevotee_Old(toPrintCard: Bool) {
         let headers = ["Content-Type": "application/x-www-form-urlencoded"]
         let postData = NSMutableData(data: "devotee_type=".data(using: String.Encoding.utf8)!)
         postData.append((txtDevoteeType.text?.data(using: String.Encoding.utf8)!)!)
@@ -574,6 +643,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         //print(base64String as Any)
     }
     
+    //MARK: Commented Code
     /*
      private func loadAccommodations_old() {
      let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"

@@ -15,9 +15,23 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     var previewLayer: AVCaptureVideoPreviewLayer!
     
 //    var xmlString: String
-    @IBOutlet weak var testLabel: UILabel!
+    
+    @IBAction func Cancel(_ sender: Any) {
+        let isPresentingInAddMealMode = presentingViewController is UINavigationController
+        
+        if isPresentingInAddMealMode {
+            dismiss(animated: true, completion: nil)
+        }
+        else if let owningNavigationController = navigationController{
+            owningNavigationController.popViewController(animated: true)
+        }
+        else {
+            fatalError("The ScannerControl is not inside a navigation controller.")
+        }
+    }
     
     
+  
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -169,7 +183,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         remark += ", "
         remark +=  attributeDict["pc"] ?? ""
         
-        let newDevotee = Devotee(firstName: firstName , lastName: lastName ?? "", devoteeKey: "", devoteeType: "P", devoteeIdType: IDType, devoteeIdNumber: ID ?? "", devoteeStation: location, devoteePhone: "", devoteeRemarks: remark , devoteeAccoId: "", devoteePhoto: photo1, devoteeIdImage: image1)
+        let newDevotee = Devotee(firstName: firstName , lastName: lastName , devoteeKey: "", devoteeType: "P", devoteeIdType: IDType, devoteeIdNumber: ID , devoteeStation: location, devoteePhone: "", devoteeRemarks: remark , devoteeAccoId: "", devoteeAccoName: "", devoteePhoto: photo1, devoteeIdImage: image1)
     
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)

@@ -104,7 +104,7 @@ class DevoteeTableViewController: UITableViewController {
         cell.imagePhoto.image = devotee.devoteePhoto
         cell.lblStation.text = devotee.devoteeStation ?? ""
         cell.lblDevoteeKey.text = devotee.devoteeKey ?? ""
-        cell.lblAccommodation.text = devotee.devoteeAccoId ?? ""
+        cell.lblAccommodation.text = devotee.devoteeAccoName ?? ""
         
         return cell
     }
@@ -193,6 +193,8 @@ class DevoteeTableViewController: UITableViewController {
                 
                 for id in parsedData {
                     let parsedDevotee = id as! NSDictionary
+                    var accoName = parsedDevotee.object(forKey: "accomodation_name")  as? String
+                    accoName = accoName?.replacingOccurrences(of: "+", with: " ")
                     self.devotees.append(Devotee(firstName: parsedDevotee.object(forKey: "devotee_first_name") as? String,
                                                  lastName: parsedDevotee.object(forKey: "devotee_last_name") as? String,
                                                  devoteeKey: (parsedDevotee.object(forKey: "devotee_key")  as? String)!,
@@ -203,6 +205,7 @@ class DevoteeTableViewController: UITableViewController {
                                                  devoteePhone: parsedDevotee.object(forKey: "devotee_cell_phone_number")  as? String,
                                                  devoteeRemarks: parsedDevotee.object(forKey: "devotee_remarks")  as? String,
                                                  devoteeAccoId: parsedDevotee.object(forKey: "accomodation_key")  as? String,
+                                                 devoteeAccoName: accoName,
                                                  devoteePhoto: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_Photo")  as? String) ?? ""),
                                                  devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))!)
                     self.tableView.reloadData()
