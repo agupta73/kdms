@@ -10,8 +10,10 @@ class clsDevoteeSearch {
 
     public function __construct($requestObject) {
         $this->request = $requestObject;
-        $site_setting = include_once '../site_config.php';
-        $this->url = $site_setting['api_dir'] . 'searchDevotee.php';
+        
+        // Include new config file in each page ,where we need data from configuration
+        $config_data = include("../site_config.php");
+        $this->url = $config_data['api_dir'] . 'searchDevotee.php';
     }
 
     public function getDevoteeDetails() {

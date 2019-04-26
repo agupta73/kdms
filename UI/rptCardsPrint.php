@@ -1,4 +1,6 @@
-
+<?php
+$config_data = include("../site_config.php");
+?>
 <html>
     <head>
         <title> Card Print </title>
@@ -199,7 +201,7 @@
        </div>
         <br>
         <a href = "#" onclick="printdiv()"><button >Print </button> </a>
-        <form id="printForm" action="/KDMS/Logic/requestManager.php" method="POST">
+        <form id="printForm" action="<?=$config_data['webroot'];?>Logic/requestManager.php" method="POST">
             <input type="hidden" id="requestType" value="removeFromPrintQueue">
 <!--            <input type="hidden" id="devotee_key" value=" <?php print_r($_GET); ?>">-->
             <input type="hidden" id="devotee_key" value="Devotee_Key">

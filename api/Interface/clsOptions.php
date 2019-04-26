@@ -298,7 +298,7 @@ class clsOptions {
         $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, aa.Available_Count, am.Accomodation_Capacity,
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
             FROM `Accommodation_Master` am 
-            LEFT OUTER JOIN accommodation_availability aa 
+            LEFT OUTER JOIN Accommodation_Availability aa 
             ON am.accomodation_key = aa.accomodation_key";
         
         
@@ -332,7 +332,7 @@ class clsOptions {
         $query = "SELECT am.amenity_key, am.`Amenity_Name`, am.Amenity_Status, aa.Available_Count, am.Amenity_Quantity,
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
             FROM `Amenity_Master` am 
-            LEFT OUTER JOIN amenities_availability aa 
+            LEFT OUTER JOIN Amenities_Availability aa 
             ON am.amenity_key = aa.amenity_key";
         
         
@@ -366,7 +366,7 @@ class clsOptions {
         $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, aa.Available_Count, 
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
             FROM `Accommodation_Master` am 
-            LEFT OUTER JOIN accommodation_availability aa 
+            LEFT OUTER JOIN Accommodation_Availability aa 
             ON am.accomodation_key = aa.accomodation_key 
             WHERE am.accomodation_key = '" . $accommodationKey . "'";
         
@@ -400,7 +400,7 @@ class clsOptions {
         $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, aa.Available_Count, 
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
             FROM `Amenity_Master` am 
-            LEFT OUTER JOIN amenities_availability aa 
+            LEFT OUTER JOIN Amenities_Availability aa 
             ON am.amenity_key = aa.amenity_key 
             WHERE am.amenity_key = '" . $amenityKey . "'";
         

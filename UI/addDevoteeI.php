@@ -1,3 +1,7 @@
+<?php
+// Include new config file in each page ,where we need data from configuration
+$config_data=include_once("../site_config.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,8 +11,8 @@
         </title>
         <?php
         include_once("header.php");
-        include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-        include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+        include_once("../Logic/clsDevoteeSearch.php");
+        include_once("../Logic/clsOptionHandler.php");
 
         $requestData = $_GET;
         $is_key_available=false;
@@ -125,7 +129,7 @@
 
                 if (validateInput()) {
                     $.ajax({
-                        url: '/KDMS/Logic/requestManager.php',
+                        url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
                         type: 'POST',
                         data: formData,
                         async: false,
@@ -147,13 +151,13 @@
                     //Save and stay on the record
                     if (flag == 1 && updateSuccess) {
                         alert("Devotee record updated successfully!");
-                        window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info']);
+                        window.location.assign("<?=$config_data['webroot'];?>UI/adddevoteei.php?devotee_key=" + r['info']);
                     }
                     //save and Print
                     if (flag == -1 && updateSuccess) {
 
                         $.ajax({
-                            url: '/KDMS/Logic/requestManager.php',
+                            url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
                             type: 'POST',
                             data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
                             async: false,
@@ -163,7 +167,7 @@
 
                                 if (r['flag'] == true) {
                                     alert("Devotee Record updated and card added to Print Queue!");
-                                    window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                                    window.location.assign("<?=$config_data['webroot'];?>UI/devoteeSearchResult.php?mode=SET&key=CTP");
                                 } else {
                                     alert(r['message']);
                                     updateSuccess = false;
@@ -182,7 +186,7 @@
                     //save and exit
                     if (flag == 0 && updateSuccess) {
                         alert("Devotee record updated successfully!");
-                        window.location.assign("/KDMS/UI/index.php");
+                        window.location.assign("<?=$config_data['webroot'];?>UI/index.php");
                     }
                     /*
                      document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";

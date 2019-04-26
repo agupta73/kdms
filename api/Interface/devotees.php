@@ -437,7 +437,7 @@ Class Devotee {
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
                         " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key " .
+                    " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
                     "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
                 
