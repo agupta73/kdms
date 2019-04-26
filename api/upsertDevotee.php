@@ -11,7 +11,7 @@
   //echo json_encode($requestData); die;
   $res = array();
   $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData);
-  
+  // echo json_encode($response); die;
   if (!empty($requestData['requestType'])) {
       $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData['requestType']);
     switch ($requestData['requestType']) {
@@ -40,7 +40,7 @@ else {
 if(!empty($res['status'])){
     
 if ($res['status']) {
-      $response = array('flag' => true, 'info'=>$res['info']);
+      $response = array('flag' => true,'message'=>$res['message'], 'info'=>$res['info']);
   } else {
       $response = array('flag' => false,'message'=>$res['message'], 'info'=>$res['info']);
   }

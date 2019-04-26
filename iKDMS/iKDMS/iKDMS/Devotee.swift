@@ -21,6 +21,7 @@ class Devotee {
     var devoteePhone: String?
     var devoteeRemarks: String?
     var devoteeAccoId: String?
+    var devoteeAccoName: String?
     var devoteePhoto: UIImage?
     var devoteeIdImage: UIImage?
     
@@ -42,11 +43,12 @@ class Devotee {
         let devoteePhone = aDecoder.decodeObject(forKey: PropertyKey.devoteePhone) as? String
         let devoteeRemarks = aDecoder.decodeObject(forKey: PropertyKey.devoteeRemarks) as? String
         let devoteeAccoId = aDecoder.decodeObject(forKey: PropertyKey.devoteeAccoId) as? String
+        let devoteeAccoName = aDecoder.decodeObject(forKey: PropertyKey.devoteeAccoName) as? String
         let devoteePhoto = aDecoder.decodeObject(forKey: PropertyKey.devoteePhoto) as? UIImage
         let devoteeIdImage = aDecoder.decodeObject(forKey: PropertyKey.devoteeIdImage) as? UIImage
         
         // self.init(name: name, photo: photo, rating: rating)
-        self.init(firstName: firstName, lastName: lastName, devoteeKey: devoteeKey, devoteeType: devoteeType, devoteeIdType: devoteeIdType, devoteeIdNumber: devoteeIdNumber, devoteeStation: devoteeStation, devoteePhone: devoteePhone, devoteeRemarks: devoteeRemarks, devoteeAccoId: devoteeAccoId, devoteePhoto: devoteePhoto, devoteeIdImage: devoteeIdImage )
+        self.init(firstName: firstName, lastName: lastName, devoteeKey: devoteeKey, devoteeType: devoteeType, devoteeIdType: devoteeIdType, devoteeIdNumber: devoteeIdNumber, devoteeStation: devoteeStation, devoteePhone: devoteePhone, devoteeRemarks: devoteeRemarks, devoteeAccoId: devoteeAccoId,devoteeAccoName: devoteeAccoName, devoteePhoto: devoteePhoto, devoteeIdImage: devoteeIdImage )
     }
     
     func encode(with aCoder: NSCoder) {
@@ -60,6 +62,7 @@ class Devotee {
         aCoder.encode(devoteePhone, forKey:PropertyKey.devoteePhone)
         aCoder.encode(devoteeRemarks, forKey:PropertyKey.devoteeRemarks)
         aCoder.encode(devoteeAccoId, forKey:PropertyKey.devoteeAccoId)
+        aCoder.encode(devoteeAccoName, forKey:PropertyKey.devoteeAccoName)
         aCoder.encode(devoteePhoto, forKey:PropertyKey.devoteePhoto)
         aCoder.encode(devoteeIdImage, forKey:PropertyKey.devoteeIdImage)
         
@@ -82,13 +85,14 @@ class Devotee {
         static let devoteePhone = "devoteePhone"
         static let devoteeRemarks = "devoteeRemarks"
         static let devoteeAccoId = "devoteeAccoID"
+        static let devoteeAccoName = "devoteeAccoName"
         static let devoteePhoto = "devoteePhoto"
         static let devoteeIdImage = "devoteeIdImage"
         // static let rating = "rating"
     }
     
     //MARK: Initialization
-    init?(firstName: String?, lastName: String?, devoteeKey: String, devoteeType: String?, devoteeIdType: String?, devoteeIdNumber: String?, devoteeStation: String?, devoteePhone: String?, devoteeRemarks: String?, devoteeAccoId: String?, devoteePhoto: UIImage?, devoteeIdImage: UIImage?){
+    init?(firstName: String?, lastName: String?, devoteeKey: String, devoteeType: String?, devoteeIdType: String?, devoteeIdNumber: String?, devoteeStation: String?, devoteePhone: String?, devoteeRemarks: String?, devoteeAccoId: String?, devoteeAccoName: String?, devoteePhoto: UIImage?, devoteeIdImage: UIImage?){
         
         //Initilization should fail if there is no devotee Key or rating
        // guard !devoteeKey.isEmpty  else {
@@ -108,6 +112,7 @@ class Devotee {
         self.devoteePhone = devoteePhone
         self.devoteeRemarks = devoteeRemarks
         self.devoteeAccoId = devoteeAccoId
+        self.devoteeAccoName = devoteeAccoName
         self.devoteePhoto = devoteePhoto
         self.devoteeIdImage = devoteeIdImage
     }

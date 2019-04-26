@@ -31,39 +31,44 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var btnSaveExit: UIButton!
     
-    
+    struct saveResponse: Codable {
+        var flag: Int?
+        var info: String?
+        var error: String?
+        
+    }
   
-    struct AccommodationStructure: Codable {
-        var accomodation_key: String
-        var Accomodation_Name: String
-        var Available_Count: String
-        var Accomodation_Capacity: String
-        var Allocated_Count: String
-        var Reserved_Count: String
-        var Out_Of_Availability_Count: String
-    }
+//    struct AccommodationStructure: Codable {
+//        var accomodation_key: String
+//        var Accomodation_Name: String
+//        var Available_Count: String
+//        var Accomodation_Capacity: String
+//        var Allocated_Count: String
+//        var Reserved_Count: String
+//        var Out_Of_Availability_Count: String
+//    }
     
-    struct DevoteeStructure: Codable {
-        var Devotee_Key: String
-        var Devotee_Type: String?
-        var Devotee_First_Name: String?
-        var Devotee_Last_Name: String?
-        var Devotee_Gender: String?
-        var Devotee_ID_Type: String?
-        var Devotee_ID_Number: String?
-        var Devotee_Station: String?
-        var Devotee_Cell_Phone_Number: String?
-        var Devotee_Status: String?
-        var Devotee_Remarks: String?
-        var Devotee_Record_Update_Date_Time: String?
-        var Devotee_Record_Updated_By: String?
-        var Devotee_ID_Image: String?
-        var Devotee_ID_XML: String?
-        var DID_Devotee_ID_Type: String?
-        var Photo_type: String?
-        var Devotee_Photo: String?
-        var Accomodation_Key: String
-    }
+//    struct DevoteeStructure: Codable {
+//        var Devotee_Key: String
+//        var Devotee_Type: String?
+//        var Devotee_First_Name: String?
+//        var Devotee_Last_Name: String?
+//        var Devotee_Gender: String?
+//        var Devotee_ID_Type: String?
+//        var Devotee_ID_Number: String?
+//        var Devotee_Station: String?
+//        var Devotee_Cell_Phone_Number: String?
+//        var Devotee_Status: String?
+//        var Devotee_Remarks: String?
+//        var Devotee_Record_Update_Date_Time: String?
+//        var Devotee_Record_Updated_By: String?
+//        var Devotee_ID_Image: String?
+//        var Devotee_ID_XML: String?
+//        var DID_Devotee_ID_Type: String?
+//        var Photo_type: String?
+//        var Devotee_Photo: String?
+//        var Accomodation_Key: String
+//    }
     
     var devotee: Devotee?
     var accoDetailValues: [String] = Array()
@@ -98,26 +103,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         loadMasterData()
         
-        txtAccommodation.inputView = self.accoPicker
-        txtIDType.inputView = self.idTypePicker
-        txtDevoteeType.inputView = self.devoteeTypePicker
-        
-        // Set up views if editing an existing Devotee.
-        if let devotee = devotee {
-            navigationItem.title = devotee.firstName! + " " + devotee.lastName!
-            txtFirstName.text = devotee.firstName
-            txtDevoteeKey.text = devotee.devoteeKey
-            txtLastName.text = devotee.lastName
-            txtDevoteeType.text = devotee.devoteeType
-            txtIDType.text = devotee.devoteeIdType
-            txtIDNumber.text = devotee.devoteeIdNumber
-            txtPhoneNumber.text = devotee.devoteePhone
-            txtStation.text = devotee.devoteeStation
-            txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
-            txtRemarks.text = devotee.devoteeRemarks
-            DevoteePhoto.image = devotee.devoteePhoto
-            devoteeIDImage.image = devotee.devoteeIdImage
-        }
+       
         
         
         //updateSaveButtonState()
@@ -212,7 +198,10 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             return
         }
         
-        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "", devoteeType: txtDevoteeType.text ?? "P", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "",  devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage:devoteeIDImage.image)
+        devotee = Devotee(firstName: txtFirstName.text ?? "", lastName: txtLastName.text ?? "", devoteeKey: txtDevoteeKey.text ?? "", devoteeType: txtDevoteeType.text ?? "", devoteeIdType: txtIDType.text ?? "", devoteeIdNumber: txtIDNumber.text ?? "", devoteeStation: txtStation.text ?? "", devoteePhone: txtPhoneNumber.text ?? "", devoteeRemarks: txtRemarks.text ?? "", devoteeAccoId: getAccommodationKeyfromValue(passedValue: txtAccommodation.text ?? ""), devoteeAccoName: txtAccommodation.text ?? "", devoteePhoto: DevoteePhoto.image, devoteeIdImage: devoteeIDImage.image)
+        
+
+        
         os_log("Devotee Object created", log: OSLog.default, type: .debug)
     }
     
@@ -240,38 +229,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         btnSave.isEnabled = !text.isEmpty
         btnSavePrint.isEnabled = !text.isEmpty
     }
-    
-    private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
-        if(passedDevotee.devoteeKey != "") {
-            Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
-                //print("Request: \(String(describing: response.request))")   // original url request
-                //print("Response: \(String(describing: response.response))") // http url response
-                //print("Result: \(response.result)")                         // response serialization result
-                
-                if let json = response.result.value {
-                    let parsedData = json as! NSDictionary
-                    //print("JSON: \(json)") // serialized json response
-                    //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
-                    passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
-                    passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
-                    passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
-                    passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
-                    passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
-                    passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
-                    passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
-                    passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
-                    passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
-                }
-                
-                /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                 print("Data: \(utf8Text)") // original server data as UTF8 string
-                 }*/
-            }
-            
-        }
-        return passedDevotee
-    }
-    
+  
     
     //MARK: Action
     
@@ -317,17 +275,17 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     @IBAction func btnSave(_ sender: UIButton) {
         saveDevotee(toPrintCard: false)
+        self.navigationController?.popViewController(animated: true)
     }
     @IBAction func btnSavePrint(_ sender: UIButton) {
         saveDevotee(toPrintCard: true)
     }
     @IBAction func btnSaveExit(_ sender: UIButton) {
-        //lblTopMessage.text = "Devotee Record Saved, exiting now.."
+        saveDevotee(toPrintCard: false)
+        self.navigationController?.popViewController(animated: true)
     }
     
     private func loadMasterData() {
-        loadDevoteeRecord()
-        loadAccommodations()
         
         //Load deveotee ID Types
         devoteeIDTypeValues.append("none")
@@ -338,10 +296,60 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         devoteeIDTypeValues.append("Passport")
         devoteeIDTypeValues.append("Voter ID")
         
+        txtIDType.inputView = self.idTypePicker
+        
         //Load deveotee Types
         devoteeTypeValues.append("P")
         devoteeTypeValues.append("T")
+        txtDevoteeType.inputView = self.devoteeTypePicker
+        
+        loadAccommodations(completion: {
+            self.txtAccommodation.inputView = self.accoPicker
+            self.loadDevoteeRecord()
+        })
     }
+    private func loadAccommodations(completion: @escaping () -> ()) {
+        
+        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+        
+        Alamofire.request(urlString).responseJSON { response in
+            if let json = response.result.value {
+                let parsedData = json as! NSArray
+                
+                for id in parsedData {
+                    let parsedAcco = id as! NSDictionary
+                    var accoName = parsedAcco.object(forKey: "Accomodation_Name")  as? String ?? ""
+                    let accoAvail = parsedAcco.object(forKey: "Available_Count")  as? String ?? ""
+                    accoName = accoName.replacingOccurrences(of: "+", with: " ")
+                    self.accoDetailValues.append(accoName + " - " + accoAvail)
+                    self.accoIDValues.append(parsedAcco.object(forKey: "accomodation_key")  as? String ?? ""  )
+                }
+                
+            }
+            completion()
+        }
+    }
+    
+    private func loadDevoteeRecord() {
+        if let devotee = devotee {
+            navigationItem.title = devotee.firstName! + " " + devotee.lastName!
+            txtFirstName.text = devotee.firstName
+            txtDevoteeKey.text = devotee.devoteeKey
+            txtLastName.text = devotee.lastName
+            txtDevoteeType.text = devotee.devoteeType
+            txtIDType.text = devotee.devoteeIdType
+            txtIDNumber.text = devotee.devoteeIdNumber
+            txtPhoneNumber.text = devotee.devoteePhone
+            txtStation.text = devotee.devoteeStation
+            if devotee.devoteeAccoId != nil {
+                txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
+            }
+            txtRemarks.text = devotee.devoteeRemarks
+            DevoteePhoto.image = devotee.devoteePhoto
+            devoteeIDImage.image = devotee.devoteeIdImage
+        }
+    }
+    
     
     private func getAccommodationValuefromKey(passedKey: String) -> String {
         for i in 0..<self.accoIDValues.count {
@@ -360,220 +368,62 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         }
         return ""
     }
-    private func loadAccommodations() {
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
-        guard let url = URL(string: urlString) else { return }
-        
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if error != nil {
-                print(error!.localizedDescription)
-            }
-            
-            guard let data = data else { return }
-            //Implement JSON decoding and parsing
-            do {
-                //Decode retrived data with JSONDecoder and assing type of Article object
-                let parsedData = try JSONDecoder().decode([AccommodationStructure].self, from: data)
-                
-                //Get back to the main queue
-                DispatchQueue.main.async {
-                    
-                    for i in 0..<parsedData.count {
-                        self.accoDetailValues.append(parsedData[i].Accomodation_Name + " - " + parsedData[i].Available_Count)
-                        self.accoIDValues.append(parsedData[i].accomodation_key)
-                    }
-                }
-                
-            } catch let jsonError {
-                print(jsonError)
-            }
-            }.resume()
-    }
-    private func loadDevoteeRecord() {
-        if(txtDevoteeKey.text != "") {
-            let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
-            //print(urlString)
-            guard let url = URL(string: urlString) else { return }
-            
-            URLSession.shared.dataTask(with: url) { (data, response, error) in
-                if error != nil {
-                    print(error!.localizedDescription)
-                }
-                
-                guard let data = data else { return }
-                //Implement JSON decoding and parsing
-                do {
-                    //Decode retrived data with JSONDecoder and assing type of Article object
-                    let parsedData = try JSONDecoder().decode(DevoteeStructure.self, from: data)
-                    
-                    //Get back to the main queue
-                    DispatchQueue.main.async {
-                        self.txtDevoteeKey.text = parsedData.Devotee_Key
-                        self.txtRemarks.text = parsedData.Devotee_Remarks
-                        self.txtFirstName.text = parsedData.Devotee_First_Name
-                        self.txtLastName.text = parsedData.Devotee_Last_Name
-                        self.txtDevoteeType.text = parsedData.Devotee_Type
-                        self.txtIDType.text = parsedData.Devotee_ID_Type
-                        self.txtIDNumber.text = parsedData.Devotee_ID_Number
-                        self.txtPhoneNumber.text = parsedData.Devotee_Cell_Phone_Number
-                        self.txtStation.text = parsedData.Devotee_Station
-                        self.txtAccommodation.text = parsedData.Accomodation_Key
-                    }
-                    
-                } catch let jsonError {
-                    print(jsonError)
-                }
-                }.resume()
-            
-            }
-        }
-
     
-    
-    func saveDevotee(toPrintCard: Bool) {
-        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
-        let postData = NSMutableData(data: "devotee_type=".data(using: String.Encoding.utf8)!)
-        postData.append((txtDevoteeType.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_first_name=".data(using: String.Encoding.utf8)!)
-        postData.append((txtFirstName.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_last_name=".data(using: String.Encoding.utf8)!)
-        postData.append((txtLastName.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_gender=".data(using: String.Encoding.utf8)!)
-        postData.append("".data(using: String.Encoding.utf8)!)
-        postData.append("&devotee_id_type=".data(using: String.Encoding.utf8)!)
-        postData.append((txtIDType.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_id_number=".data(using: String.Encoding.utf8)!)
-        postData.append((txtIDNumber.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_station=".data(using: String.Encoding.utf8)!)
-        postData.append((txtStation.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_cell_phone_number=".data(using: String.Encoding.utf8)!)
-        postData.append((txtPhoneNumber.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_status=".data(using: String.Encoding.utf8)!)
-        postData.append("A".data(using: String.Encoding.utf8)!)
-        postData.append("&devotee_remarks=".data(using: String.Encoding.utf8)!)
-        postData.append((txtRemarks.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&devotee_accommodation_id=".data(using: String.Encoding.utf8)!)
-        postData.append((getAccommodationKeyfromValue(passedValue: txtAccommodation.text!).data(using: String.Encoding.utf8)!))
-        postData.append("&devotee_key=".data(using: String.Encoding.utf8)!)
-        postData.append((txtDevoteeKey.text?.data(using: String.Encoding.utf8)!)!)
-        postData.append("&requestType=upsertDevotee".data(using: String.Encoding.utf8)!)
-        
-        //print(postData)
-        
-        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
-        guard let todosURL = URL(string: todosEndpoint) else {
-            print("Error: cannot create URL")
-            return
-        }
-        
-        var todosUrlRequest = URLRequest(url: todosURL)
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.allHTTPHeaderFields = headers
-        todosUrlRequest.httpBody = postData as Data
-        
-        let session = URLSession.shared
-        
-        let task = session.dataTask(with: todosUrlRequest) {
-            (data, response, error) in
-            guard error == nil else {
-                print("error calling POST on /todos/1")
-                print(error!)
-                return
-            }
-            guard let responseData = data else {
-                print("Error: did not receive data")
-                return
+    func saveDevotee(toPrintCard: Bool){
+        let accoID = getAccommodationKeyfromValue(passedValue: txtAccommodation.text ?? "")
+        let parameters: Parameters = [
+            "devotee_first_name": txtFirstName.text ?? "",
+            "devotee_last_name": txtLastName.text ?? "",
+            "devotee_gender": "",
+            "devotee_id_type": txtIDType.text ?? "",
+            "devotee_id_number": txtIDNumber.text ?? "",
+            "devotee_type": txtDevoteeType.text ?? "",
+            "devotee_station": txtStation.text ?? "",
+            "devotee_cell_phone_number": txtPhoneNumber.text ?? "",
+            "devotee_status": "A",
+            "devotee_remarks": txtRemarks.text ?? "" ,
+            "devotee_accommodation_id": accoID,
+            "devotee_key": txtDevoteeKey.text ?? "",
+            "requestType": "upsertDevotee"
+        ]
+        let url = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+        self.postData(url: url, parameter: parameters,completion: { result, error in
+            let jsonResult = result?.value as! NSDictionary
+            let devoteeID = jsonResult["info"] as! String
+            if(devoteeID  != self.txtDevoteeKey.text) {
+                self.txtDevoteeKey.text = devoteeID
             }
             
-            // parse the result as JSON, since that's what the API provides
-            do {
-                
-                guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
-                    print("Could not get JSON from responseData as dictionary")
-                    return
-                }
-                print("The todo is: " + receivedTodo.description)
-                guard let saved = receivedTodo["flag"] as? Bool else {
-                    print("Could not get todoID as string from JSON")
-                    return
-                }
-                if saved {
-                    print("The ID is: \(receivedTodo["info"] ?? "")")
-                    self.navigationItem.title = "Record Saved: "
-                    if toPrintCard {
-                        self.printDevoteeCard(devoteeKey: receivedTodo["info"] as! String)
-                    }
-                }
-            } catch  {
-                print("error parsing response from POST on /todos")
-                self.navigationItem.title = "Error!!"
-                return
+            if(toPrintCard) {
+                let printParam: Parameters = [
+                "devotee_key": devoteeID,
+                 "requestType": "addToPrintQueue"
+                ]
+                self.postData(url: url, parameter: printParam,completion: { result, error in
+                    let jsonResultPU = result?.value as! NSDictionary
+                    print( jsonResultPU["info"] as! String)
+                })
             }
-        }
-        task.resume()
+            
+        })
     }
     
-    private func printDevoteeCard(devoteeKey: String){
-        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
-        let postData = NSMutableData(data: "&devotee_key=".data(using: String.Encoding.utf8)!)
-        postData.append((devoteeKey.data(using: String.Encoding.utf8)!))
-        postData.append("&requestType=addToPrintQueue".data(using: String.Encoding.utf8)!)
-       
-        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
-        guard let todosURL = URL(string: todosEndpoint) else {
-            print("Error: cannot create URL")
-            return
-        }
+    func postData(url: String, parameter: [String: Any], completion:@escaping (_ responseData:Result<Any>?, _ error:Error?)->Void) {
         
-        var todosUrlRequest = URLRequest(url: todosURL)
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.allHTTPHeaderFields = headers
-        todosUrlRequest.httpBody = postData as Data
-        
-        let session = URLSession.shared
-        
-        let task = session.dataTask(with: todosUrlRequest) {
-            (data, response, error) in
-            guard error == nil else {
-                print("error calling POST on /todos/1")
-                print(error!)
-                return
+        Alamofire.request(url, method: .post, parameters: parameter, encoding: URLEncoding.default).responseJSON { response in
+            guard response.result.isSuccess,
+                (response.result.value != nil) else {
+                    debugPrint("Error while fetching data: \(String(describing: response.result.error))")
+                    completion(nil,response.result.error)
+                    return
             }
-            guard let responseData = data else {
-                print("Error: did not receive data")
-                return
-            }
+            completion(response.result,nil)
             
-            // parse the result as JSON, since that's what the API provides
-            do {
-                
-                guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
-                    print("Could not get JSON from responseData as dictionary")
-                    return
-                }
-                print("The todo is: " + receivedTodo.description)
-                guard let saved = receivedTodo["flag"] as? Bool else {
-                    print("Could not get todoID as string from JSON")
-                    return
-                }
-                if saved {
-                    print("The ID is: \(receivedTodo["info"] ?? "")")
-                    self.navigationItem.title = "Record Saved and Printed!"
-                }
-            } catch  {
-                print("error parsing response from POST on /todos")
-                self.navigationItem.title = "Error!!"
-                return
-            }
         }
-        task.resume()
+        
     }
+    
+    
     
     private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
         let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
@@ -644,6 +494,259 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
         //print(base64String as Any)
     }
+    
+    //MARK: Commented Code
+    /*
+     private func loadAccommodations_old() {
+     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+     guard let url = URL(string: urlString) else { return }
+     
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode([AccommodationStructure].self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     
+     for i in 0..<parsedData.count {
+     self.accoDetailValues.append(parsedData[i].Accomodation_Name + " - " + parsedData[i].Available_Count)
+     self.accoIDValues.append(parsedData[i].accomodation_key)
+     }
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     }
+     */
+    
+    /*
+     private func loadDevoteeRecord() {
+     if(txtDevoteeKey.text != "") {
+     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+     //print(urlString)
+     guard let url = URL(string: urlString) else { return }
+     
+     URLSession.shared.dataTask(with: url) { (data, response, error) in
+     if error != nil {
+     print(error!.localizedDescription)
+     }
+     
+     guard let data = data else { return }
+     //Implement JSON decoding and parsing
+     do {
+     //Decode retrived data with JSONDecoder and assing type of Article object
+     let parsedData = try JSONDecoder().decode(DevoteeStructure.self, from: data)
+     
+     //Get back to the main queue
+     DispatchQueue.main.async {
+     self.txtDevoteeKey.text = parsedData.Devotee_Key
+     self.txtRemarks.text = parsedData.Devotee_Remarks
+     self.txtFirstName.text = parsedData.Devotee_First_Name
+     self.txtLastName.text = parsedData.Devotee_Last_Name
+     self.txtDevoteeType.text = parsedData.Devotee_Type
+     self.txtIDType.text = parsedData.Devotee_ID_Type
+     self.txtIDNumber.text = parsedData.Devotee_ID_Number
+     self.txtPhoneNumber.text = parsedData.Devotee_Cell_Phone_Number
+     self.txtStation.text = parsedData.Devotee_Station
+     self.txtAccommodation.text = parsedData.Accomodation_Key
+     }
+     
+     } catch let jsonError {
+     print(jsonError)
+     }
+     }.resume()
+     
+     }
+     }
+     */
+
+    /*
+     private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
+     if(passedDevotee.devoteeKey != "") {
+     Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+     //print("Request: \(String(describing: response.request))")   // original url request
+     //print("Response: \(String(describing: response.response))") // http url response
+     //print("Result: \(response.result)")                         // response serialization result
+     
+     if let json = response.result.value {
+     let parsedData = json as! NSDictionary
+     //print("JSON: \(json)") // serialized json response
+     //print(parsedData.object(forKey: "Devotee_First_Name") ?? "" )
+     passedDevotee.devoteeRemarks = parsedData.object(forKey: "Devotee_Remarks") as? String
+     passedDevotee.firstName = parsedData.object(forKey: "Devotee_First_Name") as? String
+     passedDevotee.lastName = parsedData.object(forKey: "Devotee_Last_Name") as? String
+     passedDevotee.devoteeType = parsedData.object(forKey: "Devotee_Type") as? String
+     passedDevotee.devoteeIdType = parsedData.object(forKey: "Devotee_ID_Type") as? String
+     passedDevotee.devoteeIdNumber = parsedData.object(forKey: "Devotee_ID_Number") as? String
+     passedDevotee.devoteePhone = parsedData.object(forKey: "Devotee_Cell_Phone_Number") as? String
+     passedDevotee.devoteeStation = parsedData.object(forKey: "Devotee_Station") as? String
+     passedDevotee.devoteeAccoId = parsedData.object(forKey: "Accomodation_Key") as? String
+     }
+     
+     /*if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+     print("Data: \(utf8Text)") // original server data as UTF8 string
+     }*/
+     }
+     
+     }
+     return passedDevotee
+     }
+     
+     func saveDevotee_Old(toPrintCard: Bool) {
+     let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+     let postData = NSMutableData(data: "devotee_type=".data(using: String.Encoding.utf8)!)
+     postData.append((txtDevoteeType.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_first_name=".data(using: String.Encoding.utf8)!)
+     postData.append((txtFirstName.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_last_name=".data(using: String.Encoding.utf8)!)
+     postData.append((txtLastName.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_gender=".data(using: String.Encoding.utf8)!)
+     postData.append("".data(using: String.Encoding.utf8)!)
+     postData.append("&devotee_id_type=".data(using: String.Encoding.utf8)!)
+     postData.append((txtIDType.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_id_number=".data(using: String.Encoding.utf8)!)
+     postData.append((txtIDNumber.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_station=".data(using: String.Encoding.utf8)!)
+     postData.append((txtStation.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_cell_phone_number=".data(using: String.Encoding.utf8)!)
+     postData.append((txtPhoneNumber.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_status=".data(using: String.Encoding.utf8)!)
+     postData.append("A".data(using: String.Encoding.utf8)!)
+     postData.append("&devotee_remarks=".data(using: String.Encoding.utf8)!)
+     postData.append((txtRemarks.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&devotee_accommodation_id=".data(using: String.Encoding.utf8)!)
+     postData.append((getAccommodationKeyfromValue(passedValue: txtAccommodation.text!).data(using: String.Encoding.utf8)!))
+     postData.append("&devotee_key=".data(using: String.Encoding.utf8)!)
+     postData.append((txtDevoteeKey.text?.data(using: String.Encoding.utf8)!)!)
+     postData.append("&requestType=upsertDevotee".data(using: String.Encoding.utf8)!)
+     
+     //print(postData)
+     
+     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+     guard let todosURL = URL(string: todosEndpoint) else {
+     print("Error: cannot create URL")
+     return
+     }
+     
+     var todosUrlRequest = URLRequest(url: todosURL)
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+     todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.allHTTPHeaderFields = headers
+     todosUrlRequest.httpBody = postData as Data
+     
+     let session = URLSession.shared
+     
+     let task = session.dataTask(with: todosUrlRequest) {
+     (data, response, error) in
+     guard error == nil else {
+     print("error calling POST on /todos/1")
+     print(error!)
+     return
+     }
+     guard let responseData = data else {
+     print("Error: did not receive data")
+     return
+     }
+     
+     // parse the result as JSON, since that's what the API provides
+     do {
+     
+     guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
+     print("Could not get JSON from responseData as dictionary")
+     return
+     }
+     print("The todo is: " + receivedTodo.description)
+     guard let saved = receivedTodo["flag"] as? Bool else {
+     print("Could not get todoID as string from JSON")
+     return
+     }
+     if saved {
+     print("The ID is: \(receivedTodo["info"] ?? "")")
+     self.navigationItem.title = "Record Saved: "
+     if toPrintCard {
+     //self.printDevoteeCard(devoteeKey: receivedTodo["info"] as! String)
+     }
+     }
+     } catch  {
+     print("error parsing response from POST on /todos")
+     self.navigationItem.title = "Error!!"
+     return
+     }
+     }
+     task.resume()
+     }
+     
+     private func printDevoteeCard_Old(devoteeKey: String){
+     let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+     let postData = NSMutableData(data: "&devotee_key=".data(using: String.Encoding.utf8)!)
+     postData.append((devoteeKey.data(using: String.Encoding.utf8)!))
+     postData.append("&requestType=addToPrintQueue".data(using: String.Encoding.utf8)!)
+     
+     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+     guard let todosURL = URL(string: todosEndpoint) else {
+     print("Error: cannot create URL")
+     return
+     }
+     
+     var todosUrlRequest = URLRequest(url: todosURL)
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+     todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.allHTTPHeaderFields = headers
+     todosUrlRequest.httpBody = postData as Data
+     
+     let session = URLSession.shared
+     
+     let task = session.dataTask(with: todosUrlRequest) {
+     (data, response, error) in
+     guard error == nil else {
+     print("error calling POST on /todos/1")
+     print(error!)
+     return
+     }
+     guard let responseData = data else {
+     print("Error: did not receive data")
+     return
+     }
+     
+     // parse the result as JSON, since that's what the API provides
+     do {
+     
+     guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
+     print("Could not get JSON from responseData as dictionary")
+     return
+     }
+     print("The todo is: " + receivedTodo.description)
+     guard let saved = receivedTodo["flag"] as? Bool else {
+     print("Could not get todoID as string from JSON")
+     return
+     }
+     if saved {
+     print("The ID is: \(receivedTodo["info"] ?? "")")
+     self.navigationItem.title = "Record Saved and Printed!"
+     }
+     } catch  {
+     print("error parsing response from POST on /todos")
+     self.navigationItem.title = "Error!!"
+     return
+     }
+     }
+     task.resume()
+     }
+     
+     */
 }
 
 
