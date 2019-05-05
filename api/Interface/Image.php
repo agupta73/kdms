@@ -151,10 +151,6 @@ Class Image {
             $stmt2->bindParam(":type", $type);
             $stmt2->bindParam(":status", $status);
             
-            
-            
-            
-            
             if (!$stmt2->execute()) {
                 return false;
             } else {
