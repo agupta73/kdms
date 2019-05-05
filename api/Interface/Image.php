@@ -136,8 +136,7 @@ Class Image {
             if (!$stmt02->execute()) {
                 return false;
             }
-
-            
+        
             // In photo table
             $query2 = "INSERT INTO Devotee_Photo
                    SET
