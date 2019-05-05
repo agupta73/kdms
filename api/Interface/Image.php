@@ -137,14 +137,24 @@ Class Image {
                 return false;
             }
 
+            
             // In photo table
             $query2 = "INSERT INTO Devotee_Photo
                    SET
                 Devotee_Key=:id,
-                Devotee_Photo=:photo;";
+                Devotee_Photo=:photo,
+                photo_type=:type,
+                status=:status";
             $stmt2 = $this->conn->prepare($query2);
             $stmt2->bindParam(":id", $devotee_id);
             $stmt2->bindParam(":photo", $unencoded);
+            $stmt2->bindParam(":type", $type);
+            $stmt2->bindParam(":status", $status);
+            
+            
+            
+            
+            
             if (!$stmt2->execute()) {
                 return false;
             } else {
