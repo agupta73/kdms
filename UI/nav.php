@@ -22,38 +22,38 @@
       </li>
       <li class="nav-item ">
         <a class="nav-link" href="./registration.php">
-          <i class="material-icons">person</i>
+          <i class="material-icons">camera_alt</i>
           <p>Photo/ID Capture</p>
         </a>
       </li>
        <li class="nav-item ">
         <a class="nav-link" href="./addDevoteeI.php">
-          <i class="material-icons">person</i>
+          <i class="material-icons">person_add</i>
           <p>Register New Devotee</p>
         </a>
       </li>     
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=CUS&key=">
-          <i class="material-icons">person</i>
+          <i class="material-icons">search</i>
           <p>Search Devotees</p>
         </a>
       </li>
 
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=PWD">
-          <i class="material-icons">person</i>
+          <i class="material-icons">camera_front</i>
           <p>Devotee Records with Photo</p>
         </a>
       </li>
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=DWP">
-          <i class="material-icons">person</i>
+          <i class="material-icons">camera_enhance</i>
           <p>Devotee Records w/o Photo</p>
         </a>
       </li>     
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=CTP">
-          <i class="material-icons">person</i>
+          <i class="material-icons">print</i>
           <p>Devotee Cards for Printing</p>
         </a>
       </li>         

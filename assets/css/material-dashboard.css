@@ -171,6 +171,7 @@ caption {
   caption-side: bottom; }
 
 th {
+
   text-align: inherit; }
 
 label {
@@ -6530,6 +6531,7 @@ a.text-dark:hover, a.text-dark:focus {
         background-color: transparent;
         color: #00bcd4; }
   .btn.btn-success {
+    margin-left: 7px;
     color: #fff;
     background-color: #4caf50;
     border-color: #4caf50;
@@ -10470,9 +10472,12 @@ h2.title {
   width: calc(100% - 260px);
   transition: 0.33s, cubic-bezier(0.685, 0.0473, 0.346, 1); }
   .main-panel > .content {
-    margin-top: 70px;
+    margin-top: 10px;
     padding: 30px 15px;
     min-height: calc(100vh - 123px); }
+  .main-panel > .content-search {
+    margin-top: 10px;
+    padding: 30px 15px;}
   .main-panel > .footer {
     border-top: 1px solid #e7e7e7; }
   .main-panel > .navbar {
@@ -11241,7 +11246,7 @@ h2.title {
 .table > thead > tr > th {
   border-bottom-width: 1px;
   font-size: 1.0625rem;
-  font-weight: 300; }
+  font-weight: 500; }
 
 .table .form-check {
   margin-top: 0; }
@@ -11376,7 +11381,9 @@ legend {
     outline: 0; }
 
 a {
-  color: #ff8c00; }
+    font-weight: 400;
+    color: #504646;
+     }
   a:hover, a:focus {
     color: #89229b;
     text-decoration: none; }
@@ -11849,7 +11856,7 @@ label {
       .card .card-footer .stats .material-icons {
         position: relative;
         top: 4px;
-        font-size: 16px; }
+        font-size: 19px; }
   .card [class*="card-header-"] {
     margin: 0px 15px 0;
     padding: 0;
@@ -13022,3 +13029,15 @@ Copyright (c) 2015 Daniel Eden
     display: none !important; } }
 
 /*# sourceMappingURL=material-dashboard.css.map */
+
+/* kdms custom css */
+
+.dash-link{
+  font-size: 16px;
+}
+
+
+
+
+
+

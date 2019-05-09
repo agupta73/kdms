@@ -405,7 +405,7 @@ $config_data=include_once("../site_config.php");
 <!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
                                         <?php
                                         if ($devotee_photo == "") {
-                                            echo '<div  id="photo2"><img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img></div>';
+                                            echo '<div  id="photo2"><img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img></div>';
                                         } else {
                                             echo '<div  id="photo2"><img src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" width="240px"></img></div>';
                                         }

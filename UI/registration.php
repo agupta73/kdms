@@ -142,7 +142,7 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                                             <?php
                                             if (!$is_photo_available) {
                                                 ?>
-                                                <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>
+                                                <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img>
                                                 <?php
                                             } else {
                                                 ?>
@@ -165,7 +165,7 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                                             <?php
                                             if (empty($is_doc_available)) {
                                                 ?>                                                
-                                                <img src="../assets/img/faces/doc.png" alt="devotee image" height="250px" width="250px"></img>
+                                                <img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>
                                                 <?php
                                             } else {
                                                 ?>
@@ -179,11 +179,11 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                             </div>
 
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-10">
                             <div class="card-body">
                                 <form>
                                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
-                                    <button type="submit" class="btn btn-success pull-right">Update for existing Devotee</button>
+                                    <button type="submit" class="btn btn-success pull-right">Update existing Devotee</button>
                                     <button type="submit" class="btn btn-success pull-right">Register New Devotee</button>
                                     <button type="submit" class="btn btn-success pull-right">Save for later</button>
                                     <div class="clearfix"></div>

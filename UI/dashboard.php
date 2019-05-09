@@ -43,41 +43,40 @@ function validateInput(){
   <div class="content">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
               <div class="card card-stats">
                 <div class="card-header card-header-warning card-header-icon">
                   <div class="card-icon">
                     <i class="material-icons">add</i>
                   </div>
                   <p class="card-category">Registration</p>
-                  <h3 class="card-title">Devotee Registration
-                  </h3>
+                  <h3 class="card-title"> Registration</h3>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">image</i>
-                    <a href="../UI/registration.php">Photo and ID Scan</a>
+                    <a href="../UI/registration.php" class="dash-link">Photo and ID Scan</a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">add</i>
-                    <a href="../UI/addDevoteeI.php">Add Devotee</a>
+                    <a href="../UI/addDevoteeI.php"  class="dash-link">Add Devotee</a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">print</i>
-                    <a href="#pablo">Print Cards</a>
+                    <a href="#pablo" class="dash-link">Print Cards</a>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
               <div class="card card-stats">
                 <div class="card-header card-header-success card-header-icon">
                   <div class="card-icon">
-                    <i class="material-icons">update</i>
+                    <i class="material-icons">edit</i>
                   </div>
                   <p class="card-category">Update</p>
                   <h3 class="card-title">Devotee Update</h3>
@@ -85,28 +84,26 @@ function validateInput(){
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">search</i>
-                    <a href="#pablo">Search Devotee</a>
+                    <a href="./devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Search Devotee</a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">edit</i>
-                    <a href="#pablo">Modify Delete Record</a>
+                    <a href="#pablo" class="dash-link">Modify Delete Record</a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">print</i>
-                    <a href="#pablo">Print Cards</a>
+                    <a href="./devoteeSearchResult.php?mode=SET&key=CTP" class="dash-link">Print Cards</a>
                   </div>
                 </div>
               </div>
             </div>
-              
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
                 <form name="myForm" id="myFormID">
                     <input type="hidden" name="requestType" id="requestType" value="none">
-                    
                     <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                   <div class="card-icon">
@@ -117,25 +114,25 @@ function validateInput(){
                 </div>
                 <div class="card-footer" onclick="clickHandler('#myFormID', 1); return false;">
                   <div class="stats">
-                    <i class="material-icons text-danger">face</i>
-                    <a href>Refresh Accommodation Counts</a>
+                    <i class="material-icons text-danger">refresh</i>
+                    <a href class="dash-link">Refresh Accommodation Counts</a>
                   </div>
                 </div>
                 <div class="card-footer" >
                   <div class="stats">
                     <i class="material-icons text-danger">add</i>
-                    <a href="addAccommodationII.php">Manage Accommodations</a>
+                    <a href="addAccommodationII.php" class="dash-link">Manage Accommodations</a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <i class="material-icons text-danger">face</i>
-                    <a href="upsertAmenityII.php">Manage Amenities</a>
+                    <i class="material-icons text-danger">edit</i>
+                    <a href="upsertAmenityII.php" class="dash-link">Manage Amenities</a>
                   </div>
                 </div>
-                </div>             </form>
-
-              </div>
+                </div>             
+              </form>
+            </div>
             </div>
           </div>
         </div>

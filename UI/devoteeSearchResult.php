@@ -152,7 +152,7 @@
             }
             ?>
                 <!-- End Navbar -->
-                <div class="card" <?php
+                <div class="content-search" <?php
                 if ($hideSearchArea) {
                     print_r(" hidden=true");
                 }
@@ -230,7 +230,7 @@ if (!empty($accommodations)) {
                         </div>
                     </div>
                 </div>
-                <div class="content">
+                <div class="content-search">
                     <div class="container-fluid">
                         <div class="card">
                             <div class="card-header card-header-primary">
@@ -333,7 +333,7 @@ if (!empty($response)) {
                                                      </td><td>");
             //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
             if ($devoteePhoto == "") {
-                print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="70px"></img>');
+                print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="75px"></img>');
             } else {
                 print_r('<img src="data:image/jpeg;base64,' . $devoteePhoto . '" alt="devotee image" height="70px" width="70px"></img>');
             }
@@ -342,7 +342,7 @@ if (!empty($response)) {
             //"<img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' /> " ;
 
             if ($devoteeIdImage == "") {
-                print_r('<img src="../assets/img/faces/doc.png" alt="Devotee ID Image" height="70px" width="70px"></img>');
+                print_r('<img src="../assets/img/faces/doc.png" alt="Devotee ID Image" height="65px" width="65px"></img>');
             } else {
                 print_r('<img src="data:image/jpeg;base64,' . $devoteeIdImage . '" alt="devotee image" height="70px" width="70px"></img>');
             }
