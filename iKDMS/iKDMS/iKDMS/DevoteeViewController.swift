@@ -246,7 +246,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             txtAccommodation.resignFirstResponder()
             txtRemarks.resignFirstResponder()
             let imagePickerController = UIImagePickerController()
-            imagePickerController.sourceType = .camera
+            //imagePickerController.sourceType = .camera
             
             // Make sure ViewController is notified when the user picks an image.
             imagePickerController.delegate = self
@@ -369,6 +369,27 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         return ""
     }
     
+    private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
+        let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
+        //let imageData = UIImagePNGRepresentation(selectedImage)
+        let base64String = imageData?.base64EncodedString()
+        
+        let url: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
+
+        let parameters: Parameters = [
+            "devotee_key": txtDevoteeKey.text ?? "",
+            "api_type": "3",
+            "image": base64String ?? ""
+        ]
+        self.postData(url: url, parameter: parameters,completion: { result, error in
+            let jsonResult = result?.value as! NSDictionary
+            let devoteeID = jsonResult["info"] as! String
+            if(devoteeID  != self.txtDevoteeKey.text) {
+                self.txtDevoteeKey.text = devoteeID
+            }
+        })
+    }
+    
     func saveDevotee(toPrintCard: Bool){
         let accoID = getAccommodationKeyfromValue(passedValue: txtAccommodation.text ?? "")
         let parameters: Parameters = [
@@ -425,75 +446,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     
     
-    private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
-        let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
-        //let imageData = UIImagePNGRepresentation(selectedImage)
-        let base64String = imageData?.base64EncodedData()
-        
-        
-        //print(base64String?.description)
-        
-        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
-        let postData = NSMutableData(data: "&devotee_key=".data(using: String.Encoding.utf8)!)
-        postData.append((self.devotee?.devoteeKey?.data(using: String.Encoding.utf8) ?? "".data(using: String.Encoding.utf8)!))
-        postData.append("&api_type=3".data(using: String.Encoding.utf8)!)
-        postData.append("&image=".data(using: String.Encoding.utf8)!)
-        postData.append(base64String!)
-        
-        let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
-        guard let todosURL = URL(string: todosEndpoint) else {
-            print("Error: cannot create URL")
-            return
-        }
-        
-        var todosUrlRequest = URLRequest(url: todosURL)
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
-        todosUrlRequest.httpMethod = "POST"
-        todosUrlRequest.allHTTPHeaderFields = headers
-        todosUrlRequest.httpBody = postData as Data
-        
-        let session = URLSession.shared
-        
-        let task = session.dataTask(with: todosUrlRequest) {
-            (data, response, error) in
-            guard error == nil else {
-                print("error calling POST on /todos/1")
-                print(error!)
-                return
-            }
-            guard let responseData = data else {
-                print("Error: did not receive data")
-                return
-            }
-            print(responseData.description)
-            // parse the result as JSON, since that's what the API provides
-            do {
-                
-                guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
-                    print("Could not get JSON from responseData as dictionary")
-                    return
-                }
-                print("The todo is: " + receivedTodo.description)
-                guard let saved = receivedTodo["flag"] as? Bool else {
-                    print("Could not get todoID as string from JSON")
-                    return
-                }
-                if saved {
-                    print("The ID is: \(receivedTodo["info"] ?? "")")
-                    self.navigationItem.title = "Record Saved and Printed!"
-                }
-            } catch  {
-                print("error parsing response from POST on /todos")
-                self.navigationItem.title = "Error!!"
-                return
-            }
-        }
-        task.resume()
-        
-        //print(base64String as Any)
-    }
+   
     
     //MARK: Commented Code
     /*
@@ -746,6 +699,76 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
      task.resume()
      }
      
+     
+     private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
+     let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
+     //let imageData = UIImagePNGRepresentation(selectedImage)
+     let base64String = imageData?.base64EncodedData()
+     
+     
+     //print(base64String?.description)
+     
+     let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+     let postData = NSMutableData(data: "&devotee_key=".data(using: String.Encoding.utf8)!)
+     postData.append((self.devotee?.devoteeKey?.data(using: String.Encoding.utf8) ?? "".data(using: String.Encoding.utf8)!))
+     postData.append("&api_type=3".data(using: String.Encoding.utf8)!)
+     postData.append("&image=".data(using: String.Encoding.utf8)!)
+     postData.append(base64String!)
+     
+     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
+     guard let todosURL = URL(string: todosEndpoint) else {
+     print("Error: cannot create URL")
+     return
+     }
+     
+     var todosUrlRequest = URLRequest(url: todosURL)
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+     todosUrlRequest.addValue("application/json", forHTTPHeaderField: "Accept")
+     todosUrlRequest.httpMethod = "POST"
+     todosUrlRequest.allHTTPHeaderFields = headers
+     todosUrlRequest.httpBody = postData as Data
+     
+     let session = URLSession.shared
+     
+     let task = session.dataTask(with: todosUrlRequest) {
+     (data, response, error) in
+     guard error == nil else {
+     print("error calling POST on /todos/1")
+     print(error!)
+     return
+     }
+     guard let responseData = data else {
+     print("Error: did not receive data")
+     return
+     }
+     print(responseData.description)
+     // parse the result as JSON, since that's what the API provides
+     do {
+     
+     guard let receivedTodo = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] else {
+     print("Could not get JSON from responseData as dictionary")
+     return
+     }
+     print("The todo is: " + receivedTodo.description)
+     guard let saved = receivedTodo["flag"] as? Bool else {
+     print("Could not get todoID as string from JSON")
+     return
+     }
+     if saved {
+     print("The ID is: \(receivedTodo["info"] ?? "")")
+     self.navigationItem.title = "Record Saved and Printed!"
+     }
+     } catch  {
+     print("error parsing response from POST on /todos")
+     self.navigationItem.title = "Error!!"
+     return
+     }
+     }
+     task.resume()
+     
+     //print(base64String as Any)
+     }
      */
 }
 

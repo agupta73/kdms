@@ -17,37 +17,6 @@ class DevoteeTableViewController: UITableViewController {
     var devotees = [Devotee]()
     var selectedTabIndex: Int = 0
     
-//    struct DevoteeStructure: Codable {
-//        var devotee_key: String
-//        var Devotee_Name: String?
-//        var devotee_station: String?
-//        var devotee_cell_phone_number: String?
-//        var Devotee_ID_Image: String?
-//        var Devotee_Photo: String?
-//    }
-//    struct DevoteeDetailedStructure: Codable {
-//        var Devotee_Key: String
-//        var Devotee_Type: String?
-//        var Devotee_First_Name: String?
-//        var Devotee_Last_Name: String?
-//        var Devotee_Gender: String?
-//        var Devotee_ID_Type: String?
-//        var Devotee_ID_Number: String?
-//        var Devotee_Station: String?
-//        var Devotee_Cell_Phone_Number: String?
-//        var Devotee_Status: String?
-//        var Devotee_Remarks: String?
-//        var Devotee_Record_Update_Date_Time: String?
-//        var Devotee_Record_Updated_By: String?
-//        var Devotee_ID_Image: String?
-//        var Devotee_ID_XML: String?
-//        var DID_Devotee_ID_Type: String?
-//        var Photo_type: String?
-//        var Devotee_Photo: String?
-//        var Accomodation_Key: String
-//    }
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl?.addTarget(self, action: #selector(DevoteeTableViewController.LoadDevoteeRecords), for: UIControlEvents.valueChanged)
@@ -219,6 +188,7 @@ class DevoteeTableViewController: UITableViewController {
     
     private func loadImage(imageData: String) -> UIImage? {
             let unencodedData = Data(base64Encoded: imageData)
+  //          print(imageData)
             let image = UIImage(data: unencodedData!)
             return image
     }
@@ -393,4 +363,34 @@ class DevoteeTableViewController: UITableViewController {
      self.refreshControl?.endRefreshing()
      }
      */
+    //    struct DevoteeStructure: Codable {
+    //        var devotee_key: String
+    //        var Devotee_Name: String?
+    //        var devotee_station: String?
+    //        var devotee_cell_phone_number: String?
+    //        var Devotee_ID_Image: String?
+    //        var Devotee_Photo: String?
+    //    }
+    //    struct DevoteeDetailedStructure: Codable {
+    //        var Devotee_Key: String
+    //        var Devotee_Type: String?
+    //        var Devotee_First_Name: String?
+    //        var Devotee_Last_Name: String?
+    //        var Devotee_Gender: String?
+    //        var Devotee_ID_Type: String?
+    //        var Devotee_ID_Number: String?
+    //        var Devotee_Station: String?
+    //        var Devotee_Cell_Phone_Number: String?
+    //        var Devotee_Status: String?
+    //        var Devotee_Remarks: String?
+    //        var Devotee_Record_Update_Date_Time: String?
+    //        var Devotee_Record_Updated_By: String?
+    //        var Devotee_ID_Image: String?
+    //        var Devotee_ID_XML: String?
+    //        var DID_Devotee_ID_Type: String?
+    //        var Photo_type: String?
+    //        var Devotee_Photo: String?
+    //        var Accomodation_Key: String
+    //    }
+    
 }

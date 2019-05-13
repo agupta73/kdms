@@ -120,7 +120,6 @@ $config_data=include_once("../site_config.php");
                 return document.getElementById(el);
             }
 
-
             //javascript function for ajax call
             function saveFormData(formId, flag) {
 
