@@ -17,17 +17,19 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //    var xmlString: String
     
     @IBAction func Cancel(_ sender: Any) {
-        let isPresentingInAddMealMode = presentingViewController is UINavigationController
         
-        if isPresentingInAddMealMode {
-            dismiss(animated: true, completion: nil)
-        }
-        else if let owningNavigationController = navigationController{
-            owningNavigationController.popViewController(animated: true)
-        }
-        else {
-            fatalError("The ScannerControl is not inside a navigation controller.")
-        }
+        self.navigationController?.popViewController(animated: true)
+//        let isPresentingInAddMealMode = presentingViewController is UINavigationController
+//        
+//        if isPresentingInAddMealMode {
+//            dismiss(animated: true, completion: nil)
+//        }
+//        else if let owningNavigationController = navigationController{
+//            owningNavigationController.popViewController(animated: true)
+//        }
+//        else {
+//            fatalError("The ScannerControl is not inside a navigation controller.")
+//        }
     }
     
     

@@ -384,6 +384,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         self.postData(url: url, parameter: parameters,completion: { result, error in
             let jsonResult = result?.value as! NSDictionary
             let devoteeID = jsonResult["info"] as! String
+            //let message = jsonResult["msg"] as! String
+            //print(message)
             if(devoteeID  != self.txtDevoteeKey.text) {
                 self.txtDevoteeKey.text = devoteeID
             }

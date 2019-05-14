@@ -46,10 +46,11 @@ Class ImageIOS {
             $stmt->bindParam(":status", $status);
             
             if (!$stmt->execute()) {
-                return $stmt->errorInfo();
+                //return $stmt->errorInfo();
+                return 'Error';
             }
             else{
-                return $stmt->errorInfo();
+                return 'Success';
             }
 
         } 
