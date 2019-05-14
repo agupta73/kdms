@@ -17,6 +17,7 @@ class DevoteeTableViewController: UITableViewController {
     var devotees = [Devotee]()
     var selectedTabIndex: Int = 0
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl?.addTarget(self, action: #selector(DevoteeTableViewController.LoadDevoteeRecords), for: UIControlEvents.valueChanged)

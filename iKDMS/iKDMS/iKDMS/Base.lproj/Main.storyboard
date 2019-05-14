@@ -106,7 +106,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Skip" id="uNV-fs-aYy">
                             <connections>
-                                <segue destination="N8F-Sw-WIN" kind="show" id="Rnf-Uj-sEv"/>
+                                <segue destination="BYZ-38-t0r" kind="show" id="Ej0-Bm-eGb"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -305,7 +305,7 @@
                     <navigationItem key="navigationItem" title="Add New Devotee Record" id="t1I-rE-hN3">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="R5s-QV-ru7">
                             <connections>
-                                <action selector="Cancel:" destination="BYZ-38-t0r" id="3Pq-9n-Uhj"/>
+                                <action selector="cancelButtonPressed:" destination="BYZ-38-t0r" id="9Dh-dC-t9z"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Save" id="GfZ-z7-y3r">
@@ -362,31 +362,12 @@
             </objects>
             <point key="canvasLocation" x="-524" y="133"/>
         </scene>
-        <!--Item-->
-        <scene sceneID="XEm-vz-wIu">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="N8F-Sw-WIN" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="s9L-9M-Txw"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" restorationIdentifier="Title" insetsLayoutMarginsFromSafeArea="NO" id="aSx-el-2UG">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="hgq-DP-fxh"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CdT-dy-VRP" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="975" y="491"/>
-        </scene>
     </scenes>
     <resources>
         <image name="Default ID" width="256" height="256"/>
         <image name="Default Image" width="35" height="34"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hgq-DP-fxh"/>
+        <segue reference="Ej0-Bm-eGb"/>
     </inferredMetricsTieBreakers>
 </document>

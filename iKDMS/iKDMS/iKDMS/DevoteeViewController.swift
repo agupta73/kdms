@@ -38,6 +38,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         
     }
   
+    
 //    struct AccommodationStructure: Codable {
 //        var accomodation_key: String
 //        var Accomodation_Name: String
@@ -283,6 +284,10 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @IBAction func btnSaveExit(_ sender: UIButton) {
         saveDevotee(toPrintCard: false)
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func cancelButtonPressed(_ sender: Any) {
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     private func loadMasterData() {
