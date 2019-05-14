@@ -36,10 +36,10 @@ if ($api_type == 3) {
 //        echo $unencoded;
 //        die;
     $rMessage = $imageClass->upload($requestData, $devotee_key, $is_update);
-    echo implode("|", $rMessage);
+//    echo implode("|", $rMessage);
 //    if ($imageClass->upload($requestData, $devotee_key, $is_update)) {
 //        if ($new) {
-//            res_success($devotee_key);
+            res_success($rMessage, $devotee_key);
 //        } else {
 //            res_success('Devotee image updated successfully !');
 //            //res_success($requestData['image']);
@@ -50,8 +50,8 @@ if ($api_type == 3) {
             
 }
 
-function res_success($msg) {
-    echo json_encode(['message' => $msg, 'status' => true]);
+function res_success($msg, $devotee_key) {
+    echo json_encode(['message' => $msg, 'info' => $devotee_key , 'status' => true]);
     die;
 }
 
