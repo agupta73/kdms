@@ -282,17 +282,21 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        if picker == imagePickerControllerID {
-            print("ID")
-        }
+        
         // The info dictionary may contain multiple representations of the image. You want to use the original.
         guard let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else {
             fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
         }
         
-        // Set photoImageView to display the selected image.
-        DevoteePhoto.image = selectedImage
-        saveDevoteePhoto(selectedImage: selectedImage)
+        if picker == imagePickerControllerID {
+            devoteeIDImage.image = selectedImage
+            saveDevoteePhoto(selectedImage: selectedImage, imageType: "ID")
+        }
+        else {
+            // Set photoImageView to display the selected image.
+            DevoteePhoto.image = selectedImage
+            saveDevoteePhoto(selectedImage: selectedImage, imageType: "Photo")
+        }
         // Dismiss the picker.
         dismiss(animated: true, completion: nil)
     }
@@ -397,16 +401,34 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         return ""
     }
     
-    private func saveDevoteePhoto(selectedImage: UIImage, imageType: String = "") {
+    private func saveDevoteePhoto(selectedImage: UIImage, imageType: String ) {
+        var apiType: String
+        var type: String
+        
         let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
         //let imageData = UIImagePNGRepresentation(selectedImage)
         let base64String = imageData?.base64EncodedString()
         
         let url: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
 
+        if imageType == "ID" {
+            apiType = "4"
+            if txtIDType.text == "" {
+                type = "Other"
+            }
+            else {
+                type = txtIDType.text ?? "Other"
+            }
+        }
+        else {
+            apiType = "3"
+            type = "self"
+        }
+        
         let parameters: Parameters = [
             "devotee_key": txtDevoteeKey.text ?? "",
-            "api_type": "3",
+            "api_type": apiType,
+            "type": type,
             "image": base64String ?? ""
         ]
         self.postData(url: url, parameter: parameters,completion: { result, error in
