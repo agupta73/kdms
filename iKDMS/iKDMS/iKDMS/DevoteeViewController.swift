@@ -31,6 +31,9 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var btnSaveExit: UIButton!
     
+    var imagePickerControllerID: UIImagePickerController?
+    var imagePickerController: UIImagePickerController?
+    
     struct saveResponse: Codable {
         var flag: Int?
         var info: String?
@@ -103,9 +106,6 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         devoteeTypePicker.dataSource = self
         
         loadMasterData()
-        
-       
-        
         
         //updateSaveButtonState()
     }
@@ -234,6 +234,26 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     //MARK: Action
     
+    @IBAction func IdClicked(_ sender: UITapGestureRecognizer) {
+        txtFirstName.resignFirstResponder()
+        txtDevoteeKey.resignFirstResponder()
+        txtLastName.resignFirstResponder()
+        txtDevoteeType.resignFirstResponder()
+        txtIDType.resignFirstResponder()
+        txtIDNumber.resignFirstResponder()
+        txtPhoneNumber.resignFirstResponder()
+        txtStation.resignFirstResponder()
+        txtAccommodation.resignFirstResponder()
+        txtRemarks.resignFirstResponder()
+        imagePickerControllerID = UIImagePickerController()
+        imagePickerControllerID!.delegate = self
+        imagePickerControllerID!.sourceType = UIImagePickerControllerSourceType.savedPhotosAlbum
+        
+        // Make sure ViewController is notified when the user picks an image.
+        imagePickerControllerID!.delegate = self
+        present(imagePickerControllerID!, animated: true, completion: nil)
+        //lblTopMessage.text = "photo clicked.."
+    }
     @IBAction func PhotoClicked(_ sender: UITapGestureRecognizer) {
         
             txtFirstName.resignFirstResponder()
@@ -246,12 +266,12 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             txtStation.resignFirstResponder()
             txtAccommodation.resignFirstResponder()
             txtRemarks.resignFirstResponder()
-            let imagePickerController = UIImagePickerController()
-            //imagePickerController.sourceType = .camera
-            
+            imagePickerController = UIImagePickerController()
+            imagePickerController!.sourceType = .savedPhotosAlbum
+
             // Make sure ViewController is notified when the user picks an image.
-            imagePickerController.delegate = self
-            present(imagePickerController, animated: true, completion: nil)
+            imagePickerController!.delegate = self
+            present(imagePickerController!, animated: true, completion: nil)
             //lblTopMessage.text = "photo clicked.."
     }
     //MARK: UIImagePickerControllerDelegate
@@ -262,6 +282,9 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
+        if picker == imagePickerControllerID {
+            print("ID")
+        }
         // The info dictionary may contain multiple representations of the image. You want to use the original.
         guard let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else {
             fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")

@@ -268,10 +268,13 @@
                                     <outletCollection property="gestureRecognizers" destination="2Rv-53-fbG" appends="YES" id="4Hv-je-R1Q"/>
                                 </connections>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Default ID" translatesAutoresizingMaskIntoConstraints="NO" id="BUL-ja-rzo">
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Default ID" translatesAutoresizingMaskIntoConstraints="NO" id="BUL-ja-rzo">
                                 <rect key="frame" x="192" y="71" width="158" height="158"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="Xcj-Wx-IdC" appends="YES" id="BXQ-tr-UBb"/>
+                                </connections>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z7R-yd-iBa">
                                 <rect key="frame" x="8" y="565" width="111" height="30"/>
@@ -338,6 +341,11 @@
                 <tapGestureRecognizer id="2Rv-53-fbG">
                     <connections>
                         <action selector="PhotoClicked:" destination="BYZ-38-t0r" id="Hmq-mD-1Lt"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="Xcj-Wx-IdC">
+                    <connections>
+                        <action selector="IdClicked:" destination="BYZ-38-t0r" id="WU4-oi-s0Q"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
