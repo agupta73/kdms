@@ -1,4 +1,6 @@
-
+<?php
+$config_data=include("../site_config.php");
+?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
     Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
@@ -119,13 +121,17 @@
           var reqType = "dynamicSearchDevotee";
       	$('#search-result-container').show();
       	$('#search-result-container').html('<div><img src="../assets/img/preloader.gif" width="50px;" height="50px"> <span style="font-size: 20px;">Please Wait...</span></div>');
-        $.post('/KDMS/Logic/requestManager.php',{'key': val, 'requestType': reqType}, function(data){
-      		if(data != "")
+        $.post('<?=$config_data['webroot'];?>Logic/requestManager.php',{'key': val, 'requestType': reqType}, function(data){
+      		if(data != ""){
       			$('#search-result-container').html(data);
-              else
+                    // add some css to scroll/view all data
+                    $('.sidebar').css({'height':'1200px','overflow-y':'scroll'});
+                    $('.sidebar-wrapper').css({'height':'1200px','overflow-y':'scroll'});
+                }else{
       		$('#search-result-container').html("<div class='search-result'> Please wait.. </div>");
+            }
       	}).fail(function(xhr, ajaxOptions, thrownError) { //any errors?
-
+            $('#search-result-container').html('');
       	   alert(thrownError); //alert with HTTP error
       	});
       }
