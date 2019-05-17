@@ -122,7 +122,7 @@ $config_data=include_once("../site_config.php");
 
             //javascript function for ajax call
             function saveFormData(formId, flag) {
-
+                var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
 
@@ -134,7 +134,7 @@ $config_data=include_once("../site_config.php");
                         async: false,
                         success: function (response) {
                             //		alert(response);
-                            var r = JSON.parse(response);
+                            r = JSON.parse(response);
 
                             if (r['flag'] == true) {
                                 //                    alert("Devotee record updated successfully!");
@@ -146,11 +146,10 @@ $config_data=include_once("../site_config.php");
                             }
                         }
                     });
-
                     //Save and stay on the record
                     if (flag == 1 && updateSuccess) {
                         alert("Devotee record updated successfully!");
-                        window.location.assign("<?=$config_data['webroot'];?>UI/adddevoteei.php?devotee_key=" + r['info']);
+                        window.location.assign("<?=$config_data['webroot'];?>UI/addDevoteeI.php?devotee_key=" + r['info']);
                     }
                     //save and Print
                     if (flag == -1 && updateSuccess) {

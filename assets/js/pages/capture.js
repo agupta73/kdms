@@ -134,7 +134,7 @@
                 var url = window.location.href;
                 alert('Devotee Image updated!!');
                 $('#CameraModalLong').modal('hide');
-                //window.location = url;
+                window.location = url;
             });
         } else {
             $.ajax({
@@ -146,9 +146,9 @@
                 var newId = data.message;
                 var url = window.location.href;
                 url = url + '?devotee_key=' + newId;
-                //alert('Image uploaded to new Devotee record!!');
-                //$('#CameraModalLong').modal('hide');
-                //window.location = url;
+                alert('Image uploaded to new Devotee record!!');
+                $('#CameraModalLong').modal('hide');
+                window.location = url;
             });
         }
 
