@@ -41,6 +41,10 @@ Class Devotee {
                     case "DYN": //Dynamic search
                             return $this->dynamicSearchDevotee($requestData['key']);
                     break;
+                
+                    case "AOD": //Accommodation Occupier Devotees  
+                            return $this->getDevoteesForAccommodation($requestData['key']);
+                    break;
 
                     default :
                         return $this->getDetails($requestData['key']);                    
@@ -442,6 +446,64 @@ Class Devotee {
                     " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
                     "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
+                
+        
+           
+        //var_dump($query);die;
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeSearchResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            
+            $devoteeSearchResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);die;
+        if($i==0){
+            $devoteeSearchResult['status'] = false;
+            $devoteeSearchResult['message'] = "No record found!";
+            $devoteeSearchResult['info'] = $results;
+        }
+        
+        return $devoteeSearchResult;
+    }
+    
+     private function getDevoteesForAccommodation($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($requestData)) {
+            $errormsg .= "Accommodation keys not supplied.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+       
+        $query = "select " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name " .
+                    ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", acm.accomodation_name " .
+                    ", dp.Devotee_Photo ".
+                 "from " .
+                    " Devotee d ".
+                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
+                    " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
+                 "where " .
+                    "da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
                 
         
            
