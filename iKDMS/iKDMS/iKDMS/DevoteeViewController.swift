@@ -386,11 +386,17 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
                 txtAccommodation.text = getAccommodationValuefromKey(passedKey: devotee.devoteeAccoId!)
             }
             txtRemarks.text = devotee.devoteeRemarks
-            DevoteePhoto.image = devotee.devoteePhoto
-            devoteeIDImage.image = devotee.devoteeIdImage
+            
+            print(devotee.devoteePhoto?.size.width)
+            
+            if(devotee.devoteePhoto?.size.width != nil) {
+                DevoteePhoto.image = devotee.devoteePhoto
+            }
+            if(devotee.devoteeIdImage?.size.width != nil) {
+                devoteeIDImage.image = devotee.devoteeIdImage
+            }
         }
     }
-    
     
     private func getAccommodationValuefromKey(passedKey: String) -> String {
         for i in 0..<self.accoIDValues.count {

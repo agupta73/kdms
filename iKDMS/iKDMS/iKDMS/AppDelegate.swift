@@ -32,12 +32,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //let stopWatchViewController = storyboard.instantiateViewControllerWithIdentifier("StopWatchViewController")
         let devoteeListViewController = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
         let devoteeListViewController2 = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
-        let devoteeListViewController3 = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
+        let devoteeListViewController3 = storyboard.instantiateViewController(withIdentifier: "ReportViewController") as! UITableViewController
         let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController")
         
         devoteeListViewController.tabBarItem.title = "Print List"
         devoteeListViewController2.tabBarItem.title = "Add Photo"
-        devoteeListViewController3.tabBarItem.title = "Add Detail"
+        devoteeListViewController3.tabBarItem.title = "View Report"
         //devoteeListViewController.tabBarItem.image = UIImage(named: "List")
         
         //devoteeViewController.tabBarItem.title = "Register"
