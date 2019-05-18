@@ -31,7 +31,7 @@ Class ImageIOS {
          */
         // To devotee table 
         
-        if ($is_update) {  //
+//        if ($is_update) {  //
              
 //            $query0 = "UPDATE Devotee_Photo
 //                        SET
@@ -59,7 +59,7 @@ Class ImageIOS {
                 return "Success";
             }
 
-        } 
+//        } 
     }
 
     public function uploadID($requestData, $devotee_id, $IDType ) {
@@ -82,7 +82,7 @@ Class ImageIOS {
          */
         // To devotee table 
         
-        if ($is_update) {  //
+//        if ($is_update) {  //
              
 //            $query0 = "UPDATE Devotee_Photo
 //                        SET
@@ -99,7 +99,7 @@ Class ImageIOS {
             $stmt->bindParam(":photo", $unencoded);
             $stmt->bindParam(":id", $devotee_id);
             $stmt->bindParam(":type", $type);
-            $stmt->bindParam(":status", $status);
+//            $stmt->bindParam(":status", $status);
             
             if (!$stmt->execute()) {
                 //return $stmt->errorInfo();
@@ -109,7 +109,7 @@ Class ImageIOS {
                 return "Success";
             }
 
-        } 
+//        } 
     }
 }
 

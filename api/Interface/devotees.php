@@ -631,7 +631,8 @@ Class Devotee {
         if (!empty($requestData['devotee_key'])) {
             // Edit
             $unique_id = $requestData['devotee_key'];
-            $query = "CALL PROC_UPDATE_DEVOTEE(";
+            //$query = "CALL PROC_UPDATE_DEVOTEE(";
+            $query = "CALL PROC_REPLACE_DEVOTEE(";
         } else {
             // Add
             // Generate unique ID

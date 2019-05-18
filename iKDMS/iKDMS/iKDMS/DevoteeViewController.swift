@@ -246,8 +246,12 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         txtAccommodation.resignFirstResponder()
         txtRemarks.resignFirstResponder()
         imagePickerControllerID = UIImagePickerController()
-        imagePickerControllerID!.delegate = self
-        imagePickerControllerID!.sourceType = UIImagePickerControllerSourceType.savedPhotosAlbum
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imagePickerControllerID?.sourceType = .camera
+        }
+        else {
+            imagePickerControllerID?.sourceType = .photoLibrary
+        }
         
         // Make sure ViewController is notified when the user picks an image.
         imagePickerControllerID!.delegate = self
@@ -256,23 +260,28 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     @IBAction func PhotoClicked(_ sender: UITapGestureRecognizer) {
         
-            txtFirstName.resignFirstResponder()
-            txtDevoteeKey.resignFirstResponder()
-            txtLastName.resignFirstResponder()
-            txtDevoteeType.resignFirstResponder()
-            txtIDType.resignFirstResponder()
-            txtIDNumber.resignFirstResponder()
-            txtPhoneNumber.resignFirstResponder()
-            txtStation.resignFirstResponder()
-            txtAccommodation.resignFirstResponder()
-            txtRemarks.resignFirstResponder()
-            imagePickerController = UIImagePickerController()
-            imagePickerController!.sourceType = .savedPhotosAlbum
-
-            // Make sure ViewController is notified when the user picks an image.
-            imagePickerController!.delegate = self
-            present(imagePickerController!, animated: true, completion: nil)
-            //lblTopMessage.text = "photo clicked.."
+        txtFirstName.resignFirstResponder()
+        txtDevoteeKey.resignFirstResponder()
+        txtLastName.resignFirstResponder()
+        txtDevoteeType.resignFirstResponder()
+        txtIDType.resignFirstResponder()
+        txtIDNumber.resignFirstResponder()
+        txtPhoneNumber.resignFirstResponder()
+        txtStation.resignFirstResponder()
+        txtAccommodation.resignFirstResponder()
+        txtRemarks.resignFirstResponder()
+        imagePickerController = UIImagePickerController()
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imagePickerController?.sourceType = .camera
+        }
+        else {
+            imagePickerController?.sourceType = .photoLibrary
+        }
+        
+        // Make sure ViewController is notified when the user picks an image.
+        imagePickerController!.delegate = self
+        present(imagePickerController!, animated: true, completion: nil)
+        //lblTopMessage.text = "photo clicked.."
     }
     //MARK: UIImagePickerControllerDelegate
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -432,13 +441,13 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             "image": base64String ?? ""
         ]
         self.postData(url: url, parameter: parameters,completion: { result, error in
-//            let jsonResult = result?.value as! NSDictionary
-//            let devoteeID = jsonResult["info"] as! String
-//            //let message = jsonResult["msg"] as! String
-//            //print(message)
-//            if(devoteeID  != self.txtDevoteeKey.text) {
-//                self.txtDevoteeKey.text = devoteeID
-//            }
+            let jsonResult = result?.value as! NSDictionary
+            let devoteeID = jsonResult["info"] as! String
+            //let message = jsonResult["msg"] as! String
+            //print(message)
+            if(devoteeID  != self.txtDevoteeKey.text) {
+                self.txtDevoteeKey.text = devoteeID
+            }
         })
     }
     
