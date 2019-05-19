@@ -1,101 +1,253 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf500
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww24120\viewh16000\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\rtf1\ansi\deff3\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset0 Liberation Serif{\*\falt Times New Roman};}{\f4\fswiss\fprq2\fcharset0 Liberation Sans{\*\falt Arial};}{\f5\froman\fprq2\fcharset0 Helvetica{\*\falt Arial};}{\f6\fnil\fprq2\fcharset0 Noto Sans CJK SC Regular;}{\f7\fnil\fprq2\fcharset0 Lohit Devanagari;}{\f8\fnil\fprq0\fcharset128 Lohit Devanagari;}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}
+{\stylesheet{\s0\snext0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393 Normal;}
+{\s15\sbasedon0\snext16\sb240\sa120\keepn\dbch\af6\dbch\af7\afs28\loch\f4\fs28 Heading;}
+{\s16\sbasedon0\snext16\sl276\slmult1\sb0\sa140 Text Body;}
+{\s17\sbasedon16\snext17\sl276\slmult1\sb0\sa140\dbch\af8 List;}
+{\s18\sbasedon0\snext18\sb120\sa120\noline\i\dbch\af8\afs24\ai\fs24 Caption;}
+{\s19\sbasedon0\snext19\noline\dbch\af8 Index;}
+}{\*\generator LibreOffice/6.1.5.2$Linux_X86_64 LibreOffice_project/10$Build-2}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr2019\mo5\dy19\hr19\min8}{\printim\yr0\mo0\dy0\hr0\min0}}{\*\userprops}\deftab720
+\viewscale100
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse451\pgwsxn12240\pghsxn15840\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\pgdscnxt0 Default Style;}}
+\formshade{\*\pgdscno0}\paperh15840\paperw12240\margl1440\margr1440\margt1440\margb1440\sectd\sbknone\sectunlocked1\pgndec\pgwsxn12240\pghsxn15840\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+{\*\ftnsep\chftnsep}\pgndec\pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+DELIMITER $$}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_REPLACE_DEVOTEE`(IN `p_Devotee_Key` VARCHAR(10), IN `p_Devotee_Type` VARCHAR(30), IN `p_Devotee_First_Name` VARCHAR(50), IN `p_Devotee_Last_Name` VARCHAR(50), IN `p_Devotee_Gender` VARCHAR(6), IN `p_Devotee_ID_Type` VARCHAR(10), IN `p_Devotee_ID_Number` VARCHAR(50), IN `p_Devotee_Station` VARCHAR(50), IN `p_Devotee_Cell_Phone_Number` VARCHAR(15), IN `p_Devotee_Status` VARCHAR(20), IN `p_Devotee_Remarks` VARCHAR(250), IN `p_Devotee_Record_Updated_By` VARCHAR(10), IN `p_Devotee_Accommodation_ID` VARCHAR(10), IN `p_Devotee_Accomodation_Status` VARCHAR(10))}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+BEGIN}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+\tab }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+DECLARE v_past_accomodation varchar(10);}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+DECLARE v_past_accomodation_Count varchar(10);    }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
 
-\f0\fs24 \cf0 DELIMITER $$\
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_REPLACE_DEVOTEE`(IN `p_Devotee_Key` VARCHAR(10), IN `p_Devotee_Type` VARCHAR(30), IN `p_Devotee_First_Name` VARCHAR(50), IN `p_Devotee_Last_Name` VARCHAR(50), IN `p_Devotee_Gender` VARCHAR(6), IN `p_Devotee_ID_Type` VARCHAR(10), IN `p_Devotee_ID_Number` VARCHAR(50), IN `p_Devotee_Station` VARCHAR(50), IN `p_Devotee_Cell_Phone_Number` VARCHAR(15), IN `p_Devotee_Status` VARCHAR(20), IN `p_Devotee_Remarks` VARCHAR(250), IN `p_Devotee_Record_Updated_By` VARCHAR(10), IN `p_Devotee_Accommodation_ID` VARCHAR(10), IN `p_Devotee_Accomodation_Status` VARCHAR(10))\
-BEGIN\
-	\
-    DECLARE v_past_accomodation varchar(10);\
-    DECLARE v_past_accomodation_Count varchar(10);    \
-\
-       REPLACE INTO devotee(\
-        Devotee_Key,\
-        Devotee_Type,\
-        Devotee_First_Name,\
-        Devotee_Last_Name,\
-        Devotee_Gender,\
-        Devotee_ID_Type,\
-        Devotee_ID_Number,\
-        Devotee_Station,\
-        Devotee_Cell_Phone_Number,\
-        Devotee_Status,\
-        Devotee_Remarks,\
-        Devotee_Record_Update_Date_Time,\
-        Devotee_Record_Updated_By\
-    )\
-VALUES(\
-    p_Devotee_Key,\
-    p_Devotee_Type,\
-    p_Devotee_First_Name,\
-    p_Devotee_Last_Name,\
-    p_Devotee_Gender,\
-    p_Devotee_ID_Type,\
-    p_Devotee_ID_Number,\
-    p_Devotee_Station,\
-    p_Devotee_Cell_Phone_Number,\
-    p_Devotee_Status,\
-    p_Devotee_Remarks,\
-    NOW(),\
-    p_Devotee_Record_Updated_By\
-);\
-\
-\
-SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE\
-Devotee_Key = p_Devotee_Key AND\
-Accomodation_Status = 'Allocated' AND\
-Accomodation_Year = YEAR(NOW()) AND\
-Accomodation_key = p_Devotee_Accommodation_ID;\
-\
-IF (v_past_accomodation_Count = 0) THEN\
-\
-SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE\
-Devotee_Key = p_Devotee_Key AND\
-Accomodation_Status = 'Allocated' AND\
-Accomodation_Year = YEAR(NOW()) \
-ORDER BY \
-Devotee_Accomodation_Update_Date_Time DESC\
-LIMIT 1;\
-\
-UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;\
-\
-UPDATE Accommodation_Availability SET\
-	Allocated_Count = Allocated_Count - 1,\
-    Available_Count = Available_Count + 1\
-WHERE	\
-	Accomodation_Key = v_past_accomodation;\
-    \
-INSERT INTO Devotee_Accomodation(\
-    Accomodation_Key,\
-    Devotee_Key,\
-    Accomodation_Year,\
-    Arrival_Date_Time,\
-    Departure_Date_Time,\
-    Accomodation_Status,\
-    Devotee_Accomodation_Update_Date_Time,\
-    Devotee_Accomodation_Updated_By\
-)\
-VALUES(\
-    p_Devotee_Accommodation_ID,\
-    p_Devotee_Key,\
-    YEAR(NOW()),\
-    NOW(),\
-    NULL,\
-    p_Devotee_Accomodation_Status,\
-    NOW(),\
-    p_Devotee_Record_Updated_By\
-);\
-\
-UPDATE Accommodation_Availability SET\
-	Allocated_Count = Allocated_Count + 1,\
-    Available_Count = Available_Count - 1\
-WHERE	\
-	Accomodation_Key = p_Devotee_Accommodation_ID;\
-END IF;\
-\
-\
-END$$\
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+       }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+REPLACE INTO }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+D}{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+evotee(}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Key,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Type,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_First_Name,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Last_Name,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Gender,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_ID_Type,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_ID_Number,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Station,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Cell_Phone_Number,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Status,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Remarks,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Record_Update_Date_Time,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+        }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Record_Updated_By}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+)}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+VALUES(}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Key,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Type,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_First_Name,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Last_Name,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Gender,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_ID_Type,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_ID_Number,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Station,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Cell_Phone_Number,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Status,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Remarks,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+NOW(),}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Record_Updated_By}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+);}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Key = p_Devotee_Key AND}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Status = 'Allocated' AND}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Year = YEAR(NOW()) AND}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_key = p_Devotee_Accommodation_ID;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+IF (v_past_accomodation_Count = 0) THEN}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Key = p_Devotee_Key AND}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Status = 'Allocated' AND}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Year = YEAR(NOW()) }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+ORDER BY }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Accomodation_Update_Date_Time DESC}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+LIMIT 1;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+UPDATE Accommodation_Availability SET}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+\tab Allocated_Count = Allocated_Count - 1,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Available_Count = Available_Count + 1}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+WHERE\tab }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+\tab Accomodation_Key = v_past_accomodation;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+INSERT INTO Devotee_Accomodation(}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Key,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Key,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Year,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Arrival_Date_Time,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Departure_Date_Time,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Accomodation_Status,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Accomodation_Update_Date_Time,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Devotee_Accomodation_Updated_By}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+)}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+VALUES(}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Accommodation_ID,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Key,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+YEAR(NOW()),}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+NOW(),}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+NULL,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Accomodation_Status,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+NOW(),}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+p_Devotee_Record_Updated_By}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+);}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+UPDATE Accommodation_Availability SET}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+\tab Allocated_Count = Allocated_Count + 1,}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\fs24\loch\f5\hich\af5
+    }{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+Available_Count = Available_Count - 1}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+WHERE\tab }
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+\tab Accomodation_Key = p_Devotee_Accommodation_ID;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+END IF;}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
+END$$}
+\par \pard\plain \s0\nowidctlpar\hyphpar0\cf0\kerning1\dbch\af9\langfe2052\dbch\af7\afs24\alang1081\loch\f3\hich\af3\fs24\lang16393\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640{\cf0\rtlch \ltrch\loch\fs24\loch\f5\hich\af5
 DELIMITER ;}
+\par }
