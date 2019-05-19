@@ -15,7 +15,7 @@ Class Devotee {
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
-                            return $this->getDetails($requestData['key']);                    
+                            return $this->getDetails(urldecode($requestData['key']));                    
                     break;
 
                     case "SET": //set query, like devotee without photo

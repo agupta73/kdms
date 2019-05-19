@@ -48,7 +48,7 @@ class clsDevoteeSearch {
     private function get_records_from_API($requestData, $mode) {
 
         $ch = curl_init();
-        $url = $this->url . "?key=" . $requestData . "&mode=" . $mode;
+        $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode;
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
