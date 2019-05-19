@@ -11,3 +11,4 @@
 <link href="../assets/css/material-dashboard.css?v=2.1.0" rel="stylesheet" />
 <!-- CSS Just for demo purpose, don't include it in your project -->
 <link href="../assets/demo/demo.css" rel="stylesheet" />
+<script src="../assets/js/qrcode.min.js"></script>

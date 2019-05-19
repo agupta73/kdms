@@ -253,6 +253,21 @@ $config_data=include_once("../site_config.php");
                                                         <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-7">
+                                                        <div id="qrcode" align="right"></div>
+                                                        <script type="text/javascript">
+                                                            new QRCode(document.getElementById("qrcode"), {
+                                                            text: document.getElementById("devotee_key").value,
+                                                            width: 100,
+                                                            height: 100,
+                                                            colorDark : "#000000",
+                                                            colorLight : "#ffffff",
+                                                            correctLevel : QRCode.CorrectLevel.H
+                                                            }
+                                                        );
+                                                </script>
+                                            </div>
+
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
