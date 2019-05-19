@@ -158,10 +158,10 @@ class clsReport {
         $devoteeResults = array();
         
         //1. Total devotees present in the ashram
-        $query[0] = "SELECT sum(allocated_Count) FROM `Accommodation_Availability` WHERE available_count < 10000" ;  
+        $query[0] = "SELECT sum(allocated_Count) as SpaceOccupiedOrDevoteesPresent FROM `Accommodation_Availability` WHERE available_count < 10000" ;  
         
         //2. Total devotees registered this year
-        $query[1] = "select sum(Allocated_Count) as RegisteredDevotees from Accommodation_Availability "  ;
+        $query[1] = "select sum(Allocated_Count) as RegisteredDevoteesIncludingLocals from Accommodation_Availability "  ;
                 //" where Availability_Update_Date_Time >= DATE_SUB(NOW(), INTERVAL 3 MONTH)" ;
                 
         //3. Total spaces available for allocation
@@ -169,6 +169,9 @@ class clsReport {
         
         //4. Total spaces reserved
         $query[3] = "SELECT sum(Reserved_Count) as ReservedSpaces FROM `Accommodation_Availability` where Available_Count < 10000" ;
+        
+        //5. Total devotees with own arrangement
+        $query[4] = "SELECT sum(allocated_Count) as DevoteesWithOwnArrangements FROM `Accommodation_Availability` WHERE available_count > 1000" ;
         
         for($i = 0; $i < sizeof($query); $i++ ) {
             $result = $this->conn->query($query[$i],MYSQLI_USE_RESULT);
