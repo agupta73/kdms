@@ -69,8 +69,11 @@ class DevoteeTableViewController: UITableViewController {
         
         // Fetches the appropriate meal for the data source layout.
         let devotee = devotees[indexPath.row]
+        let devotee_first_name = devotee.firstName ?? ""
+        let devotee_last_name = devotee.lastName ?? ""
         
-        cell.lblName.text = (devotee.firstName ?? "" + " ")// + devotee.lastName ?? "" ?? "") ?? ""
+//        cell.lblName.text = (devotee.firstName ?? "" + " ")// + devotee.lastName ?? "" ?? "") ?? ""
+        cell.lblName.text = devotee_first_name + " " + devotee_last_name
         cell.imagePhoto.image = devotee.devoteePhoto
         cell.lblStation.text = devotee.devoteeStation ?? ""
         cell.lblDevoteeKey.text = devotee.devoteeKey ?? ""
