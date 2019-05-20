@@ -4,7 +4,7 @@ class Database {
 
     private $host = "localhost";
     private $db_name = "KDMS";
-    private $username = "admin";
+    private $username = "root";
     private $password = "";
     public $conn;
 
