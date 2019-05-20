@@ -73,7 +73,7 @@ unset($getReport);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">image</i>
-                            <a href="../UI/registration.php" class="dash-link">Photo and ID Scan</a>
+                            <a href="../UI/addDevoteeI.php" class="dash-link">Photo and ID Scan</a>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -108,13 +108,13 @@ unset($getReport);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">edit</i>
-                            <a href="#pablo" class="dash-link">Modify Delete Record</a>
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Modify Devotee Record</a>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">print</i>
-                            <a href="./devoteeSearchResult.php?mode=SET&key=CTP" class="dash-link">Print Cards</a>
+                            <a href="./devoteeSearchResult.php?mode=SET&key=PWD" class="dash-link">Add Devotee Info to Photos/ID</a>
                         </div>
                     </div>
                 </div>
@@ -166,7 +166,7 @@ unset($getReport);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/index.php?accoType=Occupied" class="dash-link">Total Spaces Occupied:  
+                            <a href="../UI/index.php?accoType=Occupied" class="dash-link">Total Spaces Allocated:  
                                 <b>  <?php echo $response[0]['SpaceOccupiedOrDevoteesPresent']; ?> </b> </a>
                         </div>
                     </div>
@@ -197,21 +197,21 @@ unset($getReport);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/registration.php" class="dash-link">Devotees Residing in Ashram:  
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Residing in Ashram:  
                                 <b>  <?php echo $response[0]['SpaceOccupiedOrDevoteesPresent']; ?> </b> </a>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/registration.php" class="dash-link">Devotees Registered for Seva:  
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva:  
                                 <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
                         </div> 
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/registration.php" class="dash-link">Devotees with Own Arrangement:
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWN" class="dash-link">Devotees with Own Arrangement:
                                 <b>  <?php echo $response[4]['DevoteesWithOwnArrangements']; ?> </b> </a></div> 
                     </div>
                 </div>
@@ -275,13 +275,13 @@ unset($getReport);
                                             Available 
                                         </th>
                                         <th align='right'>
+                                            Allocated 
+                                        </th>
+                                        <th align='right'>
                                             Occupied
                                         </th>
                                         <th align='right'>
                                             Reserved
-                                        </th>
-                                        <th align='right'>
-                                            Allocated 
                                         </th>
                                         <th align='right'>
                                             Unavailable 
@@ -315,18 +315,17 @@ unset($getReport);
                                                         $availableCount = $accommodationRecord['available_count'];
                                                     }
 
+                                                    if (!empty($accommodationRecord['allocated_count'])) {
+                                                        $allocatedCount = $accommodationRecord['allocated_count'];
+                                                    }
+                                                    
                                                     if (!empty($accommodationRecord['occupied_count'])) {
                                                         $occupiedCount = urldecode($accommodationRecord['occupied_count']);
                                                     }
 
                                                     if (!empty($accommodationRecord['reserved_count'])) {
                                                         $reservedCount = urldecode($accommodationRecord['reserved_count']);
-                                                    }
-
-
-                                                    if (!empty($accommodationRecord['allocated_count'])) {
-                                                        $allocatedCount = $accommodationRecord['allocated_count'];
-                                                    }
+                                                    }                                                    
 
                                                     if (!empty($accommodationRecord['Out_of_Availability_Count'])) {
                                                         $outOfAvailabilityCount = $accommodationRecord['Out_of_Availability_Count'];
@@ -343,14 +342,15 @@ unset($getReport);
                                    <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                              </td>
                              <td align='right'>
+                                 <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                             </td>
+                             <td align='right'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
                              </td>
                              <td align='right'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
                              </td>
-                             <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
-                             </td>
+                             
                              <td align='right'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
