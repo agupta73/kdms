@@ -158,7 +158,7 @@ unset($getReport);
                 <div class="card card-stats">
                     <div class="card-header card-header-warning card-header-icon">
                         <div class="card-icon">
-                            <i class="material-icons">Accommodation</i>
+                            <i class="material-icons">hotel</i>
                         </div>
                         <p class="card-category">Statistics</p>
                         <h3 class="card-title"> Accommodations</h3>
@@ -189,7 +189,7 @@ unset($getReport);
                 <div class="card card-stats">
                     <div class="card-header card-header-success card-header-icon">
                         <div class="card-icon">
-                            <i class="material-icons">Devotees</i>
+                            <i class="material-icons">people</i>
                         </div>
                         <p class="card-category">Statistics</p>
                         <h3 class="card-title">Devotees</h3>
@@ -222,7 +222,7 @@ unset($getReport);
                     <div class="card card-stats">
                         <div class="card-header card-header-danger card-header-icon">
                             <div class="card-icon">
-                                <i class="material-icons">Maintenance</i>
+                                <i class="material-icons">settings</i>
                             </div>
                             <p class="card-category">Maintenance</p>
                             <h3 class="card-title">Admin Tasks</h3>
@@ -268,28 +268,32 @@ unset($getReport);
                     <!--                      <th>
                                             Accommodation Key
                                           </th>-->
-                                        <th>
+                                        <th align='left'>
                                             Accommodation Name
                                         </th>
-                                        <th align='right'>
+                                        <th align='left'>
                                             Available 
                                         </th>
-                                        <th align='right'>
+                                        <th align='left'>
                                             Allocated 
                                         </th>
-                                        <th align='right'>
+                                        <th align='left'>
                                             Occupied
                                         </th>
-                                        <th align='right'>
+                                        <th align='left'>
                                             Reserved
                                         </th>
-                                        <th align='right'>
+                                        <th align='left'>
                                             Unavailable 
                                         </th>
 
 
                                         </thead>
-                                        <tbody>
+                                        <tbody >
+                                        <tr>
+                                            <td colspan="12">
+                                            <div class="scrollbar-dash" id="style-6">
+                                                <table class="table table-striped"> 
                                             <?php
                                             $recordCount = 0;
                                             if (!empty($AccoResponse)) {
@@ -336,23 +340,24 @@ unset($getReport);
                                                         $recordCount = $recordCount + 1;
 
                                                         print_r("
-                             <tr><td align='left'>
+                            <tr >
+                             <td align='left'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
                              </td>
-                               <td align='right'>
+                               <td align='left' class='table-data'>
                                    <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left' class='table-data'>
                                  <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left' class='table-data'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left' class='table-data'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
                              </td>
                              
-                             <td align='right'>
+                             <td align='left' class='table-data'>
                                  <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
                              </tr>
@@ -361,6 +366,10 @@ unset($getReport);
                                                 }
                                             }
                                             ?>
+                                            </table>
+                                        </div>
+                                        </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>                  
