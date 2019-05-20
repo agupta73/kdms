@@ -301,6 +301,7 @@ unset($getReport);
                                                     $outOfAvailabilityCount = "--";
                                                     $allocatedCount = "--";
                                                     $availableCount = "--";
+                                                    $occupiedCount = "--";
 
 
                                                     if (!empty($accommodationRecord['accomodation_key'])) {
