@@ -15,7 +15,7 @@ Class Devotee {
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
-                            return $this->getDetails($requestData['key']);                    
+                            return $this->getDetails(urldecode($requestData['key']));                    
                     break;
 
                     case "SET": //set query, like devotee without photo
@@ -491,9 +491,10 @@ Class Devotee {
         }
        
         $query = "select " .
-                    "d.devotee_key, devotee_first_name, d.devotee_last_name " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
                     ", d.devotee_station, d.devotee_cell_phone_number " .
                     ", acm.accomodation_name " .
+                    ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
                  "from " .
                     " Devotee d ".
@@ -515,7 +516,7 @@ Class Devotee {
         $i = 0;
         while($row = $results->fetchObject()){
             $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            
+            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
             $devoteeSearchResult[]=$row;
             $i = $i+1;
         }

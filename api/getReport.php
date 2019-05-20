@@ -11,7 +11,7 @@
   
   $requestData = $_GET;
   $res=$report->getReport($requestData);
-   
+  
   echo json_encode($res);
   
   die;

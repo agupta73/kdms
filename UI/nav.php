@@ -23,7 +23,7 @@ $config_data=include("../site_config.php");
         </a>
       </li>
       <li class="nav-item ">
-        <a class="nav-link" href="./registration.php">
+        <a class="nav-link" href="./addDevoteeI.php">
           <i class="material-icons">camera_alt</i>
           <p>Photo/ID Capture</p>
         </a>
@@ -71,8 +71,12 @@ $config_data=include("../site_config.php");
           <div id="search-box-container" >
           <input  type="text" id="search-data" name="searchData" placeholder="Search By name, phone or stn" autocomplete="off" />
           </div>
-          <div id="search-result-container" style="display:none;position:relative;">
-              <!-- search results comes over here -->
+          <div >
+          <div class="scrollbar-dynamic-search" id="style-6">
+              <div class="force-overflow" id="search-result-container" style="display:none;position:relative;">
+                  <!-- search results comes over here -->
+              </div>
+            </div>
           </div>
           </div>
         </div>
@@ -125,8 +129,8 @@ $config_data=include("../site_config.php");
       		if(data != ""){
       			$('#search-result-container').html(data);
                     // add some css to scroll/view all data
-                    $('.sidebar').css({'height':'1200px','overflow-y':'scroll'});
-                    $('.sidebar-wrapper').css({'height':'1200px','overflow-y':'scroll'});
+                    $('.sidebar').css({'overflow-y':'scroll'});
+                    $('.sidebar-wrapper').css({'overflow-y':'scroll'});
                 }else{
       		$('#search-result-container').html("<div class='search-result'> Please wait.. </div>");
             }
