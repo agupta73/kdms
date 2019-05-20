@@ -23,7 +23,7 @@ $config_data=include("../site_config.php");
         </a>
       </li>
       <li class="nav-item ">
-        <a class="nav-link" href="./addDevoteeI.php">
+        <a class="nav-link" href="./registration.php">
           <i class="material-icons">camera_alt</i>
           <p>Photo/ID Capture</p>
         </a>
