@@ -57,38 +57,32 @@ class clsReport {
     
     //Returns accommodations and their counts
     private function getAccommodationCounts($AccoSpecific){        
-        switch ($AccoSpecific) {
-            case "All":
-                $query = "SELECT" .
+        $query = "SELECT" .
+                    " aa.accomodation_key, " .
                     " am.accomodation_name, " .
                     " aa.available_count," .
                         " ( " .
                             " am.accomodation_capacity - aa.available_count" .
                         " ) AS occupied_count," .
-                        " aa.reserved_count" .
+                        " aa.reserved_count," .
+                        " aa.allocated_count," .
+                        " aa.Out_of_Availability_Count" .
                     " FROM" .
                         " Accommodation_Availability aa" .
                             " LEFT OUTER JOIN Accommodation_Master am ON" .
                             " aa.accomodation_key = am.Accomodation_Key" .
-                    " WHERE" .
+                    " WHERE" ;
+        
+        switch ($AccoSpecific) {
+            case "All":
+                $query = $query .
                         " aa.Available_Count <= 1000" .
                     " Order by " .
                         " Available_Count DESC" ;
             break;
 
             case "Available":
-                $query = "SELECT" .
-                    " am.accomodation_name, " .
-                    " aa.available_count," .
-                        " ( " .
-                            " am.accomodation_capacity - aa.available_count" .
-                        " ) AS occupied_count," .
-                        " aa.reserved_count" .
-                    " FROM" .
-                        " Accommodation_Availability aa" .
-                            " LEFT OUTER JOIN Accommodation_Master am ON" .
-                            " aa.accomodation_key = am.Accomodation_Key" .
-                    " WHERE" .
+                $query = $query .
                         " aa.Available_Count <= 1000" .
                         " AND aa.Available_Count > 0 " .
                     " Order by " .
@@ -96,37 +90,23 @@ class clsReport {
                 break;
             
             case "Reserved":
-                $query = "SELECT" .
-                    " am.accomodation_name, " .
-                    " aa.available_count," .
-                        " ( " .
-                            " am.accomodation_capacity - aa.available_count" .
-                        " ) AS occupied_count," .
-                        " aa.reserved_count" .
-                    " FROM" .
-                        " Accommodation_Availability aa" .
-                            " LEFT OUTER JOIN Accommodation_Master am ON" .
-                            " aa.accomodation_key = am.Accomodation_Key" .
-                    " WHERE" .
+                $query = $query .
                         " aa.Available_Count <= 1000" .
                         " AND aa.Reserved_Count > 0 " .
                     " Order by " .
                         " Available_Count DESC" ;
                 break;
             
+            case "Occupied":
+                $query = $query .
+                        " aa.Available_Count <= 1000" .
+                        " AND aa.Allocated_Count > 0 " .
+                    " Order by " .
+                        " Available_Count DESC" ;
+                break;
+            
             default:
-                $query = "SELECT" .
-                    " am.accomodation_name, " .
-                    " aa.available_count," .
-                        " ( " .
-                            " am.accomodation_capacity - aa.available_count" .
-                        " ) AS occupied_count," .
-                        " aa.reserved_count" .
-                    " FROM" .
-                        " Accommodation_Availability aa" .
-                            " LEFT OUTER JOIN Accommodation_Master am ON" .
-                            " aa.accomodation_key = am.Accomodation_Key" .
-                    " WHERE" .
+                $query = $query .
                         " aa.Available_Count <= 1000" .
                     " Order by " .
                         " Available_Count DESC" ;
@@ -134,7 +114,7 @@ class clsReport {
                 
         }
         
-        
+        //return $query; die;
         
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         

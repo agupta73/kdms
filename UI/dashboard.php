@@ -7,9 +7,16 @@
         
         $getReport = new clsReportHandler();
         $response = $getReport->getAccommodationCounts();
+         $accoType = "All";
+         
+        if(!empty($_GET['accoType'])) {
+            $accoType = $_GET['accoType'];
+        } 
+        
+        $AccoResponse = $getReport->getAccommodationRecords($accoType);
+        //echo sizeof($AccoResponse); die;
         
         unset($getReport);
-
         ?> 
 <script> //javascript function for ajax call 
   function clickHandler(formId, flag){
@@ -79,7 +86,7 @@ function validateInput(){
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">print</i>
-                    <a href="#pablo" class="dash-link">Print Cards</a>
+                    <a href="../UI/devoteeSearchResult.php?mode=SET&key=CTP" class="dash-link">Print Cards</a>
                   </div>
                 </div>
               </div>
@@ -159,21 +166,21 @@ function validateInput(){
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">home</i>
-                    <a href="../UI/registration.php" class="dash-link">Total Spaces Occupied:  
+                    <a href="../UI/index.php?accoType=Occupied" class="dash-link">Total Spaces Occupied:  
                       <b>  <?php echo $response[0]['SpaceOccupiedOrDevoteesPresent'];  ?> </b> </a>
                   </div>
                 </div>
                 <div class="card-footer">
                  <div class="stats">
                     <i class="material-icons text-danger">home</i>
-                    <a href="../UI/registration.php" class="dash-link">Total Spaces Available:  
+                    <a href="../UI/index.php?accoType=Available" class="dash-link">Total Spaces Available:  
                       <b>  <?php echo $response[2]['AvailableSpaces'];  ?> </b> </a>
                    </div> 
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">home</i>
-                    <a href="../UI/registration.php" class="dash-link">Total Spaces Reserved:
+                    <a href="../UI/index.php?accoType=Reserved" class="dash-link">Total Spaces Reserved:
                       <b>  <?php echo $response[3]['ReservedSpaces'];  ?> </b> </a></div> 
                   </div>
               </div>
@@ -209,7 +216,7 @@ function validateInput(){
                   </div>
               </div>
             </div>
-<!--            <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
                 <form name="myForm" id="myFormID">
                     <input type="hidden" name="requestType" id="requestType" value="none">
                     <div class="card card-stats">
@@ -223,23 +230,147 @@ function validateInput(){
                 <div class="card-footer" onclick="clickHandler('#myFormID', 1); return false;">
                   <div class="stats">
                     <i class="material-icons text-danger">refresh</i>
-                    <a href class="dash-link">Refresh Accommodation Counts</a>
+                    <a href class="dash-link"></a>
                   </div>
                 </div>
                 <div class="card-footer" >
                   <div class="stats">
                     <i class="material-icons text-danger">add</i>
-                    <a href="addAccommodationII.php" class="dash-link">Manage Accommodations</a>
+                    <a href="addAccommodationII.php" class="dash-link"></a>
                   </div>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
                     <i class="material-icons text-danger">edit</i>
-                    <a href="upsertAmenityII.php" class="dash-link">Manage Amenities</a>
+                    <a href="upsertAmenityII.php" class="dash-link"></a>
                   </div>
                 </div>
                 </div>             
               </form>
-            </div>-->
-            </div></div>
+            </div>
+            </div>
+            <div class="row">
+                <div class="content">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">
+                  <?php
+                  print_r($accoType . " ");
+                  ?>
+                  Accommodations </h4>
+            </div>
+            <div class="row">
+                 <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead class=" text-primary">
+<!--                      <th>
+                        Accommodation Key
+                      </th>-->
+                      <th>
+                          Accommodation Name
+                      </th>
+                      <th align='right'>
+                        Available 
+                      </th>
+                      <th align='right'>
+                         Occupied
+                      </th>
+                      <th align='right'>
+                         Reserved
+                      </th>
+                      <th align='right'>
+                        Allocated 
+                      </th>
+                      <th align='right'>
+                        Unavailable 
+                      </th>
+                      
+                      
+                    </thead>
+                    <tbody>
+                         <?php
+                              $recordCount = 0;
+                              if (!empty($AccoResponse) ) {
+                                      foreach ($AccoResponse as $accommodationRecord) {
+                                      $accomodationKey = "--Unavailable--";
+                                      $accomodationName = "--Unavailable--";
+                                      $accomodationCapacity = "--";
+                                      $reservedCount = "--";
+                                      $outOfAvailabilityCount = "--";
+                                      $allocatedCount = "--";
+                                      $availableCount = "--";
+
+
+                                      if (!empty($accommodationRecord['accomodation_key'])) {
+                                          $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
+                                      }
+
+                                      if (!empty($accommodationRecord['accomodation_name'])) {
+                                          $accomodationName = urldecode($accommodationRecord['accomodation_name']);
+                                      }
+
+                                      if (!empty($accommodationRecord['available_count'])) {
+                                          $availableCount = $accommodationRecord['available_count'];
+                                      }      
+
+                                       if (!empty($accommodationRecord['occupied_count'])) {
+                                          $occupiedCount = urldecode($accommodationRecord['occupied_count']);
+                                      }
+                                      
+                                      if (!empty($accommodationRecord['reserved_count'])) {
+                                          $reservedCount = urldecode($accommodationRecord['reserved_count']);
+                                      }
+
+                                      
+                                      if (!empty($accommodationRecord['allocated_count'])) {
+                                          $allocatedCount = $accommodationRecord['allocated_count'];
+                                      }
+
+                                      if (!empty($accommodationRecord['Out_of_Availability_Count'])) {
+                                          $outOfAvailabilityCount = $accommodationRecord['Out_of_Availability_Count'];
+                                      }
+                                      
+                                      if($accomodationKey !="--Unavailable--" ){
+                                          $recordCount = $recordCount + 1;
+                                      
+                                          print_r("
+                             <tr><td align='left'>
+                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                             </td>
+                               <td align='right'>
+                                   <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                             </td>
+                             <td align='right'>
+                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
+                             </td>
+                             <td align='right'>
+                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                             </td>
+                             <td align='right'>
+                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                             </td>
+                             <td align='right'>
+                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                             </td>
+                             </tr>
+                             ");
+                                     
+                                  }
+                              }
+                              }
+                              ?>
+                    </tbody>
+                  </table>
+                </div>                  
+              </div>
+                
+            </div>
+          </div>
+            </div>
+                    </div>
+                </div>
+        
+        </div>
         </div>
