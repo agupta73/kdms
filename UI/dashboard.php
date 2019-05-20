@@ -222,10 +222,10 @@ function validateInput(){
                     <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                   <div class="card-icon">
-                    <i class="material-icons">links</i>
+                    <i class="material-icons">Maintenance</i>
                   </div>
-                  <p class="card-category">Links</p>
-                  <h3 class="card-title">Quick Links</h3>
+                  <p class="card-category">Maintenance</p>
+                  <h3 class="card-title">Admin Tasks</h3>
                 </div>
                 <div class="card-footer" onclick="clickHandler('#myFormID', 1); return false;">
                   <div class="stats">
