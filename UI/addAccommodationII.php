@@ -7,7 +7,7 @@
   </title>
   <?php
     include_once("header.php");
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+    include_once("../Logic/clsOptionHandler.php");
   ?>
 </head>
 

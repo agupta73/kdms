@@ -133,9 +133,7 @@ VALUES
     p_Devotee_Key,
     v_past_amenity_quantity + p_Amenity_Quantity,
     YEAR
-(NOW
-()), 'Allocated', NOW
-(), p_Amenity_Managed_By);
+(NOW()), 'Allocated', NOW(), p_Amenity_Managed_By);
 
 UPDATE
     Amenities_Availability
@@ -175,11 +173,9 @@ VALUES
     p_Amenity_Quantity,
     v_amenity_action,
     YEAR
-(NOW
-()),
+(NOW()),
     p_Amenity_Managed_By,
-    NOW
-()) ;
+    NOW()) ;
 END$$
 DELIMITER ;
 -- ///////////////////
@@ -356,8 +352,7 @@ VALUES
     p_Devotee_Cell_Phone_Number,
     p_Devotee_Status,
     p_Devotee_Remarks,
-    NOW
-(),
+    NOW(),
     p_Devotee_Record_Updated_By
 );
 
@@ -386,8 +381,7 @@ LIMIT 1;
 
 UPDATE Devotee_Accomodation
 SET Accomodation_Status
-= 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW
-() WHERE Devotee_Key = p_Devotee_Key;
+= 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;
 
 UPDATE Accommodation_Availability SET
 	Allocated_Count = Allocated_Count - 1,
@@ -494,8 +488,7 @@ LIMIT 1;
 
 UPDATE Devotee_Accomodation
 SET Accomodation_Status
-= 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW
-() WHERE Devotee_Key = p_Devotee_Key;
+= 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;
 
 UPDATE Accommodation_Availability SET
 	Allocated_Count = Allocated_Count - 1,
@@ -563,8 +556,7 @@ VALUES
     p_Accomodation_Key,
     p_Accomodation_Name,
     p_Accomodation_Capacity,
-    NOW
-(), p_Accomodation_Updated_By) ;
+    NOW(), p_Accomodation_Updated_By) ;
     
 REPLACE
 INTO `Accommodation_Availability`
@@ -580,8 +572,7 @@ VALUES
     p_Accomodation_Key,
     p_Reserved_Count,
     p_Out_of_Availability_Count,
-    NOW
-(),
+    NOW(),
     p_Accomodation_Updated_By
     );
 
@@ -620,8 +611,7 @@ VALUES
     p_Amenity_Name,
     p_Amenity_Status,
     p_Amenity_Quantity,
-    NOW
-(), p_Amenity_Updated_By) ;
+    NOW(), p_Amenity_Updated_By) ;
     
 REPLACE
 INTO `Amenities_Availability`
@@ -637,8 +627,7 @@ VALUES
     p_Amenity_Key,
     p_Reserved_Count,
     p_Out_of_Availability_Count,
-    NOW
-(), p_Amenity_Updated_By) ;
+    NOW(), p_Amenity_Updated_By) ;
 CALL
     PROC_REFRESH_AMENITY_COUNT
 () ;
