@@ -7,7 +7,7 @@
   </title>
   <?php
     include_once("header.php");
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+    include_once("../Logic/clsOptionHandler.php");
   ?>
 </head>
 
@@ -118,28 +118,28 @@
                                       print_r("
                              <tr>
                              <td>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityKey . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityKey . "</a>
                              </td>
                              <td>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityName . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityName . "</a>
                              </td>
                              <td>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityStatus . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityStatus . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $amenityQuantity . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityQuantity . "</a>
                              </td>
                                <td align='right'>
-                                   <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $reservedCount . "</a>
+                                   <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $reservedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $outOfAvailabilityCount . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='upsertAmenityi.php?amenity_key=" . $amenityKey . "'>" . $allocatedCount . "</a>
+                                 <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $allocatedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?amenity_key=" . $amenityKey . "'>" . $availableCount . "</a>
+                                 <a href='addAccommodationI.php?amenity_key=" . $amenityKey . "'>" . $availableCount . "</a>
                              </td>
                              </tr>
                              ");
