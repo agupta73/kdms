@@ -88,7 +88,7 @@
                 //alert(response);
 		if(r['status'] == true){
                     alert("Amenity record updated successfully!");
-                   window.location.assign("<?=$config_data['webroot']?>UI/upsertamenityi.php?amenity_key=" + r['info'] );
+                   window.location.assign("<?=$config_data['webroot']?>UI/upsertAmenityI.php?amenity_key=" + r['info'] );
                 }
 		else{
                     alert(r['message']);
