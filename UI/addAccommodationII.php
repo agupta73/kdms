@@ -144,7 +144,7 @@
                 </div>
                 <div class="card-body">
            <div class="col-md-12">                  
-               <form action="addaccommodationI.php">
+               <form action="addAccommodationI.php">
 <!--                    <button type="submit" class="btn btn-success pull-right" style="margin-left:30px;">Cancel</button>
                     <button type="submit" class="btn btn-success pull-right">Add Devotee without photo/image</button>-->
                     <button type="submit" class="btn btn-success pull-right" >Add New Accommodation</button>

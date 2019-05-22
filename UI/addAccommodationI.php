@@ -90,7 +90,7 @@
                 //alert(response);
 		if(r['status'] == true){
                     alert("Accommodation record updated successfully!");
-                   window.location.assign("<?=$config_data['webroot']?>UI/addaccommodationI.php?accommodation_key=" + r['info'] );
+                   window.location.assign("<?=$config_data['webroot']?>UI/addAccommodationI.php?accommodation_key=" + r['info'] );
                 }
 		else{
                     alert(r['message']);

@@ -1,7 +1,7 @@
 <?php
 include_once("header.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsReportHandler.php");
+include_once("../Logic/clsDevoteeSearch.php");
+include_once("../Logic/clsReportHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
 
@@ -29,7 +29,7 @@ unset($getReport);
             switch (flag) {
                 case 1: //Refresh count
                     $.ajax({
-                        url: '/KDMS/Logic/requestManager.php',
+                        url: "<?=$config_data['webroot'];?>Logic/requestManager.php",
                         type: 'POST',
                         data: formData,
                         success: function (response) {
@@ -342,23 +342,23 @@ unset($getReport);
                                                         print_r("
                             <tr >
                              <td align='left'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
                              </td>
                                <td align='left' class='table-data'>
-                                   <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                                   <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                              </td>
                              <td align='left' class='table-data'>
                                  <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
                              </td>
                              <td align='left' class='table-data'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
                              </td>
                              <td align='left' class='table-data'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
                              </td>
                              
                              <td align='left' class='table-data'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
                              </tr>
                              ");
