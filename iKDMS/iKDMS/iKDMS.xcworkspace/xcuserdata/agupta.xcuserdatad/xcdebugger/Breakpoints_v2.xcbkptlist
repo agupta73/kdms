@@ -490,7 +490,7 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "579853102.82864"
+                  timestampString = "580256227.651855"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "478"
@@ -505,7 +505,7 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "579853102.830701"
+                  timestampString = "580256227.654792"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "479"
@@ -672,6 +672,38 @@
             startingLineNumber = "390"
             endingLineNumber = "390"
             landmarkName = "loadDevoteeRecord()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iKDMS/AccommodationTableViewController.swift"
+            timestampString = "580256650.2144949"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "numberOfSections(in:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iKDMS/AccommodationTableViewController.swift"
+            timestampString = "580256650.2148989"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "tableView(_:numberOfRowsInSection:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
