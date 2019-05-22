@@ -7,7 +7,7 @@
   </title>
   <?php
     include_once("header.php");
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+    include_once("../Logic/clsOptionHandler.php");
   ?>
 </head>
 
@@ -110,25 +110,25 @@
                                       print_r("
                              <tr>
                              <td>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
                              </td>
                              <td>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
                              </td>
                                <td align='right'>
-                                   <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                                   <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
                              </td>
                              <td align='right'>
-                                 <a href='addAccommodationi.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                              </td>
                              </tr>
                              ");
@@ -144,7 +144,7 @@
                 </div>
                 <div class="card-body">
            <div class="col-md-12">                  
-               <form action="addaccommodationi.php">
+               <form action="addAccommodationI.php">
 <!--                    <button type="submit" class="btn btn-success pull-right" style="margin-left:30px;">Cancel</button>
                     <button type="submit" class="btn btn-success pull-right">Add Devotee without photo/image</button>-->
                     <button type="submit" class="btn btn-success pull-right" >Add New Accommodation</button>

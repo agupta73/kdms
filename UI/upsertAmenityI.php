@@ -6,8 +6,9 @@
     KDMS (Add Amenity I)
   </title>
   <?php
+    $config_data=include_once("../site_config.php");
     include_once("header.php");  
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+    include_once("../Logic/clsOptionHandler.php");
 
     $requestData = $_GET;
     
@@ -78,7 +79,7 @@
     //alert(formData);
     if(validateInput()){ 
          $.ajax({
-          url:'/KDMS/Logic/requestManager.php',
+          url:'<?=$config_data['webroot']?>Logic/requestManager.php',
           type:'POST',
           data:formData,
           success:function(response){
@@ -87,7 +88,7 @@
                 //alert(response);
 		if(r['status'] == true){
                     alert("Amenity record updated successfully!");
-                   window.location.assign("/KDMS/UI/upsertamenityi.php?amenity_key=" + r['info'] );
+                   window.location.assign("<?=$config_data['webroot']?>UI/upsertAmenityI.php?amenity_key=" + r['info'] );
                 }
 		else{
                     alert(r['message']);
