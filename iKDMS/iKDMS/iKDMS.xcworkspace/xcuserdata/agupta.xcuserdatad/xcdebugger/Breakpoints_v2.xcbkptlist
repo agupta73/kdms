@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "579853102.592064"
+            timestampString = "580257086.571246"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "44"
@@ -58,7 +58,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "579853102.592119"
+            timestampString = "580257086.57199"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "45"
@@ -74,7 +74,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/ScannerViewController.swift"
-            timestampString = "579853102.5921561"
+            timestampString = "580257086.5724241"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "49"
@@ -490,7 +490,7 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "580256227.651855"
+                  timestampString = "580257166.1361949"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "478"
@@ -505,7 +505,7 @@
                   moduleName = "iKDMS"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeViewController.swift"
-                  timestampString = "580256227.654792"
+                  timestampString = "580257166.137417"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "479"
@@ -682,7 +682,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/AccommodationTableViewController.swift"
-            timestampString = "580256650.2144949"
+            timestampString = "580257086.57507"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "28"
@@ -698,13 +698,91 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iKDMS/AccommodationTableViewController.swift"
-            timestampString = "580256650.2148989"
+            timestampString = "580257086.575127"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "32"
             endingLineNumber = "32"
             landmarkName = "tableView(_:numberOfRowsInSection:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iKDMS/DevoteeTableViewController.swift"
+            timestampString = "580257164.856566"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "viewDidAppear(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "iKDMS.DevoteeTableViewController.viewDidAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "iKDMS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeTableViewController.swift"
+                  timestampString = "580257165.66452"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "419">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "iKDMS.DevoteeTableViewController.viewDidAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "iKDMS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeTableViewController.swift"
+                  timestampString = "580257165.666079"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "439">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "iKDMS.DevoteeTableViewController.viewDidAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "iKDMS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeTableViewController.swift"
+                  timestampString = "580257165.66741"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "995">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "iKDMS.DevoteeTableViewController.viewDidAppear(Swift.Bool) -&gt; ()"
+                  moduleName = "iKDMS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/agupta/Box%20Sync/Personal/kdms/kdms/iKDMS/iKDMS/iKDMS/DevoteeTableViewController.swift"
+                  timestampString = "580257165.669152"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "1551">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
