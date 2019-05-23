@@ -421,6 +421,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         var type: String
         
         let imageData = UIImageJPEGRepresentation(selectedImage,0.2)
+        
         //let imageData = UIImagePNGRepresentation(selectedImage)
         let base64String = imageData?.base64EncodedString()
         
