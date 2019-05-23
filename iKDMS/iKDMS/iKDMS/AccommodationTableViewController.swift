@@ -26,7 +26,7 @@ class AccommodationTableViewController: UITableViewController {
         var SummaryID: String
         var SummaryCount: String
     }
-    var selectedRowIndex: Int = 0
+    var filterAcco: String = ""
     
     // MARK: - Table view data source
 
@@ -90,17 +90,25 @@ class AccommodationTableViewController: UITableViewController {
     @objc private func loadAccommodations()  {
         accommodations.removeAll()
         var urlString: String
-        switch selectedRowIndex {
-        case 0:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&AccoType=Reserved"
-        case 1:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&AccoType=Reserved"
-        case 2:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&AccoType=Reserved"
+        switch filterAcco {
+        case "Total Space Allocated":
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Occupied"
+            break
+        case "Total Spaces Available":
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Available"
+            break
+        case "Total Spaces Reserved":
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Reserved"
+            break
+        case "Devotees With Own Arrangements":
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=All"
+            break
         default:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&AccoType=All"
+            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=All"
+            break
         }
         
+        print(urlString)
         Alamofire.request(urlString).responseJSON { response in
             if let json = response.result.value {
                 let parsedData = json as! NSArray
@@ -116,24 +124,8 @@ class AccommodationTableViewController: UITableViewController {
                                                reservedCount: parsedAcco.object(forKey: "reserved_count") as? String,
                                                allocatedCount: parsedAcco.object(forKey: "allocated_count") as? String,
                                                outOfAvailabilityCount: parsedAcco.object(forKey: "Out_of_Availability_Count") as? String ?? "")!)
-                        
-                        
-                        /* (firstName: parsedAcco.object(forKey: "devotee_first_name") as? String,
-                                                 lastName: parsedAcco.object(forKey: "devotee_last_name") as? String,
-                                                 devoteeKey: (parsedAcco.object(forKey: "devotee_key")  as? String)!,
-                                                 devoteeType: parsedAcco.object(forKey: "devotee_type") as? String,
-                                                 devoteeIdType: parsedAcco.object(forKey: "devotee_id_type") as? String,
-                                                 devoteeIdNumber: parsedAcco.object(forKey: "devotee_id_number") as? String,
-                                                 devoteeStation: parsedAcco.object(forKey: "devotee_station")  as? String,
-                                                 devoteePhone: parsedAcco.object(forKey: "devotee_cell_phone_number")  as? String,
-                                                 devoteeRemarks: parsedAcco.object(forKey: "devotee_remarks")  as? String,
-                                                 devoteeAccoId: parsedAcco.object(forKey: "accomodation_key")  as? String,
-                                                 devoteeAccoName: accoName,
-                                                 devoteePhoto: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_Photo")  as? String) ?? ""),
-                                                 devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))!) */
-                    
                 }
-                self.tableView.reloadData()
+                self.tableView.reloadSections([1], with: .none)
             }
         }
        // self.refreshControl?.endRefreshing()
@@ -158,16 +150,36 @@ class AccommodationTableViewController: UITableViewController {
         if section == 0 {
             return "Summary Counts: Click on row to see details"
         } else {
-            return "All Accommodations"
+            switch filterAcco {
+            case "Total Space Allocated":
+                return "Allocated Accommodations"
+            break
+            case "Total Spaces Available":
+                return "Available Accommodations"
+            break
+            case "Total Spaces Reserved":
+                return "Reserved Accommodations"
+            break
+            case "Devotees With Own Arrangements":
+                return "All Accommodations"
+            break
+            default:
+                return "All Accommodations"
+            break
+            }
         }
         
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "AccomodationTableViewCell"
-        
-        let lblOccupied = "Occupied: "
+        var lblOccupied: String
         let lblAvailable = "Available: "
+        if filterAcco == "Total Spaces Reserved" {
+            lblOccupied = "Reserved: "
+        } else {
+            lblOccupied = "Allocated: "
+        }
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? AccommodationTableViewCell  else {
             fatalError("The dequeued cell is not an instance of MealTableViewCell.")
@@ -176,7 +188,11 @@ class AccommodationTableViewController: UITableViewController {
             let accommodation = accommodations[indexPath.row]
             cell.lblAccoName.text = accommodation.accommodationName
             cell.lblAvailableCount.text = lblAvailable +  accommodation.availableCount!
-            cell.lblOccupiedCount.text = lblOccupied + accommodation.occupiedCount!
+            if filterAcco == "Total Spaces Reserved" {
+                cell.lblOccupiedCount.text = lblOccupied + accommodation.reservedCount!
+            } else {
+                cell.lblOccupiedCount.text = lblOccupied + accommodation.allocatedCount!
+            }
             tableView.rowHeight = 50
             cell.backgroundColor = UIColor.clear
             return cell
@@ -187,7 +203,17 @@ class AccommodationTableViewController: UITableViewController {
             cell.lblOccupiedCount.text = ""
             tableView.rowHeight = 30
             cell.backgroundColor = UIColor.lightGray
+            
             return cell
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let summaryCount = summaryList[indexPath.row]
+            filterAcco = summaryCount.SummaryID
+            loadAccommodations()
+            //self.tableView.reloadSections([1], with: .none)
         }
     }
  
