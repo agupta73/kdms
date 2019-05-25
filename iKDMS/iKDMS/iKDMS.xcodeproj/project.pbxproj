@@ -19,6 +19,7 @@
 		2667FAF9228FC9C700EA717D /* AccommodationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2667FAF8228FC9C700EA717D /* AccommodationTableViewCell.swift */; };
 		2667FAFB228FCDBF00EA717D /* AccommodationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2667FAFA228FCDBF00EA717D /* AccommodationTableViewController.swift */; };
 		2667FAFD228FD0EF00EA717D /* Accommodation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2667FAFC228FD0EF00EA717D /* Accommodation.swift */; };
+		26AA1B13229852DD00682833 /* DevoteeSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AA1B12229852DD00682833 /* DevoteeSearchViewController.swift */; };
 		26BB14BF2215230900CD91F1 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BB14BE2215230900CD91F1 /* ScannerViewController.swift */; };
 		26DA592221FAABC3001A6030 /* Devotee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592121FAABC3001A6030 /* Devotee.swift */; };
 		26DA592421FBD272001A6030 /* DevoteeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */; };
@@ -79,6 +80,7 @@
 		2667FAF8228FC9C700EA717D /* AccommodationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccommodationTableViewCell.swift; sourceTree = "<group>"; };
 		2667FAFA228FCDBF00EA717D /* AccommodationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccommodationTableViewController.swift; sourceTree = "<group>"; };
 		2667FAFC228FD0EF00EA717D /* Accommodation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accommodation.swift; sourceTree = "<group>"; };
+		26AA1B12229852DD00682833 /* DevoteeSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeSearchViewController.swift; sourceTree = "<group>"; };
 		26BB14BE2215230900CD91F1 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		26DA592121FAABC3001A6030 /* Devotee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devotee.swift; sourceTree = "<group>"; };
 		26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevoteeTableViewCell.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 				26DA592521FBDE5E001A6030 /* DevoteeTableViewController.swift */,
 				2667FAFA228FCDBF00EA717D /* AccommodationTableViewController.swift */,
 				2667FAFC228FD0EF00EA717D /* Accommodation.swift */,
+				26AA1B12229852DD00682833 /* DevoteeSearchViewController.swift */,
 				26DA592321FBD272001A6030 /* DevoteeTableViewCell.swift */,
 				2667FAF8228FC9C700EA717D /* AccommodationTableViewCell.swift */,
 				26DA592721FFF5BE001A6030 /* SwiftyJSON.swift */,
@@ -438,6 +441,7 @@
 				26DA592221FAABC3001A6030 /* Devotee.swift in Sources */,
 				2667FAF9228FC9C700EA717D /* AccommodationTableViewCell.swift in Sources */,
 				262171CF21F9903700EBBAF9 /* DevoteeViewController.swift in Sources */,
+				26AA1B13229852DD00682833 /* DevoteeSearchViewController.swift in Sources */,
 				262171D521F9903700EBBAF9 /* iKDMS.xcdatamodeld in Sources */,
 				26DA592421FBD272001A6030 /* DevoteeTableViewCell.swift in Sources */,
 				26DA592621FBDE5E001A6030 /* DevoteeTableViewController.swift in Sources */,

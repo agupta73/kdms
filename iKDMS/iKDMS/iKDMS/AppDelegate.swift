@@ -32,12 +32,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //let stopWatchViewController = storyboard.instantiateViewControllerWithIdentifier("StopWatchViewController")
         let devoteeListViewController = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
         let devoteeListViewController2 = storyboard.instantiateViewController(withIdentifier: "DevoteeNavigationBar") as! UINavigationController
-        let devoteeListViewController3 = storyboard.instantiateViewController(withIdentifier: "ReportViewController") as! UITableViewController
+        let devoteeListViewController3 = storyboard.instantiateViewController(withIdentifier: "DevoteeSearchViewController") as! UIViewController
+        let devoteeListViewController4 = storyboard.instantiateViewController(withIdentifier: "ReportViewController") as! UITableViewController
         let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController")
         
         devoteeListViewController.tabBarItem.title = "Print List"
         devoteeListViewController2.tabBarItem.title = "Add Photo"
-        devoteeListViewController3.tabBarItem.title = "View Report"
+        devoteeListViewController3.tabBarItem.title = "Search"
+        devoteeListViewController4.tabBarItem.title = "View Report"
         //devoteeListViewController.tabBarItem.image = UIImage(named: "List")
         
         //devoteeViewController.tabBarItem.title = "Register"
@@ -47,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set up the Tab Bar Controller to have two tabs
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = //[devoteeListViewController,devoteeListViewController2,devoteeListViewController3, devoteeViewController]
-        [devoteeListViewController,devoteeListViewController2,devoteeListViewController3]
+        [devoteeListViewController,devoteeListViewController2,devoteeListViewController3,devoteeListViewController4]
         
         // Make the Tab Bar Controller the root view controller
         window?.rootViewController = tabBarController

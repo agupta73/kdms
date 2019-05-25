@@ -214,6 +214,14 @@ class AccommodationTableViewController: UITableViewController {
             filterAcco = summaryCount.SummaryID
             loadAccommodations()
             //self.tableView.reloadSections([1], with: .none)
+            if filterAcco == "Devotees With Own Arrangements" {
+//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController") as? DevoteeViewController
+//                //devoteeViewController?.devotee  = newDevotee
+//                self.navigationController?.pushViewController(devoteeViewController!, animated: true)
+            }
+            
+            
         }
     }
  
