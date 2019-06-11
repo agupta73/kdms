@@ -174,7 +174,14 @@ $config_data = include("../site_config.php");
                                                         </span> 
                                                     </td>
                                                 </tr>
-
+ <tr>
+                                                    <td>
+                                                        <span>
+                                                            <label style="font-weight:bold; padding-top: 2px"> Date:</label>                                        
+                                                            <input type="text" style="border:none; background-color: transparent; width: 130px; vertical-align: middle" id="devotee_cell_phone_number" value=" <?php echo date('jS F Y'); ?> ">
+                                                        </span> 
+                                                    </td>
+                                                </tr>
                                             </table>
                                         </td>
                                         <td>

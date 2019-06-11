@@ -36,6 +36,11 @@ class clsOptions {
                 $res=$this->upsertAccommodation($requestData);
                 break;
             
+            case "upsertSeva": 
+                $res=$this->upsertSeva($requestData);
+                break;
+            
+            
             case "upsertAmenity": 
                 //print_r("Reaching upsert option");
                 $res=$this->upsertAmenity($requestData);
@@ -129,6 +134,73 @@ class clsOptions {
         else{
             $res['status'] = false;
             $res['message'] = "[Accommodation] Upserting Accommodation Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+  
+    }
+    
+    private function upsertSeva($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "";
+        $Seva_Id="";
+        $Seva_Description="";
+        $Seva_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+
+        
+        if (empty($requestData['seva_id'])) {
+            $errormsg .= " Seva ID is missing.";
+            $status = false;
+        }
+        else{
+            $Seva_Id = htmlspecialchars(strip_tags($requestData['seva_id']));
+        }
+        
+        if (!empty($requestData['seva_description'])) {
+            $Seva_Description = htmlspecialchars(strip_tags($requestData['seva_description']));
+        }
+        else{
+            $Seva_Description=$Seva_Id;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        
+        $query= "CALL PROC_UPSERT_SEVA(";
+//    IN `p_Accomodation_Key` VARCHAR(5),
+//    IN `p_Accomodation_Name` VARCHAR(100),
+//    IN `p_Accomodation_Capacity` INT(11),
+//    IN `p_Reserved_Count` INT(11),
+//    IN `p_Out_of_Availability_Count` INT(11),
+//    IN `p_Accomodation_Updated_By` VARCHAR(10)
+
+         $query = $query . "'" .
+                $Seva_Id . "', '" . 
+                $Seva_Description . "')" ; 
+        
+  // prepare query
+        $stmt = $this->conn->prepare($query);
+        
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $Seva_Id;
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Accommodation] Upserting Seva Record Failed at API!!";
             $res['info'] = $stmt;
         }
         return $res;
@@ -251,6 +323,16 @@ class clsOptions {
             Case "AccommodationDetail":                
                 if(!empty($requestData['option_type'])){
                     return $this->getAccommodationDetail($requestData['key']);
+                }
+                else {
+                    $res['message'] = "Option key not provided";
+                    return $res;                    
+                }
+                break;
+              
+            Case "SevaDetail":                
+                if(!empty($requestData['option_type'])){
+                    return $this->getSevaDetail($requestData['key']);
                 }
                 else {
                     $res['message'] = "Option key not provided";
@@ -387,6 +469,37 @@ class clsOptions {
         }
         
         return $AccomodationDetail;
+    }
+    
+    private function getSevaDetail($sevaKey){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+        
+        
+        $query = "SELECT sm.Seva_ID, sm.`Seva_Description`
+            FROM `Seva_Master` sm             
+            WHERE sm.seva_id = '" . $sevaKey . "'";
+        
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $SevaDetail = array();
+        
+        if($row = $results->fetchObject()){
+            //var_dump($row);
+            $SevaDetail=$row;           
+        }
+        //var_dump($AccomodationDetail);
+        else{
+            $SevaDetail['status'] = false;
+            $SevaDetail['message'] = "Accomodation details not found!";
+            $SevaDetail['info'] = $results;
+        }
+        
+        return $SevaDetail;
     }
     
     private function getAmenityDetail($amenityKey){

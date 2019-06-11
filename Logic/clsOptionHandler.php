@@ -46,6 +46,7 @@ class clsOptionHandler {
 
             case "AccommodationDetail":
             case "AmenityDetail":
+            case "SevaDetail":
                 $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
                 break;
 
@@ -62,6 +63,7 @@ class clsOptionHandler {
         switch ($this->optionType) {
             case "upsertAcco":
             case "upsertAmenity":
+            case "upsertSeva":
                 $response = $this->upsertOptionRecord($this->urlUpsert, $requestData);
                 break;
 
