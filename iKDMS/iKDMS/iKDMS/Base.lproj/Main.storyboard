@@ -368,6 +368,7 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="Add New Devotee Record" id="t1I-rE-hN3">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="R5s-QV-ru7">
                             <connections>
@@ -380,6 +381,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="DevoteePhoto" destination="TWB-TU-bvV" id="pS1-kn-Px7"/>
                         <outlet property="btnSave" destination="Z7R-yd-iBa" id="akI-2p-dj3"/>
@@ -412,7 +414,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2396" y="133"/>
+            <point key="canvasLocation" x="2396" y="132.68365817091455"/>
         </scene>
         <!--Item-->
         <scene sceneID="mnZ-VR-afn">

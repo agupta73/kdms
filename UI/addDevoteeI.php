@@ -29,6 +29,7 @@ $config_data=include_once("../site_config.php");
         $devotee_accommodation_id = "";
         $devotee_photo = "";
         $devotee_id_image = "";
+        $devotee_referral = "";
 
 
         //load accommodation options and available spots
@@ -48,8 +49,8 @@ $config_data=include_once("../site_config.php");
             $is_key_available=true;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails();
-            //unset($devoteeSearch);
-            //var_dump($response); die;
+//            unset($devoteeSearch);
+//            var_dump($response); die;
             //$response = json_decode($response);
             //var_dump($response);
             //assign values
@@ -93,6 +94,10 @@ $config_data=include_once("../site_config.php");
                 $devotee_remarks = urldecode($response['Devotee_Remarks']); //  "" 
             }
 
+            if (!empty($response['Devotee_Referral'])) {
+                $devotee_referral = urldecode($response['Devotee_Referral']); //  "" 
+            }
+            
             if (!empty($response['Accomodation_Key'])) {
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
@@ -379,6 +384,40 @@ $config_data=include_once("../site_config.php");
                                                                 }
                                                                 Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
                                                             }
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Referral</label>
+                                                        <input type="text" class="form-control" name="devotee_referral" id="devotee_referral" value="<?php print_r($devotee_referral); ?>">
+                                                    </div>
+                                                </div>
+<!--                                                <div class="col-md-4">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Phone No.</label>
+                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
+                                                    </div>
+                                                </div>-->
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Duty</label>
+
+                                                        <select type="text" class="form-control" name="devotee_duty_id" id="devotee_duty_id" >
+                                                            <?php
+//                                                            foreach ($accommodations as $accommodation) {
+//                                                                print_r("<option value='" . $accommodation['accomodation_key'] . "'");
+//                                                                if (empty($devotee_accommodation_id)) {
+//                                                                    $devotee_accommodation_id = 'OWN';
+//                                                                }
+//                                                                if ($devotee_accommodation_id == $accommodation['accomodation_key']) {
+//                                                                    print_r("selected");
+//                                                                }
+//                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+//                                                            }
                                                             ?>
                                                         </select>
                                                     </div>

@@ -597,6 +597,7 @@ Class Devotee {
         $Devotee_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
 
+        
         if (empty($requestData['devotee_type'])) {
             $errormsg .= " Devotee Type is missing.";
             $status = false;
@@ -672,6 +673,13 @@ Class Devotee {
             $Devotee_Remarks=htmlspecialchars(strip_tags($requestData['devotee_remarks']));
         }
 
+        if (empty($requestData['devotee_referral'])){
+            $Devotee_Referral="";
+        }
+        else {
+            $Devotee_Referral=htmlspecialchars(strip_tags($requestData['devotee_referral']));
+        }
+        
         if (empty($requestData['devotee_accommodation_id'])){
             $Devotee_Accommodation_ID="0";
         }
@@ -695,12 +703,12 @@ Class Devotee {
             // Edit
             $unique_id = $requestData['devotee_key'];
             //$query = "CALL PROC_UPDATE_DEVOTEE(";
-            $query = "CALL PROC_REPLACE_DEVOTEE(";
+            $query = "CALL PROC_REPLACE_DEVOTEE_I(";
         } else {
             // Add
             // Generate unique ID
             $unique_id = $this->generateId();
-            $query = "CALL PROC_INSERT_DEVOTEE(";
+            $query = "CALL PROC_INSERT_DEVOTEE_I(";
         }
         
 //        $query = $query . "
@@ -731,6 +739,7 @@ Class Devotee {
                 $Devotee_Cell_Phone_Number . "', '" . //:devotee_cell_phone_number,
                 $Devotee_Status . "', '" . //:devotee_status,
                 $Devotee_Remarks . "', '" . //:devotee_remarks,
+                $Devotee_Referral . "', '" . //:devotee_referral,
                 $Devotee_Record_Updated_By . "', '" . //:devotee_record_updated_by,
                 $Devotee_Accommodation_ID . "', '" . //:devotee_accommodation_id,
                 $Devotee_Accomodation_Status . "')" ; //:devotee_accommodation_status)" ;

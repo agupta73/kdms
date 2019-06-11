@@ -14,6 +14,7 @@ import Alamofire
 class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     //MARK: Properties
     //@IBOutlet weak var lblTopMessage: UILabel!
+    
     @IBOutlet weak var txtDevoteeKey: UITextField!
     @IBOutlet weak var txtFirstName: UITextField!
     @IBOutlet weak var txtLastName: UITextField!
@@ -40,7 +41,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         var error: String?
         
     }
-  
+//    @IBAction func Cancel(_ sender: Any) {
+//    }
     
 //    struct AccommodationStructure: Codable {
 //        var accomodation_key: String
@@ -217,7 +219,8 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             owningNavigationController.popViewController(animated: true)
         }
         else {
-            fatalError("The DevoteeViewController is not inside a navigation controller.")
+            //fatalError("The DevoteeViewController is not inside a navigation controller.")
+            
         }
     }
     

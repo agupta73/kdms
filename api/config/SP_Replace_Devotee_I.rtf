@@ -1,0 +1,105 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf500
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww19140\viewh14260\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 DELIMITER $$\
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_REPLACE_DEVOTEE_I`(IN `p_Devotee_Key` VARCHAR(10), IN `p_Devotee_Type` VARCHAR(30), IN `p_Devotee_First_Name` VARCHAR(50), IN `p_Devotee_Last_Name` VARCHAR(50), IN `p_Devotee_Gender` VARCHAR(6), IN `p_Devotee_ID_Type` VARCHAR(10), IN `p_Devotee_ID_Number` VARCHAR(50), IN `p_Devotee_Station` VARCHAR(50), IN `p_Devotee_Cell_Phone_Number` VARCHAR(15), IN `p_Devotee_Status` VARCHAR(20), IN `p_Devotee_Remarks` VARCHAR(250),  IN `p_Devotee_Referral` VARCHAR(100), IN `p_Devotee_Record_Updated_By` VARCHAR(10), IN `p_Devotee_Accommodation_ID` VARCHAR(10), IN `p_Devotee_Accomodation_Status` VARCHAR(10))\
+BEGIN\
+	\
+    DECLARE v_past_accomodation varchar(10);\
+    DECLARE v_past_accomodation_Count varchar(10);    \
+\
+       REPLACE INTO devotee(\
+        Devotee_Key,\
+        Devotee_Type,\
+        Devotee_First_Name,\
+        Devotee_Last_Name,\
+        Devotee_Gender,\
+        Devotee_ID_Type,\
+        Devotee_ID_Number,\
+        Devotee_Station,\
+        Devotee_Cell_Phone_Number,\
+        Devotee_Status,\
+        Devotee_Remarks,\
+        Devotee_Referral,\
+        Devotee_Record_Update_Date_Time,\
+        Devotee_Record_Updated_By\
+    )\
+VALUES(\
+    p_Devotee_Key,\
+    p_Devotee_Type,\
+    p_Devotee_First_Name,\
+    p_Devotee_Last_Name,\
+    p_Devotee_Gender,\
+    p_Devotee_ID_Type,\
+    p_Devotee_ID_Number,\
+    p_Devotee_Station,\
+    p_Devotee_Cell_Phone_Number,\
+    p_Devotee_Status,\
+    p_Devotee_Remarks,\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0     p_Devotee_Referral,\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0     NOW(),\
+    p_Devotee_Record_Updated_By\
+);\
+\
+\
+SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE\
+Devotee_Key = p_Devotee_Key AND\
+Accomodation_Status = 'Allocated' AND\
+Accomodation_Year = YEAR(NOW()) AND\
+Accomodation_key = p_Devotee_Accommodation_ID;\
+\
+IF (v_past_accomodation_Count = 0) THEN\
+\
+SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE\
+Devotee_Key = p_Devotee_Key AND\
+Accomodation_Status = 'Allocated' AND\
+Accomodation_Year = YEAR(NOW()) \
+ORDER BY \
+Devotee_Accomodation_Update_Date_Time DESC\
+LIMIT 1;\
+\
+UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;\
+\
+UPDATE Accommodation_Availability SET\
+	Allocated_Count = Allocated_Count - 1,\
+    Available_Count = Available_Count + 1\
+WHERE	\
+	Accomodation_Key = v_past_accomodation;\
+    \
+INSERT INTO Devotee_Accomodation(\
+    Accomodation_Key,\
+    Devotee_Key,\
+    Accomodation_Year,\
+    Arrival_Date_Time,\
+    Departure_Date_Time,\
+    Accomodation_Status,\
+    Devotee_Accomodation_Update_Date_Time,\
+    Devotee_Accomodation_Updated_By\
+)\
+VALUES(\
+    p_Devotee_Accommodation_ID,\
+    p_Devotee_Key,\
+    YEAR(NOW()),\
+    NOW(),\
+    NULL,\
+    p_Devotee_Accomodation_Status,\
+    NOW(),\
+    p_Devotee_Record_Updated_By\
+);\
+\
+UPDATE Accommodation_Availability SET\
+	Allocated_Count = Allocated_Count + 1,\
+    Available_Count = Available_Count - 1\
+WHERE	\
+	Accomodation_Key = p_Devotee_Accommodation_ID;\
+END IF;\
+\
+\
+END$$\
+DELIMITER ;}

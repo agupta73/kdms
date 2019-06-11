@@ -51,43 +51,7 @@ class DevoteeSearchViewController: UIViewController, UITextFieldDelegate, UIText
     
     //MARK: Action
     @IBAction func searchDevotee(_ sender: Any) {
-        var searchStr: String = ""
-        if txtDevoteeKey.text != "" {
-            searchDevoteeDetail(completion: {
-                //self.txtAccommodation.inputView = self.accoPicker
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController") as? DevoteeViewController
-                devoteeViewController?.devotee  = self.devotee
-                self.navigationController?.pushViewController(devoteeViewController!, animated: true)
-            })
-        } else {
-            searchStr = "mode=CUS&key"
-            
-            if txtRemarks.text != "" {
-                searchStr = searchStr + "remarks=" + txtRemarks.text.addingPercentEncoding(withAllowedCharacters: .alphanumerics)! + ","
-            }
-            if txtStation.text != "" {
-                searchStr = searchStr + "Station=" + txtStation.text! + ","
-            }
-            if txtIDNumber.text != "" {
-                searchStr = searchStr + "id_number=" + txtIDNumber.text! + ","
-            }
-            if txtLastName.text != "" {
-                searchStr = searchStr + "last_name=" + txtLastName.text! + ","
-            }
-            if txtFirstName.text != "" {
-                searchStr = searchStr + "first_name=" + txtFirstName.text! + ","
-            }
-            if txtAccommodation.text != "" {
-                searchStr = searchStr + "accomodation=" + getAccommodationKeyfromValue(passedValue: txtAccommodation.text!) + ","
-            }
-            if txtPhoneNumber.text != "" {
-                searchStr = searchStr + "devotee_cell_phone_number=" + txtPhoneNumber.text! + ","
-            }
-            if searchStr.count > 0 {
-                searchStr =  String(searchStr.dropLast())
-            }
-        }
+       
     }
     
     @IBAction func Cancel(_ sender: Any) {
@@ -120,19 +84,20 @@ class DevoteeSearchViewController: UIViewController, UITextFieldDelegate, UIText
                 let parsedDevotee = json as! NSDictionary
                 var accoName = parsedDevotee.object(forKey: "accomodation_name")  as? String
                 accoName = accoName?.replacingOccurrences(of: "+", with: " ")
-                self.devotee = Devotee(firstName: parsedDevotee.object(forKey: "devotee_first_name") as? String,
-                                             lastName: parsedDevotee.object(forKey: "devotee_last_name") as? String,
+                self.devotee = Devotee(firstName: parsedDevotee.object(forKey: "Devotee_First_Name") as? String,
+                                             lastName: parsedDevotee.object(forKey: "Devotee_Last_Name") as? String,
                                              devoteeKey: (parsedDevotee.object(forKey: "Devotee_Key")  as? String) ?? "",
-                                             devoteeType: parsedDevotee.object(forKey: "devotee_type") as? String,
-                                             devoteeIdType: parsedDevotee.object(forKey: "devotee_id_type") as? String,
-                                             devoteeIdNumber: parsedDevotee.object(forKey: "devotee_id_number") as? String,
-                                             devoteeStation: parsedDevotee.object(forKey: "devotee_station")  as? String,
-                                             devoteePhone: parsedDevotee.object(forKey: "devotee_cell_phone_number")  as? String,
-                                             devoteeRemarks: parsedDevotee.object(forKey: "devotee_remarks")  as? String,
-                                             devoteeAccoId: parsedDevotee.object(forKey: "accomodation_key")  as? String,
+                                             devoteeType: parsedDevotee.object(forKey: "Devotee_Type") as? String,
+                                             devoteeIdType: parsedDevotee.object(forKey: "Devotee_Id_Type") as? String,
+                                             devoteeIdNumber: parsedDevotee.object(forKey: "Devotee_Id_Number") as? String,
+                                             devoteeStation: parsedDevotee.object(forKey: "Devotee_Station")  as? String,
+                                             devoteePhone: parsedDevotee.object(forKey: "Devotee_Cell_Phone_Number")  as? String,
+                                             devoteeRemarks: parsedDevotee.object(forKey: "Devotee_Remarks")  as? String,
+                                             devoteeAccoId: parsedDevotee.object(forKey: "Accomodation_Key")  as? String,
                                              devoteeAccoName: accoName,
                                              devoteePhoto: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_Photo")  as? String) ?? ""),
-                                             devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))!
+                                             devoteeIdImage: self.loadImage(imageData: (parsedDevotee.object(forKey: "Devotee_ID_Image")  as? String) ?? ""))
+//                print(self.devotee?.firstName)
             }
             completion()
         }
@@ -264,7 +229,48 @@ class DevoteeSearchViewController: UIViewController, UITextFieldDelegate, UIText
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
-        searchDevotee(self)
+       // searchDevotee(self)
+        //print("reaching prepare...")
+        var searchStr: String = ""
+        if txtDevoteeKey.text != ""   {
+            searchDevoteeDetail(completion: {
+                //self.txtAccommodation.inputView = self.accoPicker
+//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                guard let devoteeViewController = segue.destination as? DevoteeViewController else {
+                    fatalError("Unexpected destination: \(segue.destination)")
+                }
+//                let devoteeViewController = storyboard.instantiateViewController(withIdentifier:"DevoteeViewController") as? DevoteeViewController
+                devoteeViewController.devotee  = self.devotee
+                self.navigationController?.pushViewController(devoteeViewController, animated: true)
+            })
+        } else {
+            searchStr = "mode=CUS&key"
+            
+            if txtRemarks.text != "" {
+                searchStr = searchStr + "remarks=" + txtRemarks.text.addingPercentEncoding(withAllowedCharacters: .alphanumerics)! + ","
+            }
+            if txtStation.text != "" {
+                searchStr = searchStr + "Station=" + txtStation.text! + ","
+            }
+            if txtIDNumber.text != "" {
+                searchStr = searchStr + "id_number=" + txtIDNumber.text! + ","
+            }
+            if txtLastName.text != "" {
+                searchStr = searchStr + "last_name=" + txtLastName.text! + ","
+            }
+            if txtFirstName.text != "" {
+                searchStr = searchStr + "first_name=" + txtFirstName.text! + ","
+            }
+            if txtAccommodation.text != "" {
+                searchStr = searchStr + "accomodation=" + getAccommodationKeyfromValue(passedValue: txtAccommodation.text!) + ","
+            }
+            if txtPhoneNumber.text != "" {
+                searchStr = searchStr + "devotee_cell_phone_number=" + txtPhoneNumber.text! + ","
+            }
+            if searchStr.count > 0 {
+                searchStr =  String(searchStr.dropLast())
+            }
+        }
     }
  
 
