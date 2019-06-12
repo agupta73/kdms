@@ -45,6 +45,10 @@ Class Devotee {
                     case "AOD": //Accommodation Occupier Devotees  
                             return $this->getDevoteesForAccommodation($requestData['key']);
                     break;
+                
+                    case "ADS": //Assigned Devotees to Seva
+                            return $this->getDevoteesForSeva($requestData['key']);
+                    break;
 
                     default :
                         return $this->getDetails($requestData['key']);                    
@@ -473,7 +477,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-     private function getDevoteesForAccommodation($requestData){
+    private function getDevoteesForAccommodation($requestData){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -507,6 +511,64 @@ Class Devotee {
                     " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
                     "da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
+                
+        
+           
+        //var_dump($query);die;
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeSearchResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            $devoteeSearchResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);die;
+        if($i==0){
+            $devoteeSearchResult['status'] = false;
+            $devoteeSearchResult['message'] = "No record found!";
+            $devoteeSearchResult['info'] = $results;
+        }
+        
+        return $devoteeSearchResult;
+    }
+    
+    private function getDevoteesForSeva($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($requestData)) {
+            $errormsg .= "Seva id not supplied.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+       
+        $query = "select " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
+                    ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", did.Devotee_ID_Image " .
+                    ", dp.Devotee_Photo ".
+                 "from " .
+                    " Devotee d ".
+                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " LEFT OUTER JOIN Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key " . 
+                        "AND ds.Seva_Year = YEAR(NOW()) AND ds.Seva_Status = 'Assigned' " .
+                 "WHERE " .
+                        " ds.Seva_ID = '" . $requestData . "' " .
+                 "ORDER BY ds.Seva_ID Desc" ;
                 
         
            

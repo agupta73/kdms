@@ -114,6 +114,15 @@ switch ($requestType) {
         die;
         break;
         
+    case "refreshSeva":
+        $optionHandler = new clsOptionHandler('RefreshSeva');
+        $response =  $optionHandler->getOptions();
+
+        echo $response;
+        die;
+        break;
+        
+    
     case "dynamicSearchDevotee":
         $devoteeSearch = new clsDevoteeSearch($_POST);
         $response =  $devoteeSearch->dynamicSearchDevotees();

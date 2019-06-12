@@ -42,6 +42,7 @@ class clsOptionHandler {
 
             case "RefreshAcco":
             case "RefreshAmenity":
+            case "RefreshSeva":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
@@ -102,7 +103,7 @@ class clsOptionHandler {
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        if ($optionType != "RefreshAcco") {
+        if ($optionType != "RefreshAcco" && $optionType != "RefreshSeva") {
             $response = json_decode($response, true);
         }
 

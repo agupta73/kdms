@@ -365,6 +365,10 @@ class clsOptions {
                 return $this->refreshAmenities();
                 break;
             
+            Case "RefreshSeva":                
+                return $this->refreshSeva();
+                break;
+            
             default:
                 print_r("Not provided option");
                 break;
@@ -414,7 +418,9 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT sm.Seva_Id, sm.Seva_Description FROM `Seva_Master` sm";
+        $query = "SELECT sm.Seva_Id, sm.Seva_Description, sa.assigned_count " . 
+            " FROM `Seva_Master` sm " .
+            " left outer join Seva_Availability sa on sm.seva_id = sa.Seva_Id ";
         
         
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
@@ -614,6 +620,27 @@ class clsOptions {
         return $res;
     }
     
+    private function refreshSeva(){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        
+        $query = "CALL PROC_REFRESH_SEVA_COUNT()";
+        $stmt = $this->conn->prepare($query);
+        
+         if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = "";
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Seva] Refreshing seva count failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+    }
   }
     
 

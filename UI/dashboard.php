@@ -2,6 +2,7 @@
 include_once("header.php");
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsReportHandler.php");
+include_once("../Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
 
@@ -14,9 +15,13 @@ if (!empty($_GET['accoType'])) {
 }
 
 $AccoResponse = $getReport->getAccommodationRecords($accoType);
-//echo sizeof($AccoResponse); die;
-
 unset($getReport);
+
+$sevaSearch = new clsOptionHandler("Seva");    
+$sevaRes = $sevaSearch->getOptions();
+//var_dump($response); die;
+//array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }
+unset($sevaSearch);
 ?> 
 <script> //javascript function for ajax call 
     function clickHandler(formId, flag) {
@@ -42,6 +47,26 @@ unset($getReport);
                         }
                     });
                     break;
+                    
+                    case 2: //Refresh count
+                    document.getElementById("requestType").value = "refreshSeva";
+                    formData = $(formId).serialize();
+                    
+                    $.ajax({
+                        url: "<?=$config_data['webroot'];?>Logic/requestManager.php",
+                        type: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            var r = JSON.parse(response);
+                            if (r['status'] == true) {
+                                alert("Seva count refreshed successfully!");
+                            } else {
+                                alert(response);
+                            }
+                        }
+                    });
+                    break;
+
 
 //                case 2: //Manage accommodations
 //                    document.getElementById("myForm").action = "addAccommodationII.php";            
@@ -130,7 +155,7 @@ unset($getReport);
                             <p class="card-category">Links</p>
                             <h3 class="card-title">Quick Links</h3>
                         </div>
-                        <div class="card-footer"    >
+                        <div class="card-footer">
                             <div class="stats">
                                 <i class="material-icons text-danger">refresh</i>
                                 <a href="AddSevaII.php" class="dash-link">Manage Seva Types</a>
@@ -232,10 +257,10 @@ unset($getReport);
                                 <a href class="dash-link">Refresh Accommodation Counts</a>
                             </div>
                         </div>
-                        <div class="card-footer" >
+                        <div class="card-footer" onclick="clickHandler('#myFormID', 2); return false;">
                             <div class="stats">
-                                <i class="material-icons text-danger">add</i>
-                                <a href="addAccommodationII.php" class="dash-link"></a>
+                                <i class="material-icons text-danger">refresh</i>
+                                <a href class="dash-link">Refresh Seva Counts</a>
                             </div>
                         </div>
                         <div class="card-footer">
@@ -376,6 +401,143 @@ unset($getReport);
 
                         </div>
                     </div>
+                     <div class="col-lg-8 col-md-12 col-sm-8">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-header card-header-primary">
+                            <h4 class="card-title">
+                                Seva Assignment Counts </h4>
+                        </div>
+                        <div class="row">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class=" text-primary">
+<!--                                          <th>
+                                            Seva ID
+                                          </th>-->
+                                        <th align='left'>
+                                            Seva
+                                        </th>
+                                        <th align='left'>
+                                            Assigned Devotees 
+                                        </th>
+<!--                                        <th align='left'>
+                                            Allocated 
+                                        </th>
+                                        <th align='left'>
+                                            Occupied
+                                        </th>
+                                        <th align='left'>
+                                            Reserved
+                                        </th>
+                                        <th align='left'>
+                                            Unavailable 
+                                        </th>-->
+
+
+                                        </thead>
+                                        <tbody >
+                                        <tr>
+                                            <td colspan="12">
+                                            <div class="scrollbar-dash" id="style-6">
+                                                <table class="table table-striped"> 
+                                            <?php
+                                            $sevaRecordCount = 0;
+                                            if (!empty($sevaRes)) {
+                                                foreach ($sevaRes as $sevaRecord) {
+                                                    $sevaID = "--Unavailable--";
+                                                    $sevaDesc = "--Unavailable--";
+                                                    $assignCount = "--";
+//                                                    $reservedCount = "--";
+//                                                    $outOfAvailabilityCount = "--";
+//                                                    $allocatedCount = "--";
+//                                                    $availableCount = "--";
+//                                                    $occupiedCount = "--";
+//["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]
+
+                                                    if (!empty($sevaRecord['Seva_Id'])) {
+                                                        $sevaID = urldecode($sevaRecord['Seva_Id']);
+                                                    }
+
+                                                    if (!empty($sevaRecord['Seva_Description'])) {
+                                                        $sevaDesc = urldecode($sevaRecord['Seva_Description']);
+                                                    }
+
+                                                    if (!empty($sevaRecord['assigned_count'])) {
+                                                        $assignCount = $sevaRecord['assigned_count'];
+                                                    }
+
+//                                                    if (!empty($accommodationRecord['allocated_count'])) {
+//                                                        $allocatedCount = $accommodationRecord['allocated_count'];
+//                                                    }
+//                                                    
+//                                                    if (!empty($accommodationRecord['occupied_count'])) {
+//                                                        $occupiedCount = urldecode($accommodationRecord['occupied_count']);
+//                                                    }
+//
+//                                                    if (!empty($accommodationRecord['reserved_count'])) {
+//                                                        $reservedCount = urldecode($accommodationRecord['reserved_count']);
+//                                                    }                                                    
+//
+//                                                    if (!empty($accommodationRecord['Out_of_Availability_Count'])) {
+//                                                        $outOfAvailabilityCount = $accommodationRecord['Out_of_Availability_Count'];
+//                                                    }
+
+                                                    if ($sevaDesc != "--Unavailable--") {
+                                                        $sevaRecordCount = $sevaRecordCount + 1;
+
+//                                                        print_r("
+//                            <tr >
+//                             <td align='left'>
+//                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+//                             </td>
+//                               <td align='left' class='table-data'>
+//                                   <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+//                             </td>
+//                             <td align='left' class='table-data'>
+//                                 <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+//                             </td>
+//                             <td align='left' class='table-data'>
+//                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
+//                             </td>
+//                             <td align='left' class='table-data'>
+//                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+//                             </td>
+//                             
+//                             <td align='left' class='table-data'>
+//                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+//                             </td>
+//                             </tr>
+//                             ");
+                                                        print_r("
+                            <tr >
+                             <td align='left'>
+                                 <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "'>" . $sevaDesc . "</a>
+                             </td>
+                               <td align='left' class='table-data'>
+                                   <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "'>" . $assignCount . "</a>
+                             </td>
+                             
+                             </tr>
+                             ");
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            </table>
+                                        </div>
+                                        </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>                  
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
