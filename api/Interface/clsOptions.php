@@ -319,6 +319,10 @@ class clsOptions {
                   return $this->getAccommodations();
                 break;           
 
+            case "Seva":
+                  return $this->getSevas();
+                break; 
+            
             Case "AccommodationDetail":                
                 if(!empty($requestData['option_type'])){
                     return $this->getAccommodationDetail($requestData['key']);
@@ -402,6 +406,37 @@ class clsOptions {
         return $AccomodationDetail;
     }
   
+    private function getSevas(){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+        
+        
+        $query = "SELECT sm.Seva_Id, sm.Seva_Description FROM `Seva_Master` sm";
+        
+        
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $Sevas = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            //var_dump($row);
+            $Sevas[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($AccomodationDetail);
+        if($i==0){
+            $Sevas['status'] = false;
+            $Sevas['message'] = "Seva records not found!";
+            $Sevas['info'] = $results;
+        }
+        
+        return $Sevas;
+    }
+  
+    
     private function getAmenities(){
 //        $res = array();
 //        $res['status'] = false;

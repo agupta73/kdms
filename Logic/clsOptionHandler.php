@@ -36,6 +36,7 @@ class clsOptionHandler {
         switch ($this->optionType) {
             case "Accommodation":
             case "Amenity":
+            case "Seva":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 

@@ -16,10 +16,10 @@
     $seva_description="";
     
     //Pre-populate devotee record in case of edit
-    if (!empty($requestData['seva_key'])) {
+    if (!empty($requestData['seva_id'])) {
         
         $optionHandler = new clsOptionHandler("SevaDetail");  
-        $optionHandler->setOptionKey($requestData['seva_key']);
+        $optionHandler->setOptionKey($requestData['seva_id']);
         $response = $optionHandler->getOptions();
        
         //assign values
@@ -64,7 +64,7 @@
                 
 		if(r['status'] == true){
                     alert("Seva record updated successfully!");
-                   window.location.assign("<?=$config_data['webroot']?>UI/addSevaI.php?seva_key=" + r['info'] );
+                   window.location.assign("<?=$config_data['webroot']?>UI/addSevaI.php?seva_id=" + r['info'] );
                 }
 		else{
                     alert(r['message']);
