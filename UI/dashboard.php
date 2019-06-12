@@ -130,11 +130,10 @@ unset($getReport);
                             <p class="card-category">Links</p>
                             <h3 class="card-title">Quick Links</h3>
                         </div>
-                        <div class="card-footer" onclick="clickHandler('#myFormID', 1);
-                                return false;">
+                        <div class="card-footer"    >
                             <div class="stats">
                                 <i class="material-icons text-danger">refresh</i>
-                                <a href class="dash-link">Refresh Accommodation Counts</a>
+                                <a href="AddSevaII.php" class="dash-link">Manage Seva Types</a>
                             </div>
                         </div>
                         <div class="card-footer" >

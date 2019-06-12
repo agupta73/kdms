@@ -6,7 +6,8 @@
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 DELIMITER $$\
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPSERT_SEVA`(IN `p_Seva_Id` VARCHAR(6), IN `p_Seva_Description` VARCHAR(100))\
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPSERT_SEVA_W_AVAIL_UPDATE`(IN `p_Seva_Id` VARCHAR(6), IN `p_Seva_Description` VARCHAR(100))\
+\
 BEGIN\
     REPLACE\
 INTO `Seva_Master`(\
@@ -20,5 +21,20 @@ VALUES(\
     p_Seva_Description,\
     NOW(), 'Anil') ;\
  \
+ REPLACE INTO `Seva_Availability`(\
+	`Seva_Id`, \
+	`Assigned_Count`, \
+	`Availability_Update_Date_Time`, \
+	`Availability_Updated_By`\
+	) \
+VALUES (\
+	p_Seva_Id,\
+	0,\
+	NOW(),\
+	\'91Anil\'92\
+);\
+ \
+\
+\
     END$$\
 DELIMITER ;}

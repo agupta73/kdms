@@ -77,6 +77,7 @@ Class Devotee {
         
         $query = "SELECT " .
                     "d.* " .
+                    ", ds.Seva_ID " .
                     ", did.Devotee_ID_Image, did.Devotee_ID_XML " .
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
@@ -85,6 +86,7 @@ Class Devotee {
                     "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  " .
+                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_year = YEAR(NOW()) AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
@@ -687,7 +689,15 @@ Class Devotee {
             $Devotee_Accommodation_ID=htmlspecialchars(strip_tags($requestData['devotee_accommodation_id']));
         }
 
+        if (empty($requestData['devotee_seva_id'])){
+            $Devotee_Seva_ID="UN";
+        }
+        else {
+            $Devotee_Seva_ID=htmlspecialchars(strip_tags($requestData['devotee_seva_id']));
+        }
+        
         $Devotee_Accomodation_Year = date('y');
+        $Devotee_Seva_Year = date('y');
         $Devotee_Accomodation_Status = "Allocated";
         
         if ($status == false) {
@@ -703,12 +713,12 @@ Class Devotee {
             // Edit
             $unique_id = $requestData['devotee_key'];
             //$query = "CALL PROC_UPDATE_DEVOTEE(";
-            $query = "CALL PROC_REPLACE_DEVOTEE_I(";
+            $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA(";
         } else {
             // Add
             // Generate unique ID
             $unique_id = $this->generateId();
-            $query = "CALL PROC_INSERT_DEVOTEE_I(";
+            $query = "CALL PROC_INSERT_DEVOTEE_W_SEVA(";
         }
         
 //        $query = $query . "
@@ -740,6 +750,8 @@ Class Devotee {
                 $Devotee_Status . "', '" . //:devotee_status,
                 $Devotee_Remarks . "', '" . //:devotee_remarks,
                 $Devotee_Referral . "', '" . //:devotee_referral,
+                $Devotee_Seva_ID . "', '" . //:devotee_seva,
+                "Assigned" . "', '" . //:devotee_seva_status,
                 $Devotee_Record_Updated_By . "', '" . //:devotee_record_updated_by,
                 $Devotee_Accommodation_ID . "', '" . //:devotee_accommodation_id,
                 $Devotee_Accomodation_Status . "')" ; //:devotee_accommodation_status)" ;

@@ -55,8 +55,8 @@ $config_data=include_once("../site_config.php");
             $is_key_available=true;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails();
-//            unset($devoteeSearch);
-//            var_dump($response); die;
+//           unset($devoteeSearch);
+//           var_dump($response); die;
             //$response = json_decode($response);
             //var_dump($response);
             //assign values
@@ -108,8 +108,8 @@ $config_data=include_once("../site_config.php");
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
 
-            if (!empty($response['Seva_Id'])) {
-                $devotee_seva_id = urldecode($response['Seva_Id']); //  "" 
+            if (!empty($response['Seva_ID'])) {
+                $devotee_seva_id = urldecode($response['Seva_ID']); //  "" 
             }
             
             
@@ -140,7 +140,7 @@ $config_data=include_once("../site_config.php");
                 var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
-
+                //alert(formData);
                 if (validateInput()) {
                     $.ajax({
                         url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
@@ -414,7 +414,7 @@ $config_data=include_once("../site_config.php");
                                                 </div>-->
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label class="bmd-label-floating">Duty</label>
+                                                        <label class="bmd-label-floating">Assigned Seva</label>
 
                                                         <select type="text" class="form-control" name="devotee_seva_id" id="devotee_seva_id" >
                                                             <?php
@@ -427,7 +427,7 @@ $config_data=include_once("../site_config.php");
                                                                     print_r("selected");
                                                                 }
                                                                 //Print_r(">" . $seva['Seva_Description'] . " - " . $accommodation['Available_Count'] . "</option>");
-                                                                Print_r(">" . urldecode($seva['Seva_Description']) );
+                                                                Print_r(">" . urldecode($seva['Seva_Description']) . "</option>");
                                                             }
                                                             ?>
                                                         </select>

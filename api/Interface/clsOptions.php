@@ -176,7 +176,7 @@ class clsOptions {
             $Seva_Description=$Seva_Id;
         }
                 
-        $query= "CALL PROC_UPSERT_SEVA(";
+        $query= "CALL PROC_UPSERT_SEVA_W_AVAIL_UPDATE(";
 //    IN `p_Accomodation_Key` VARCHAR(5),
 //    IN `p_Accomodation_Name` VARCHAR(100),
 //    IN `p_Accomodation_Capacity` INT(11),
