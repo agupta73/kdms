@@ -27,6 +27,7 @@ $config_data=include_once("../site_config.php");
         $devotee_status = "A";
         $devotee_remarks = "";
         $devotee_accommodation_id = "";
+        $devotee_seva_id = "";
         $devotee_photo = "";
         $devotee_id_image = "";
         $devotee_referral = "";
@@ -36,7 +37,12 @@ $config_data=include_once("../site_config.php");
         $loadAccommodation = new clsOptionHandler("Accommodation");
         $accommodations = $loadAccommodation->getOptions();
         unset($loadAccommodations);
-
+        
+        //load seva options and assigned devotee counts
+        $loadSeva = new clsOptionHandler("Seva");
+        $sevas = $loadSeva->getOptions();
+        unset($loadSeva);
+        
 //    $loadAmenity = new clsOptionHandler("Amenity");
 //    $amenities = $loadAmenity->getOptions();
 //    unset($loadAmenity);
@@ -102,7 +108,11 @@ $config_data=include_once("../site_config.php");
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
 
-
+            if (!empty($response['Seva_Id'])) {
+                $devotee_seva_id = urldecode($response['Seva_Id']); //  "" 
+            }
+            
+            
             //$devotee_accommodation_id="";
             //$response['Devotee_Gender']; // "" 
             ////$response['Devotee_Record_Update_Date_Time']; // "2018-10-14 07:23:23" 
@@ -406,18 +416,19 @@ $config_data=include_once("../site_config.php");
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Duty</label>
 
-                                                        <select type="text" class="form-control" name="devotee_duty_id" id="devotee_duty_id" >
+                                                        <select type="text" class="form-control" name="devotee_seva_id" id="devotee_seva_id" >
                                                             <?php
-//                                                            foreach ($accommodations as $accommodation) {
-//                                                                print_r("<option value='" . $accommodation['accomodation_key'] . "'");
-//                                                                if (empty($devotee_accommodation_id)) {
-//                                                                    $devotee_accommodation_id = 'OWN';
-//                                                                }
-//                                                                if ($devotee_accommodation_id == $accommodation['accomodation_key']) {
-//                                                                    print_r("selected");
-//                                                                }
-//                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
-//                                                            }
+                                                            foreach ($sevas as $seva) {
+                                                                print_r("<option value='" . $seva['Seva_Id'] . "'");
+                                                                if (empty($devotee_seva_id)) {
+                                                                    $devotee_seva_id = 'UN';
+                                                                }
+                                                                if ($devotee_seva_id == $seva['Seva_Id']) {
+                                                                    print_r("selected");
+                                                                }
+                                                                //Print_r(">" . $seva['Seva_Description'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                                Print_r(">" . urldecode($seva['Seva_Description']) );
+                                                            }
                                                             ?>
                                                         </select>
                                                     </div>
