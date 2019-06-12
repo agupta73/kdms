@@ -59,9 +59,9 @@
           type:'POST',
           data:formData,
           success:function(response){
-		
+		//alert(response);
                 var r = JSON.parse(response);
-                alert(response);
+                
 		if(r['status'] == true){
                     alert("Seva record updated successfully!");
                    window.location.assign("<?=$config_data['webroot']?>UI/addSevaI.php?seva_key=" + r['info'] );
@@ -174,7 +174,7 @@ function validateInput(){
                    <div class="row"> 
                        <div class="col-md-6"></div>
                        <div class="col-md-6" >
-                    <input type="hidden" name="requestType" id="requestType" value="upsertAcco">
+                    <input type="hidden" name="requestType" id="requestType" value="upsertSeva">
                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                        </div>

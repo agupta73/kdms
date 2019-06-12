@@ -163,20 +163,19 @@ class clsOptions {
             $Seva_Id = htmlspecialchars(strip_tags($requestData['seva_id']));
         }
         
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        
         if (!empty($requestData['seva_description'])) {
             $Seva_Description = htmlspecialchars(strip_tags($requestData['seva_description']));
         }
         else{
             $Seva_Description=$Seva_Id;
         }
-        
-        if ($status == false) {
-            $res['status'] = $status;
-            $res['message'] = $errormsg;
-            return $res;
-        }
-
-        
+                
         $query= "CALL PROC_UPSERT_SEVA(";
 //    IN `p_Accomodation_Key` VARCHAR(5),
 //    IN `p_Accomodation_Name` VARCHAR(100),
@@ -200,7 +199,7 @@ class clsOptions {
         }
         else{
             $res['status'] = false;
-            $res['message'] = "[Accommodation] Upserting Seva Record Failed at API!!";
+            $res['message'] = "[Seva] Upserting Seva Record Failed at API!!";
             $res['info'] = $stmt;
         }
         return $res;

@@ -91,7 +91,7 @@ switch ($requestType) {
     case "upsertSeva":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
-         $fields_as_post = ['seva_id','seva_description'];
+         $fields_as_post = ['seva_id','seva_description','requestType'];
 
         foreach ($fields_as_post as $fld) {
             //if (!empty($_POST[$fld])) {
