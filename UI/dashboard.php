@@ -82,6 +82,51 @@ unset($sevaSearch);
     function validateInput() {
         return true;
     }
+    
+    function generateReport(formId, flag) {
+                printForm = document.getElementById(formId);
+//                var I = 0;
+                var printString = ""
+//                for (I = 0; I < printForm.length; I++) {
+//                    if (printForm[I].value != "") {
+//                        //alert(searchForm[I].id + ": " + searchForm[I].value);
+//                        if (printForm[I].type == 'checkbox' && printForm[I].checked) {
+//                            printString = printString + "'" + encodeURI(printForm[I].value) + "',";
+//                        }
+//                    }
+//                }
+
+//                if (printString.length > 1) {
+
+                    window.open("./rptDutyReport.php?mode=CUS&key=devotee_accommodation_key=MP");
+                    //window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
+                    //window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+
+                    //if(confirm("Card printed successfully?")){
+//                    $.ajax({
+//                        url: '<?=$config_data['webroot']?>Logic/requestManager.php',
+//                        type: 'POST',
+//                        data: {'devotee_key': printString.substr(0, printString.length - 1), 'requestType': "removeFromPrintQueue"},
+//                        async: false,
+//                        success: function (response) {
+//
+//                            var r = JSON.parse(response);
+//
+//                            if (r['flag'] == true) {
+//                                alert("Card removed from the printing queue!");
+//                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+//                            } else {
+//                                alert(r['message']);
+//                                updateSuccess = false;
+//                            }
+//                        }
+//                    });
+                    //            }
+
+//                } else {
+//                    alert("Please select a card to print!");
+//                }
+            }
 </script>
 <div class="content">
     <div class="container-fluid">
@@ -263,10 +308,10 @@ unset($sevaSearch);
                                 <a href class="dash-link">Refresh Seva Counts</a>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer" onclick="generateReport('#myFormID', 2); return false;">
                             <div class="stats">
-                                <i class="material-icons text-danger">edit</i>
-                                <a href="upsertAmenityII.php" class="dash-link"></a>
+                                <i class="material-icons text-danger">home</i>
+                                <a href class="dash-link">Generate Mal Pua Report</a>
                             </div>
                         </div>
                     </div>             

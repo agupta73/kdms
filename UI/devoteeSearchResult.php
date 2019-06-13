@@ -27,6 +27,7 @@
                         searchString = searchString + searchForm[I].id + "=" + encodeURI(searchForm[I].value) + ",";
                     }
                 }
+                //alert(searchString);
 
                 if (searchString.length > 1) {
                     window.location = "./devoteeSearchResult.php?mode=CUS&key=" + searchString.substr(0, searchString.length - 1);
@@ -185,6 +186,9 @@
                 }
                 $devoteeSearch = new clsDevoteeSearch($_GET);
                 $response = $devoteeSearch->getDevoteeRecords();
+//                if(!empty($_GET)) {
+//                    var_dump($_GET);die;
+//                }
 
                 unset($devoteeSearch);
 
