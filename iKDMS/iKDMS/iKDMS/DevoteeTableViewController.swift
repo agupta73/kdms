@@ -151,13 +151,13 @@ class DevoteeTableViewController: UITableViewController {
         var urlString: String
         switch selectedTabIndex {
         case 0:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+            urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
         case 1:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
+            urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
         case 2:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
+            urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
         default:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+            urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
         }
         
         Alamofire.request(urlString).responseJSON { response in
@@ -225,7 +225,7 @@ class DevoteeTableViewController: UITableViewController {
      
      private func loadDevoteeRecordDetail_Old(devotee: Devotee) -> Devotee {
      if(devotee.devoteeKey != "") {
-     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + devotee.devoteeKey!
+     let urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=KEY&key=" + devotee.devoteeKey!
      //print(urlString)
      guard let url = URL(string: urlString) else { return devotee }
      let sem = DispatchSemaphore(value: 0)
@@ -269,7 +269,7 @@ class DevoteeTableViewController: UITableViewController {
      
      private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
      if(passedDevotee.devoteeKey != "") {
-     Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+     Alamofire.request("http://192.168.0.103/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
      //print("Request: \(String(describing: response.request))")   // original url request
      //print("Response: \(String(describing: response.response))") // http url response
      //print("Result: \(response.result)")                         // response serialization result
@@ -328,13 +328,13 @@ class DevoteeTableViewController: UITableViewController {
      var urlString: String
      switch selectedTabIndex {
      case 0:
-     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+     urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
      case 1:
-     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
+     urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=DWP"
      case 2:
-     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
+     urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=PWD"
      default:
-     urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
+     urlString = "http://192.168.0.103/KDMS/api/searchDevotee.php?mode=iSET&key=CTP"
      }
      
      guard let url = URL(string: urlString) else { return }
