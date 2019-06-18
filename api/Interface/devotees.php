@@ -686,8 +686,6 @@ Class Devotee {
             $Devotee_Last_Name=htmlspecialchars(strip_tags($requestData['devotee_last_name']));
         }
 
-
-
         if (empty($requestData['devotee_gender'])){
             $Devotee_Gender="";
         }
@@ -758,6 +756,55 @@ Class Devotee {
             $Devotee_Seva_ID=htmlspecialchars(strip_tags($requestData['devotee_seva_id']));
         }
         
+        if (empty($requestData['devotee_address_1'])){
+            $Devotee_Address_1="";
+        }
+        else {
+            $Devotee_Address_1=htmlspecialchars(strip_tags($requestData['devotee_address_1']));
+        }
+
+        if (empty($requestData['devotee_address_2'])){
+            $Devotee_Address_2="";
+        }
+        else {
+            $Devotee_Address_2=htmlspecialchars(strip_tags($requestData['devotee_address_2']));
+        }
+
+        if (empty($requestData['devotee_state'])){
+            $Devotee_State="";
+        }
+        else {
+            $Devotee_State=htmlspecialchars(strip_tags($requestData['devotee_state']));
+        }
+        
+        if (empty($requestData['devotee_zip'])){
+            $Devotee_Zip="";
+        }
+        else {
+            $Devotee_Zip=htmlspecialchars(strip_tags($requestData['devotee_zip']));
+        }
+
+        if (empty($requestData['devotee_country'])){
+            $Devotee_Country="";
+        }
+        else {
+            $Devotee_Country=htmlspecialchars(strip_tags($requestData['devotee_country']));
+        }
+
+        if (empty($requestData['comments'])){
+            $Comments="";
+        }
+        else {
+            $Comments=htmlspecialchars(strip_tags($requestData['comments']));
+        }
+
+        if (empty($requestData['joined_since'])){
+            $Joined_Since="";
+        }
+        else {
+            $Joined_Since=htmlspecialchars(strip_tags($requestData['joined_since']));
+        }
+        
         $Devotee_Accomodation_Year = date('y');
         $Devotee_Seva_Year = date('y');
         $Devotee_Accomodation_Status = "Allocated";
@@ -775,12 +822,12 @@ Class Devotee {
             // Edit
             $unique_id = $requestData['devotee_key'];
             //$query = "CALL PROC_UPDATE_DEVOTEE(";
-            $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA(";
+            $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
         } else {
             // Add
             // Generate unique ID
             $unique_id = $this->generateId();
-            $query = "CALL PROC_INSERT_DEVOTEE_W_SEVA(";
+            $query = "CALL PROC_INSERT_DEVOTEE_W_SEVA_I(";
         }
         
 //        $query = $query . "
@@ -816,7 +863,21 @@ Class Devotee {
                 "Assigned" . "', '" . //:devotee_seva_status,
                 $Devotee_Record_Updated_By . "', '" . //:devotee_record_updated_by,
                 $Devotee_Accommodation_ID . "', '" . //:devotee_accommodation_id,
-                $Devotee_Accomodation_Status . "')" ; //:devotee_accommodation_status)" ;
+                $Devotee_Accomodation_Status . "','" . //:devotee_accommodation_status)" ;
+                $Devotee_Address_1 . "', '" . 
+                $Devotee_Address_2 . "', '" . 
+                $Devotee_State . "', '" . 
+                $Devotee_Zip . "', '" . 
+                $Devotee_Country . "', '" . 
+                $Comments . "', '" . 
+                $Joined_Since . "')" ;
+                
+         
+//            $res['status'] = true;
+//            $res['message'] = $query;
+//            $res['info'] = $unique_id;
+//            return $res;
+//            die;
 // prepare query
         $stmt = $this->conn->prepare($query);
 

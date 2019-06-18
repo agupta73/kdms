@@ -1,5 +1,5 @@
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_INSERT_DEVOTEE_W_SEVA`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_INSERT_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10), 
 	IN `p_Devotee_Type` VARCHAR(30), 
 	IN `p_Devotee_First_Name` VARCHAR(50), 
@@ -16,7 +16,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_INSERT_DEVOTEE_W_SEVA`(
 	IN `p_Devotee_Seva_Status` VARCHAR(10),
 	IN `p_Devotee_Record_Updated_By` VARCHAR(10), 
 	IN `p_Devotee_Accommodation_ID` VARCHAR(10), 
-	IN `p_Devotee_Accomodation_Status` VARCHAR(10)
+	IN `p_Devotee_Accomodation_Status` VARCHAR(10),
+	IN `p_Devotee_Address_1` VARCHAR(100),
+    IN `p_Devotee_Address_2` VARCHAR(100),
+    IN `p_Devotee_State` VARCHAR(25),
+    IN `p_Devotee_Zip` VARCHAR(12),
+    IN `p_Devotee_Country` VARCHAR(20),
+    IN `p_Comments`  VARCHAR(250),
+    IN `p_Joined_Since`  VARCHAR(4)
 	)
 BEGIN
 
@@ -34,7 +41,14 @@ BEGIN
         Devotee_Remarks,
         Devotee_Referral,
         Devotee_Record_Update_Date_Time,
-        Devotee_Record_Updated_By
+        Devotee_Record_Updated_By,
+    	Devotee_Address_1,
+    	Devotee_Address_2,
+    	Devotee_State,
+    	Devotee_Zip,
+    	Devotee_Country,
+    	Comments,
+    	Joined_Since
     )
 VALUES(
     p_Devotee_Key,
@@ -50,7 +64,14 @@ VALUES(
     p_Devotee_Remarks,
     p_Devotee_Referral,
     NOW(),
-    p_Devotee_Record_Updated_By
+    p_Devotee_Record_Updated_By,
+	p_Devotee_Address_1,
+    p_Devotee_Address_2,
+    p_Devotee_State,
+    p_Devotee_Zip,
+    p_Devotee_Country,
+    p_Comments,
+    p_Joined_Since
 );
 
 INSERT INTO Devotee_Accomodation(
