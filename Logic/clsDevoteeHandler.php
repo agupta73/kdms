@@ -4,6 +4,7 @@
  * Description of clsDevoteeHandler
  *
  * @author agupta
+ * Jai Maharaaj Ji
  */
 class clsDevoteeHandler {
 
