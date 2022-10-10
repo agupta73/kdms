@@ -27,6 +27,7 @@
                         searchString = searchString + searchForm[I].id + "=" + encodeURI(searchForm[I].value) + ",";
                     }
                 }
+                //alert(searchString);
 
                 if (searchString.length > 1) {
                     window.location = "./devoteeSearchResult.php?mode=CUS&key=" + searchString.substr(0, searchString.length - 1);
@@ -51,6 +52,50 @@
                 if (printString.length > 1) {
 
                     window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
+                    //window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+
+                    //if(confirm("Card printed successfully?")){
+                    $.ajax({
+                        url: '<?=$config_data['webroot']?>Logic/requestManager.php',
+                        type: 'POST',
+                        data: {'devotee_key': printString.substr(0, printString.length - 1), 'requestType': "removeFromPrintQueue"},
+                        async: false,
+                        success: function (response) {
+
+                            var r = JSON.parse(response);
+
+                            if (r['flag'] == true) {
+                                alert("Card removed from the printing queue!");
+                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                            } else {
+                                alert(r['message']);
+                                updateSuccess = false;
+                            }
+                        }
+                    });
+                    //            }
+
+                } else {
+                    alert("Please select a card to print!");
+                }
+            }
+
+            function removePrint(formId, flag) {
+                printForm = document.getElementById(formId);
+                var I = 0;
+                var printString = ""
+                for (I = 0; I < printForm.length; I++) {
+                    if (printForm[I].value != "") {
+                        //alert(searchForm[I].id + ": " + searchForm[I].value);
+                        if (printForm[I].type == 'checkbox' && printForm[I].checked) {
+                            printString = printString + "'" + encodeURI(printForm[I].value) + "',";
+                        }
+                    }
+                }
+
+                if (printString.length > 1) {
+
+                    //window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
                     //window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
 
                     //if(confirm("Card printed successfully?")){
@@ -141,6 +186,9 @@
                 }
                 $devoteeSearch = new clsDevoteeSearch($_GET);
                 $response = $devoteeSearch->getDevoteeRecords();
+//                if(!empty($_GET)) {
+//                    var_dump($_GET);die;
+//                }
 
                 unset($devoteeSearch);
 
@@ -363,6 +411,10 @@ if (!empty($response)) {
                                                         print_r("hidden='true'");
                                                     } ?> class="btn btn-success pull-right" >Cancel</button>
                                             <button type="submit" hidden='true' class="btn btn-success pull-right">Add Devotee without photo/image</button>
+                                            
+                                            <button type="submit" <?php if (!$showSelection) {
+                                                        print_r("hidden='true'");
+                                                    } ?> class="btn btn-success pull-right" onclick="removePrint('printForm', 1); return false;">Cancel Print for Selected Cards</button>
                                             <button type="submit" <?php if (!$showSelection) {
                                                         print_r("hidden='true'");
                                                     } ?> class="btn btn-success pull-right" onclick="submitPrint('printForm', 1); return false;">Print Selected Cards</button>

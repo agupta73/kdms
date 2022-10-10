@@ -31,6 +31,13 @@ $config_data=include_once("../site_config.php");
         $devotee_photo = "";
         $devotee_id_image = "";
         $devotee_referral = "";
+        $Devotee_Address_1 = "" ; 
+        $Devotee_Address_2 = "" ; 
+        $Devotee_State = "" ; 
+        $Devotee_Zip = "" ; 
+        $Devotee_Country = "" ; 
+        $Comments  = "" ; 
+        $Joined_Since  = "" ; 
 
 
         //load accommodation options and available spots
@@ -56,7 +63,7 @@ $config_data=include_once("../site_config.php");
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails();
 //           unset($devoteeSearch);
-//           var_dump($response); die;
+//               var_dump($response); die;
             //$response = json_decode($response);
             //var_dump($response);
             //assign values
@@ -112,6 +119,27 @@ $config_data=include_once("../site_config.php");
                 $devotee_seva_id = urldecode($response['Seva_ID']); //  "" 
             }
             
+            if (!empty($response['Devotee_Address_1'])) {
+                $Devotee_Address_1 = urldecode($response['Devotee_Address_1']); //  "" 
+            }
+            if (!empty($response['Devotee_Address_2'])) {
+                $Devotee_Address_2 = urldecode($response['Devotee_Address_2']); //  "" 
+            }
+            if (!empty($response['Devotee_State'])) {
+                $Devotee_State = urldecode($response['Devotee_State']); //  "" 
+            }
+            if (!empty($response['Devotee_Zip'])) {
+                $Devotee_Zip = urldecode($response['Devotee_Zip']); //  "" 
+            }
+            if (!empty($response['Devotee_Country'])) {
+                $Devotee_Country = urldecode($response['Devotee_Country']); //  "" 
+            }
+            if (!empty($response['Comments'])) {
+                $Comments = urldecode($response['Comments']); //  "" 
+            }
+            if (!empty($response['Joined_Since'])) {
+                $Joined_Since = urldecode($response['Joined_Since']); //  "" 
+            }
             
             //$devotee_accommodation_id="";
             //$response['Devotee_Gender']; // "" 
@@ -148,7 +176,7 @@ $config_data=include_once("../site_config.php");
                         data: formData,
                         async: false,
                         success: function (response) {
-                            //		alert(response);
+                            //alert(response);
                             r = JSON.parse(response);
 
                             if (r['flag'] == true) {
@@ -399,20 +427,9 @@ $config_data=include_once("../site_config.php");
                                                     </div>
                                                 </div>
                                             </div>
+                                            
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Referral</label>
-                                                        <input type="text" class="form-control" name="devotee_referral" id="devotee_referral" value="<?php print_r($devotee_referral); ?>">
-                                                    </div>
-                                                </div>
-<!--                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Phone No.</label>
-                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
-                                                    </div>
-                                                </div>-->
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Assigned Seva</label>
 
@@ -433,14 +450,84 @@ $config_data=include_once("../site_config.php");
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Referral</label>
+                                                        <input type="text" class="form-control" name="devotee_referral" id="devotee_referral" value="<?php print_r($devotee_referral); ?>">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-4">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Joined Since</label>
+                                                        <input type="text" class="form-control" name="joined_since" id="joined_since" value="<?php print_r($Joined_Since); ?>">
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group" >
+                                                        <label class="bmd-label-floating">Address Line 1</label>
+                                                        <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" value="<?php print_r($Devotee_Address_1); ?>">
+                                                    </div>
+                                                </div>
+<!--                                                <div class="col-md-4">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Phone No.</label>
+                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
+                                                    </div>
+                                                </div>-->
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Address Line 2</label>
+
+                                                        <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" value="<?php print_r($Devotee_Address_2); ?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group" >
+                                                        <label class="bmd-label-floating">State</label>
+                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" value="<?php print_r($Devotee_State); ?>">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Zip/Pin Code</label>
+                                                        <input type="text" class="form-control" name="devotee_zip" id="devotee_zip" value="<?php print_r($Devotee_Zip); ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Country</label>
+                                                        <input type="text" class="form-control" name="devotee_country" id="devotee_country" value="<?php print_r($Devotee_Country); ?>">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Remarks</label>
                                                         <div class="form-group">
-                                                            <label class="bmd-label-floating"> Add additional Information</label>
+                                                            
+                                                            <!--<label class="bmd-label-floating"> Add additional Information</label>-->
                                                             <textarea class="form-control" rows="2" name="devotee_remarks" id="devotee_remarks"> <?php print_r($devotee_remarks); ?></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Feedback/Coments</label>
+                                                        <div class="form-group">
+                                                            
+                                                            <!--<label class="bmd-label-floating"> Add additional Information</label>-->
+                                                            <textarea class="form-control" rows="2" name="comments" id="comments"> <?php print_r($Comments); ?></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
