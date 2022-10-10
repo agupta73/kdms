@@ -354,7 +354,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     }
     private func loadAccommodations(completion: @escaping () -> ()) {
         
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+        let urlString = "http://192.168.0.101/KDMS/api/loadoptions.php?option_type=Accommodation"
         
         Alamofire.request(urlString).responseJSON { response in
             if let json = response.result.value {
@@ -428,7 +428,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         //let imageData = UIImagePNGRepresentation(selectedImage)
         let base64String = imageData?.base64EncodedString()
         
-        let url: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
+        let url: String = "http://192.168.0.101/KDMS/api/managePhotoIOS.php"
 
         if imageType == "ID" {
             apiType = "4"
@@ -478,7 +478,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             "devotee_key": txtDevoteeKey.text ?? "",
             "requestType": "upsertDevotee"
         ]
-        let url = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+        let url = "http://192.168.0.101/KDMS/api/upsertDevotee.php"
         self.postData(url: url, parameter: parameters,completion: { result, error in
             let jsonResult = result?.value as! NSDictionary
             let devoteeID = jsonResult["info"] as! String
@@ -522,7 +522,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     //MARK: Commented Code
     /*
      private func loadAccommodations_old() {
-     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+     let urlString = "http://192.168.0.101/KDMS/api/loadoptions.php?option_type=Accommodation"
      guard let url = URL(string: urlString) else { return }
      
      URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -555,7 +555,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     /*
      private func loadDevoteeRecord() {
      if(txtDevoteeKey.text != "") {
-     let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+     let urlString = "http://192.168.0.101/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
      //print(urlString)
      guard let url = URL(string: urlString) else { return }
      
@@ -596,7 +596,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     /*
      private func loadDevoteeRecordDetail(passedDevotee: Devotee) -> Devotee {
      if(passedDevotee.devoteeKey != "") {
-     Alamofire.request("http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
+     Alamofire.request("http://192.168.0.101/KDMS/api/searchDevotee.php?mode=KEY&key=" + passedDevotee.devoteeKey!).responseJSON { response in
      //print("Request: \(String(describing: response.request))")   // original url request
      //print("Response: \(String(describing: response.response))") // http url response
      //print("Result: \(response.result)")                         // response serialization result
@@ -655,7 +655,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
      
      //print(postData)
      
-     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+     let todosEndpoint: String = "http://192.168.0.101/KDMS/api/upsertDevotee.php"
      guard let todosURL = URL(string: todosEndpoint) else {
      print("Error: cannot create URL")
      return
@@ -717,7 +717,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
      postData.append((devoteeKey.data(using: String.Encoding.utf8)!))
      postData.append("&requestType=addToPrintQueue".data(using: String.Encoding.utf8)!)
      
-     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/upsertDevotee.php"
+     let todosEndpoint: String = "http://192.168.0.101/KDMS/api/upsertDevotee.php"
      guard let todosURL = URL(string: todosEndpoint) else {
      print("Error: cannot create URL")
      return
@@ -786,7 +786,7 @@ class DevoteeViewController: UIViewController, UITextFieldDelegate, UITextViewDe
      postData.append("&image=".data(using: String.Encoding.utf8)!)
      postData.append(base64String!)
      
-     let todosEndpoint: String = "http://FSCAM0RLHV2R.local/KDMS/api/managePhotoIOS.php"
+     let todosEndpoint: String = "http://192.168.0.101/KDMS/api/managePhotoIOS.php"
      guard let todosURL = URL(string: todosEndpoint) else {
      print("Error: cannot create URL")
      return

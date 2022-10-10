@@ -46,7 +46,7 @@ class AccommodationTableViewController: UITableViewController {
     
     @objc private func loadSummary()  {
         summaryList.removeAll()
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=DevoteeCount"
+        let urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=DevoteeCount"
         var i = 0
         Alamofire.request(urlString).responseJSON { response in
             if let json = response.result.value {
@@ -92,19 +92,19 @@ class AccommodationTableViewController: UITableViewController {
         var urlString: String
         switch filterAcco {
         case "Total Space Allocated":
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Occupied"
+            urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=AccoCount&accoType=Occupied"
             break
         case "Total Spaces Available":
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Available"
+            urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=AccoCount&accoType=Available"
             break
         case "Total Spaces Reserved":
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=Reserved"
+            urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=AccoCount&accoType=Reserved"
             break
         case "Devotees With Own Arrangements":
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=All"
+            urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=AccoCount&accoType=All"
             break
         default:
-            urlString = "http://FSCAM0RLHV2R.local/KDMS/api/getReport.php?type=AccoCount&accoType=All"
+            urlString = "http://192.168.0.101/KDMS/api/getReport.php?type=AccoCount&accoType=All"
             break
         }
         

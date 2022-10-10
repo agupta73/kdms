@@ -77,7 +77,7 @@ class DevoteeSearchViewController: UIViewController, UITextFieldDelegate, UIText
     }
     private func searchDevoteeDetail(completion: @escaping () -> ()) {
         
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
+        let urlString = "http://192.168.0.101/KDMS/api/searchDevotee.php?mode=KEY&key=" + txtDevoteeKey.text!
         
         Alamofire.request(urlString).responseJSON { response in
             if let json = response.result.value {
@@ -113,7 +113,7 @@ class DevoteeSearchViewController: UIViewController, UITextFieldDelegate, UIText
     
     private func loadAccommodations(completion: @escaping () -> ()) {
         
-        let urlString = "http://FSCAM0RLHV2R.local/KDMS/api/loadoptions.php?option_type=Accommodation"
+        let urlString = "http://192.168.0.101/KDMS/api/loadoptions.php?option_type=Accommodation"
         
         Alamofire.request(urlString).responseJSON { response in
             if let json = response.result.value {
