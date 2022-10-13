@@ -314,6 +314,12 @@ unset($sevaSearch);
                                 <a href class="dash-link">Generate Mal Pua Report</a>
                             </div>
                         </div>
+                        <div class="card-footer" >
+                            <div class="stats">
+                                <i class="material-icons text-danger">add</i>
+                                <a href="upsertEventII.php" class="dash-link">Manage Events</a>
+                            </div>
+                        </div>
                     </div>             
                 </form>
             </div>

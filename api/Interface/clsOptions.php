@@ -39,7 +39,10 @@ class clsOptions {
             case "upsertSeva": 
                 $res=$this->upsertSeva($requestData);
                 break;
-            
+
+            case "upsertEvent":
+                $res=$this->upsertEvent($requestData);
+                break;
             
             case "upsertAmenity": 
                 //print_r("Reaching upsert option");
@@ -205,7 +208,74 @@ class clsOptions {
         return $res;
   
     }
-    
+
+    private function upsertEvent($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+
+        $query = "";
+        $Event_ID="";
+        $Event_Description="";
+        $Event_Status="";
+        $Event_Record_Updated_By='Anil'; //to be fixed userid
+        $now = date('Y-m-d H:i:s');
+
+
+        if (empty($requestData['event_id'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else{
+            $Event_ID = htmlspecialchars(strip_tags($requestData['event_id']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        if (!empty($requestData['event_description'])) {
+            $Event_Description = htmlspecialchars(strip_tags($requestData['event_description']));
+        }
+        else{
+            $Event_Description=$Event_ID;
+        }
+
+        if (!empty($requestData['event_status'])) {
+            $Event_Status = htmlspecialchars(strip_tags($requestData['event_status']));
+        }
+        else{
+            $Event_Status="Future";
+        }
+
+        $query= "CALL PROC_UPSERT_EVENT(";
+        $query = $query . "'" .
+            $Event_ID . "', '" .
+            $Event_Description . "', '" .
+            $Event_Status . "')" ;
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $Event_ID;
+        }
+        else{
+            $res['status'] = false;
+            $res['message'] = "[Seva] Upserting Event Record Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+
+    }
     private function upsertAmenity($requestData) {
         $res = array();
         $res['status'] = false;
@@ -321,8 +391,12 @@ class clsOptions {
 
             case "Seva":
                   return $this->getSevas();
-                break; 
-            
+                break;
+
+            case "Event":
+                return $this->getEvents();
+                break;
+
             Case "AccommodationDetail":                
                 if(!empty($requestData['option_type'])){
                     return $this->getAccommodationDetail($requestData['key']);
@@ -342,7 +416,17 @@ class clsOptions {
                     return $res;                    
                 }
                 break;
-                
+
+            Case "EventDetail":
+                if(!empty($requestData['option_type'])){
+                    return $this->getEventDetail($requestData['key']);
+                }
+                else {
+                    $res['message'] = "Option key not provided";
+                    return $res;
+                }
+                break;
+
             case "Amenity":
                   return $this->getAmenities();
                 break;
@@ -441,8 +525,38 @@ class clsOptions {
         
         return $Sevas;
     }
-  
-    
+
+    private function getEvents(){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+
+
+        $query = "SELECT em.Event_Id, em.Event_Description, em.Event_Status " .
+            " FROM `Event_Master` em " ;
+
+
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+
+        $Events = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            //var_dump($row);
+            $Events[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($AccomodationDetail);
+        if($i==0){
+            $Events['status'] = false;
+            $Events['message'] = "Event records not found!";
+            $Events['info'] = $results;
+        }
+
+        return $Events;
+    }
+
     private function getAmenities(){
 //        $res = array();
 //        $res['status'] = false;
@@ -535,13 +649,43 @@ class clsOptions {
         //var_dump($AccomodationDetail);
         else{
             $SevaDetail['status'] = false;
-            $SevaDetail['message'] = "Accomodation details not found!";
+            $SevaDetail['message'] = "Seva details not found!";
             $SevaDetail['info'] = $results;
         }
         
         return $SevaDetail;
     }
-    
+
+    private function getEventDetail($eventID){
+//        $res = array();
+//        $res['status'] = false;
+//        $res['message'] = '';
+//        $errormsg = "";
+//        $status = true;
+
+
+        $query = "SELECT em.Event_ID, em.`Event_Description`, em.Event_Status
+            FROM `Event_Master` em             
+            WHERE em.event_ID = '" . $eventID . "'";
+
+
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+
+        $EventDetail = array();
+
+        if($row = $results->fetchObject()){
+            //var_dump($row);
+            $EventDetail=$row;
+        }
+        //var_dump($AccomodationDetail);
+        else{
+            $EventDetail['status'] = false;
+            $EventDetail['message'] = "Event details not found!";
+            $EventDetail['info'] = $results;
+        }
+
+        return $EventDetail;
+    }
     private function getAmenityDetail($amenityKey){
 //        $res = array();
 //        $res['status'] = false;

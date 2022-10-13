@@ -13,6 +13,7 @@
  */
 class clsOptionHandler {
 
+    // TODO: change the following URL to relative, as opposed to hardcoded localhost
     private $url = "http://localhost/KDMS/api/loadOptions.php";
     private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
     private $optionType = "";
@@ -37,6 +38,7 @@ class clsOptionHandler {
             case "Accommodation":
             case "Amenity":
             case "Seva":
+            Case "Event":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
@@ -49,6 +51,7 @@ class clsOptionHandler {
             case "AccommodationDetail":
             case "AmenityDetail":
             case "SevaDetail":
+            case "EventDetail":
                 $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
                 break;
 
@@ -66,6 +69,7 @@ class clsOptionHandler {
             case "upsertAcco":
             case "upsertAmenity":
             case "upsertSeva":
+            case "upsertEvent":
                 $response = $this->upsertOptionRecord($this->urlUpsert, $requestData);
                 break;
 

@@ -107,7 +107,24 @@ switch ($requestType) {
         echo $response;
         die;
         break;
-        
+
+    case "upsertEvent":
+        //$url = "http://localhost/kdms/api/upsertDevotee.php";
+
+        $fields_as_post = ['event_id','event_description', 'event_status','requestType'];
+
+        foreach ($fields_as_post as $fld) {
+            //if (!empty($_POST[$fld])) {
+            $requestData[$fld] = urlencode($_POST[$fld]);
+            //}
+        }
+
+        $optionHandler = new clsOptionHandler($requestType);
+        $response =  $optionHandler->upsertOption($requestData);
+
+        echo $response;
+        die;
+        break;
     case "refreshAcco":
         $optionHandler = new clsOptionHandler('RefreshAcco');
         $response =  $optionHandler->getOptions();
