@@ -127,10 +127,12 @@ function get_event_desc($event_id)
       
       
   </div>
+    <br>
+
  <div class="content">
         <div class="container-fluid">
 <!--          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">-->
-          <div style="width: 240px;z-index:15;position:absolute;top:500px;left:10px;">
+          <div style="width: 240px;z-index:15;position:absolute;top:550px;left:10px;">
 
           <div id="search-box-container" >
           <input  type="text" id="search-data" name="searchData" placeholder="Search By name, phone or stn" autocomplete="off" />
