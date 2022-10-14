@@ -1,0 +1,8 @@
+CREATE TABLE `event_master` (
+  `Event_ID` varchar(10) NOT NULL,
+  `Event_Description` varchar(50) DEFAULT NULL,
+  `Event_Status` varchar(10) DEFAULT NULL,
+  `Event_Update_By` varchar(50) DEFAULT NULL,
+  `Event_Updated_On_Date_Time` datetime DEFAULT NULL,
+  UNIQUE KEY `UniqueEventID` (`Event_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
