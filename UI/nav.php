@@ -1,5 +1,63 @@
 <?php
 $config_data=include("../site_config.php");
+include_once("../Logic/clsOptionHandler.php");
+
+$eventID = $config_data['event_id'];
+$message = "";
+$debug = false;
+session_start();
+if(!isset($_SESSION["eventDesc"])){
+    $_SESSION["eventDesc"] = "";
+}
+
+if( $eventID == ""){
+    $message = "Event not set";
+    $_SESSION["eventDesc"] = "";
+}
+
+    if($_SESSION["eventDesc"] != ""){
+        $message = $message = $_SESSION["eventDesc"];
+    }
+    else {
+        if($debug){ echo "Session is empty";}
+        //Pre-populate event record in case of edit
+        $optionHandler = new clsOptionHandler("EventDetail");
+        $optionHandler->setOptionKey($eventID);
+        $response = $optionHandler->getOptions();
+        //assign values
+        if(!empty($response['Event_Description'])){
+                $_SESSION["eventDesc"] = urldecode($response['Event_Description']);
+                $message = $_SESSION["eventDesc"] ;
+            if($debug){echo "setting session";}
+            }
+        else{
+                $message= "Event not found";
+                if($debug){ echo "session not set";}
+            }
+    }
+
+
+if($debug){var_dump($message);die;}
+
+function get_event_desc($event_id)
+{
+    $eventDescription = "";
+    if($_SESSION["eventDesc"]==""){
+        echo "reaching";
+        //Pre-populate event record in case of edit
+        $optionHandler = new clsOptionHandler("EventDetail");
+        $optionHandler->setOptionKey($event_id);
+        $response = $optionHandler->getOptions();
+       //assign values
+        if(!empty($response['Event_Description'])){
+           $eventDescription = urldecode($response['Event_Description']);
+        }
+    }
+    return $eventDescription;
+}
+
+
+
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
@@ -8,10 +66,16 @@ $config_data=include("../site_config.php");
     Tip 2: you can also add an image using data-image tag
 -->
 
+
   <div class="logo">
     <a href="#" class="simple-text logo-normal">
-      KDMS 
+      KDMS
+        <br>
+       <b> <?=$message;?> </b>
     </a>
+
+
+
   </div>
 
   <div class="sidebar-wrapper">

@@ -6,6 +6,8 @@ include_once("../Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
 
+//var_dump($config_data); die;
+
 $getReport = new clsReportHandler();
 $response = $getReport->getAccommodationCounts();
 $accoType = "All";
