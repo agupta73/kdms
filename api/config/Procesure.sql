@@ -633,3 +633,25 @@ CALL
 () ;
     END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_UPSERT_EVENT`(IN `p_Event_Id` VARCHAR(10), IN `p_Event_Description` VARCHAR(50), IN `p_Event_Status` VARCHAR(10))
+BEGIN
+    REPLACE
+INTO `Event_Master`(
+    `Event_ID`,
+    `Event_Description`,
+    `Event_Status`,
+    `Event_Updated_On_Date_Time`,
+    `Event_Update_by`
+)
+VALUES(
+    p_Event_Id,
+    p_Event_Description,
+    p_Event_Status,
+    NOW(), 'Anil') ;
+
+
+
+    END$$
+DELIMITER ;
