@@ -5,7 +5,8 @@ include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsDevoteeHandler.php");
 include_once("../Logic/clsOptionHandler.php");
 
-$url="";
+//Removed redundant variable.
+//$url="";
 $requestType = "";
 $requestData = array();
 

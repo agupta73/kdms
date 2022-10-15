@@ -13,9 +13,12 @@
  */
 class clsOptionHandler {
 
-    // TODO: change the following URL to relative, as opposed to hardcoded localhost
-    private $url = "http://localhost/KDMS/api/loadOptions.php";
-    private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
+    // Removed hard coding of url
+    //private $url = "http://localhost/KDMS/api/loadOptions.php";
+    //private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
+    private $url = "";
+    private $urlUpsert = "";
+
     private $optionType = "";
     private $optionKey = "";
 

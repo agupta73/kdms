@@ -10,7 +10,10 @@ class clsDevoteeHandler {
 
     private $requestData = array();
     private $api_type = 1;
-    private $url = "http://localhost/KDMS/api/upsertDevotee.php";
+
+    //Removed hard coding of URL
+    //private $url = "http://localhost/KDMS/api/upsertDevotee.php";
+    private $url = "";
 
     public function __construct($requestObject) {
         $this->requestData = $requestObject;
