@@ -3,7 +3,7 @@
 class Database {
 
     private $host = "USMLAGUPTA.local:3306";
-    private $db_name = "KDMS";
+    private $db_name = "kdms2022";
 	//private $db_name = "kdms_testing";
 	
     private $username = "kdms";

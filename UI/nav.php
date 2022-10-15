@@ -19,7 +19,7 @@ if( $eventID == ""){
         $message = $message = $_SESSION["eventDesc"];
     }
     else {
-        if($debug){ echo "Session is empty";}
+        if($debug){ echo "Repopulating event description..";}
         //Pre-populate event record in case of edit
         $optionHandler = new clsOptionHandler("EventDetail");
         $optionHandler->setOptionKey($eventID);
@@ -68,13 +68,19 @@ function get_event_desc($event_id)
 
 
   <div class="logo">
-    <a href="#" class="simple-text logo-normal">
+    <a href="#" onclick=refreshSession() class="simple-text logo-normal">
       KDMS
         <br>
        <b> <?=$message;?> </b>
     </a>
 
-
+      <script type="text/javascript">
+          function refreshSession(){
+              alert("This will refresh session!");
+              <?php session_unset();?>
+              location.reload();
+          }
+      </script>
 
   </div>
 
