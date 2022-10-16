@@ -6,10 +6,10 @@ $config_data=include("../site_config.php");
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
-    Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+      Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
-    Tip 2: you can also add an image using data-image tag
--->
+      Tip 2: you can also add an image using data-image tag
+  -->
 
 
   <div class="logo">
@@ -80,8 +80,6 @@ $config_data=include("../site_config.php");
         </a>
       </li>         
     </ul>
-      
-      
   </div>
     <br>
 
@@ -105,7 +103,9 @@ $config_data=include("../site_config.php");
      </div>
 </div>
 <br>
-
+<?php
+  include_once("topNav.php");
+?>
 
  <script src="../assets/js/jquery-3.2.1.min.js"></script>
   <style>
@@ -163,6 +163,3 @@ $config_data=include("../site_config.php");
       }
 
   </script>
-<?php
-if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>", "eventDesc:";echo $_SESSION['eventDesc'], "<br>";}
-?>
