@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+
+<script>
+<html>
+<head>
+  <title>
+    SignIn(KDMS)
+  </title>
+  <?php
+    include_once("header.php");
+  ?>
+</head>
+<body>
 <?php
 //TODO: 1. Kill session (move code from nav.php
 //2. start session
@@ -8,19 +20,18 @@
 //- authority
 //- event ID/Desc
 
-$debug = true;
+$debug = false;
 if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
 //Distroy session, if active
 if(session_status() == PHP_SESSION_ACTIVE ){
     session_unset();
     session_destroy();
-    if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
+    if ($debug) {echo "current session ID from inside reset code: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
 }
-?>
 
-<?php
 $config_data=include_once("../site_config.php");
 include_once("../Logic/clsAdminTasks.php");
+
 
 $requestData = $_POST;
 
@@ -38,11 +49,10 @@ if (!empty($requestData['loginID'])) {
     $response=  $adminTasks->processAdminTasks();
 
     if($debug){
+        echo "fetched the login data <br>";
         var_dump($response);
     }
-    if($debug){
-        echo "Response -> User key: ", urldecode($response['User_Key']), "<br>";
-    }
+
     //assign values
     if(!empty($response['User_Key'])){
 
@@ -64,31 +74,29 @@ if (!empty($requestData['loginID'])) {
     if(!empty($response['User_Phone'])){
         $phone=  urldecode($response['User_Phone']); // "Gupta"
     }
-if($debug){
-    echo "<br>","login: ", $loginID, "<br>";
-    var_dump($password);
-    var_dump($role);
-    var_dump($name);
-    var_dump($email);
-    var_dump($phone);
-    die;
-}
+    if($debug){
+        echo "<br>","login: ", $loginID, "<br>";
+        var_dump($password);
+        var_dump($role);
+        var_dump($name);
+        var_dump($email);
+        var_dump($phone);
+
+    }
+    if(!empty($loginID)){
+        if($debug){echo "reaching non-empty login ID..";}
+        include_once("../initialize.php");
+        $_SESSION["LoginID"] = $loginID;
+        $_SESSION["UserName"] = $name;
+        $_SESSION["UserEmail"] = $email;
+        $_SESSION["Role"] = $role;
+        $url = $config_data['webroot']."UI/Index.php";
+        //header("Location: ".$url);
+        //exit();
+    }
+    if($debug){echo "Skipped non-empty login ID check..";}
 }
 ?>
-<script>
-
-
-<html>
-<head>
-  <title>
-    SignIn(KDMS)
-  </title>
-  <?php
-    include_once("header.php");
-  ?>
-</head>
-<body>
-
   <div class="content">
       <div class="container-fluid">
             <div class="row">

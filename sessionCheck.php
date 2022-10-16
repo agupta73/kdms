@@ -8,8 +8,11 @@ else {
     if (!isset($_SESSION["eventDesc"])) {$result = false; }
     elseif ($_SESSION["eventDesc"] == "") {$result = false;}
 
-    if(!isset($_SESSION["userID"])){$result = false;}
-    elseif($_SESSION["userID"] == ""){ $result = false;}
+    if(!isset($_SESSION["LoginID"])){$result = false;}
+    elseif($_SESSION["LoginID"] == ""){ $result = false;}
+
+    if(!isset($_SESSION["Role"])){$result = false;}
+    elseif($_SESSION["Role"] == ""){ $result = false;}
 
     if ($debug) {
         echo "SessionCheck", "result: ";
