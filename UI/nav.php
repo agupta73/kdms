@@ -61,23 +61,19 @@ function get_event_desc($event_id)
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
-    Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+      Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
-    Tip 2: you can also add an image using data-image tag
--->
+      Tip 2: you can also add an image using data-image tag
+  -->
 
 
   <div class="logo">
     <a href="#" class="simple-text logo-normal">
       KDMS
-        <br>
-       <b> <?=$message;?> </b>
+      <br>
+      <b> <?=$message;?> </b>
     </a>
-
-
-
   </div>
-
   <div class="sidebar-wrapper">
     <ul class="nav">
       <li class="nav-item active  ">
@@ -104,7 +100,6 @@ function get_event_desc($event_id)
           <p>Search Devotees</p>
         </a>
       </li>
-
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=PWD">
           <i class="material-icons">camera_front</i>
@@ -124,11 +119,8 @@ function get_event_desc($event_id)
         </a>
       </li>         
     </ul>
-      
-      
   </div>
-    <br>
-
+  <br>
  <div class="content">
         <div class="container-fluid">
 <!--          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">-->
@@ -149,7 +141,9 @@ function get_event_desc($event_id)
      </div>
 </div>
 <br>
-
+<?php
+  include_once("topNav.php");
+?>
 
  <script src="../assets/js/jquery-3.2.1.min.js"></script>
   <style>
