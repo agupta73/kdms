@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<?php
+//TODO: 1. Kill session (move code from nav.php
+//2. start session
+//3. validate credentials
+//3. add session variables
+//- login ID
+//- authority
+//- event ID/Desc
+
+$debug = true;
+if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
+//Distroy session, if active
+if(session_status() != PHP_SESSION_DISABLED){ session_destroy();}
+?>
+
 <html>
 <head>
   <title>
@@ -18,10 +33,10 @@
                   <div class="col-md-4">
                 <div class="card">
                   <div class="card-header card-header-primary">
-                    <h4 class="card-title">KDMS LogIn </h4>
+                    <h4 class="card-title">KDMS Login </h4>
                   </div>
                   <div class="card-body">
-                      <form  id="myForm">
+                      <form  id="myForm" method="post" action="../initialize.php">
                       <div class="row">
 
                       </div>
@@ -64,4 +79,6 @@
       <?php
       include_once("scriptJS.php") ?>
 </body>
+
+
 </html>

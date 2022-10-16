@@ -1,9 +1,11 @@
 
 <?php
+$debug = false;
 
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsDevoteeHandler.php");
 include_once("../Logic/clsOptionHandler.php");
+
 
 //Removed redundant variable.
 //$url="";
@@ -17,6 +19,9 @@ if (!empty($_POST['requestType'])){
 }
 else {
     var_dump($_POST);die;
+}
+if($debug) {
+    echo "reaching here..";
 }
 
 switch ($requestType) {

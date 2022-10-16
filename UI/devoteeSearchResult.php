@@ -8,6 +8,7 @@
         include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
         // Include new config file in each page ,where we need data from configuration
         $config_data = include("../site_config.php");
+        $debug = false;
         ?>
         <script>
 
@@ -147,7 +148,12 @@
 
     <body class="">
         <div class="wrapper ">
-<?php include_once("nav.php"); ?>
+            <?php
+            if($debug) {
+            echo "reaching here..";
+            }
+            ?>
+            <?php include_once("nav.php"); ?>
 
             <div class="main-panel">
                 <!-- Navbar -->

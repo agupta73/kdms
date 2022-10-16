@@ -1,63 +1,8 @@
 <?php
-$config_data=include("../site_config.php");
-include_once("../Logic/clsOptionHandler.php");
-
-$eventID = $config_data['event_id'];
-$message = "";
 $debug = false;
-session_start();
-if(!isset($_SESSION["eventDesc"])){
-    $_SESSION["eventDesc"] = "";
-}
-
-if( $eventID == ""){
-    $message = "Event not set";
-    $_SESSION["eventDesc"] = "";
-}
-
-    if($_SESSION["eventDesc"] != ""){
-        $message = $message = $_SESSION["eventDesc"];
-    }
-    else {
-        if($debug){ echo "Repopulating event description..";}
-        //Pre-populate event record in case of edit
-        $optionHandler = new clsOptionHandler("EventDetail");
-        $optionHandler->setOptionKey($eventID);
-        $response = $optionHandler->getOptions();
-        //assign values
-        if(!empty($response['Event_Description'])){
-                $_SESSION["eventDesc"] = urldecode($response['Event_Description']);
-                $message = $_SESSION["eventDesc"] ;
-            if($debug){echo "setting session";}
-            }
-        else{
-                $message= "Event not found";
-                if($debug){ echo "session not set";}
-            }
-    }
-
-
-if($debug){var_dump($message);die;}
-
-function get_event_desc($event_id)
-{
-    $eventDescription = "";
-    if($_SESSION["eventDesc"]==""){
-        echo "reaching";
-        //Pre-populate event record in case of edit
-        $optionHandler = new clsOptionHandler("EventDetail");
-        $optionHandler->setOptionKey($event_id);
-        $response = $optionHandler->getOptions();
-       //assign values
-        if(!empty($response['Event_Description'])){
-           $eventDescription = urldecode($response['Event_Description']);
-        }
-    }
-    return $eventDescription;
-}
-
-
-
+include_once("../initialize.php");
+//include_once("../sessionCheck.php");
+$config_data=include("../site_config.php");
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
@@ -71,13 +16,18 @@ function get_event_desc($event_id)
     <a href="#" onclick=refreshSession() class="simple-text logo-normal">
       KDMS
         <br>
-       <b> <?=$message;?> </b>
+       <b> <?=$_SESSION["eventDesc"];?> </b>
     </a>
 
       <script type="text/javascript">
           function refreshSession(){
-              alert("This will refresh session!");
-              <?php session_unset();?>
+              alert("This doesn't do anything. You will need to somehow kill your session, if you are trying to load the next event. Adding log out functionality will fix this issue!");
+
+              <?php
+              //session_unset();
+              //header("Location: /index.php");
+              if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
+              ?>
               location.reload();
           }
       </script>
@@ -213,3 +163,6 @@ function get_event_desc($event_id)
       }
 
   </script>
+<?php
+if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>", "eventDesc:";echo $_SESSION['eventDesc'], "<br>";}
+?>
