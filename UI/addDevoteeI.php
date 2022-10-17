@@ -1,5 +1,6 @@
 <?php
 // Include new config file in each page ,where we need data from configuration
+include_once("../sessionCheck.php");
 $config_data=include_once("../site_config.php");
 ?>
 <!DOCTYPE html>

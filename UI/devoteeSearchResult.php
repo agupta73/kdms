@@ -1,15 +1,17 @@
 <!DOCTYPE html>
+<?php
+include_once("../sessionCheck.php");
+include_once("header.php");
+include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
+// Include new config file in each page ,where we need data from configuration
+$config_data = include("../site_config.php");
+$debug = false;
+?>
 <html lang="en">
     <head>
         <title> KDMS (Available Devotee Records) </title>
-        <?php
-        include_once("header.php");
-        include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-        include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
-        // Include new config file in each page ,where we need data from configuration
-        $config_data = include("../site_config.php");
-        $debug = false;
-        ?>
+
         <script>
 
             function _(el) {
