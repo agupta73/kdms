@@ -157,6 +157,7 @@ if (!empty($requestData['loginID'])) {
 
                           <div class="form-group">
                             <a href="recovery.php"<label class="bmd-label-floating">Forgot password</label></a>
+                          </div></div></div>
 
                       <button class="btn btn-success pull-right" onclick="" >SignIn</button>
                   </form>
