@@ -15,8 +15,8 @@ $config_data=include("../site_config.php");
   <div class="logo">
     <a href="#" onclick=refreshSession() class="simple-text logo-normal">
       KDMS
-        <br>
-       <b> <?=$_SESSION["eventDesc"];?> </b>
+        <!--<br>
+       <b> <?=$_SESSION["eventDesc"];?> </b>-->
     </a>
 
       <script type="text/javascript">
