@@ -37,5 +37,5 @@ if($_SESSION["eventDesc"]== ""){
         if($debug){ echo "session not set", "<br>";}
     }
 }
-if ($debug) {echo "eventDesc:";echo $_SESSION['eventDesc'], "<br>";}
+if ($debug) {echo "eventDesc:";echo $_SESSION['eventDesc'], "<br>"; die;}
 ?>

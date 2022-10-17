@@ -1,6 +1,10 @@
 <!DOCTYPE html>
+<?php
+$debug = false;
+//trying session start by default
+session_start();
+?>
 
-<script>
 <html>
 <head>
   <title>
@@ -20,7 +24,6 @@
 //- authority
 //- event ID/Desc
 
-$debug = false;
 if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
 //Distroy session, if active
 if(session_status() == PHP_SESSION_ACTIVE ){
@@ -34,14 +37,18 @@ include_once("../Logic/clsAdminTasks.php");
 
 
 $requestData = $_POST;
-
 $loginID = "";
-$password="";
+$password = "";
 $role="";
 $name = "";
 $email = "";
 $phone ="";
+$message = "";
+//Setting login ID and password to display on the login screen
+//if(isset($_POST['loginID'])){$loginID = $_POST['loginID']; }
+//if(isset($_POST['password'])){ $password = $_POST['password'];}
 
+unset($_POST);
 //Pre-populate devotee record in case of edit
 if (!empty($requestData['loginID'])) {
     $response = array();
@@ -91,10 +98,17 @@ if (!empty($requestData['loginID'])) {
         $_SESSION["UserEmail"] = $email;
         $_SESSION["Role"] = $role;
         $url = $config_data['webroot']."UI/Index.php";
-        //header("Location: ".$url);
-        //exit();
+        header("Location: ".$url);
+        exit();
     }
-    if($debug){echo "Skipped non-empty login ID check..";}
+    else{
+        //echo "<script> alert('Incorrect credential... please try again!') </script>";
+        $message = "Incorrect credentials!";
+        $loginID = $requestData['loginID'];
+        $password = $requestData['password'];
+        if($debug){echo "LoginID: ", $loginID, " password: " , $password, " Message: " , $message;}
+    }
+
 }
 ?>
   <div class="content">
@@ -116,7 +130,7 @@ if (!empty($requestData['loginID'])) {
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="bmd-label-floating">Username</label>
-                            <input type="text" class="form-control" name="loginID" id="loginID">
+                            <input type="text" class="form-control" name="loginID" id="loginID" value="<? echo $loginID; ?>">
                           </div>
                         </div>
                       </div>
@@ -125,14 +139,22 @@ if (!empty($requestData['loginID'])) {
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="bmd-label-floating">Password</label>
-                            <input type="password" class="form-control" name="password" id="password">
+                            <input type="password" class="form-control" name="password" id="password" value="<? echo $password; ?>">
                                 <input type="hidden" name="type" id="type" value="login">
                           </div>
                         </div>
 
                       </div>
+                          <div class="row">
+                              <div class="col-md-12">
+                                  <p class="text-danger">
+                                      <? echo $message; ?> </p>
+                              </div>
+                          </div>
+
                       <div class="row">
                         <div class="col-md-12">
+
                           <div class="form-group">
                             <a href="recovery.php"<label class="bmd-label-floating">Forgot password</label></a>
 

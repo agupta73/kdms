@@ -15,7 +15,7 @@ $api_dir = $webroot . 'api' . $directory_seprator;
 //Set the event ID of the current event
 //Please see event_master table for available events or
 // use the manage event functionality, available from dashboard of application
-$event_id = "2022GP";
+$event_id = "2022NR";
 
 return [
     'webroot' => $webroot,

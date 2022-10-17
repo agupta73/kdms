@@ -1,7 +1,7 @@
 <?php
 $debug = false;
-include_once("../initialize.php");
-//include_once("../sessionCheck.php");
+//include_once("../initialize.php");
+include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">

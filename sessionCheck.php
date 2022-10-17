@@ -1,8 +1,12 @@
 <?php
 $debug = false;
 $result = true;
+session_start();
 $config_data=include("../site_config.php");
-if($debug){var_dump(session_status());}
+if($debug){
+    var_dump(session_status());
+    var_dump($_SESSION);
+}
 if(session_status() == PHP_SESSION_DISABLED) { $result=false; }
 else {
     if (!isset($_SESSION["eventDesc"])) {$result = false; }
