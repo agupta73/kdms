@@ -1,10 +1,13 @@
 <?php
+
 include_once("header.php");
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsReportHandler.php");
 include_once("../Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
+
+// TODO: add event ID on the refresh accomodation count function
 
 //var_dump($config_data); die;
 
@@ -290,6 +293,7 @@ unset($sevaSearch);
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <form name="myForm" id="myFormID">
                     <input type="hidden" name="requestType" id="requestType" value="none">
+                    <input type="hidden" name="eventID" id="eventID" value="<? echo $config_data['event_id']; ?>">
                     <div class="card card-stats">
                         <div class="card-header card-header-danger card-header-icon">
                             <div class="card-icon">

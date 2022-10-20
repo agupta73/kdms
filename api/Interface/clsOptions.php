@@ -5,7 +5,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+//TODO: remove hardcoding from Refresh Accommodations function
 /**
  * Description of clsOptions
  *
@@ -13,7 +13,7 @@
  */
 class clsOptions {
     private $conn;
-
+    public $debug = true;
 
 // constructor with $db as database connection
     public function __construct($db) {
@@ -725,8 +725,13 @@ class clsOptions {
         $res['status'] = false;
         $res['message'] = '';
         $res['info']='';
-        
-        $query = "CALL PROC_REFRESH_ACCO_COUNT()";
+
+        if($this->debug){
+            $query = "CALL PROC_REFRESH_ACCO_COUNT_W_EVENT('2022NR')";
+        }
+        else {
+            $query = "CALL PROC_REFRESH_ACCO_COUNT()";
+        }
         $stmt = $this->conn->prepare($query);
         
          if ($stmt->execute()) {

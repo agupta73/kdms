@@ -655,3 +655,139 @@ VALUES(
 
     END$$
 DELIMITER ;
+
+    -- DELIMITER ;
+-- //////////////////////////////////////
+-- // Proc_upsert_Acco_W_Event
+-- ////////////////////////////////////////
+drop procedure `PROC_UPSERT_ACCO_W_EVENT`;
+DELIMITER $$
+CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_UPSERT_ACCO_W_EVENT`(
+IN `p_Accomodation_Key` VARCHAR(5),
+IN `p_Accommodation_Event` VARCHAR(10),
+IN `p_Accomodation_Name` VARCHAR(100),
+IN `p_Accomodation_Capacity` INT(11),
+IN `p_Reserved_Count` INT(11),
+IN `p_Out_of_Availability_Count` INT(11),
+IN `p_Accomodation_Updated_By` VARCHAR(10)
+)
+BEGIN
+    REPLACE
+INTO `Accommodation_Master`
+(
+    `Accomodation_Key`,
+    `Accomodation_Name`,
+    `Accomodation_Capacity`,
+    `Accomodation_Update_Date_Time`,
+    `Accomodation_Updated_By`
+)
+VALUES
+(
+    p_Accomodation_Key,
+    p_Accomodation_Name,
+    p_Accomodation_Capacity,
+    NOW(), p_Accomodation_Updated_By) ;
+
+REPLACE
+INTO `Accommodation_Availability`
+(
+    `Accomodation_Key`,
+    `Accommodation_Event`,
+    `Reserved_Count`,
+    `Out_of_Availability_Count`,
+    `Availability_Update_Date_Time`,
+    `Availability_Updated_By`
+)
+VALUES
+(
+    p_Accomodation_Key,
+    p_Accommodation_Event,
+    p_Reserved_Count,
+    p_Out_of_Availability_Count,
+    NOW(),
+    p_Accomodation_Updated_By
+    )
+    ;
+
+CALL PROC_REFRESH_ACCO_COUNT_W_EVENT(p_Accommodation_Event);
+
+END$$
+DELIMITER ;
+
+
+-- //////////////////////////////////////
+-- // PROC_REFRESH_ACCO_COUNT_W_EVENT
+-- ////////////////////////////////////////
+drop procedure `PROC_REFRESH_ACCO_COUNT_W_EVENT`;
+
+DELIMITER $$
+CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REFRESH_ACCO_COUNT_W_EVENT`(
+IN `p_accommodation_event` VARCHAR(10))
+BEGIN
+
+    DECLARE v_finished INTEGER DEFAULT 0;
+	DECLARE v_accommodation_key VARCHAR(10) DEFAULT "" ;
+    DECLARE v_accommodation_count INTEGER DEFAULT 0;
+	DECLARE v_accommodation_capacity INTEGER DEFAULT 0 ;
+
+	DECLARE DEBUG bool DEFAULT false;
+
+DECLARE csr_accomodation CURSOR FOR
+SELECT
+    am.accomodation_key,
+    COUNT(da.Accomodation_Key),
+    am.accomodation_capacity
+FROM
+    Accommodation_Master am
+        LEFT OUTER JOIN Devotee_Accomodation da ON
+                am.Accomodation_Key = da.Accomodation_Key AND da.Accommodation_Event = p_accommodation_event AND da.Accomodation_Status = 'Allocated'
+GROUP BY
+    am.Accomodation_Key;
+
+DECLARE
+CONTINUE
+HANDLER FOR NOT FOUND
+SET v_finished = 1 ;
+
+OPEN csr_accomodation ;
+
+WHILE v_finished = 0 DO
+
+FETCH csr_accomodation
+INTO v_accommodation_key, v_accommodation_count, v_accommodation_capacity ;
+
+IF v_finished = 0 THEN
+UPDATE
+    Accommodation_Availability
+SET
+    allocated_count = v_accommodation_count,
+    available_count = v_accommodation_capacity - (reserved_count + out_of_availability_count + v_accommodation_count)
+
+WHERE
+        accomodation_key = v_accommodation_key AND
+        Accommodation_Event = p_accommodation_event
+;
+
+IF DEBUG = true THEN
+		CALL logIt(concat('PROC_REFRESH_ACCO_COUNT_W_EVENT: v_accommodation_capacity is: ', v_accommodation_capacity, ' and v_accommodation_event is: ', p_accommodation_event));
+END IF;
+END IF ;
+
+END WHILE ;
+
+CLOSE csr_accomodation ;
+END$$
+DELIMITER ;
+
+
+
+-- //////////////////////////////////////
+-- // logIt
+-- ////////////////////////////////////////
+DELIMITER $$
+CREATE DEFINER=`kdms`@`%` PROCEDURE `logIt`(
+IN `p_msg` VARCHAR(1024) )
+BEGIN
+insert into sp_logs select 0, `p_msg`;
+END$$
+DELIMITER ;
