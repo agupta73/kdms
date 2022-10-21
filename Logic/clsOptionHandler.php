@@ -19,6 +19,7 @@ class clsOptionHandler {
     private $url = "";
     private $urlUpsert = "";
 
+
     private $optionType = "";
     private $optionKey = "";
 
@@ -45,10 +46,14 @@ class clsOptionHandler {
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
-            case "RefreshAcco":
             case "RefreshAmenity":
             case "RefreshSeva":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
+                break;
+
+            case "RefreshAcco":
+
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
                 break;
 
             case "AccommodationDetail":
@@ -117,5 +122,6 @@ class clsOptionHandler {
         curl_close($ch);
         return $response;
     }
+
 
 }

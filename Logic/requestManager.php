@@ -1,27 +1,24 @@
 
 <?php
-$debug = false;
-
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsDevoteeHandler.php");
 include_once("../Logic/clsOptionHandler.php");
-
+$debug = false;
 
 //Removed redundant variable.
 //$url="";
 $requestType = "";
 $requestData = array();
 
+if($debug){
+    var_dump($_POST);die;
+}
 
-    //var_dump($_POST);die;
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
 else {
-    var_dump($_POST);die;
-}
-if($debug) {
-    echo "reaching here..";
+    var_dump($_POST);
 }
 
 switch ($requestType) {
@@ -132,7 +129,10 @@ switch ($requestType) {
         die;
         break;
     case "refreshAcco":
+
+        $optionHandler = new clsOptionHandler($requestType);
         $optionHandler = new clsOptionHandler('RefreshAcco');
+        $optionHandler->setOptionKey($requestData['eventId']);
         $response =  $optionHandler->getOptions();
 
         echo $response;

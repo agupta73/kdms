@@ -5,7 +5,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//TODO: remove hardcoding from Refresh Accommodations function
+
 /**
  * Description of clsOptions
  *
@@ -13,7 +13,7 @@
  */
 class clsOptions {
     private $conn;
-    public $debug = true;
+    public $debug = false;
 
 // constructor with $db as database connection
     public function __construct($db) {
@@ -441,8 +441,14 @@ class clsOptions {
                 }
                 break;
                 
-            Case "RefreshAcco":                
-                return $this->refreshAccommodations();
+            Case "RefreshAcco":
+                if(!empty($requestData['key'])){
+                    return $this->refreshAccommodations($requestData['key']);
+                }
+                else {
+                    $res['message'] = "Option key not provided";
+                    return $res;
+                }
                 break;
             
             Case "RefreshAmenity":                
@@ -720,18 +726,14 @@ class clsOptions {
         return $AmenityDetail;
     }
         
-    private function refreshAccommodations(){
+    private function refreshAccommodations($eventid){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $res['info']='';
 
-        if($this->debug){
-            $query = "CALL PROC_REFRESH_ACCO_COUNT_W_EVENT('2022NR')";
-        }
-        else {
-            $query = "CALL PROC_REFRESH_ACCO_COUNT()";
-        }
+        $query = "CALL PROC_REFRESH_ACCO_COUNT_W_EVENT('$eventid')";
+
         $stmt = $this->conn->prepare($query);
         
          if ($stmt->execute()) {

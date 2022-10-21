@@ -1,5 +1,5 @@
 <?php
-
+$debug= false;
 include_once("header.php");
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsReportHandler.php");
@@ -29,11 +29,27 @@ $sevaRes = $sevaSearch->getOptions();
 unset($sevaSearch);
 ?> 
 <script> //javascript function for ajax call 
+    function clickHandler2(formId, flag) {
+
+        //document.getElementById("requestType").value = "refreshAcco";
+        var formData = $(formId).serialize();
+        alert(formData);
+        document.getElementById(formId).action = "<?=$config_data['webroot'];?>Logic/requestManager.php";
+
+        document.getElementById(formId).submit();
+
+    }
+
     function clickHandler(formId, flag) {
 
-        document.getElementById("requestType").value = "refreshAcco";
+        //document.getElementById("requestType").value = "refreshAcco";
         var formData = $(formId).serialize();
 
+        <?php
+        if($debug){
+            echo "alert(formData);";
+        }
+        ?>
         if (validateInput()) {
 
             switch (flag) {
@@ -44,6 +60,7 @@ unset($sevaSearch);
                         data: formData,
                         success: function (response) {
                             var r = JSON.parse(response);
+
                             if (r['status'] == true) {
                                 alert("Accomodation count refreshed successfully!");
                             } else {
@@ -52,11 +69,11 @@ unset($sevaSearch);
                         }
                     });
                     break;
-                    
-                    case 2: //Refresh count
+
+                case 2: //Refresh count
                     document.getElementById("requestType").value = "refreshSeva";
                     formData = $(formId).serialize();
-                    
+
                     $.ajax({
                         url: "<?=$config_data['webroot'];?>Logic/requestManager.php",
                         type: 'POST',
@@ -74,16 +91,15 @@ unset($sevaSearch);
 
 
 //                case 2: //Manage accommodations
-//                    document.getElementById("myForm").action = "addAccommodationII.php";            
+//                    document.getElementById("myForm").action = "addAccommodationII.php";
 //                    document.getElementById(formId).submit();
 //                    break;
-//                
+//
                 default:
                     break;
             }
         }
     }
-
     function validateInput() {
         return true;
     }
@@ -195,8 +211,8 @@ unset($sevaSearch);
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
-                <form name="myForm" id="myFormID">
-                    <input type="hidden" name="requestType" id="requestType" value="none">
+                <form name="myForm1" id="myFormID1">
+                    <input type="hidden" name="requestType1" id="requestType1" value="none">
                     <div class="card card-stats">
                         <div class="card-header card-header-danger card-header-icon">
                             <div class="card-icon">
@@ -292,8 +308,8 @@ unset($sevaSearch);
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <form name="myForm" id="myFormID">
-                    <input type="hidden" name="requestType" id="requestType" value="none">
-                    <input type="hidden" name="eventID" id="eventID" value="<? echo $config_data['event_id']; ?>">
+                    <input type="hidden" name="requestType" id="requestType" value="refreshAcco">
+                    <input type="hidden" name="eventId" id="eventId" value="<? echo $config_data['event_id']; ?>">
                     <div class="card card-stats">
                         <div class="card-header card-header-danger card-header-icon">
                             <div class="card-icon">
