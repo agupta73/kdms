@@ -7,19 +7,19 @@ include_once("../Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
 
-// TODO: add event ID on the refresh accomodation count function
-
-//var_dump($config_data); die;
+$eventId = $config_data['event_id'];
 
 $getReport = new clsReportHandler();
-$response = $getReport->getAccommodationCounts();
+//$response = $getReport->getAccommodationCounts();
+$response = $getReport->getAccommodationCounts($eventId);
+if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);die;}
 $accoType = "All";
 
 if (!empty($_GET['accoType'])) {
     $accoType = $_GET['accoType'];
 }
 
-$AccoResponse = $getReport->getAccommodationRecords($accoType);
+$AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
 
 $sevaSearch = new clsOptionHandler("Seva");    
