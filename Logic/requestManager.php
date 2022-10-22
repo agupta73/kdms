@@ -11,15 +11,13 @@ $requestType = "";
 $requestData = array();
 
 if($debug){
-    var_dump($_POST);die;
+    var_dump($_POST);
 }
 
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
-else {
-    var_dump($_POST);
-}
+
 
 switch ($requestType) {
     case "upsertDevotee":
@@ -132,9 +130,9 @@ switch ($requestType) {
 
         $optionHandler = new clsOptionHandler($requestType);
         $optionHandler = new clsOptionHandler('RefreshAcco');
-        $optionHandler->setOptionKey($requestData['eventId']);
+        $optionHandler->setOptionKey($_POST['eventId']);
         $response =  $optionHandler->getOptions();
-
+        if($debug){echo "<br>", "reaching the function call. ";}
         echo $response;
         die;
         break;

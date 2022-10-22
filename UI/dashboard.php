@@ -28,22 +28,24 @@ $sevaRes = $sevaSearch->getOptions();
 //array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }
 unset($sevaSearch);
 ?> 
-<script> //javascript function for ajax call 
+<script>
+    //Debug only function.. do not use
     function clickHandler2(formId, flag) {
 
         //document.getElementById("requestType").value = "refreshAcco";
         var formData = $(formId).serialize();
         alert(formData);
+        alert(formId);
         document.getElementById(formId).action = "<?=$config_data['webroot'];?>Logic/requestManager.php";
-
+        document.getElementById(formId).method = "POST";
+        //document.getElementById("myFormID").data = formData;
         document.getElementById(formId).submit();
 
     }
 
+    //javascript function for ajax call
     function clickHandler(formId, flag) {
-
-        //document.getElementById("requestType").value = "refreshAcco";
-        var formData = $(formId).serialize();
+       var formData = $(formId).serialize();
 
         <?php
         if($debug){
@@ -54,6 +56,7 @@ unset($sevaSearch);
 
             switch (flag) {
                 case 1: //Refresh count
+
                     $.ajax({
                         url: "<?=$config_data['webroot'];?>Logic/requestManager.php",
                         type: 'POST',
