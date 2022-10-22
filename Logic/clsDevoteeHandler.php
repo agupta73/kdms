@@ -37,7 +37,7 @@ class clsDevoteeHandler {
                 $response = $this->curl_rest($this->url, true, $this->requestData);
             }
         }
-        /* Get data */ else if ($api_type == 2) {
+        /* Get data */ else if ($this->api_type == 2) {
             
         }
         return $response;

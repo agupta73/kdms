@@ -58,11 +58,13 @@ class clsReportHandler {
 
         $ch = curl_init();
         $url = $this->url . "?type=" . $type;
-        if($eventId != ""){
-            $url = $url . "&eventId=" . $eventId;
-        }
+
         if ($accoType != "") {
             $url = $url . "&accoType=" . $accoType;
+        }
+
+        if($eventId != ""){
+            $url = $url . "&eventId=" . $eventId;
         }
 
         if($this->debug){echo "<br> url: ", $url, "<br>";}

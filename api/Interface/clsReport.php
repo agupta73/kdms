@@ -41,7 +41,7 @@ class clsReport {
         if (!empty($requestData['type'])) {
             switch ($requestData['type']) {
                 case "AccoCount": //Accommodation Counts
-                    return $this->getAccommodationCounts($AccoSpecific);
+                    return $this->getAccommodationCounts($AccoSpecific, $eventId);
                     break;
 
                 case "DevoteeCount": //Accommodation Counts
@@ -60,7 +60,7 @@ class clsReport {
     }
 
     //Returns accommodations and their counts
-    private function getAccommodationCounts($AccoSpecific) {
+    private function getAccommodationCounts($AccoSpecific, $eventId) {
         $query = "SELECT" .
                 " aa.accomodation_key, " .
                 " am.accomodation_name, " .
@@ -80,44 +80,40 @@ class clsReport {
         switch ($AccoSpecific) {
             case "All":
                 $query = $query .
-                        " aa.Available_Count <= 1000" .
-                        " Order by " .
-                        " Available_Count DESC";
+                        " aa.Available_Count <= 1000" ;
                 break;
 
             case "Available":
                 $query = $query .
                         " aa.Available_Count <= 1000" .
-                        " AND aa.Available_Count > 0 " .
-                        " Order by " .
-                        " Available_Count DESC";
+                        " AND aa.Available_Count > 0 ";
                 break;
 
             case "Reserved":
                 $query = $query .
                         " aa.Available_Count <= 1000" .
-                        " AND aa.Reserved_Count > 0 " .
-                        " Order by " .
-                        " Available_Count DESC";
+                        " AND aa.Reserved_Count > 0 " ;
                 break;
 
             case "Occupied":
                 $query = $query .
                         " aa.Available_Count <= 1000" .
-                        " AND aa.Allocated_Count > 0 " .
-                        " Order by " .
-                        " Available_Count DESC";
+                        " AND aa.Allocated_Count > 0 ";
                 break;
 
             default:
                 $query = $query .
-                        " aa.Available_Count <= 1000" .
-                        " Order by " .
-                        " Available_Count DESC";
+                        " aa.Available_Count <= 1000" ;
                 break;
         }
 
-        //return $query; die;
+        if($eventId != ""){
+            $query = $query . " AND  aa.Accommodation_Event = '" . $eventId . "' ";
+        }
+
+        $query = $query . " Order by Available_Count DESC";
+
+        if($this->debug){echo $query; }
 
         $results = $this->conn->query($query, MYSQLI_USE_RESULT);
 

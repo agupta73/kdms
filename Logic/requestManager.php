@@ -23,9 +23,14 @@ switch ($requestType) {
     case "upsertDevotee":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
+        /*$fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
+            'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_referral', 'devotee_seva_id', 'devotee_accommodation_id',
+            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments' ]; */
+
+        //Included event ID in the field list
         $fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
             'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_referral', 'devotee_seva_id', 'devotee_accommodation_id',
-            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments' ];
+            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments', 'eventId' ];
 
         foreach ($fields_as_post as $fld) {
             if (!empty($_POST[$fld])) {
@@ -130,7 +135,7 @@ switch ($requestType) {
 
         $optionHandler = new clsOptionHandler($requestType);
         $optionHandler = new clsOptionHandler('RefreshAcco');
-        $optionHandler->setOptionKey($_POST['eventId']);
+        $optionHandler->setEventId($_POST['eventId']);
         $response =  $optionHandler->getOptions();
         if($debug){echo "<br>", "reaching the function call. ";}
         echo $response;

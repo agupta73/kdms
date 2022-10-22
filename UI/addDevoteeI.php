@@ -1,7 +1,12 @@
 <?php
+//TODO: form not saving - javascript function not getting called
+//TODO: fix devotee search
+
 // Include new config file in each page ,where we need data from configuration
+
 include_once("../sessionCheck.php");
 $config_data=include_once("../site_config.php");
+$debug = false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,8 +43,10 @@ $config_data=include_once("../site_config.php");
         $Devotee_Zip = "" ; 
         $Devotee_Country = "" ; 
         $Comments  = "" ; 
-        $Joined_Since  = "" ; 
+        $Joined_Since  = "" ;
+        $eventId = "";
 
+        $eventId = $config_data['event_id'];
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
@@ -166,10 +173,11 @@ $config_data=include_once("../site_config.php");
 
             //javascript function for ajax call
             function saveFormData(formId, flag) {
+                alert("Reachin here");
                 var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
-                //alert(formData);
+                alert(formData);
                 if (validateInput()) {
                     $.ajax({
                         url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
@@ -534,6 +542,7 @@ $config_data=include_once("../site_config.php");
                                                 </div>
                                             </div>
                                             <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
+                                            <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>>">
                                             <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);

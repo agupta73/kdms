@@ -24,7 +24,8 @@ if($_SESSION["eventDesc"]== ""){
     if($debug){ echo "Repopulating event description..", "<br>";}
     //Pre-populate event record in case of edit
     $optionHandler = new clsOptionHandler("EventDetail");
-    $optionHandler->setOptionKey($eventID);
+    //$optionHandler->setOptionKey($eventID);
+    $optionHandler->setEventId($eventID);
     $response = $optionHandler->getOptions();
     //assign values
     if(!empty($response['Event_Description'])){

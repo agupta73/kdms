@@ -4,7 +4,7 @@ Class Devotee {
 
     private $conn;
     private $table_name = "Devotee";
-
+    private $debug = false;
 // constructor with $db as database connection
     public function __construct($db) {
         $this->conn = $db;
@@ -661,6 +661,13 @@ Class Devotee {
         $Devotee_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
 
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else {
+            $eventId = $requestData['eventId'];
+        }
         
         if (empty($requestData['devotee_type'])) {
             $errormsg .= " Devotee Type is missing.";
@@ -822,14 +829,16 @@ Class Devotee {
             // Edit
             $unique_id = $requestData['devotee_key'];
             //$query = "CALL PROC_UPDATE_DEVOTEE(";
-            $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
+
+            //$query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
         } else {
             // Add
             // Generate unique ID
             $unique_id = $this->generateId();
-            $query = "CALL PROC_INSERT_DEVOTEE_W_SEVA_I(";
+            //$query = "CALL PROC_INSERT_DEVOTEE_W_SEVA_I(";
         }
-        
+        //Use same function for insert as well as update
+        $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
 //        $query = $query . "
 //                :id,
 //                :devotee_type,
@@ -869,10 +878,13 @@ Class Devotee {
                 $Devotee_State . "', '" . 
                 $Devotee_Zip . "', '" . 
                 $Devotee_Country . "', '" . 
-                $Comments . "', '" . 
-                $Joined_Since . "')" ;
+                $Comments . "', '" .
+                $Joined_Since . "' , '".
+                $eventId . "')" ;
                 
-         
+         if($this->debug){
+             echo $query;
+         }
 //            $res['status'] = true;
 //            $res['message'] = $query;
 //            $res['info'] = $unique_id;

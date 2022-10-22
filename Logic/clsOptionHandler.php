@@ -22,6 +22,7 @@ class clsOptionHandler {
 
     private $optionType = "";
     private $optionKey = "";
+    private $eventId = "";
 
     //put your code here
     public function __construct($requestObject) {
@@ -36,6 +37,9 @@ class clsOptionHandler {
         $this->optionKey = $optKey;
     }
 
+    public function setEventId($currentEventId) {
+        $this->eventId = $currentEventId;
+    }
     public function getOptions() {
 
         switch ($this->optionType) {
@@ -53,14 +57,14 @@ class clsOptionHandler {
 
             case "RefreshAcco":
 
-                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
+                $response = $this->getOptionsFromAPI($this->optionType, $this->eventId);
                 break;
 
             case "AccommodationDetail":
             case "AmenityDetail":
             case "SevaDetail":
             case "EventDetail":
-                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
+                $response = $this->getOptionsFromAPI($this->optionType, $this->eventId);
                 break;
 
             default:

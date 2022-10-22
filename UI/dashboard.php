@@ -12,7 +12,8 @@ $eventId = $config_data['event_id'];
 $getReport = new clsReportHandler();
 //$response = $getReport->getAccommodationCounts();
 $response = $getReport->getAccommodationCounts($eventId);
-if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);die;}
+if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);}
+
 $accoType = "All";
 
 if (!empty($_GET['accoType'])) {
