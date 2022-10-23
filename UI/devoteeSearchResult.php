@@ -6,7 +6,9 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
 include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 $config_data = include("../site_config.php");
+$eventId = $config_data['event_id'];
 $debug = false;
+//if($debug){var_dump( $_GET);}
 ?>
 <html lang="en">
     <head>
@@ -21,6 +23,7 @@ $debug = false;
 
             //javascript function for ajax call
             function submitSearch(formId, flag) {
+
                 searchForm = document.getElementById(formId);
                 var I = 0;
                 var searchString = ""
@@ -149,17 +152,14 @@ $debug = false;
     </head>
 
     <body class="">
+
         <div class="wrapper ">
             <?php
-            if($debug) {
-            echo "reaching here..";
-            }
-            ?>
-            <?php include_once("nav.php"); ?>
-
+            include_once("nav.php"); ?>
             <div class="main-panel">
                 <!-- Navbar -->
             <?php
+
             include_once("navBottom.php");
 
             $searchKey = "";
@@ -167,6 +167,7 @@ $debug = false;
             $showSelection = FALSE;
             $hideSearchArea = FALSE;
             // var_dump($_GET);
+
             if (!empty($_GET['key'])) {
                 $searchKey = $_GET['key'];
 
@@ -192,12 +193,13 @@ $debug = false;
                         $gridTitle = "Devotee Search Result";
                         break;
                 }
-                $devoteeSearch = new clsDevoteeSearch($_GET);
-                $response = $devoteeSearch->getDevoteeRecords();
-//                if(!empty($_GET)) {
-//                    var_dump($_GET);die;
-//                }
 
+
+
+                $devoteeSearch = new clsDevoteeSearch($_GET);
+                $response = $devoteeSearch->getDevoteeRecords($eventId);
+
+                if($debug){echo "reaching after API call.."; var_dump( $_GET); var_dump($response); die;}
                 unset($devoteeSearch);
 
                 $hideSearchArea = TRUE;
@@ -278,6 +280,7 @@ if (!empty($accommodations)) {
                                         </div>
                                     </div>                          
                                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
+
                                     <button class="btn btn-success pull-right" onclick="submitSearch('searchForm', 1);
                                             return false;">Search</button>
                                 </form>
@@ -415,6 +418,7 @@ if (!empty($response)) {
 
                                     <div class="col-md-8" >
                                         <div class="card-body">
+
                                             <button type="submit" <?php if (!$showSelection) {
                                                         print_r("hidden='true'");
                                                     } ?> class="btn btn-success pull-right" >Cancel</button>
@@ -431,6 +435,7 @@ if (!empty($response)) {
                                         </div>
                                     </div>
                                 </div>
+
                             </form>
                         </div>
                     </div>

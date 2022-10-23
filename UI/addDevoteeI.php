@@ -1,11 +1,9 @@
 <?php
-//TODO: form not saving - javascript function not getting called
-//TODO: fix devotee search
 
 // Include new config file in each page ,where we need data from configuration
 
 include_once("../sessionCheck.php");
-$config_data=include_once("../site_config.php");
+$config_data=include("../site_config.php");
 $debug = false;
 ?>
 <!DOCTYPE html>
@@ -20,6 +18,7 @@ $debug = false;
         include_once("../Logic/clsDevoteeSearch.php");
         include_once("../Logic/clsOptionHandler.php");
 
+        if($debug){var_dump($config_data); }
         $requestData = $_GET;
         $is_key_available=false;
         $devotee_key = "";
@@ -44,9 +43,7 @@ $debug = false;
         $Devotee_Country = "" ; 
         $Comments  = "" ; 
         $Joined_Since  = "" ;
-        $eventId = "";
-
-        $eventId = $config_data['event_id'];
+        $eventId = $config_data['event_id'];;
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
@@ -69,11 +66,10 @@ $debug = false;
             $devotee_key=$requestData['devotee_key'];
             $is_key_available=true;
             $devoteeSearch = new clsDevoteeSearch($requestData);
-            $response = $devoteeSearch->getDevoteeDetails();
-//           unset($devoteeSearch);
-//               var_dump($response); die;
-            //$response = json_decode($response);
-            //var_dump($response);
+            $response = $devoteeSearch->getDevoteeDetails($eventId);
+
+            if($debug){ var_dump($response); }
+
             //assign values
             if (!empty($response['Devotee_Key'])) {
                 $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093" 
@@ -173,14 +169,14 @@ $debug = false;
 
             //javascript function for ajax call
             function saveFormData(formId, flag) {
-                alert("Reachin here");
+
                 var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
-                alert(formData);
+
                 if (validateInput()) {
                     $.ajax({
-                        url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
+                        url: '<? echo $config_data['webroot'];?>Logic/requestManager.php',
                         type: 'POST',
                         data: formData,
                         async: false,
