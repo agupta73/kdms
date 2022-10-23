@@ -829,6 +829,7 @@ BEGIN
 
     DECLARE v_past_accomodation varchar(10);
     DECLARE v_past_accomodation_Count varchar(10);
+    DECLARE v_past_demographics_count INT;
     DECLARE v_past_seva varchar(10);
 	DECLARE v_past_seva_count varchar(10);
     DECLARE DEBUG bool DEFAULT false;
@@ -848,11 +849,11 @@ BEGIN
         Devotee_Referral,
         Devotee_Record_Update_Date_Time,
         Devotee_Record_Updated_By,
-    	Devotee_Address_1,
-    	Devotee_Address_2,
-    	Devotee_State,
-    	Devotee_Zip,
-    	Devotee_Country,
+    	-- Devotee_Address_1,
+    	-- Devotee_Address_2,
+    	-- Devotee_State,
+    	-- Devotee_Zip,
+    	-- Devotee_Country,
     	Comments,
     	Joined_Since
     )
@@ -871,11 +872,11 @@ VALUES(
     p_Devotee_Referral,
     NOW(),
     p_Devotee_Record_Updated_By,
-	p_Devotee_Address_1,
-    p_Devotee_Address_2,
-    p_Devotee_State,
-    p_Devotee_Zip,
-    p_Devotee_Country,
+	-- p_Devotee_Address_1,
+    -- p_Devotee_Address_2,
+    -- p_Devotee_State,
+    -- p_Devotee_Zip,
+    -- p_Devotee_Country,
     p_Comments,
     p_Joined_Since
 );
@@ -884,10 +885,56 @@ IF DEBUG = true THEN
 		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Devotee record replaced. Devotee ID: ', p_Devotee_Key));
 END IF;
 
+-- Demographics table Update
+
+IF (p_Devotee_Address_1 <> "" AND p_Devotee_State <> "" AND p_Devotee_Country <> "") THEN
+SELECT count(*) INTO v_past_demographics_count  FROM Devotee_Demographics WHERE devotee_key = p_Devotee_Key AND Devotee_Demographics_Status = 'Current';
+
+/* IF (v_past_demographics_count > 0) THEN
+
+    IF DEBUG = true THEN
+            CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Past address Record Found. Devotee ID: ', p_Devotee_Key ), ' counts: ' , v_past_demographics_count);
+    END IF;
+
+     UPDATE devotee_demographics SET Devotee_Demographics_Status = 'Past', Devotee_Record_Updated_By = p_Devotee_Record_Updated_By, Devotee_Record_Update_Date_Time =  NOW()
+     WHERE Devotee_Key = p_Devotee_Key AND Devotee_Demographics_Status = 'Current';
+    */
+
+REPLACE INTO `devotee_demographics`
+			(`Devotee_Key`,
+				`Devotee_Address_1`,
+				`Devotee_Address_2`,
+				`Devotee_State`,
+				`Devotee_Zip`,
+				`Devotee_Country`,
+				`Devotee_Address_Status`,
+				`Devotee_Email`,
+				`Devotee_Demographics_Status`,
+				`Devotee_Record_Updated_By`,
+				`Devotee_Record_Update_Date_Time`)
+				VALUES
+				(
+
+                p_Devotee_Key,
+                p_Devotee_Address_1,
+				p_Devotee_Address_2,
+				p_Devotee_State,
+				p_Devotee_Zip,
+				p_Devotee_Country,
+				'Current',
+				'',
+				'',
+				p_Devotee_Record_Updated_By,
+				NOW()
+                );
+	-- END IF;
+END IF;
+--
+
 SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE
         Devotee_Key = p_Devotee_Key AND
         Accomodation_Status = 'Allocated' AND
-        Accomodation_Event = p_Event_ID AND
+        Accommodation_Event = p_Event_ID AND
         Accomodation_key = p_Devotee_Accommodation_ID;
 
 
@@ -900,7 +947,7 @@ END IF;
 SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE
         Devotee_Key = p_Devotee_Key AND
         Accomodation_Status = 'Allocated' AND
-        Accomodation_Event = p_Event_ID
+        Accommodation_Event = p_Event_ID
 ORDER BY
     Devotee_Accomodation_Update_Date_Time DESC
     LIMIT 1;
@@ -921,7 +968,7 @@ END IF;
 INSERT INTO Devotee_Accomodation(
     Accomodation_Key,
     Devotee_Key,
-    Accomodation_Event,
+    Accommodation_Event,
     Arrival_Date_Time,
     Departure_Date_Time,
     Accomodation_Status,
@@ -1145,3 +1192,105 @@ WHERE Seva_Id = p_Devotee_Seva_ID;
 
 END$$
 DELIMITER ;
+
+-- //////////////////////////////////////
+-- // PROC_UPSERT_SEVA_W_AVAIL_UPDATE_I
+-- ////////////////////////////////////////
+drop procedure PROC_UPSERT_SEVA_W_AVAIL_UPDATE_I;
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPSERT_SEVA_W_AVAIL_UPDATE_I`(
+	IN `p_Seva_Id` VARCHAR(6),
+    IN `p_Seva_Description` VARCHAR(100),
+    IN `p_Event_Id` VARCHAR(10)
+    )
+BEGIN
+    REPLACE
+INTO `Seva_Master`(
+    `Seva_Id`,
+    `Seva_Description`,
+    `Seva_Updated_On_Date_Time`,
+    `Seva_Update_by`
+)
+VALUES(
+    p_Seva_Id,
+    p_Seva_Description,
+    NOW(), 'Anil') ;
+
+ REPLACE INTO `Seva_Availability`(
+	`Seva_Id`,
+    `Seva_Event`,
+	`Assigned_Count`,
+	`Availability_Update_Date_Time`,
+	`Availability_Updated_By`
+	)
+VALUES (
+	p_Seva_Id,
+    p_Event_Id,
+	0,
+	NOW(),
+	'Anil'
+);
+
+CALL PROC_REFRESH_SEVA_COUNT_I(p_Event_Id);
+
+END$$
+DELIMITER ;
+
+-- //////////////////////////////////////
+-- // PROC_REFRESH_SEVA_COUNT_I
+-- ////////////////////////////////////////
+drop procedure `PROC_REFRESH_SEVA_COUNT_I`;
+
+DELIMITER $$
+CREATE PROCEDURE `PROC_REFRESH_SEVA_COUNT_I`(
+    IN `p_Event_Id` VARCHAR(10)
+)
+BEGIN
+
+	DECLARE v_finished INTEGER DEFAULT 0 ;
+    DECLARE v_seva_id VARCHAR(10) DEFAULT "" ;
+    DECLARE v_seva_count INTEGER DEFAULT 0 ;
+    DECLARE DEBUG BOOL DEFAULT true ;
+
+
+	DECLARE csr_seva CURSOR FOR
+SELECT
+    sm.seva_id,
+    COUNT(ds.seva_id)
+FROM
+    Seva_Master sm
+        LEFT OUTER JOIN Devotee_Seva ds ON
+                sm.Seva_ID = ds.Seva_Id AND ds.Seva_Event = p_Event_Id AND ds.Seva_Status = 'Assigned'
+GROUP BY
+    sm.Seva_Id;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = 1 ;
+
+-- Update seva_availability set assigned_count = 0 where seva_event = p_Event_Id;
+
+OPEN csr_seva ;
+
+WHILE v_finished = 0 DO
+
+            FETCH csr_seva INTO v_seva_id, v_seva_count ;
+
+            IF v_finished = 0 THEN
+UPDATE
+    Seva_Availability
+SET
+    assigned_count = v_seva_count
+WHERE
+        seva_id = v_seva_id AND
+        seva_event = p_Event_Id;
+
+IF DEBUG = true THEN
+						CALL logIt(concat('PROC_REFRESH_SEVA_COUNT_I: Seva_ID is: ', v_seva_id, ' and seva_event is: ', p_Event_Id, ' and assigned count is : ', v_seva_count));
+END IF;
+END IF ;
+
+END WHILE ;
+
+CLOSE csr_seva ;
+END$$
+DELIMITER ;
+

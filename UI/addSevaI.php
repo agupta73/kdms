@@ -6,7 +6,7 @@ addSevaI.php<!DOCTYPE html>
     KDMS (Add Seva I)
   </title>
   <?php
-    $config_data=include_once("../site_config.php");
+    $config_data=include("../site_config.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");
 
@@ -20,6 +20,7 @@ addSevaI.php<!DOCTYPE html>
         
         $optionHandler = new clsOptionHandler("SevaDetail");  
         $optionHandler->setOptionKey($requestData['seva_id']);
+        $optionHandler->setEventId($config_data['event_id']);
         $response = $optionHandler->getOptions();
        
         //assign values

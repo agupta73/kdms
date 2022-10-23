@@ -27,3 +27,20 @@ ALTER TABLE `devotee`
 
 ALTER TABLE `devotee`
 CHANGE COLUMN `Joined_Since` `Joined_Since` VARCHAR(15) NULL DEFAULT NULL AFTER `Devotee_Status`;
+
+-- //////////////////////////////////////
+-- // Modified devotee seva table for seva_event
+-- ////////////////////////////////////////
+ALTER TABLE `devotee_seva`
+CHANGE COLUMN `Seva_Year` `Seva_Event` VARCHAR(10) NULL COMMENT 'Year/festival for which seva was assigned' ;
+
+-- //////////////////////////////////////
+-- // Modified devotee seva availability table for seva_event
+-- ////////////////////////////////////////
+ALTER TABLE `seva_availability`
+ADD COLUMN `Seva_Event` VARCHAR(10) NOT NULL AFTER `Seva_Id`;
+
+ALTER TABLE `kdms2022`.`seva_availability`
+ADD PRIMARY KEY (`Seva_Id`, `Seva_Event`),
+DROP INDEX `UniqueSevaID` ;
+;
