@@ -5,20 +5,18 @@ Class Devotee {
     private $conn;
     private $table_name = "Devotee";
     private $debug = false;
-    private $eventId = "";
+    //private $eventId = "";
 // constructor with $db as database connection
     public function __construct($db) {
         $this->conn = $db;
     }
 
     public function search($requestData){
-        if(!empty($requestData['eventId'])){
-            $this->eventId = $requestData['eventId'];
-        }
+
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
-                            return $this->getDetails(urldecode($requestData['key']), $this->eventId);
+                            return $this->getDetails(urldecode($requestData['key']), $requestData['eventId']);
                     break;
 
                     case "SET": //set query, like devotee without photo
@@ -26,7 +24,7 @@ Class Devotee {
                     break;
                 
                     case "CUS": //Custom query
-                            return $this->searchDevotee($requestData['key'], $this->eventId);
+                            return $this->searchDevotee($requestData['key'], $requestData['eventId']);
                     break;
                        
                     case "iSET": //set query, like devotee without photo
@@ -34,7 +32,7 @@ Class Devotee {
                     break;
                 
                     case "PCD": //Print Queue 
-                            return $this->getDevoteeDetailsForPrint($requestData['key'], $this->eventId);
+                            return $this->getDevoteeDetailsForPrint($requestData['key'], $requestData['eventId']);
                     break;
                 
                     case "DAD": //Devotee Amenity Details 
@@ -63,19 +61,20 @@ Class Devotee {
         }
     }
     
-    private function getDetails($devotee_key, $eventId = ""){
+    private function getDetails($devotee_key, $eventId="" ){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
         $status = true;
-        
+
+
         if (empty($devotee_key)) {
             $errormsg .= " Devotee Key is missing.";
             $status = false;
         }
 
-        if($eventId = ""){
+        if($eventId == ""){
             $errormsg .= " Event ID is missing.";
             $status = false;
         }
@@ -86,7 +85,9 @@ Class Devotee {
             return $res;
             die;
         }
-        
+
+
+
         $query = "SELECT " .
                     "d.* " .
                     ", ds.Seva_ID " .
@@ -104,7 +105,7 @@ Class Devotee {
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
 
-        if($this->debug) {echo $query; die;}
+        if($this->debug) {return $query; die;}
 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
 
@@ -689,7 +690,7 @@ Class Devotee {
             $status = false;
         }
         else {
-            $eventId = $requestData['eventId'];
+            $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
         }
         
         if (empty($requestData['devotee_type'])) {

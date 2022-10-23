@@ -1,6 +1,7 @@
 <?php
 
 // Include new config file in each page ,where we need data from configuration
+//TODO: Accommodation is not getting saved
 
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
@@ -43,7 +44,7 @@ $debug = false;
         $Devotee_Country = "" ; 
         $Comments  = "" ; 
         $Joined_Since  = "" ;
-        $eventId = $config_data['event_id'];;
+        $eventId = $config_data['event_id'];
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
@@ -68,7 +69,7 @@ $debug = false;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
 
-            if($debug){ var_dump($response); }
+            if($debug){ var_dump($response); var_dump($eventId);die;}
 
             //assign values
             if (!empty($response['Devotee_Key'])) {
@@ -538,7 +539,7 @@ $debug = false;
                                                 </div>
                                             </div>
                                             <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
-                                            <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>>">
+                                            <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>">
                                             <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);

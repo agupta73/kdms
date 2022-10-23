@@ -19,6 +19,7 @@ private $debug = false;
     public function getDevoteeDetails($eventId) {
 
         $response = $this->get_records_from_API($this->request['devotee_key'], "KEY", $eventId);
+
         return $response;
     }
 
@@ -49,7 +50,7 @@ private $debug = false;
 
         $ch = curl_init();
         $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
-        if($this->debug){echo "<br> $url: ", $url; die;}
+        if($this->debug){return  $url; die;}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
