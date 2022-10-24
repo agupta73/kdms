@@ -1,7 +1,7 @@
 <?php
 
 // Include new config file in each page ,where we need data from configuration
-//TODO: Accommodation is not getting saved
+//TODO: Accommodation availability is not changing when accommodation ID is allocated
 
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
@@ -69,7 +69,7 @@ $debug = false;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
 
-            if($debug){ var_dump($response); var_dump($eventId);die;}
+            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);die;}
 
             //assign values
             if (!empty($response['Devotee_Key'])) {

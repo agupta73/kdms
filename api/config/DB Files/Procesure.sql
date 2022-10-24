@@ -795,28 +795,28 @@ DELIMITER ;
 -- //////////////////////////////////////
 -- // PROC_REPLACE_DEVOTEE_W_SEVA_I
 -- ////////////////////////////////////////
-drop procedure  `PROC_REPLACE_DEVOTEE_W_SEVA_I`;
+drop procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
 
 DELIMITER $$
-CREATE  PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
-    IN `p_Devotee_Key` VARCHAR(10),
-    IN `p_Devotee_Type` VARCHAR(30),
-    IN `p_Devotee_First_Name` VARCHAR(50),
-    IN `p_Devotee_Last_Name` VARCHAR(50),
-    IN `p_Devotee_Gender` VARCHAR(6),
-    IN `p_Devotee_ID_Type` VARCHAR(10),
-    IN `p_Devotee_ID_Number` VARCHAR(50),
-    IN `p_Devotee_Station` VARCHAR(50),
-    IN `p_Devotee_Cell_Phone_Number` VARCHAR(15),
-    IN `p_Devotee_Status` VARCHAR(20),
-    IN `p_Devotee_Remarks` VARCHAR(250),
-    IN `p_Devotee_Referral` VARCHAR(100),
-    IN `p_Devotee_Seva_Id` VARCHAR(6),
-    IN `p_Devotee_Seva_Status` VARCHAR(10),
-    IN `p_Devotee_Record_Updated_By` VARCHAR(10),
-    IN `p_Devotee_Accommodation_ID` VARCHAR(10),
-    IN `p_Devotee_Accomodation_Status` VARCHAR(10),
-    IN `p_Devotee_Address_1` VARCHAR(100),
+CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
+	IN `p_Devotee_Key` VARCHAR(10),
+	IN `p_Devotee_Type` VARCHAR(30),
+	IN `p_Devotee_First_Name` VARCHAR(50),
+	IN `p_Devotee_Last_Name` VARCHAR(50),
+	IN `p_Devotee_Gender` VARCHAR(6),
+	IN `p_Devotee_ID_Type` VARCHAR(10),
+	IN `p_Devotee_ID_Number` VARCHAR(50),
+	IN `p_Devotee_Station` VARCHAR(50),
+	IN `p_Devotee_Cell_Phone_Number` VARCHAR(15),
+	IN `p_Devotee_Status` VARCHAR(20),
+	IN `p_Devotee_Remarks` VARCHAR(250),
+	IN `p_Devotee_Referral` VARCHAR(100),
+	IN `p_Devotee_Seva_Id` VARCHAR(6),
+	IN `p_Devotee_Seva_Status` VARCHAR(10),
+	IN `p_Devotee_Record_Updated_By` VARCHAR(10),
+	IN `p_Devotee_Accommodation_ID` VARCHAR(10),
+	IN `p_Devotee_Accomodation_Status` VARCHAR(10),
+	IN `p_Devotee_Address_1` VARCHAR(100),
     IN `p_Devotee_Address_2` VARCHAR(100),
     IN `p_Devotee_State` VARCHAR(25),
     IN `p_Devotee_Zip` VARCHAR(12),
@@ -824,7 +824,7 @@ CREATE  PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
     IN `p_Comments`  VARCHAR(250),
     IN `p_Joined_Since`  VARCHAR(4),
     IN `p_Event_ID` VARCHAR(10)
-)
+	)
 BEGIN
 
     DECLARE v_past_accomodation varchar(10);
@@ -1003,15 +1003,15 @@ END IF;
 SELECT count(*) INTO v_past_seva_count  FROM Devotee_Seva WHERE
         Devotee_Key = p_Devotee_Key AND
         Seva_Status = 'Assigned' AND
-        Seva_Year = YEAR(NOW()) AND
-    Seva_Id = p_Devotee_Seva_Id;
+        Seva_Event =  p_Event_ID AND
+        Seva_Id = p_Devotee_Seva_Id;
 
 IF (v_past_seva_Count = 0) THEN
 
 SELECT seva_id INTO v_past_seva  FROM Devotee_Seva WHERE
         Devotee_Key = p_Devotee_Key AND
         Seva_Status = 'Assigned' AND
-        Seva_Year = YEAR(NOW())
+        Seva_Event = p_Event_ID
 ORDER BY
     Devotee_Seva_Update_Date_Time DESC
     LIMIT 1;
@@ -1026,7 +1026,7 @@ WHERE
 INSERT INTO `Devotee_Seva`(
     `Seva_ID`,
     `Devotee_Key`,
-    `Seva_Year`,
+    `Seva_event`,
     `Assignment_Date_Time`,
     `Release_Date_Time`,
     `Seva_Status`,
@@ -1035,7 +1035,7 @@ INSERT INTO `Devotee_Seva`(
 VALUES (
            p_Devotee_Seva_Id,
            p_Devotee_Key,
-           YEAR(NOW()),
+           p_Event_id,
            NOW(),
            NULL,
            p_Devotee_Seva_Status,
@@ -1054,6 +1054,7 @@ END IF;
 
 END$$
 DELIMITER ;
+
 -- //////////////////////////////////////
 -- // PROC_INSERT_DEVOTEE_W_SEVA_I
 -- ////////////////////////////////////////
@@ -1250,7 +1251,7 @@ BEGIN
 	DECLARE v_finished INTEGER DEFAULT 0 ;
     DECLARE v_seva_id VARCHAR(10) DEFAULT "" ;
     DECLARE v_seva_count INTEGER DEFAULT 0 ;
-    DECLARE DEBUG BOOL DEFAULT true ;
+    DECLARE DEBUG BOOL DEFAULT false ;
 
 
 	DECLARE csr_seva CURSOR FOR

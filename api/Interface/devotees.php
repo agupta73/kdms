@@ -101,7 +101,7 @@ Class Devotee {
                     "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accommodation_event = '". $eventId . "' AND Accomodation_Status = 'Allocated'  " .
                     "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
-                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_year = YEAR(NOW()) AND Seva_Status = 'Assigned'  " .
+                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
 

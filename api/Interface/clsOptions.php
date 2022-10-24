@@ -156,6 +156,7 @@ class clsOptions {
         $Seva_Description="";
         $Seva_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
+        $eventId = "";
 
         
         if (empty($requestData['seva_id'])) {
@@ -165,7 +166,15 @@ class clsOptions {
         else{
             $Seva_Id = htmlspecialchars(strip_tags($requestData['seva_id']));
         }
-        
+
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else{
+            $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
+
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
@@ -179,17 +188,14 @@ class clsOptions {
             $Seva_Description=$Seva_Id;
         }
                 
-        $query= "CALL PROC_UPSERT_SEVA_W_AVAIL_UPDATE(";
-//    IN `p_Accomodation_Key` VARCHAR(5),
-//    IN `p_Accomodation_Name` VARCHAR(100),
-//    IN `p_Accomodation_Capacity` INT(11),
-//    IN `p_Reserved_Count` INT(11),
-//    IN `p_Out_of_Availability_Count` INT(11),
-//    IN `p_Accomodation_Updated_By` VARCHAR(10)
+        $query= "CALL PROC_UPSERT_SEVA_W_AVAIL_UPDATE_I(";
 
          $query = $query . "'" .
                 $Seva_Id . "', '" . 
-                $Seva_Description . "')" ; 
+                $Seva_Description . "', '" .
+                $eventId . "')" ;
+
+        if($this->debug){return $query; die;}
         
   // prepare query
         $stmt = $this->conn->prepare($query);
@@ -386,7 +392,7 @@ class clsOptions {
         
         switch ($optionType) {
             case "Accommodation":
-                  return $this->getAccommodations();
+                  return $this->getAccommodations($requestData['key']);
                 break;           
 
             case "Seva":
@@ -398,8 +404,8 @@ class clsOptions {
                 break;
 
             Case "AccommodationDetail":                
-                if(!empty($requestData['option_type'])){
-                    return $this->getAccommodationDetail($requestData['key']);
+                if(!empty($requestData['eventId'])){
+                    return $this->getAccommodationDetail($requestData['key'], $requestData['eventId']);
                 }
                 else {
                     $res['message'] = "Option key not provided";
@@ -408,11 +414,11 @@ class clsOptions {
                 break;
               
             Case "SevaDetail":                
-                if(!empty($requestData['option_type'])){
+                if(!empty($requestData['eventId'])){
                     return $this->getSevaDetail($requestData['key']);
                 }
                 else {
-                    $res['message'] = "Option key not provided";
+                    $res['message'] = "Event ID not provided";
                     return $res;                    
                 }
                 break;
@@ -466,7 +472,7 @@ class clsOptions {
         
     }
     
-    private function getAccommodations(){
+    private function getAccommodations($eventId = ""){
 //        $res = array();
 //        $res['status'] = false;
 //        $res['message'] = '';
@@ -474,13 +480,16 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, aa.Available_Count, am.Accomodation_Capacity,
-            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
-            FROM `Accommodation_Master` am 
-            LEFT OUTER JOIN Accommodation_Availability aa 
-            ON am.accomodation_key = aa.accomodation_key";
-        
-        
+        $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, IFNULL(am.Accomodation_Capacity, 0) AS Accomodation_Capacity , " .
+            " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count,0) AS Out_Of_Availability_Count " .
+            " FROM `Accommodation_Master` am " .
+            " LEFT OUTER JOIN Accommodation_Availability aa " .
+            " ON am.accomodation_key = aa.accomodation_key ";
+
+        if($eventId != "") {
+            $query = $query . " AND aa.accommodation_event = '" . $eventId . "'";
+        }
+        if($this->debug){ return $query; die;}
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $AccomodationDetail = array();
@@ -493,7 +502,7 @@ class clsOptions {
         //var_dump($AccomodationDetail);
         if($i==0){
             $AccomodationDetail['status'] = false;
-            $AccomodationDetail['message'] = "Accomodation details not found!";
+            $AccomodationDetail['message'] = "Accommodation details not found!";
             $AccomodationDetail['info'] = $results;
         }
         
@@ -597,7 +606,7 @@ class clsOptions {
         return $AmenityDetail;
     }
   
-     private function getAccommodationDetail($accommodationKey){
+     private function getAccommodationDetail($accommodationKey, $eventId = ""){
 //        $res = array();
 //        $res['status'] = false;
 //        $res['message'] = '';
@@ -605,12 +614,12 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, aa.Available_Count, 
-            aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
-            FROM `Accommodation_Master` am 
-            LEFT OUTER JOIN Accommodation_Availability aa 
-            ON am.accomodation_key = aa.accomodation_key 
-            WHERE am.accomodation_key = '" . $accommodationKey . "'";
+        $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, " .
+            " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count, 0) AS Out_Of_Availability_Count " . //, aa.Available_Count " .
+            " FROM `Accommodation_Master` am " .
+            " LEFT OUTER JOIN Accommodation_Availability aa " .
+            " ON am.accomodation_key = aa.accomodation_key AND aa.accommodation_event = '" . $eventId . "'" .
+            " WHERE am.accomodation_key = '" . $accommodationKey . "'";
         
         
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
@@ -771,13 +780,13 @@ class clsOptions {
         return $res;
     }
     
-    private function refreshSeva(){
+    private function refreshSeva($eventId){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $res['info']='';
         
-        $query = "CALL PROC_REFRESH_SEVA_COUNT()";
+        $query = "CALL PROC_REFRESH_SEVA_COUNT_I($eventId)";
         $stmt = $this->conn->prepare($query);
         
          if ($stmt->execute()) {

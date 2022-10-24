@@ -43,7 +43,7 @@ class clsOptionHandler {
     public function getOptions() {
 
         switch ($this->optionType) {
-            case "Accommodation":
+
             case "Amenity":
             case "Seva":
             Case "Event":
@@ -56,7 +56,7 @@ class clsOptionHandler {
                 break;
 
             case "RefreshAcco":
-
+            case "Accommodation":
                 $response = $this->getOptionsFromAPI($this->optionType, $this->eventId);
                 break;
 
@@ -64,7 +64,7 @@ class clsOptionHandler {
             case "AmenityDetail":
             case "SevaDetail":
             case "EventDetail":
-                $response = $this->getOptionsFromAPI($this->optionType, $this->eventId);
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey, $this->eventId);
                 break;
 
             default:
@@ -112,10 +112,10 @@ class clsOptionHandler {
         return $response;
     }
 
-    private function getOptionsFromAPI($optionType, $optionKey) {
+    private function getOptionsFromAPI($optionType, $optionKey, $eventId="") {
 
         $ch = curl_init();
-        $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey;
+        $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey . "&eventId=" . $eventId;
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);

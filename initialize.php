@@ -1,5 +1,4 @@
 <?php
-//TODO: figure out a way to refresh session by clicking on event desc text
 
 $debug = false;
 session_start();
@@ -24,9 +23,10 @@ if($_SESSION["eventDesc"]== ""){
     if($debug){ echo "Repopulating event description..", "<br>";}
     //Pre-populate event record in case of edit
     $optionHandler = new clsOptionHandler("EventDetail");
-    //$optionHandler->setOptionKey($eventID);
+    $optionHandler->setOptionKey($eventID);
     $optionHandler->setEventId($eventID);
     $response = $optionHandler->getOptions();
+    if($debug){echo "<br> Response: "; var_dump($response);}
     //assign values
     if(!empty($response['Event_Description'])){
         $_SESSION["eventDesc"] = urldecode($response['Event_Description']);

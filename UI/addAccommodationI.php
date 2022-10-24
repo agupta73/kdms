@@ -6,7 +6,10 @@
     KDMS (Add Accommodation I)
   </title>
   <?php
-    $config_data=include_once("../site_config.php");
+
+  //TODO: Pass accommodation_event to get the count for the event, as opposed to total count
+
+    $config_data=include("../site_config.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");
 
@@ -20,12 +23,14 @@
     $reserved_count = 0;
     $out_of_availability_count = 0 ;
     $accomodation_updated_by = "";
+    $eventId = $config_data['event_id'];
    
     //Pre-populate devotee record in case of edit
     if (!empty($requestData['accommodation_key'])) {
         
         $optionHandler = new clsOptionHandler("AccommodationDetail");  
         $optionHandler->setOptionKey($requestData['accommodation_key']);
+        $optionHandler->setEventId($eventId);
         $response = $optionHandler->getOptions();
        
         //assign values
