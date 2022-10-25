@@ -796,7 +796,6 @@ DELIMITER ;
 -- // PROC_REPLACE_DEVOTEE_W_SEVA_I
 -- ////////////////////////////////////////
 drop procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
-
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10),
@@ -941,7 +940,7 @@ SELECT count(*) INTO v_past_accomodation_count  FROM Devotee_Accomodation WHERE
 IF (v_past_accomodation_Count = 0) THEN
 
 IF DEBUG = true THEN
-		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Past Accommodation Record Found. Devotee ID: ', p_Devotee_Key, ' accommocation ID: ' , p_Devotee_Accommodation_ID, ' event ID: ', p_Event_ID));
+		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: No Past Accommodation Record Found for the current event. Devotee ID: ', p_Devotee_Key, ' accommocation ID: ' , p_Devotee_Accommodation_ID, ' event ID: ', p_Event_ID));
 END IF;
 
 SELECT accomodation_key INTO v_past_accomodation  FROM Devotee_Accomodation WHERE
@@ -952,6 +951,7 @@ ORDER BY
     Devotee_Accomodation_Update_Date_Time DESC
     LIMIT 1;
 
+IF (SELECT ROW_COUNT() > 0) THEN
 UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;
 
 UPDATE Accommodation_Availability SET
@@ -960,10 +960,13 @@ UPDATE Accommodation_Availability SET
 WHERE
         Accomodation_Key = v_past_accomodation AND
         Accommodation_Event = p_Event_ID;
-
 IF DEBUG = true THEN
 		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Accommodation Count reduced. Devotee ID: ', p_Devotee_Key, ' accommocation ID: ' , p_Devotee_Accommodation_ID, ' event ID: ', p_Event_ID));
 END IF;
+END IF;
+
+
+
 
 INSERT INTO Devotee_Accomodation(
     Accomodation_Key,
@@ -992,10 +995,30 @@ UPDATE Accommodation_Availability SET
 WHERE
         Accomodation_Key = p_Devotee_Accommodation_ID AND
         Accommodation_Event = p_Event_ID;
-
+IF (SELECT ROW_COUNT() = 0) THEN
+    INSERT INTO `accommodation_availability`
+    (`Accomodation_Key`,
+     `Accommodation_Event`,
+     `Allocated_Count`,
+     `Reserved_Count`,
+     `Out_of_Availability_Count`,
+     `Available_Count`,
+     `Availability_Update_Date_Time`,
+     `Availability_Updated_By`)
+    VALUES
+        (v_past_accomodation,
+        p_Event_ID,
+        1,
+        0,
+        0,
+        0,
+        NOW(),
+        p_Devotee_Record_Updated_By);
 IF DEBUG = true THEN
-		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Accommodation Count increased. Devotee ID: ', p_Devotee_Key, ' accommocation ID: ' , p_Devotee_Accommodation_ID, ' event ID: ', p_Event_ID));
+		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Accommodation availability record added and allocation increased. Devotee ID: ', p_Devotee_Key, ' accommocation ID: ' , p_Devotee_Accommodation_ID, ' event ID: ', p_Event_ID));
 END IF;
+END IF;
+
 
 END IF;
 
@@ -1008,6 +1031,11 @@ SELECT count(*) INTO v_past_seva_count  FROM Devotee_Seva WHERE
 
 IF (v_past_seva_Count = 0) THEN
 
+IF DEBUG = true THEN
+		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: No past seva found for the current event/seva. Devotee ID: ', p_Devotee_Key, ' Seva ID: ' , p_Devotee_Seva_Id, ' event ID: ', p_Event_ID));
+END IF;
+
+
 SELECT seva_id INTO v_past_seva  FROM Devotee_Seva WHERE
         Devotee_Key = p_Devotee_Key AND
         Seva_Status = 'Assigned' AND
@@ -1018,10 +1046,15 @@ ORDER BY
 
 UPDATE Devotee_Seva SET Seva_Status = 'Released' ,  Devotee_Seva_Updated_By = p_Devotee_Record_Updated_By, Release_Date_Time = NOW() WHERE Devotee_Key = p_Devotee_Key;
 
+
 UPDATE `Seva_Availability` SET
     Assigned_Count = Assigned_Count - 1
 WHERE
-        `seva_id` = v_past_seva;
+        `seva_id` = v_past_seva AND Seva_Event = p_Event_ID;
+
+IF DEBUG = true THEN
+		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Released from past seva from the current event and reduced its assigned count. Devotee ID: ', p_Devotee_Key, 'Seva ID: ', v_past_seva, ' event ID: ', p_Event_ID));
+END IF;
 
 INSERT INTO `Devotee_Seva`(
     `Seva_ID`,
@@ -1048,12 +1081,29 @@ SET
     `Assigned_Count`= `Assigned_Count` + 1,
     `Availability_Update_Date_Time`= NOW(),
     `Availability_Updated_By`= p_Devotee_Record_Updated_By
-WHERE Seva_Id = p_Devotee_Seva_ID;
+WHERE
+        Seva_Id = p_Devotee_Seva_ID AND Seva_Event = p_Event_ID;
 
+IF (SELECT ROW_COUNT() > 0) THEN
+    INSERT INTO `seva_availability`
+    (`Seva_Id`,
+     `Seva_Event`,
+     `Assigned_Count`,
+     `Availability_Update_Date_Time`,
+     `Availability_Updated_By`)
+    VALUES
+        (p_Devotee_Seva_ID,
+        p_Event_ID,
+        1,
+        NOW(),
+        p_Devotee_Record_Updated_By);
+
+END IF;
 END IF;
 
 END$$
 DELIMITER ;
+
 
 -- //////////////////////////////////////
 -- // PROC_INSERT_DEVOTEE_W_SEVA_I
