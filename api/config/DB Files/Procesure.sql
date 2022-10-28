@@ -829,10 +829,11 @@ BEGIN
 
     DECLARE v_past_accomodation varchar(10);
     DECLARE v_past_accomodation_Count varchar(10);
-    DECLARE v_past_demographics_count INT;
+    DECLARE v_past_accomodation_Count1 int;
+    DECLARE v_past_demographics_count int;
     DECLARE v_past_seva varchar(10);
 	DECLARE v_past_seva_count varchar(10);
-    DECLARE DEBUG bool DEFAULT true;
+    DECLARE DEBUG bool DEFAULT false;
 
 -- Upsert Devotee Record
        REPLACE INTO devotee(
@@ -960,7 +961,7 @@ ORDER BY
 
 -- If it is changing (at least one record found), de-allocate it and increase accommodation's availability (because devotee has departed and one more space available now)
 IF (SELECT ROW_COUNT() > 0) THEN
-UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key;
+UPDATE Devotee_Accomodation SET Accomodation_Status = 'Departed' ,  Devotee_Accomodation_Updated_By = p_Devotee_Record_Updated_By, Departure_date_time = NOW() WHERE Devotee_Key = p_Devotee_Key AND Accommodation_Event = p_Event_ID AND Accomodation_Key = v_past_accomodation;
 
 UPDATE Accommodation_Availability SET
                                       Allocated_Count = Allocated_Count - 1,
@@ -977,7 +978,8 @@ END IF;
 -- IN case of new allocation, simply insert the record in devotee accommodation table. But first check if that's going ot work because
 -- There is a possibility that the accommodation availability record didn't even exist and therefore availability is not reduced.
 -- Check if accommodation availability record exists:
-SELECT *
+
+SELECT COUNT(*) INTO v_past_accomodation_count1
 FROM
     accommodation_availability
 WHERE
@@ -985,7 +987,7 @@ WHERE
         Accomodation_key = p_Devotee_Accommodation_ID ;
 
 -- If accommodation record not found in accommodation availability table, insert the record first
-IF (SELECT ROW_COUNT() = 0) THEN
+IF (v_past_accomodation_Count1 = 0) THEN
     INSERT INTO `accommodation_availability`
     (`Accomodation_Key`,
      `Accommodation_Event`,
