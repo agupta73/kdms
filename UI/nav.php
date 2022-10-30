@@ -21,7 +21,7 @@ $config_data=include("../site_config.php");
 
       <script type="text/javascript">
           function refreshSession(){
-              alert("This doesn't do anything. You will need to somehow kill your session, if you are trying to load the next event. Adding log out functionality will fix this issue!");
+              //alert("This doesn't do anything. You will need to somehow kill your session, if you are trying to load the next event. Adding log out functionality will fix this issue!");
 
               <?php
               //session_unset();

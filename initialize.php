@@ -28,13 +28,25 @@ if($_SESSION["eventDesc"]== ""){
     $response = $optionHandler->getOptions();
     if($debug){echo "<br> Response: "; var_dump($response);}
     //assign values
-    if(!empty($response['Event_Description'])){
-        $_SESSION["eventDesc"] = urldecode($response['Event_Description']);
-        //$message = $_SESSION["eventDesc"] ;
-        if($debug){echo "setting session to: ", $_SESSION["eventDesc"] , "<br>";}
+    if(!empty($response['Event_Status'])){
+        if($response['Event_Status'] == "Current"){
+            if(!empty($response['Event_Description'])){
+                $_SESSION["eventDesc"] = urldecode($response['Event_Description']);
+                //$message = $_SESSION["eventDesc"] ;
+                if($debug){echo "setting session to: ", $_SESSION["eventDesc"] , "<br>";}
+            }
+            else{
+                $_SESSION["eventDesc"]= "Event not found";
+                if($debug){ echo "session not set", "<br>";}
+            }
+        }
+        else{
+            $_SESSION["eventDesc"]= "Event ID " . $eventID ." is not current."." <br> "."  Please use Event Manager page.";
+            if($debug){ echo "session not set", "<br>";}
+        }
     }
     else{
-        $_SESSION["eventDesc"]= "Event not found";
+        $_SESSION["eventDesc"]= "Event not found."." <br> "." Please use Event Manager page to initialize.";
         if($debug){ echo "session not set", "<br>";}
     }
 }
