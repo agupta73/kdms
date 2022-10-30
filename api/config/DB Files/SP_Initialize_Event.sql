@@ -33,7 +33,7 @@ BEGIN
 -- BEGIN TRASACTION
 
     DECLARE errno INT;
-    DECLARE DEBUG bool DEFAULT false;
+    DECLARE DEBUG bool DEFAULT true;
     /* DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
 		GET CURRENT DIAGNOSTICS CONDITION 1 errno = MYSQL_ERRNO;
@@ -42,28 +42,120 @@ BEGIN
     END;
 	*/
     START TRANSACTION;
-	-- ARCHIVAL
-	-- Archive past data (event ID in closed status, and not in current or future status)
-    -- Identify accommodation record already archived for the each event identified
-	INSERT INTO accommodation_availability_archive 
-	SELECT aa.*
+	-- ACCOMMODATION ARCHIVAL 
+	-- Create temporary table with records to be archieved (event ID in closed status, and not in current or future status)
+	CREATE TEMPORARY TABLE t_aa_result
+    SELECT aa.* 
 	FROM   accommodation_availability aa
 	LEFT OUTER JOIN Event_Master em on aa.Accommodation_Event = em.event_ID  
     LEFT OUTER JOIN accommodation_availability_archive aaa ON (aa.accomodation_Key = aaa.accomodation_key 
 		AND aa.accommodation_event = aaa.accommodation_event)
 	WHERE em.event_Status = 'Closed' AND aa.Accommodation_Event <> p_Event_ID AND aaa.accomodation_key IS NULL ;
     
-    SELECT aa.*
-	FROM   accommodation_availability aa
-	LEFT OUTER JOIN Event_Master em on aa.Accommodation_Event = em.event_ID  
-    LEFT OUTER JOIN accommodation_availability_archive aaa ON (aa.accomodation_Key = aaa.accomodation_key 
-		AND aa.accommodation_event = aaa.accommodation_event)
-	WHERE em.event_Status = 'Closed' AND aa.Accommodation_Event <> p_Event_ID AND aaa.accomodation_key IS NULL ;
-    
+     -- >>> DEBUG block
     IF DEBUG THEN
-		call logIt(CONCAT('PROC_INITIALIZE_EVENT: '));
+		CREATE TEMPORARY TABLE t_d_result (
+			DebugInfoType varchar(50),
+            DebugInfo varchar(50)
+        );
+	END IF;
+	IF DEBUG THEN
+		insert into t_d_result select distinct 'a1. pre_archival_results_events', IFNULL(accommodation_event, 'No Event') from t_aa_result;
+		insert into t_d_result select distinct 'a2. pre_archival_aa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability ;
+		insert into t_d_result select distinct 'a3. pre_archival_aaa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability_archive ;
+    END IF;
+   -- >>> Till here
+    -- Archive past data 
+    INSERT INTO accommodation_availability_archive
+    SELECT * FROM t_aa_result;
+    
+    -- DELETE archieved records
+    DELETE aa FROM accommodation_availability aa
+    INNER JOIN t_aa_result taar ON taar.accomodation_key = aa.accomodation_key AND taar.accommodation_event = aa.accommodation_event;
+    
+    -- >>> DEBUG block
+    IF DEBUG THEN
+		insert into t_d_result select distinct 'b1. post_archival_acco_results_events', IFNULL(accommodation_event, 'No Event') from t_aa_result;
+		insert into t_d_result select distinct 'b2. post_archival_aa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability ;
+		insert into t_d_result select distinct 'b3. post_archival_aaa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability_archive ;
+    END IF;
+   -- >>> Till here
+    -- || ACCOMMODATION ARCHIVAL COMPLETE
+    
+	-- SEVA ARCHIVAL
+    -- Create temporary table with records to be archieved (event ID in closed status, and not in current or future status)
+	CREATE TEMPORARY TABLE t_sa_result
+    SELECT sa.* 
+	FROM   seva_availability sa
+	LEFT OUTER JOIN Event_Master em on sa.Seva_Event = em.event_ID  
+    LEFT OUTER JOIN seva_availability_archive saa ON (sa.seva_id = saa.seva_id 
+		AND sa.seva_event = saa.seva_event)
+	WHERE em.event_Status = 'Closed' AND sa.Seva_Event <> p_Event_ID AND saa.seva_id IS NULL ;
+    
+     -- >>> DEBUG block
+    IF DEBUG THEN
+		insert into t_d_result select distinct 'c1. pre_archival_seva_results_events',  IFNULL(seva_event, 'No Event') from t_sa_result;
+		insert into t_d_result select distinct 'c2. pre_archival_sa_events', IFNULL(seva_event, 'No Event') from seva_availability ;
+		insert into t_d_result select distinct 'c3. pre_archival_aaa_events', IFNULL(seva_event, 'No Event') from seva_availability_archive ;
+    END IF;
+   -- >>> Till here
+    -- Archive past data 
+    INSERT INTO seva_availability_archive
+    SELECT * FROM t_sa_result;
+    
+    -- DELETE archieved records
+    DELETE sa FROM seva_availability sa
+    INNER JOIN t_sa_result saar ON saar.seva_id = sa.seva_id AND saar.seva_event = sa.seva_event;
+    
+    -- >>> DEBUG block
+    IF DEBUG THEN
+		insert into t_d_result select distinct 'd1. post_archival_seva_results_events', IFNULL(seva_event, 'No Event') from t_sa_result;
+		insert into t_d_result select distinct 'd2. post_archival_sa_events', IFNULL(seva_event, 'No Event') from seva_availability ;
+		insert into t_d_result select distinct 'd3. post_archival_saa_events', IFNULL(seva_event, 'No Event') from seva_availability_archive ;
+    END IF;
+   -- >>> Till here
+   
+	-- || SEVA ARCHIVAL COMPLETE
+    
+	-- ACCOMMODATION INITIALIZE 
+    
+    -- Move any pre-existing records from archive table to main table (in case previously archived event is being reopened)
+
+
+	-- || ACCOMMODATION INITIALIZE COMPLETE
+
+    DROP TEMPORARY TABLE t_aa_result;
+    DROP TEMPORARY TABLE t_sa_result;
+    IF DEBUG THEN
+		select DebugInfoType, group_concat(DebugInfo) from t_d_result group by DebugInfoType order by DebugInfoType;
+		DROP TEMPORARY TABLE t_d_result;
     END IF;
     COMMIT;
+    
+    
+-- ================================ TESTING BLOCK =================================
+/*
+-- Refresh tables
+insert into accommodation_availability select * from accommodation_availability_archive ;
+delete from accommodation_availability_archive;
 
+insert into seva_availability select * from seva_availability_archive ;
+delete from seva_availability_archive;
+-- till here
+
+
+select 'accommodation_availability', count(*) from accommodation_availability 
+UNION select 'accommodation_availability_archive', count(*) from accommodation_availability_archive 
+UNION select 'seva_availability', count(*) from seva_availability 
+UNION select 'seva_availability_archive', count(*) from seva_availability_archive;
+
+CALL `PROC_INITIALIZE_EVENT`('2022JB');
+
+select 'accommodation_availability', count(*) from accommodation_availability 
+UNION select 'accommodation_availability_archive', count(*) from accommodation_availability_archive 
+UNION select 'seva_availability', count(*) from seva_availability 
+UNION select 'seva_availability_archive', count(*) from seva_availability_archive;
+*/
+-- ============================= END TESTING BLOCK ================================
 END$$
 DELIMITER ;
