@@ -6,6 +6,11 @@
     KDMS (Add/update Event)
   </title>
   <?php
+
+  //TODO: call initialize event stored procedure when an event is made current or an event is closed, provided there is only one event that's current
+  //TODO: Notify user if no event is current or more than one event is current
+  //TODO: Log out if the current event ID is not same as the event ID in the event management page. Alert user to change the event ID in site_config
+
     $config_data=include_once("../site_config.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");

@@ -15,6 +15,7 @@
   
   <div class="wrapper ">
     <?php
+    //TODO: Notify user if no event is current or more than one event is current
         include_once("nav.php");
         $eventSearch = new clsOptionHandler("Event");
         $response = $eventSearch->getOptions();

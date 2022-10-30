@@ -118,17 +118,32 @@ BEGIN
 	-- || SEVA ARCHIVAL COMPLETE
     
 	-- ACCOMMODATION INITIALIZE 
-    -- MOve accommodation availability records that may have been archived
-     -- >>> DEBUG block
+      -- >>> DEBUG block
     IF DEBUG THEN
 		insert into t_d_result select distinct 'e1. pre_retrieval_aa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability ;
 		insert into t_d_result select distinct 'e2. pre_retrieval_aaa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability_archive ;
         insert into t_d_result select 'e3. pre_retrieval_accommodations_missing_in_aa', am.accomodation_key from accommodation_master am left outer join accommodation_availability aa on am.Accomodation_Key = aa.Accomodation_Key AND aa.accommodation_event = p_Event_ID WHERE  aa.Accomodation_Key is  null;
     END IF;
    -- || Till here
-    -- Get accommodation master records that are missing in accommodation availability table
+    
+    -- Move accommodation availability records that may have been archived
+    REPLACE INTO accommodation_availability 
+    SELECT * FROM accommodation_availability_archive aaa
+    WHERE aaa.accommodation_event = p_Event_ID;
+    
+    DELETE FROM accommodation_availability_archive aaa
+    WHERE aaa.accommodation_event = p_Event_ID;
+    
+    -- Add accommodation master records that are missing in accommodation availability table
+    INSERT INTO accommodation_availability 
+    SELECT am.accomodation_key, p_Event_ID, 0, 0, 0, am.Accomodation_Capacity,NOW(), 'Script'
+    FROM accommodation_master am 
+    LEFT OUTER JOIN accommodation_availability aa on am.Accomodation_Key = aa.Accomodation_Key AND aa.accommodation_event = p_Event_ID
+    WHERE  aa.Accomodation_Key is null;
     
     -- Call refresh accommodation counts procedure to true up the counts
+    CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`(p_Event_ID);
+
 	-- >>> DEBUG block
        IF DEBUG THEN
 		insert into t_d_result select distinct 'f1. post_retrieval_aa_events', IFNULL(accommodation_event, 'No Event') from accommodation_availability ;
@@ -140,7 +155,7 @@ BEGIN
 	-- || ACCOMMODATION INITIALIZE COMPLETE
     
     -- SEVA INITIALIZE 
-    -- Move Seva availability records from archive table, that may have been archived in the past
+    
      -- >>> DEBUG block
     IF DEBUG THEN
 		insert into t_d_result select distinct 'g1. pre_retrieval_sa_events', IFNULL(seva_event, 'No Event') from seva_availability ;
@@ -149,15 +164,29 @@ BEGIN
     END IF;
    -- || Till here
    
-    -- Get seva master records that are missing in seva availability table
+   -- Move Seva availability records from archive table, that may have been archived in the past
+	REPLACE INTO seva_availability 
+    SELECT * FROM seva_availability_archive saa
+    WHERE saa.seva_event = p_Event_ID;
+    
+    DELETE FROM seva_availability_archive saa
+    WHERE saa.seva_event = p_Event_ID;
+    
+    -- Add seva master records that are missing in seva availability table
+	INSERT INTO seva_availability 
+    SELECT sm.seva_id, p_Event_ID, 0,NOW(), 'Script'
+    FROM seva_master sm 
+    LEFT OUTER JOIN seva_availability sa on sm.seva_id = sa.seva_id AND sa.seva_event = p_Event_ID
+    WHERE  sa.seva_id is null;
     
     -- Call refresh seva counts procedure to true up the counts
-    
+    CALL `PROC_REFRESH_SEVA_COUNT_I`(p_Event_ID);
+
     -- >>> DEBUG block
        IF DEBUG THEN
-		insert into t_d_result select distinct 'h1. pre_retrieval_sa_events', IFNULL(seva_event, 'No Event') from seva_availability ;
-		insert into t_d_result select distinct 'h2. pre_retrieval_saa_events', IFNULL(seva_event, 'No Event') from seva_availability_archive ;
-        insert into t_d_result select 'h3. pre_retrieval_seva_missing_in_sa', sm.seva_id from seva_master sm left outer join seva_availability sa on sm.seva_id = sa.seva_id AND sa.seva_event = p_Event_ID WHERE  sa.seva_id is  null;
+		insert into t_d_result select distinct 'h1. post_retrieval_sa_events', IFNULL(seva_event, 'No Event') from seva_availability ;
+		insert into t_d_result select distinct 'h2. post_retrieval_saa_events', IFNULL(seva_event, 'No Event') from seva_availability_archive ;
+        insert into t_d_result select 'h3. post_retrieval_seva_missing_in_sa', sm.seva_id from seva_master sm left outer join seva_availability sa on sm.seva_id = sa.seva_id AND sa.seva_event = p_Event_ID WHERE  sa.seva_id is  null;
     END IF;
    -- || Till here
     
