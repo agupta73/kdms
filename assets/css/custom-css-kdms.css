@@ -4,7 +4,7 @@ Custom scroll-bar for KDMS
 .scrollbar-dynamic-search
 {
 	float: left;
-	height: 200px;
+	max-height: 400px;
 	width: 250px;
 	background: #F5F5F5;
 	overflow-y: scroll;
@@ -59,36 +59,65 @@ Custom scroll-bar for KDMS
 td .table-data{
     padding-left: 65px;
 }
-
-.kdms-top-nav {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 100%;
-	height: 60px;
+.kdms-active-event {
+	width: 50%;
 }
-
-.kdms-top-nav .kdms-account {
-    position: absolute;
-    right: 0;
-}
-.kdms-top-nav .event-title {
-	position: relative;
-    right: 20px;
-    margin-left: 30%;
+.kdms-active-event h3 {
+	margin: 0;
 	font-weight: 500;
 }
-.kdms-top-nav .kdms-account .dropdown {
-	position: static;
+.kdms-top-nav-searchbar {
+	width: 50%;
 }
-.kdms-top-nav .kdms-account .account-user {
-	font-weight: 400;
+.kdms-top-nav-searchbar span {
+	width: 100%;
 }
-.kdms-top-nav .kdms-account .dropdown-menu {
+.kdms-user {
+	margin-right: 4%;
+}
+.kdms-title h3 {
+	font-weight: 500;
+	margin: 0;
+	padding: 10px 0px;
+}
+
+.sidebar .logo {
+    padding: 5px 0px;
+}
+
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+    position: absolute;
+    left: -80px;
+}
+.kdms-user-role {
+    width: 50%;
+}
+.kdms-navbar-items {
+    right: 0;
+	width: 80%;
+}
+div.sidebar {
+	width: 15%!important;
+}
+
+.kdms-top-nav {
+	margin-left: 15%!important;
+}
+
+#search-result-container {
 	position: absolute;
-	left: 45%;
+    top: 80%;
+	width: 150%;
+	z-index: 100;
+	margin-top: 10px;
 }
-.kdms-top-nav .kdms-account .dropdown-menu a:hover {
-	background-color: #eee;
-	color: #3C4858;
+
+.search-result{
+	padding: 20px;
+	background-color: rgb(255, 255, 255);
+	font-size: 16px;color:grey;
+
+}
+.search-result{
+	border:solid 1px grey;
 }
