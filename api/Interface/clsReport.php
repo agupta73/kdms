@@ -111,7 +111,9 @@ class clsReport {
             $query = $query . " AND  aa.Accommodation_Event = '" . $eventId . "' ";
         }
 
-        $query = $query . " Order by Available_Count DESC";
+        //$query = $query . " Order by Available_Count DESC";
+
+        $query = $query . " Order by am.accomodation_name ";
 
         if($this->debug){echo $query; }
 

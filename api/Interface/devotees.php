@@ -2,6 +2,7 @@
 
 Class Devotee {
 
+    //TODO: modify PROC_REPLACE_DEVOTEE_W_SEVA_I - it doesn't have Seva availability handled yet
     private $conn;
     private $table_name = "Devotee";
     private $debug = false;

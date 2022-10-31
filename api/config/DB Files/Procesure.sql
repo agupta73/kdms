@@ -795,8 +795,7 @@ DELIMITER ;
 -- //////////////////////////////////////
 -- // PROC_REPLACE_DEVOTEE_W_SEVA_I
 -- ////////////////////////////////////////
-Drop procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
-
+DROP Procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10),
@@ -1105,7 +1104,9 @@ SET
 WHERE
         Seva_Id = p_Devotee_Seva_ID AND Seva_Event = p_Event_ID;
 
-IF (SELECT ROW_COUNT() > 0) THEN
+-- BUG REPORT- code for adding seva availability is not working. Copy the logic from accommodation availability section and refactor that for seva
+-- commenting the following block since it breaks the devotee record addition
+/* IF (SELECT ROW_COUNT() > 0) THEN
     INSERT INTO `seva_availability`
     (`Seva_Id`,
      `Seva_Event`,
@@ -1120,6 +1121,7 @@ IF (SELECT ROW_COUNT() > 0) THEN
         p_Devotee_Record_Updated_By);
 
 END IF;
+*/
 END IF;
 
 END$$
@@ -1404,7 +1406,7 @@ BEGIN
 -- BEGIN TRASACTION
 
     DECLARE errno INT;
-    DECLARE DEBUG bool DEFAULT true;
+    DECLARE DEBUG bool DEFAULT false;
     /* DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
 		GET CURRENT DIAGNOSTICS CONDITION 1 errno = MYSQL_ERRNO;

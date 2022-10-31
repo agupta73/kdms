@@ -392,11 +392,11 @@ class clsOptions {
         
         switch ($optionType) {
             case "Accommodation":
-                  return $this->getAccommodations($requestData['key']);
+                  return $this->getAccommodations($requestData['key']); //Since event ID is passed in 'key' in request
                 break;           
 
             case "Seva":
-                  return $this->getSevas();
+                  return $this->getSevas($requestData['key']); //Since event ID is passed in 'key' in request
                 break;
 
             case "Event":
@@ -509,7 +509,7 @@ class clsOptions {
         return $AccomodationDetail;
     }
   
-    private function getSevas(){
+    private function getSevas($eventId = ""){
 //        $res = array();
 //        $res['status'] = false;
 //        $res['message'] = '';
@@ -520,7 +520,10 @@ class clsOptions {
         $query = "SELECT sm.Seva_Id, sm.Seva_Description, sa.assigned_count " . 
             " FROM `Seva_Master` sm " .
             " left outer join Seva_Availability sa on sm.seva_id = sa.Seva_Id ";
-        
+
+        if($eventId != "") {
+            $query = $query . " AND sa.seva_event = '" . $eventId . "'";
+        }
         
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
