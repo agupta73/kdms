@@ -12,4 +12,4 @@
 <link href="../assets/demo/demo.css" rel="stylesheet" />
 <script src="../assets/js/qrcode.min.js"></script>
 <link href="../assets/css/custom-css-kdms.css" rel="stylesheet" />
-<script src="../assets/js/scoll-bar.min.js"></script>
+<!-- <script src="../assets/js/scoll-bar.min.js"></script> -->
