@@ -121,3 +121,14 @@ div.sidebar {
 .search-result{
 	border:solid 1px grey;
 }
+.card .card-header {
+	z-index: 0!important;
+}
+
+.sidebar .sidebar-wrapper {
+	width: auto;
+}
+
+.main-panel {
+	width: 85%;
+}
