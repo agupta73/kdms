@@ -18,12 +18,12 @@
           <h6 class="font-weight-bolder mb-0 kdms-user"><? echo $_SESSION['UserName'], " - ", $_SESSION['Role']; ?></h6>
         </li>
         <li class="nav-item d-flex align-items-center">
-          <a href="#" class="nav-link font-weight-bold px-0 text-body">
+          <a href="login.php" class="nav-link font-weight-bold px-0 text-body">
             <i class="material-icons">person</i>
             <span class="d-sm-inline d-none">Sign Out</span>
           </a>
         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-          <a href="javascript:;" class="nav-link p-0 text-body" id="iconNavbarSidenav">
+          <a href="#" class="nav-link p-0 text-body" id="iconNavbarSidenav">
             <div class="sidenav-toggler-inner">
               <i class="sidenav-toggler-line"></i>
               <i class="sidenav-toggler-line"></i>
