@@ -1,28 +1,43 @@
 <!-- Header section visible on top of every page -->
-<nav class="navbar navbar-expand-lg bg-primary kdms-top-nav">
-  <div class="container">
-    <a class="navbar-brand event-title" align="center">
-        <div class="tim-typo">
-            <h2> <b><? echo $_SESSION['eventDesc']; ?> </b></h2>
-        </div>
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-bar navbar-kebab"></span>
-  <span class="navbar-toggler-bar navbar-kebab"></span>
-  <span class="navbar-toggler-bar navbar-kebab"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown" >
-    <ul class="navbar-nav kdms-account">
-        <li class="nav-item account-user">
-          <? echo $_SESSION['UserName'], " - ", $_SESSION['Role']; ?>
 
-      </li>
+<nav class="navbar navbar-main navbar-expand-lg px-0 border-radius-xl shadow-none" id="navbarBlur" data-scroll="true">
+  <div class="container-fluid py-1 px-3 kdms-top-nav">
+    <div class="kdms-active-event">
+      <h3><? echo $_SESSION['eventDesc']; ?></h3>
+    </div>
+    <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+      <div class="ms-md-auto pe-md-3 d-flex align-items-center kdms-top-nav-searchbar">
+        <div class="input-group input-group-outline">
+          <input type="text" id="search-data" name="searchData" class="form-control" placeholder="Search By Name, Phone or Station" onfocus="focused(this)" onfocusout="defocused(this)">
+          <div class="scrollbar-dynamic-search" id="search-result-container" style="display:none;">
+          </div>
+        </div>
+      </div>
+      <ul class="navbar-nav  justify-content-end kdms-navbar-items">
+        <li class="nav-item d-flex align-items-center kdms-user-role">
+          <h6 class="font-weight-bolder mb-0 kdms-user"><? echo $_SESSION['UserName'], " - ", $_SESSION['Role']; ?></h6>
+        </li>
+        <li class="nav-item d-flex align-items-center">
+          <a href="#" class="nav-link font-weight-bold px-0 text-body">
+            <i class="material-icons">person</i>
+            <span class="d-sm-inline d-none">Sign Out</span>
+          </a>
+        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link p-0 text-body" id="iconNavbarSidenav">
+            <div class="sidenav-toggler-inner">
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+            </div>
+          </a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle account-logo" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="material-icons">account_circle</i>
+            <i class="material-icons">settings</i>
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="login.php">Logout</a>
+            <a class="dropdown-item" href="upsertEventII.php">Manage Events</a>
+            <a class="dropdown-item" href="#">Initalize Event</a>
           </div>
         </li>
       </ul>
