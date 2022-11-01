@@ -17,9 +17,6 @@
 
     <div class="main-panel">
       <!-- Navbar -->
-      <?php
-        include_once("navBottom.php");
-        ?>
     </div>
         </div>
       </div>

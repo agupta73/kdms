@@ -34,12 +34,6 @@
       ?>
 
     <div class="main-panel">
-      <!-- Navbar -->
-      <?php
-        include_once("navBottom.php");
-        
-       ?>
-      <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
           <div class="card">

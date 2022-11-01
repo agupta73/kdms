@@ -277,14 +277,6 @@ $debug = false;
             ?>
 
             <div class="main-panel">
-                <!-- Navbar -->
-                <?php
-                include_once("navBottom.php");
-
-//        $Devotee_Gender=htmlspecialchars(strip_tags($requestData['devotee_gender']));
-//        $Devotee_Status=htmlspecialchars(strip_tags($requestData['devotee_status']));
-                ?>
-
                 <div class="content">
                     <div class="container-fluid">
                         <div class="row">
