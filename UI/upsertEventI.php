@@ -93,11 +93,6 @@ function validateInput(){
 
     <div class="main-panel">
       <!-- Navbar -->
-      <?php
-        include_once("navBottom.php");
-
-        ?>
-
       <div class="content">
         <div class="container-fluid">
 <!--          <div class="row">-->

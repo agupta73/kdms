@@ -160,8 +160,6 @@ $debug = false;
                 <!-- Navbar -->
             <?php
 
-            include_once("navBottom.php");
-
             $searchKey = "";
             $gridTitle = "";
             $showSelection = FALSE;

@@ -106,11 +106,6 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
             ?>
 
             <div class="main-panel">
-                <!-- Navbar -->
-                <?php
-                include_once("navBottom.php");
-                ?>
-                <!-- End Navbar -->
                 <div class="content">
                     <div class="container-fluid">
                         <!--          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">

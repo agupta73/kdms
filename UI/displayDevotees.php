@@ -20,7 +20,6 @@
     <div class="main-panel">
       <!-- Navbar -->
       <?php
-        include_once("navBottom.php");
         $DisplayMode = "";
         if(!empty($_GET['DisplayMode'])){
             $DisplayMode = $_GET['DisplayMode'];

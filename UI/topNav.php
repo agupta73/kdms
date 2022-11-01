@@ -1,10 +1,25 @@
 <!-- Header section visible on top of every page -->
 
-<nav class="navbar navbar-main navbar-expand-lg px-0 border-radius-xl shadow-none" id="navbarBlur" data-scroll="true">
+<nav class="navbar navbar-main navbar-expand-lg px-0 border-radius-xl shadow-none kdms-top-navbar" id="navbarBlur" data-scroll="true">
+  
   <div class="container-fluid py-1 px-3 kdms-top-nav">
     <div class="kdms-active-event">
       <h3><? echo $_SESSION['eventDesc']; ?></h3>
     </div>
+    <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top kdms-toggle-navbar">
+      <div class="container-fluid">
+        <div class="navbar-wrapper">
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end">
+        </div>
+      </div>
+    </nav>
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
       <div class="ms-md-auto pe-md-3 d-flex align-items-center kdms-top-nav-searchbar">
         <div class="input-group input-group-outline">
