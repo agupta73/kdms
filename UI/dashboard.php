@@ -1,4 +1,6 @@
 <?php
+//TODO: clicking on seva/accommodation rows doesn't fetch corresponding devotees records
+
 $debug= false;
 include_once("header.php");
 include_once("../Logic/clsDevoteeSearch.php");
@@ -23,7 +25,8 @@ if (!empty($_GET['accoType'])) {
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
 
-$sevaSearch = new clsOptionHandler("Seva");    
+$sevaSearch = new clsOptionHandler("Seva");
+$sevaSearch->setEventId($eventId);
 $sevaRes = $sevaSearch->getOptions();
 //var_dump($response); die;
 //array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }

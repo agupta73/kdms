@@ -48,11 +48,13 @@ $debug = false;
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
+        $loadAccommodation->setEventId($eventId);
         $accommodations = $loadAccommodation->getOptions();
         unset($loadAccommodations);
         
         //load seva options and assigned devotee counts
         $loadSeva = new clsOptionHandler("Seva");
+        $loadSeva->setEventId($eventId);
         $sevas = $loadSeva->getOptions();
         unset($loadSeva);
         
@@ -426,7 +428,7 @@ $debug = false;
                                                                 if ($devotee_accommodation_id == $accommodation['accomodation_key']) {
                                                                     print_r("selected");
                                                                 }
-                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                                Print_r(">" . urldecode($accommodation['Accomodation_Name']) . " (" . $accommodation['Available_Count'] . " spaces) </option>");
                                                             }
                                                             ?>
                                                         </select>
