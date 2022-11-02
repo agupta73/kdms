@@ -81,25 +81,8 @@ $config_data=include("../site_config.php");
       </li>         
     </ul>
   </div>
- <div class="content">
-  <!-- <div class="container-fluid">
-    <div style="width: 240px;z-index:15;position:absolute;top:550px;left:10px;">
-    <div id="search-box-container" >
-    <input  type="text" id="search-data" name="searchData" placeholder="Search By name, phone or stn" autocomplete="off" />
-    </div>
-    <div >
-    <div class="scrollbar-dynamic-search" id="style-6">
-        <div class="force-overflow" id="search-result-container" style="display:none;position:relative;">
-        </div>
-      </div>
-    </div>
-    </div>
-  </div> -->
 </div>
-</div>
-<?php
-  include_once("topNav.php");
-?>
+<?php include_once("topNav.php"); ?>
 
  <script src="../assets/js/jquery-3.2.1.min.js"></script>
     <script>
@@ -107,7 +90,6 @@ $config_data=include("../site_config.php");
       $('#search-data').unbind().keyup(function(e) {
           var value = $(this).val();
           if (value.length>2) {
-      		//alert(99933);
               searchData(value);
           } else {
                $('#search-result-container').hide();
@@ -133,5 +115,4 @@ $config_data=include("../site_config.php");
       	   alert(thrownError); //alert with HTTP error
       	});
       }
-
   </script>
