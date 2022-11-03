@@ -24,7 +24,7 @@ if (!empty($_GET['accoType'])) {
 
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
-
+if($debug){echo "Accociation response =: " ; var_dump($AccoResponse);}
 $sevaSearch = new clsOptionHandler("Seva");
 $sevaSearch->setEventId($eventId);
 $sevaRes = $sevaSearch->getOptions();
@@ -439,10 +439,10 @@ unset($sevaSearch);
                                                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                                                             </td>
                                                             <td align='left' class='table-data'>
-                                                                <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                                                                <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "&eventId=" . $eventId . "'>" . $allocatedCount . "</a>
                                                             </td>
                                                             <td align='left' class='table-data'>
-                                                                <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $occupiedCount . "</a>
+                                                                <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "&eventId=" . $eventId . "'>"  . $occupiedCount . "</a>
                                                             </td>
                                                             <td align='left' class='table-data'>
                                                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
@@ -512,10 +512,10 @@ unset($sevaSearch);
                                                 print_r("
                                                     <tr >
                                                     <td align='left'>
-                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "'>" . $sevaDesc . "</a>
+                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . " &eventId=". $eventId . "'>" . $sevaDesc . "</a>
                                                     </td>
                                                     <td align='left' class='table-data'>
-                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "'>" . $assignCount . "</a>
+                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "&eventId=" . $eventId . "'>" . $assignCount . "</a>
                                                     </td>
                                                     
                                                     </tr>

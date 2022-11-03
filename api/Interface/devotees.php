@@ -45,11 +45,11 @@ Class Devotee {
                     break;
                 
                     case "AOD": //Accommodation Occupier Devotees  
-                            return $this->getDevoteesForAccommodation($requestData['key']);
+                            return $this->getDevoteesForAccommodation($requestData['key'], $requestData['eventId']);
                     break;
                 
                     case "ADS": //Assigned Devotees to Seva
-                            return $this->getDevoteesForSeva($requestData['key']);
+                            return $this->getDevoteesForSeva($requestData['key'], $requestData['eventId']);
                     break;
 
                     default :
@@ -502,7 +502,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForAccommodation($requestData){
+    private function getDevoteesForAccommodation($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -521,25 +521,29 @@ Class Devotee {
             die;
         }
        
-        $query = "select " .
-                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
-                    ", d.devotee_station, d.devotee_cell_phone_number " .
-                    ", acm.accomodation_name " .
-                    ", did.Devotee_ID_Image " .
-                    ", dp.Devotee_Photo ".
-                 "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
-                 "where " .
-                    "da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
-                
-        
-           
-        //var_dump($query);die;
+        $query = "select 
+                    d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , acm.accomodation_name 
+                    , did.Devotee_ID_Image 
+                    , dp.Devotee_Photo
+                 from 
+                    Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
+
+        if($eventId <> "") {
+            $query = $query . " AND da.Accommodation_event = '" . $eventId . "' ";
+        }
+
+        $query = $query . " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key 
+                 where da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
+
+        if($this->debug){
+            var_dump($query);die;
+        }
+
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -561,7 +565,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForSeva($requestData){
+    private function getDevoteesForSeva($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -581,22 +585,21 @@ Class Devotee {
         }
        
         $query = "select " .
-                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
-                    ", d.devotee_station, d.devotee_cell_phone_number " .
-                    ", did.Devotee_ID_Image " .
-                    ", dp.Devotee_Photo ".
-                 "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " LEFT OUTER JOIN Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key " . 
-                        "AND ds.Seva_Year = YEAR(NOW()) AND ds.Seva_Status = 'Assigned' " .
-                 "WHERE " .
-                        " ds.Seva_ID = '" . $requestData . "' " .
-                 "ORDER BY ds.Seva_ID Desc" ;
-                
-        
-           
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , did.Devotee_ID_Image 
+                    , dp.Devotee_Photo 
+                 from 
+                     Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+        if($eventId <> ""){
+            $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
+        }
+
+        $query = $query . "WHERE ds.Seva_ID = '" . $requestData . "' ORDER BY ds.Seva_ID Desc" ;
+
         //var_dump($query);die;
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);

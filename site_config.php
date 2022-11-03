@@ -22,3 +22,4 @@ return [
     'api_dir' => $api_dir,
     'event_id' => $event_id
 ];
+?>
