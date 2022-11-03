@@ -3,7 +3,7 @@
 class clsReportHandler {
 
     private $url;
-    //$url ="http://localhost/KDMS/api/searchDevotee.php";
+
     private $request = array();
     private $debug = false;
     //put your code here

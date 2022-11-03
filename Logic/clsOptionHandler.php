@@ -56,8 +56,11 @@ class clsOptionHandler {
 
             case "RefreshAcco":
             case "Accommodation":
+            $response = $this->getOptionsFromAPI($this->optionType,  $this->eventId);
+            break;
+
             case "Seva":
-                $response = $this->getOptionsFromAPI($this->optionType, $this->eventId);
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey, $this->eventId);
                 break;
 
             case "AccommodationDetail":

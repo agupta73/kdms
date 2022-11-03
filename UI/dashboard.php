@@ -1,5 +1,4 @@
 <?php
-//TODO: clicking on seva/accommodation rows doesn't fetch corresponding devotees records
 
 $debug= false;
 include_once("header.php");
@@ -14,12 +13,17 @@ $eventId = $config_data['event_id'];
 $getReport = new clsReportHandler();
 //$response = $getReport->getAccommodationCounts();
 $response = $getReport->getAccommodationCounts($eventId);
-if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);}
+if($debug){echo "eventId =: ", $config_data['event_id'], $_GET['sevaType'] ; var_dump($response);}
 
 $accoType = "All";
 
 if (!empty($_GET['accoType'])) {
     $accoType = $_GET['accoType'];
+}
+$sevaType = "All";
+
+if (!empty($_GET['sevaType'])) {
+    $sevaType = $_GET['sevaType'];
 }
 
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
@@ -27,6 +31,7 @@ unset($getReport);
 if($debug){echo "Accociation response =: " ; var_dump($AccoResponse);}
 $sevaSearch = new clsOptionHandler("Seva");
 $sevaSearch->setEventId($eventId);
+$sevaSearch->setOptionKey($sevaType);
 $sevaRes = $sevaSearch->getOptions();
 //var_dump($response); die;
 //array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }
@@ -301,15 +306,16 @@ unset($sevaSearch);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva:  
-                                <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
-                        </div> 
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWN" class="dash-link">Devotees with Own Arrangement:
+                                <b>  <?php echo $response[4]['DevoteesWithOwnArrangements']; ?> </b> </a></div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWN" class="dash-link">Devotees with Own Arrangement:
-                                <b>  <?php echo $response[4]['DevoteesWithOwnArrangements']; ?> </b> </a></div> 
+                            <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
+                            <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
+                                <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
+                        </div> 
                     </div>
                 </div>
             </div>
@@ -470,7 +476,19 @@ unset($sevaSearch);
                 <div class="col-lg-3 col-md-3 col-sm-3">
                     <div class="card">
                         <div class="card-header card-header-primary">
-                            <h4 class="card-title">Seva Assignment Counts </h4>
+                            <!-- <h4 class="card-title">Seva Assignment Counts </h4> -->
+                            <h4 class="card-title">
+                                <?php
+                                    if($sevaType==""){
+                                        echo "All";
+                                    }
+                                    else {
+                                        echo $sevaType;
+                                    }
+                                    // print_r($accoType . " ");
+                                ?>
+                            Sevas
+                            </h4>
                         </div>
                             <div class="card-body">
                             <div class="table-responsive">

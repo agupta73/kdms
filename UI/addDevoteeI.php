@@ -1,7 +1,7 @@
 <?php
 
 // Include new config file in each page ,where we need data from configuration
-//TODO: Accommodation availability is not changing when accommodation ID is allocated
+
 
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");

@@ -396,7 +396,7 @@ class clsOptions {
                 break;           
 
             case "Seva":
-                  return $this->getSevas($requestData['key']); //Since event ID is passed in 'key' in request
+                  return $this->getSevas($requestData['key'], $requestData['eventId']); //Since event ID is passed in 'key' in request
                 break;
 
             case "Event":
@@ -509,7 +509,7 @@ class clsOptions {
         return $AccomodationDetail;
     }
   
-    private function getSevas($eventId = ""){
+    private function getSevas($key = "", $eventId = ""){
 //        $res = array();
 //        $res['status'] = false;
 //        $res['message'] = '';
@@ -517,14 +517,18 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT sm.Seva_Id, sm.Seva_Description, sa.assigned_count " . 
-            " FROM `Seva_Master` sm " .
-            " left outer join Seva_Availability sa on sm.seva_id = sa.Seva_Id ";
+        $query = "SELECT sm.Seva_Id, sm.Seva_Description, sa.assigned_count  
+                    FROM `Seva_Master` sm 
+                    left outer join Seva_Availability sa on sm.seva_id = sa.Seva_Id  where 1=1 ";
 
         if($eventId != "") {
             $query = $query . " AND sa.seva_event = '" . $eventId . "'";
         }
-        
+
+        if($key == "Assigned") {
+            $query = $query . " AND sa.assigned_count > 0 ";
+        }
+
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $Sevas = array();

@@ -7,8 +7,6 @@
   </title>
   <?php
 
-  //TODO: Pass accommodation_event to get the count for the event, as opposed to total count
-
     $config_data=include("../site_config.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");
