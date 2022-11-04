@@ -29,7 +29,14 @@ private $debug = false;
         return $response;
         
     }
-    
+
+    public function getParticipationRecord() {
+
+        $response = $this->get_records_from_API($this->request['devotee_key'], "DPR");
+        return $response;
+
+    }
+
     public function getDevoteeRecords($eventId) {
         $response = "";
         if (!empty($this->request['mode']) AND ! empty($this->request['key'])) {

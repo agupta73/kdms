@@ -39,7 +39,11 @@ Class Devotee {
                     case "DAD": //Devotee Amenity Details 
                             return $this->getDevoteeAmenityDetails($requestData['key']);
                     break;
-                
+
+                    case "DPR": //Devotee participation records
+                        return $this->getParticipationRecords($requestData['key']);
+                        break;
+
                     case "DYN": //Dynamic search
                             return $this->dynamicSearchDevotee($requestData['key']);
                     break;
@@ -677,7 +681,71 @@ Class Devotee {
         
         return $devoteeAmenityResult;
     }
-       
+
+    private function getParticipationRecords($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        if (empty($requestData)) {
+            $errormsg .= "Devotee keys not supplied for fetching Participation Records.";
+            $status = false;
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query =    "SELECT
+                        da.devotee_key,
+                        IFNULL(em.event_description, '--') as 'Event',
+                        IFNULL(am.accomodation_name, '--') as 'Accommodation' , 
+                        IFNULL(da.arrival_date_time, '--') as 'OccupiedOn', 
+                        IFNULL(da.Departure_Date_Time, '--') as 'VacatedOn', 
+                        IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
+                        IFNULL(ds.assignment_date_time, '--') as 'AssignedOn',
+                        IFNULL(da.Accommodation_Event, ds.seva_event) as 'EventID' 
+                    FROM
+                        devotee d
+                        LEFT OUTER JOIN devotee_accomodation da ON d.devotee_key = da.Devotee_Key
+                        LEFT OUTER JOIN accommodation_master am ON da.accomodation_key = am.Accomodation_Key
+                        LEFT OUTER JOIN devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND da.Accommodation_Event = ds.Seva_Event
+                        LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
+                        LEFT OUTER JOIN event_master em ON da.Accommodation_Event = em.Event_id
+                    WHERE
+                        (am.Accomodation_Name is not null  OR sm.Seva_Description is not null) 
+                            AND d.devotee_key = '" . $requestData . "'" .
+                    " ORDER BY 
+                        da.Accommodation_Event,ds.seva_event  DESC";
+
+        if($this->debug){     var_dump($query); }
+
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+
+        if($this->debug){     var_dump($results);         }
+        $devoteeParticipationResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $devoteeParticipationResult[]=$row;
+            $i = $i+1;
+        }
+
+        if($this->debug){     var_dump($devoteeParticipationResult);        }
+
+        if($i==0){
+            $devoteeParticipationResult['status'] = false;
+            $devoteeParticipationResult['message'] = "No record found!";
+            $devoteeParticipationResult['info'] = $results;
+        }
+
+        return $devoteeParticipationResult;
+    }
+
     public function upsertDevotee($requestData) {
         $res = array();
         $res['status'] = false;

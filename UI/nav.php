@@ -28,7 +28,7 @@ $config_data=include("../site_config.php");
               //header("Location: /index.php");
               if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
               ?>
-              location.reload();
+              //location.reload();
           }
       </script>
 

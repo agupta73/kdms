@@ -1,7 +1,6 @@
 <?php
 
-// Include new config file in each page ,where we need data from configuration
-
+//TODO: Amenity management needs event segregation
 
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
@@ -71,7 +70,7 @@ $debug = false;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
 
-            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);die;}
+            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
 
             //assign values
             if (!empty($response['Devotee_Key'])) {
@@ -578,7 +577,7 @@ $debug = false;
                                     </div>
                                 </div>
                                 <?php if ($devotee_key != "") { ?>
-                                    <div class="card card-profile">
+                                     <div class="card card-profile">
                                         <div class="card-body" style="height:80px;" >
 
                                             <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
@@ -590,7 +589,22 @@ $debug = false;
                                     <!--Modal Window for Amenity Management-->
                                     <?php include_once("amenityMgmtModal.php"); ?>
 
-                                    <!--END - Modal Window for Amenity Management-->                
+                                    <!--END - Modal Window for Amenity Management-->
+
+                                    <div class="card card-profile">
+                                        <div class="card-body" style="height:80px;" >
+
+                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
+                                                Participation Records
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                    <!--Modal Window for Amenity Management-->
+                                    <?php include_once("amenityMgmtModal.php"); ?>
+                                    <?php include_once("participationRecords.php"); ?>
+
+                                    <!--END - Modal Window for Amenity Management-->
                                 <?php } ?>
                             </div>
 
