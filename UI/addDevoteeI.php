@@ -600,11 +600,11 @@ $debug = false;
 
                                         </div>
                                     </div>
-                                    <!--Modal Window for Amenity Management-->
-                                    <?php include_once("amenityMgmtModal.php"); ?>
+                                    <!--Modal Window for Participation Records-->
+
                                     <?php include_once("participationRecords.php"); ?>
 
-                                    <!--END - Modal Window for Amenity Management-->
+                                    <!--END - Modal Window for Participation Records-->
                                 <?php } ?>
                             </div>
 

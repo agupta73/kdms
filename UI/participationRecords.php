@@ -45,23 +45,23 @@
                                   <?php
                                    // var_dump($PRResponse);
                                     foreach ($PRResponse as $key => $PRValue) {
-                                            print_r("<td style='width: 150px;font-weight: bold;font-size: medium'>");
-                                            print_r($PRValue['Event']  );
+                                            print_r("<td style='width: 150px;font-size: small'>");
+                                            print_r(urldecode($PRValue['Event']  ));
 
-                                            print_r("</td><td style='width: 150px' align='right'>");
-                                            print_r($PRValue['Accommodation']);
+                                            print_r("</td><td style='width: 150px' >");
+                                            print_r(urldecode($PRValue['Accommodation']));
 
-                                            print_r("</td><td style='width: 150px' align='right'>");
+                                            print_r("</td><td style='width: 120px' >");
                                             print_r($PRValue['OccupiedOn']);
 
-                                            print_r("</td><td><style='width: 150px' align='right'>");
-                                            print_r($PRValue['VacatedOn'] . "'");
+                                            print_r("</td><td><style='width: 120px'>");
+                                            print_r($PRValue['VacatedOn'] );
 
-                                            print_r("</td><td><style='width: 150px' align='right'>");
-                                            print_r($PRValue['Seva'] . "'");
+                                            print_r("</td><td><style='width: 150px'>");
+                                            print_r(urldecode($PRValue['Seva']) );
 
-                                            print_r("</td><td><style='width: 150px' align='right'>");
-                                            print_r($PRValue['AssignedOn'] . "'");
+                                            print_r("</td><td><style='width: 120px'>");
+                                            print_r($PRValue['AssignedOn'] );
 
                                             print_r("</td>");
                                             if($key < count($PRResponse)){ print_r("</tr><tr>"); }

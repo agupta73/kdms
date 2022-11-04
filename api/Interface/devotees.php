@@ -705,10 +705,10 @@ Class Devotee {
                         da.devotee_key,
                         IFNULL(em.event_description, '--') as 'Event',
                         IFNULL(am.accomodation_name, '--') as 'Accommodation' , 
-                        IFNULL(da.arrival_date_time, '--') as 'OccupiedOn', 
-                        IFNULL(da.Departure_Date_Time, '--') as 'VacatedOn', 
+                        IFNULL(DATE_FORMAT(da.arrival_date_time, '%M %d %Y'), '--') as 'OccupiedOn', 
+                        IFNULL(DATE_FORMAT(da.Departure_Date_Time, '%M %d %Y'), '--') as 'VacatedOn', 
                         IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
-                        IFNULL(ds.assignment_date_time, '--') as 'AssignedOn',
+                        IFNULL(DATE_FORMAT(ds.assignment_date_time, '%M %d %Y'), '--') as 'AssignedOn',
                         IFNULL(da.Accommodation_Event, ds.seva_event) as 'EventID' 
                     FROM
                         devotee d
@@ -721,7 +721,8 @@ Class Devotee {
                         (am.Accomodation_Name is not null  OR sm.Seva_Description is not null) 
                             AND d.devotee_key = '" . $requestData . "'" .
                     " ORDER BY 
-                        da.Accommodation_Event,ds.seva_event  DESC";
+                        da.Accommodation_Event,ds.seva_event  ASC
+                    LIMIT 4";
 
         if($this->debug){     var_dump($query); }
 
