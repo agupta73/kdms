@@ -1,5 +1,7 @@
 <?php
 
+//TODO: refresh seva and accommodation counts is not working
+
 $debug= false;
 include_once("header.php");
 include_once("../Logic/clsDevoteeSearch.php");

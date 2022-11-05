@@ -379,12 +379,12 @@ $debug = false;
                                                         <label class="bmd-label-floating">Devotee Type</label>
                                                         <select type="text" class="form-control" name="devotee_type" id="devotee_type" value="<?php print_r($devotee_type); ?>">
                                                             <option value="P" <?php
-                                                            if ($devotee_type == "p" || empty($devotee_type) || $devotee_type == "P") {
+                                                            if ($devotee_type == "p"  || $devotee_type == "P") {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Permanent</option>
                                                             <option value="T" <?php
-                                                            if ($devotee_type == "t" || $devotee_type == "T") {
+                                                            if ($devotee_type == "t" || $devotee_type == "T" || empty($devotee_type)) {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Temporary</option>
@@ -394,9 +394,38 @@ $debug = false;
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Station</label>
-                                                        <input type="text" class="form-control" name="devotee_station" id="devotee_station" value="<?php print_r($devotee_station); ?>">
+                                                    <!-- <div class="form-group" style="margin-top:26px;"> -->
+
+                                                    <div class="form-group" >
+                                                        <!-- replaced devotee station field by devotee status -->
+                                                        <label class="bmd-label-floating">Devotee Status</label>
+                                                        <select type="text" class="form-control" name="devotee_status" id="devotee_status" >
+                                                            <option value="A" <?php
+                                                            if ($devotee_status == "a"  || $devotee_status == "A" || empty($devotee_status)) {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Active</option>
+                                                            <option value="I" <?php
+                                                            if ($devotee_status == "i"  || $devotee_status == "I") {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Inactive</option>
+                                                            <option value="D" <?php
+                                                            if ($devotee_status == "d"  || $devotee_status == "D") {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Day Visitor</option>
+                                                            <!-- <option value="L" <?php
+                                                            if ($devotee_status == "l"  || $devotee_status == "L") {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Departed</option> -->
+                                                            <option value="B" <?php
+                                                            if ($devotee_status == "b"  || $devotee_status == "B") {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Black Listed</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">

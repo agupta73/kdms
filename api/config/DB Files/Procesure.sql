@@ -819,7 +819,7 @@ CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
     IN `p_Devotee_Address_2` VARCHAR(100),
     IN `p_Devotee_State` VARCHAR(25),
     IN `p_Devotee_Zip` VARCHAR(12),
-    IN `p_Devotee_Country` VARCHAR(20),
+    IN `p_Devotee_Country` VARCHAR(20) ,
     IN `p_Comments`  VARCHAR(250),
     IN `p_Joined_Since`  VARCHAR(4),
     IN `p_Event_ID` VARCHAR(10)
@@ -888,7 +888,7 @@ IF DEBUG = true THEN
 END IF;
 
 -- Demographics table Update - simply replace the record
-IF (p_Devotee_Address_1 <> "" AND p_Devotee_State <> "" AND p_Devotee_Country <> "") THEN
+IF  (p_Devotee_Address_1 <> "" OR p_Devotee_State <> "" OR p_Devotee_Country <> "") THEN
 	-- SELECT count(*) INTO v_past_demographics_count  FROM Devotee_Demographics WHERE devotee_key = p_Devotee_Key AND Devotee_Demographics_Status = 'Current';
 
     /* IF (v_past_demographics_count > 0) THEN

@@ -252,7 +252,7 @@ $debug = false;
                                             <div class="form-group">
                                                 <label class="bmd-label-floating">Accommodation</label>            
                                                 <select type="text" class="form-control" name="devotee_accommodation_key" id="devotee_accommodation_key" >
-                                                    <option value="">-No Accomodation-</option>
+                                                    <option value="">-Any Accommodation-</option>
 <?php
 if (!empty($accommodations)) {
     foreach ($accommodations as $accommodation) {
@@ -263,19 +263,32 @@ if (!empty($accommodations)) {
 ?>
                                                 </select>
                                             </div>
-                                        </div>  
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group" >
+                                                <label class="bmd-label-floating">Status</label>
+                                                <select type="text" class="form-control" name="devotee_status" id="devotee_status" >
+                                                    <option value="">-All Status-</option>
+                                                    <option value="A">Active</option>
+                                                    <option value="I">Inactive</option>
+                                                    <option value="D">Day Visitor</option>
+                                                    <option value="B">Black Listed</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="col-md-3">
                                             <div class="form-group" style="margin-top:62px">
                                                 <label class="bmd-label-floating">Station</label>
                                                 <input type="text" class="form-control" name="devotee_station" id="devotee_station" >
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-3">
                                             <div class="form-group" style="margin-top:62px">
                                                 <label class="bmd-label-floating">Remarks</label>
                                                 <input type="text" class="form-control" name="devotee_remarks" id="devotee_remarks" >
                                             </div>
                                         </div>
+
                                     </div>                          
                                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
 
@@ -315,6 +328,9 @@ if (!empty($accommodations)) {
                                                     Devotee ID
                                                 </th>
                                                 <th>
+                                                    Status
+                                                </th>
+                                                <th>
                                                     Station
                                                 </th>
                                                 <th>
@@ -339,6 +355,7 @@ if (!empty($response)) {
         $devoteeKey = "--Unavailable--";
         $devoteeName = "--Unavailable--";
         $devoteeStation = "--Unavailable--";
+        $devoteeStatus = "--Unavailable--";
         $devoteeCellNumber = "--Unavailable--";
         $devoteePhoto = "";
         $devoteeIdImage = "";
@@ -355,6 +372,28 @@ if (!empty($response)) {
 
         if (!empty($devoteeRecord['devotee_station'])) {
             $devoteeStation = urldecode($devoteeRecord['devotee_station']);
+        }
+
+        if (!empty($devoteeRecord['devotee_status'])) {
+            $devoteeStatusDetail = "Active";
+            $devoteeStatus = urldecode($devoteeRecord['devotee_status']);
+            switch ($devoteeStatus) {
+                case "A":
+                    $devoteeStatusDetail = "Active";
+                    break;
+
+                case "I":
+                    $devoteeStatusDetail = "Inactive";
+                    break;
+
+                case "D":
+                    $devoteeStatusDetail = "Day Visitor";
+                    break;
+
+                case "B":
+                    $devoteeStatusDetail = "Black Listed";
+                    break;
+            }
         }
 
         if (!empty($devoteeRecord['devotee_cell_phone_number'])) {
@@ -381,6 +420,9 @@ if (!empty($response)) {
                                                      </td>
                                                      <td>
                                                          <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
+                                                     </td>
+                                                     <td>
+                                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStatusDetail . "</a>
                                                      </td>
                                                      <td>
                                                          <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>

@@ -99,7 +99,7 @@ Class Devotee {
                     ", did.Devotee_ID_Image, did.Devotee_ID_XML " .
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
-                    ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
+                    ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_State as Devotee_station, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
                  "from " .
                     "Devotee d " .
                     "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
@@ -157,15 +157,17 @@ Class Devotee {
        
         $query = "select " .
                     "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
-                    ", d.devotee_station, d.devotee_cell_phone_number " .
+                    ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_status " .
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
+                    ", dd.devotee_state " .
                  "from " .
                     " Devotee d ".
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' ";
+                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
+                    " left outer join Devotee_Demographics dd on d.devotee_key = dd.devotee_key";
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
@@ -343,7 +345,7 @@ Class Devotee {
                     case "first name":
                     case "First Name":
                     case "FirstName":
-                        $searchClause = $searchClause . "d.devotee_first_name like '%" . $subValue . "%' AND ";
+                        $searchClause = $searchClause . "(d.devotee_first_name like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_first_name like '%" . $subValue . "%')  AND ";
                         break;
                     
                     // Last Name
@@ -352,7 +354,7 @@ Class Devotee {
                     case "last name" :
                     case "Last Name" :
                     case "LastName" :
-                        $searchClause = $searchClause . "d.devotee_last_name like '%" . $subValue . "%' AND ";
+                        $searchClause = $searchClause . "(d.devotee_last_name like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_last_name like '%" . $subValue . "%') AND ";
                         break;
                     
                     // Station
@@ -360,16 +362,29 @@ Class Devotee {
                     case "Station" :
                     case "Devotee Station" :
                     case "DevoteeStation" :
-                        $searchClause = $searchClause . "d.devotee_station = '" . $subValue . "' AND ";
+                    case "devotee_state":
+                    case "State" :
+                    case "Devotee State" :
+                    case "DevoteeState" :
+                        $searchClause = $searchClause . "((dd.devotee_state like '%" . str_replace(' ', '+', $subValue) . "%' OR dd.devotee_state like '%" .  $subValue . "%') OR ";
+                        $searchClause = $searchClause . "(d.devotee_station like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_station like '%" .  $subValue . "%')) AND ";
                         break;
-                    
+
+                    // Status
+                    case "devotee_status" :
+                    case "Status" :
+                    case "Devotee Status" :
+                    case "DevoteeStatus" :
+                        $searchClause = $searchClause . "(d.devotee_status = '" . str_replace(' ', '+', $subValue) . "' OR d.devotee_status = '" .  $subValue . "' ) AND ";
+                        break;
+
                     // Cell Phone Number
                     case "devotee_cell_phone_number" :
                     case "cell phone number" :
                     case "devotee cell phone number" :
                     case "Cell Phone Number" :
                     case "Devotee Cell Phone Number" :
-                        $searchClause = $searchClause . "d.devotee_cell_phone_number like '%" . $subValue . "%' AND ";
+                        $searchClause = $searchClause . "(d.devotee_cell_phone_number like '%" . str_replace(' ', '', $subValue) . "%) OR d.devotee_cell_phone_number like '%" . $subValue . "%') AND ";
                         break;
                     
                     // Remarks
@@ -378,7 +393,7 @@ Class Devotee {
                     case "devotee_remark" :
                     case "remark" :
                     case "Devotee Remark" :
-                        $searchClause = $searchClause . "d.devotee_remarks like '%" . $subValue . "%' AND ";
+                        $searchClause = $searchClause . "(d.devotee_remarks like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_remarks like '%" . $subValue . "%') AND ";
                         break;                    
                     
                     // ID Number
@@ -387,7 +402,7 @@ Class Devotee {
                     case "id_number" :
                     case "ID_Number" :
                     case "Devotee ID Number" :
-                        $searchClause = $searchClause . "d.devotee_id_number like '%" . $subValue . "%' AND ";
+                        $searchClause = $searchClause . "(d.devotee_id_number like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_id_number like '%" . $subValue . "%' ) AND ";
                         break; 
                     
                     // Accommodation
@@ -405,7 +420,7 @@ Class Devotee {
                     case "Accomodation" :
                     case "accomodation" :                        
                     case "Accomodation Key" :                          
-                        $searchClause = $searchClause . "da.accomodation_key = '" . $subValue . "' AND ";
+                        $searchClause = $searchClause . "(da.accomodation_key = '" . str_replace(' ', '+', $subValue) . "' OR da.accomodation_key = '" .  $subValue . "') AND ";
                         break;
                 }           
         }

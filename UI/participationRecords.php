@@ -92,8 +92,8 @@
                           </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="save-amenity" type="button" class="btn btn-primary" onclick="saveAmenityData('formAmenity'); return false;">Save Changes</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <!-- <button id="save-amenity" type="button" class="btn btn-primary" onclick="saveAmenityData('formAmenity'); return false;">Save Changes</button> -->
                         <input type="hidden" id="devotee_key" name="devotee_key" value="<?php print_r($devotee_key); ?>">
                         <input type="hidden" id="requestType" name="requestType" value="manageAmenity">
                         <input type="hidden" id="amenity_key" name="amenity_key">
