@@ -1,6 +1,10 @@
 <?php
-// Include new config file in each page ,where we need data from configuration
-$config_data=include_once("../site_config.php");
+
+//TODO: Amenity management needs event segregation
+
+include_once("../sessionCheck.php");
+$config_data=include("../site_config.php");
+$debug = false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +18,7 @@ $config_data=include_once("../site_config.php");
         include_once("../Logic/clsDevoteeSearch.php");
         include_once("../Logic/clsOptionHandler.php");
 
+        if($debug){var_dump($config_data); }
         $requestData = $_GET;
         $is_key_available=false;
         $devotee_key = "";
@@ -37,16 +42,18 @@ $config_data=include_once("../site_config.php");
         $Devotee_Zip = "" ; 
         $Devotee_Country = "" ; 
         $Comments  = "" ; 
-        $Joined_Since  = "" ; 
-
+        $Joined_Since  = "" ;
+        $eventId = $config_data['event_id'];
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
+        $loadAccommodation->setEventId($eventId);
         $accommodations = $loadAccommodation->getOptions();
         unset($loadAccommodations);
         
         //load seva options and assigned devotee counts
         $loadSeva = new clsOptionHandler("Seva");
+        $loadSeva->setEventId($eventId);
         $sevas = $loadSeva->getOptions();
         unset($loadSeva);
         
@@ -61,11 +68,10 @@ $config_data=include_once("../site_config.php");
             $devotee_key=$requestData['devotee_key'];
             $is_key_available=true;
             $devoteeSearch = new clsDevoteeSearch($requestData);
-            $response = $devoteeSearch->getDevoteeDetails();
-//           unset($devoteeSearch);
-//               var_dump($response); die;
-            //$response = json_decode($response);
-            //var_dump($response);
+            $response = $devoteeSearch->getDevoteeDetails($eventId);
+
+            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
+
             //assign values
             if (!empty($response['Devotee_Key'])) {
                 $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093" 
@@ -165,13 +171,14 @@ $config_data=include_once("../site_config.php");
 
             //javascript function for ajax call
             function saveFormData(formId, flag) {
+
                 var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
-                //alert(formData);
+
                 if (validateInput()) {
                     $.ajax({
-                        url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
+                        url: '<? echo $config_data['webroot'];?>Logic/requestManager.php',
                         type: 'POST',
                         data: formData,
                         async: false,
@@ -271,14 +278,6 @@ $config_data=include_once("../site_config.php");
             ?>
 
             <div class="main-panel">
-                <!-- Navbar -->
-                <?php
-                include_once("navBottom.php");
-
-//        $Devotee_Gender=htmlspecialchars(strip_tags($requestData['devotee_gender']));
-//        $Devotee_Status=htmlspecialchars(strip_tags($requestData['devotee_status']));
-                ?>
-
                 <div class="content">
                     <div class="container-fluid">
                         <div class="row">
@@ -420,7 +419,7 @@ $config_data=include_once("../site_config.php");
                                                                 if ($devotee_accommodation_id == $accommodation['accomodation_key']) {
                                                                     print_r("selected");
                                                                 }
-                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                                Print_r(">" . urldecode($accommodation['Accomodation_Name']) . " (" . $accommodation['Available_Count'] . " spaces) </option>");
                                                             }
                                                             ?>
                                                         </select>
@@ -533,6 +532,7 @@ $config_data=include_once("../site_config.php");
                                                 </div>
                                             </div>
                                             <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
+                                            <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>">
                                             <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);
@@ -577,7 +577,7 @@ $config_data=include_once("../site_config.php");
                                     </div>
                                 </div>
                                 <?php if ($devotee_key != "") { ?>
-                                    <div class="card card-profile">
+                                     <div class="card card-profile">
                                         <div class="card-body" style="height:80px;" >
 
                                             <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
@@ -589,7 +589,22 @@ $config_data=include_once("../site_config.php");
                                     <!--Modal Window for Amenity Management-->
                                     <?php include_once("amenityMgmtModal.php"); ?>
 
-                                    <!--END - Modal Window for Amenity Management-->                
+                                    <!--END - Modal Window for Amenity Management-->
+
+                                    <div class="card card-profile">
+                                        <div class="card-body" style="height:80px;" >
+
+                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
+                                                Participation Records
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                    <!--Modal Window for Participation Records-->
+
+                                    <?php include_once("participationRecords.php"); ?>
+
+                                    <!--END - Modal Window for Participation Records-->
                                 <?php } ?>
                             </div>
 

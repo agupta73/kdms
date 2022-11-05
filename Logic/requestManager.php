@@ -1,30 +1,36 @@
 
 <?php
-
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsDevoteeHandler.php");
 include_once("../Logic/clsOptionHandler.php");
+$debug = false;
 
-$url="";
+//Removed redundant variable.
+//$url="";
 $requestType = "";
 $requestData = array();
 
+if($debug){
+    var_dump($_POST);
+}
 
-    //var_dump($_POST);die;
 if (!empty($_POST['requestType'])){
     $requestType = $_POST['requestType'];
 }
-else {
-    var_dump($_POST);die;
-}
+
 
 switch ($requestType) {
     case "upsertDevotee":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
+        /*$fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
+            'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_referral', 'devotee_seva_id', 'devotee_accommodation_id',
+            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments' ]; */
+
+        //Included event ID in the field list
         $fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
             'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_referral', 'devotee_seva_id', 'devotee_accommodation_id',
-            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments' ];
+            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments', 'eventId' ];
 
         foreach ($fields_as_post as $fld) {
             if (!empty($_POST[$fld])) {
@@ -93,7 +99,7 @@ switch ($requestType) {
     case "upsertSeva":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
-         $fields_as_post = ['seva_id','seva_description','requestType'];
+         $fields_as_post = ['seva_id','seva_description','requestType', 'eventId'];
 
         foreach ($fields_as_post as $fld) {
             //if (!empty($_POST[$fld])) {
@@ -107,11 +113,31 @@ switch ($requestType) {
         echo $response;
         die;
         break;
-        
-    case "refreshAcco":
-        $optionHandler = new clsOptionHandler('RefreshAcco');
-        $response =  $optionHandler->getOptions();
 
+    case "upsertEvent":
+        //$url = "http://localhost/kdms/api/upsertDevotee.php";
+
+        $fields_as_post = ['event_id','event_description', 'event_status','requestType'];
+
+        foreach ($fields_as_post as $fld) {
+            //if (!empty($_POST[$fld])) {
+            $requestData[$fld] = urlencode($_POST[$fld]);
+            //}
+        }
+
+        $optionHandler = new clsOptionHandler($requestType);
+        $response =  $optionHandler->upsertOption($requestData);
+
+        echo $response;
+        die;
+        break;
+    case "refreshAcco":
+
+        $optionHandler = new clsOptionHandler($requestType);
+        $optionHandler = new clsOptionHandler('RefreshAcco');
+        $optionHandler->setEventId($_POST['eventId']);
+        $response =  $optionHandler->getOptions();
+        if($debug){echo "<br>", "reaching the function call. ";}
         echo $response;
         die;
         break;

@@ -2,20 +2,22 @@
 
 Class Devotee {
 
+    //TODO: modify PROC_REPLACE_DEVOTEE_W_SEVA_I - it doesn't have Seva availability handled yet
     private $conn;
     private $table_name = "Devotee";
-
+    private $debug = false;
+    //private $eventId = "";
 // constructor with $db as database connection
     public function __construct($db) {
         $this->conn = $db;
     }
 
     public function search($requestData){
-        
+
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
-                            return $this->getDetails(urldecode($requestData['key']));                    
+                            return $this->getDetails(urldecode($requestData['key']), $requestData['eventId']);
                     break;
 
                     case "SET": //set query, like devotee without photo
@@ -23,7 +25,7 @@ Class Devotee {
                     break;
                 
                     case "CUS": //Custom query
-                            return $this->searchDevotee($requestData['key']);
+                            return $this->searchDevotee($requestData['key'], $requestData['eventId']);
                     break;
                        
                     case "iSET": //set query, like devotee without photo
@@ -31,23 +33,27 @@ Class Devotee {
                     break;
                 
                     case "PCD": //Print Queue 
-                            return $this->getDevoteeDetailsForPrint($requestData['key']);
+                            return $this->getDevoteeDetailsForPrint($requestData['key'], $requestData['eventId']);
                     break;
                 
                     case "DAD": //Devotee Amenity Details 
                             return $this->getDevoteeAmenityDetails($requestData['key']);
                     break;
-                
+
+                    case "DPR": //Devotee participation records
+                        return $this->getParticipationRecords($requestData['key']);
+                        break;
+
                     case "DYN": //Dynamic search
                             return $this->dynamicSearchDevotee($requestData['key']);
                     break;
                 
                     case "AOD": //Accommodation Occupier Devotees  
-                            return $this->getDevoteesForAccommodation($requestData['key']);
+                            return $this->getDevoteesForAccommodation($requestData['key'], $requestData['eventId']);
                     break;
                 
                     case "ADS": //Assigned Devotees to Seva
-                            return $this->getDevoteesForSeva($requestData['key']);
+                            return $this->getDevoteesForSeva($requestData['key'], $requestData['eventId']);
                     break;
 
                     default :
@@ -60,41 +66,55 @@ Class Devotee {
         }
     }
     
-    private function getDetails($devotee_key){
+    private function getDetails($devotee_key, $eventId="" ){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
         $status = true;
-        
+
+
         if (empty($devotee_key)) {
             $errormsg .= " Devotee Key is missing.";
             $status = false;
         }
-        
+
+        if($eventId == ""){
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
             return $res;
             die;
         }
-        
+
+
+
         $query = "SELECT " .
                     "d.* " .
                     ", ds.Seva_ID " .
                     ", did.Devotee_ID_Image, did.Devotee_ID_XML " .
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
+                    ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
                  "from " .
                     "Devotee d " .
                     "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accomodation_year = YEAR(NOW()) AND Accomodation_Status = 'Allocated'  " .
-                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_year = YEAR(NOW()) AND Seva_Status = 'Assigned'  " .
+                    "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accommodation_event = '". $eventId . "' AND Accomodation_Status = 'Allocated'  " .
+                    "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
+                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
+
+        if($this->debug) {return $query; die;}
+
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
-        
+
+
         $DevoteeDetails = array();
         
         if(!empty($row = $results->fetchObject())){
@@ -111,7 +131,7 @@ Class Devotee {
         return $DevoteeDetails;
     }
     
-    private function searchDevotee($requestData){
+    private function searchDevotee($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -122,7 +142,12 @@ Class Devotee {
             $errormsg .= "Set key is missing.";
             $status = false;
         }
-        
+
+        if($eventId = ""){
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
@@ -140,7 +165,7 @@ Class Devotee {
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' ";
+                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' ";
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
@@ -181,8 +206,10 @@ Class Devotee {
                             " WHERE " . $this->prepareSearchClause($requestData) . " ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50"; 
                 break;
         }
-        
-        //var_dump($query);die;
+        if($this->debug){
+            var_dump($query);
+        }
+
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -419,7 +446,7 @@ Class Devotee {
                 }
     }
     
-    private function getDevoteeDetailsForPrint($requestData){
+    private function getDevoteeDetailsForPrint($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -448,14 +475,16 @@ Class Devotee {
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
+                    " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
                     " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
                     "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
                 
         
            
-        //var_dump($query);die;
+       if($this->debug){
+           echo $query; die;
+       }
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -477,7 +506,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForAccommodation($requestData){
+    private function getDevoteesForAccommodation($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -496,25 +525,29 @@ Class Devotee {
             die;
         }
        
-        $query = "select " .
-                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
-                    ", d.devotee_station, d.devotee_cell_phone_number " .
-                    ", acm.accomodation_name " .
-                    ", did.Devotee_ID_Image " .
-                    ", dp.Devotee_Photo ".
-                 "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
-                 "where " .
-                    "da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
-                
-        
-           
-        //var_dump($query);die;
+        $query = "select 
+                    d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , acm.accomodation_name 
+                    , did.Devotee_ID_Image 
+                    , dp.Devotee_Photo
+                 from 
+                    Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
+
+        if($eventId <> "") {
+            $query = $query . " AND da.Accommodation_event = '" . $eventId . "' ";
+        }
+
+        $query = $query . " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key 
+                 where da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
+
+        if($this->debug){
+            var_dump($query);die;
+        }
+
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -536,7 +569,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForSeva($requestData){
+    private function getDevoteesForSeva($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -556,22 +589,21 @@ Class Devotee {
         }
        
         $query = "select " .
-                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
-                    ", d.devotee_station, d.devotee_cell_phone_number " .
-                    ", did.Devotee_ID_Image " .
-                    ", dp.Devotee_Photo ".
-                 "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " LEFT OUTER JOIN Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key " . 
-                        "AND ds.Seva_Year = YEAR(NOW()) AND ds.Seva_Status = 'Assigned' " .
-                 "WHERE " .
-                        " ds.Seva_ID = '" . $requestData . "' " .
-                 "ORDER BY ds.Seva_ID Desc" ;
-                
-        
-           
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , did.Devotee_ID_Image 
+                    , dp.Devotee_Photo 
+                 from 
+                     Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+        if($eventId <> ""){
+            $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
+        }
+
+        $query = $query . "WHERE ds.Seva_ID = '" . $requestData . "' ORDER BY ds.Seva_ID Desc" ;
+
         //var_dump($query);die;
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
@@ -649,7 +681,72 @@ Class Devotee {
         
         return $devoteeAmenityResult;
     }
-       
+
+    private function getParticipationRecords($requestData){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        if (empty($requestData)) {
+            $errormsg .= "Devotee keys not supplied for fetching Participation Records.";
+            $status = false;
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query =    "SELECT
+                        da.devotee_key,
+                        IFNULL(em.event_description, '--') as 'Event',
+                        IFNULL(am.accomodation_name, '--') as 'Accommodation' , 
+                        IFNULL(DATE_FORMAT(da.arrival_date_time, '%M %d %Y'), '--') as 'OccupiedOn', 
+                        IFNULL(DATE_FORMAT(da.Departure_Date_Time, '%M %d %Y'), '--') as 'VacatedOn', 
+                        IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
+                        IFNULL(DATE_FORMAT(ds.assignment_date_time, '%M %d %Y'), '--') as 'AssignedOn',
+                        IFNULL(da.Accommodation_Event, ds.seva_event) as 'EventID' 
+                    FROM
+                        devotee d
+                        LEFT OUTER JOIN devotee_accomodation da ON d.devotee_key = da.Devotee_Key
+                        LEFT OUTER JOIN accommodation_master am ON da.accomodation_key = am.Accomodation_Key
+                        LEFT OUTER JOIN devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND da.Accommodation_Event = ds.Seva_Event
+                        LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
+                        LEFT OUTER JOIN event_master em ON da.Accommodation_Event = em.Event_id
+                    WHERE
+                        (am.Accomodation_Name is not null  OR sm.Seva_Description is not null) 
+                            AND d.devotee_key = '" . $requestData . "'" .
+                    " ORDER BY 
+                        da.Accommodation_Event,ds.seva_event  ASC
+                    LIMIT 4";
+
+        if($this->debug){     var_dump($query); }
+
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+
+        if($this->debug){     var_dump($results);         }
+        $devoteeParticipationResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $devoteeParticipationResult[]=$row;
+            $i = $i+1;
+        }
+
+        if($this->debug){     var_dump($devoteeParticipationResult);        }
+
+        if($i==0){
+            $devoteeParticipationResult['status'] = false;
+            $devoteeParticipationResult['message'] = "No record found!";
+            $devoteeParticipationResult['info'] = $results;
+        }
+
+        return $devoteeParticipationResult;
+    }
+
     public function upsertDevotee($requestData) {
         $res = array();
         $res['status'] = false;
@@ -661,6 +758,13 @@ Class Devotee {
         $Devotee_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
 
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else {
+            $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
         
         if (empty($requestData['devotee_type'])) {
             $errormsg .= " Devotee Type is missing.";
@@ -822,14 +926,16 @@ Class Devotee {
             // Edit
             $unique_id = $requestData['devotee_key'];
             //$query = "CALL PROC_UPDATE_DEVOTEE(";
-            $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
+
+            //$query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
         } else {
             // Add
             // Generate unique ID
             $unique_id = $this->generateId();
-            $query = "CALL PROC_INSERT_DEVOTEE_W_SEVA_I(";
+            //$query = "CALL PROC_INSERT_DEVOTEE_W_SEVA_I(";
         }
-        
+        //Use same function for insert as well as update
+        $query = "CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(";
 //        $query = $query . "
 //                :id,
 //                :devotee_type,
@@ -869,10 +975,13 @@ Class Devotee {
                 $Devotee_State . "', '" . 
                 $Devotee_Zip . "', '" . 
                 $Devotee_Country . "', '" . 
-                $Comments . "', '" . 
-                $Joined_Since . "')" ;
+                $Comments . "', '" .
+                $Joined_Since . "' , '".
+                $eventId . "')" ;
                 
-         
+         if($this->debug){
+             echo $query;
+         }
 //            $res['status'] = true;
 //            $res['message'] = $query;
 //            $res['info'] = $unique_id;

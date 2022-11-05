@@ -4,7 +4,7 @@ Custom scroll-bar for KDMS
 .scrollbar-dynamic-search
 {
 	float: left;
-	height: 200px;
+	max-height: 400px;
 	width: 250px;
 	background: #F5F5F5;
 	overflow-y: scroll;
@@ -58,4 +58,115 @@ Custom scroll-bar for KDMS
 
 td .table-data{
     padding-left: 65px;
+}
+.kdms-active-event {
+	width: 20%;
+}
+.kdms-active-event h3 {
+	margin: 0;
+	font-weight: 500;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kdms-top-nav-searchbar {
+	width: 70%;
+
+}
+.kdms-top-nav-searchbar span {
+	width: 100%;
+}
+.kdms-top-nav-searchbar .bmd-form-group {
+	position: absolute;
+    right: 400px;
+    max-width: 253px;
+}
+.kdms-user {
+	margin-right: 20px;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kdms-title h3 {
+	font-weight: 500;
+	margin: 0;
+	padding: 10px 0px;
+}
+
+.sidebar .logo {
+    padding: 5px 0px;
+}
+
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+    position: absolute;
+    left: -80px;
+}
+
+.kdms-navbar-items {
+    right: 0;
+	width: 100%;
+}
+
+#search-result-container {
+	position: absolute;
+    top: 80%;
+	width: 100%;
+	z-index: 100;
+	margin-top: 10px;
+}
+
+.search-result{
+	padding: 20px;
+	background-color: rgb(255, 255, 255);
+	font-size: 16px;color:grey;
+
+}
+.search-result{
+	border:solid 1px grey;
+}
+.card .card-header {
+	z-index: 0!important;
+}
+
+.sidebar .sidebar-wrapper {
+	width: auto;
+}
+
+.main-panel {
+	margin-top: 5%;
+}
+
+.kdms-top-navbar {
+	position: fixed;
+	z-index: 1000;
+}
+
+
+@media (max-width: 991px) {
+	.kdms-top-navbar {
+		width: 100%;
+	}
+	.sidebar {
+		margin-top: 65px;
+	}
+	.kdms-toggle-navbar {
+		margin-top: 10px;
+	}	
+	.kdms-active-event {
+		width: 75%;
+	}
+}
+
+@media (min-width: 992px) {
+	.main-panel {
+		min-width: 75%;
+	}
+	.kdms-top-navbar {
+		width: 85%;
+		margin-left: 15%;
+	}
+	div.sidebar {
+		width: 15%!important;
+		/* min-width: 275px; */
+	}
 }

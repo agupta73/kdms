@@ -5,7 +5,7 @@ class clsDevoteeSearch {
     private $url;
     //$url ="http://localhost/KDMS/api/searchDevotee.php";
     private $request = array();
-
+private $debug = false;
     //put your code here
 
     public function __construct($requestObject) {
@@ -16,9 +16,10 @@ class clsDevoteeSearch {
         $this->url = $config_data['api_dir'] . 'searchDevotee.php';
     }
 
-    public function getDevoteeDetails() {
+    public function getDevoteeDetails($eventId) {
 
-        $response = $this->get_records_from_API($this->request['devotee_key'], "KEY");
+        $response = $this->get_records_from_API($this->request['devotee_key'], "KEY", $eventId);
+
         return $response;
     }
 
@@ -28,11 +29,18 @@ class clsDevoteeSearch {
         return $response;
         
     }
-    
-    public function getDevoteeRecords() {
+
+    public function getParticipationRecord() {
+
+        $response = $this->get_records_from_API($this->request['devotee_key'], "DPR");
+        return $response;
+
+    }
+
+    public function getDevoteeRecords($eventId) {
         $response = "";
         if (!empty($this->request['mode']) AND ! empty($this->request['key'])) {
-            $response = $this->get_records_from_API($this->request['key'], $this->request['mode']);            
+            $response = $this->get_records_from_API($this->request['key'], $this->request['mode'], $eventId);
         }
         return $response;
     }
@@ -45,10 +53,11 @@ class clsDevoteeSearch {
         return $response;
     }
 
-    private function get_records_from_API($requestData, $mode) {
+    private function get_records_from_API($requestData, $mode, $eventId = "") {
 
         $ch = curl_init();
-        $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode;
+        $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
+        if($this->debug){return  $url; die;}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);

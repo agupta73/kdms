@@ -1,0 +1,39 @@
+-- //////////////////////////////////////
+-- // event_master
+-- ////////////////////////////////////////
+CREATE TABLE `event_master` (
+  `Event_ID` varchar(10) NOT NULL,
+  `Event_Description` varchar(50) DEFAULT NULL,
+  `Event_Status` varchar(10) DEFAULT NULL,
+  `Event_Update_By` varchar(50) DEFAULT NULL,
+  `Event_Updated_On_Date_Time` datetime DEFAULT NULL,
+  UNIQUE KEY `UniqueEventID` (`Event_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- //////////////////////////////////////
+-- // accommodation_availability_archive
+-- ////////////////////////////////////////
+CREATE TABLE `accommodation_availability_archive` (
+  `Accomodation_Key` varchar(5) NOT NULL,
+  `Accommodation_Event` varchar(10) NOT NULL,
+  `Allocated_Count` int NOT NULL DEFAULT '0' COMMENT 'How many people already accommodate at the location',
+  `Reserved_Count` int NOT NULL DEFAULT '0' COMMENT 'Number of spaces reserved/blocked',
+  `Out_of_Availability_Count` int NOT NULL DEFAULT '0' COMMENT 'Number of spaces that cannot be allocated for any reason',
+  `Available_Count` int NOT NULL DEFAULT '0' COMMENT 'Accomodation_Master.Accomodation_Capacity - (reserved_count + Out_of_Availability_Count)',
+  `Archieval_Update_Date_Time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time of Creation/modification of availability record',
+  `Archieved_By` varchar(10) DEFAULT NULL COMMENT 'UserID of the logged in user at the time of availability record creation/modification',
+  PRIMARY KEY (`Accomodation_Key`,`Accommodation_Event`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- //////////////////////////////////////
+-- // seva_availability_archive
+-- ////////////////////////////////////////
+CREATE TABLE `seva_availability_archive` (
+  `Seva_Id` varchar(6) NOT NULL,
+  `Seva_Event` varchar(10) NOT NULL,
+  `Assigned_Count` int NOT NULL DEFAULT '0' COMMENT 'How many people already assigned for the seva',
+  `Archieval_Update_Date_Time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time of Creation/modification of availability record',
+  `Archieved_By` varchar(10) DEFAULT NULL COMMENT 'UserID of the logged in user at the time of availability record creation/modification',
+  PRIMARY KEY (`Seva_Id`,`Seva_Event`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+

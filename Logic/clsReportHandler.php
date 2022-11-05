@@ -3,9 +3,9 @@
 class clsReportHandler {
 
     private $url;
-    //$url ="http://localhost/KDMS/api/searchDevotee.php";
-    private $request = array();
 
+    private $request = array();
+    private $debug = false;
     //put your code here
 
     public function __construct() {
@@ -15,18 +15,23 @@ class clsReportHandler {
         $this->url = $config_data['api_dir'] . 'getReport.php';
     }
 
-    public function getAccommodationCounts() {
+    public function getAccommodationCounts($eventId) {
         $type = "DevoteeCount";
-        $response = $this->get_acco_records_from_API($type, "");
+        if(!empty($eventId)){
+            $response = $this->get_acco_records_from_API($type, "", $eventId);
+        }
+        else {
+            $response = $this->get_acco_records_from_API($type, "");
+        }
         return $response;
     }
 
-    public function getAccommodationRecords($accoType) {
+    public function getAccommodationRecords($accoType, $eventId) {
         $type = "AccoCount";
         if (empty($accoType)) {
             $accoType = "";
         }
-        $response = $this->get_acco_records_from_API($type, $accoType);
+        $response = $this->get_acco_records_from_API($type, $accoType, $eventId);
         return $response;
     }
 
@@ -49,14 +54,20 @@ class clsReportHandler {
 //        return $response;
 //    }
 
-    private function get_acco_records_from_API($type, $accoType) {
+    private function get_acco_records_from_API($type, $accoType, $eventId) {
 
         $ch = curl_init();
         $url = $this->url . "?type=" . $type;
+
         if ($accoType != "") {
             $url = $url . "&accoType=" . $accoType;
         }
 
+        if($eventId != ""){
+            $url = $url . "&eventId=" . $eventId;
+        }
+
+        if($this->debug){echo "<br> url: ", $url, "<br>";}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);

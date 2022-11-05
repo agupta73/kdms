@@ -13,10 +13,16 @@
  */
 class clsOptionHandler {
 
-    private $url = "http://localhost/KDMS/api/loadOptions.php";
-    private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
+    // Removed hard coding of url
+    //private $url = "http://localhost/KDMS/api/loadOptions.php";
+    //private $urlUpsert = "http://localhost/KDMS/api/upsertOption.php";
+    private $url = "";
+    private $urlUpsert = "";
+
+
     private $optionType = "";
     private $optionKey = "";
+    private $eventId = "";
 
     //put your code here
     public function __construct($requestObject) {
@@ -31,25 +37,37 @@ class clsOptionHandler {
         $this->optionKey = $optKey;
     }
 
+    public function setEventId($currentEventId) {
+        $this->eventId = $currentEventId;
+    }
     public function getOptions() {
 
         switch ($this->optionType) {
-            case "Accommodation":
+
             case "Amenity":
-            case "Seva":
+            Case "Event":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
-            case "RefreshAcco":
             case "RefreshAmenity":
             case "RefreshSeva":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 
+            case "RefreshAcco":
+            case "Accommodation":
+            $response = $this->getOptionsFromAPI($this->optionType,  $this->eventId);
+            break;
+
+            case "Seva":
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey, $this->eventId);
+                break;
+
             case "AccommodationDetail":
             case "AmenityDetail":
             case "SevaDetail":
-                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey);
+            case "EventDetail":
+                $response = $this->getOptionsFromAPI($this->optionType, $this->optionKey, $this->eventId);
                 break;
 
             default:
@@ -66,6 +84,7 @@ class clsOptionHandler {
             case "upsertAcco":
             case "upsertAmenity":
             case "upsertSeva":
+            case "upsertEvent":
                 $response = $this->upsertOptionRecord($this->urlUpsert, $requestData);
                 break;
 
@@ -96,10 +115,10 @@ class clsOptionHandler {
         return $response;
     }
 
-    private function getOptionsFromAPI($optionType, $optionKey) {
+    private function getOptionsFromAPI($optionType, $optionKey, $eventId="") {
 
         $ch = curl_init();
-        $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey;
+        $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey . "&eventId=" . $eventId;
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -110,5 +129,6 @@ class clsOptionHandler {
         curl_close($ch);
         return $response;
     }
+
 
 }

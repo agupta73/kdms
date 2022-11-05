@@ -8,6 +8,8 @@
   <?php
     include_once("header.php");
     include_once("../Logic/clsOptionHandler.php");
+    $config_data=include("../site_config.php");
+
   ?>
 </head>
 
@@ -15,21 +17,23 @@
   
   <div class="wrapper ">
     <?php
+
         include_once("nav.php");
-        $accommodationSearch = new clsOptionHandler("Accommodation");    
+        $debug = false;
+        $accommodationSearch = new clsOptionHandler("Accommodation");
+        $accommodationSearch->setEventId($config_data['event_id']);
         $response = $accommodationSearch->getOptions();
-        //var_dump($response);
+
+    if($debug){
+        var_dump($response);
+        echo "reaching here..";
+        die;
+    }
         
         unset($accommodationSearch);
       ?>
 
     <div class="main-panel">
-      <!-- Navbar -->
-      <?php
-        include_once("navBottom.php");
-        
-       ?>
-      <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
           <div class="card">

@@ -25,7 +25,7 @@
             break;
         
         case "upsertDevotee":
-            
+            //$response = array('flag' => false,'message'=>"Failed before calling upsertDevotee", 'info'=>$requestData['requestType']);
             $res = $devotee->upsertDevotee($requestData);
             break;
         

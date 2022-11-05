@@ -1,17 +1,37 @@
 <?php
+$debug = false;
+//include_once("../initialize.php");
+include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
-    Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+      Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
-    Tip 2: you can also add an image using data-image tag
--->
+      Tip 2: you can also add an image using data-image tag
+  -->
+
 
   <div class="logo">
-    <a href="#" class="simple-text logo-normal">
-      KDMS 
+    <a href="#" onclick=refreshSession() class="simple-text kdms-title logo-normal">
+      <h3>KDMS</h3>
+        <!--<br>
+       <b> <?=$_SESSION["eventDesc"];?> </b>-->
     </a>
+
+      <script type="text/javascript">
+          function refreshSession(){
+              //alert("This doesn't do anything. You will need to somehow kill your session, if you are trying to load the next event. Adding log out functionality will fix this issue!");
+
+              <?php
+              //session_unset();
+              //header("Location: /index.php");
+              if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
+              ?>
+              //location.reload();
+          }
+      </script>
+
   </div>
 
   <div class="sidebar-wrapper">
@@ -60,60 +80,16 @@ $config_data=include("../site_config.php");
         </a>
       </li>         
     </ul>
-      
-      
   </div>
- <div class="content">
-        <div class="container-fluid">
-<!--          <div style="width: 500px;z-index:5;position:absolute;top:50px;left:50px;">-->
-          <div style="width: 240px;z-index:15;position:absolute;top:500px;left:10px;">
-
-          <div id="search-box-container" >
-          <input  type="text" id="search-data" name="searchData" placeholder="Search By name, phone or stn" autocomplete="off" />
-          </div>
-          <div >
-          <div class="scrollbar-dynamic-search" id="style-6">
-              <div class="force-overflow" id="search-result-container" style="display:none;position:relative;">
-                  <!-- search results comes over here -->
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-     </div>
 </div>
-<br>
-
+<?php include_once("topNav.php"); ?>
 
  <script src="../assets/js/jquery-3.2.1.min.js"></script>
-  <style>
-    #search-data{
-      padding: 10px;
-      border: solid 1px #BDC7D8;
-      border-radius: 7px;
-      margin-bottom: 20px;
-      display: inline;
-      background-color: rgb(255, 255, 255);
-      width: 100%;
-      color: grey;
-
-    }
-    .search-result{
-      padding:10px;
-      background-color: rgb(255, 255, 255);
-      font-size: 16px;color:grey;
-    }
-  .search-result{
-    border:solid 1px grey;
-  }
-  </style>
-
     <script>
       $(document).ready(function() {
       $('#search-data').unbind().keyup(function(e) {
           var value = $(this).val();
           if (value.length>2) {
-      		//alert(99933);
               searchData(value);
           } else {
                $('#search-result-container').hide();
@@ -139,5 +115,4 @@ $config_data=include("../site_config.php");
       	   alert(thrownError); //alert with HTTP error
       	});
       }
-
   </script>
