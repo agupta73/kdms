@@ -360,7 +360,7 @@ if (!empty($response)) {
         $devoteePhoto = "";
         $devoteeIdImage = "";
         $devoteeID = "";
-
+        $devoteeStatusDetail = "Active";
 
         if (!empty($devoteeRecord['devotee_key'])) {
             $devoteeKey = urldecode($devoteeRecord['devotee_key']);
@@ -375,7 +375,7 @@ if (!empty($response)) {
         }
 
         if (!empty($devoteeRecord['devotee_status'])) {
-            $devoteeStatusDetail = "Active";
+            
             $devoteeStatus = urldecode($devoteeRecord['devotee_status']);
             switch ($devoteeStatus) {
                 case "A":
