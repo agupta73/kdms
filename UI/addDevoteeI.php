@@ -22,27 +22,30 @@ $debug = false;
         $requestData = $_GET;
         $is_key_available=false;
         $devotee_key = "";
-        $devotee_type = "P";
+        $devotee_type = "T";
         $devotee_first_name = "";
         $devotee_last_name = "";
+        $devotee_gender = "";
+        $devotee_dob = "";
         $devotee_id_type = "";
         $devotee_id_number = "";
-        $devotee_station = "";
-        $devotee_cell_phone_number = "";
-        $devotee_status = "A";
-        $devotee_remarks = "";
-        $devotee_accommodation_id = "";
-        $devotee_seva_id = "";
-        $devotee_photo = "";
-        $devotee_id_image = "";
-        $devotee_referral = "";
         $Devotee_Address_1 = "" ; 
         $Devotee_Address_2 = "" ; 
+        $devotee_station = "";
         $Devotee_State = "" ; 
         $Devotee_Zip = "" ; 
         $Devotee_Country = "" ; 
-        $Comments  = "" ; 
-        $Joined_Since  = "" ;
+        $devotee_email = "";
+        $devotee_cell_phone_number = "";
+        $devotee_status = "";
+        $joined_since  = "" ;
+        $devotee_referral = "";
+        $devotee_remarks = "";
+        $comments  = "" ; 
+        $devotee_seva_id = "";
+        $devotee_accommodation_id = "";
+        $devotee_photo = "";
+        $devotee_id_image = "";
         $eventId = $config_data['event_id'];
 
         //load accommodation options and available spots
@@ -70,7 +73,7 @@ $debug = false;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
 
-            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
+            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);die;}
 
             //assign values
             if (!empty($response['Devotee_Key'])) {
@@ -89,6 +92,14 @@ $debug = false;
                 $devotee_last_name = urldecode($response['Devotee_Last_Name']); // "Gupta" 
             }
 
+            if (!empty($response['Devotee_Gender'])) {
+                $devotee_gender = urldecode($response['Devotee_Gender']); // "Gupta" 
+            }
+
+            if (!empty($response['Devotee_DOB'])) {
+                $devotee_dob = urldecode($response['Devotee_DOB']); // "Gupta" 
+            }
+
             if (!empty($response['Devotee_ID_Type'])) {
                 $devotee_id_type = urldecode($response['Devotee_ID_Type']); // NULL     
             }
@@ -97,8 +108,32 @@ $debug = false;
                 $devotee_id_number = urldecode($response['Devotee_ID_Number']); // "" 
             }
 
+            if (!empty($response['Devotee_Address_1'])) {
+                $Devotee_Address_1 = urldecode($response['Devotee_Address_1']); //  "" 
+            }
+
+            if (!empty($response['Devotee_Address_2'])) {
+                $Devotee_Address_2 = urldecode($response['Devotee_Address_2']); //  "" 
+            }
+
             if (!empty($response['Devotee_Station'])) {
                 $devotee_station = urldecode($response['Devotee_Station']); // "New+Delhi" 
+            }
+
+            if (!empty($response['Devotee_State'])) {
+                $Devotee_State = urldecode($response['Devotee_State']); //  "" 
+            }
+
+            if (!empty($response['Devotee_Zip'])) {
+                $Devotee_Zip = urldecode($response['Devotee_Zip']); //  "" 
+            }
+
+            if (!empty($response['Devotee_Country'])) {
+                $Devotee_Country = urldecode($response['Devotee_Country']); //  "" 
+            }
+
+            if (!empty($response['Devotee_Email'])) {
+                $devotee_email = urldecode($response['Devotee_Email']); //  "4156227879" 
             }
 
             if (!empty($response['Devotee_Cell_Phone_Number'])) {
@@ -108,58 +143,37 @@ $debug = false;
             if (!empty($response['Devotee_Status'])) {
                 $devotee_status = urldecode($response['Devotee_Status']); // "A" ;
             }
-
+            
+            if (!empty($response['Joined_Since'])) {
+                $joined_since = urldecode($response['Joined_Since']); //  "" 
+            }
+        
+            if (!empty($response['Devotee_Referral'])) {
+                $devotee_referral = urldecode($response['Devotee_Referral']); //  "" 
+            }
+                
             if (!empty($response['Devotee_Remarks'])) {
                 $devotee_remarks = urldecode($response['Devotee_Remarks']); //  "" 
             }
 
-            if (!empty($response['Devotee_Referral'])) {
-                $devotee_referral = urldecode($response['Devotee_Referral']); //  "" 
+            if (!empty($response['Comments'])) {
+                $comments = urldecode($response['Comments']); //  "" 
             }
-            
-            if (!empty($response['Accomodation_Key'])) {
-                $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
-            }
-
+     
             if (!empty($response['Seva_ID'])) {
                 $devotee_seva_id = urldecode($response['Seva_ID']); //  "" 
             }
-            
-            if (!empty($response['Devotee_Address_1'])) {
-                $Devotee_Address_1 = urldecode($response['Devotee_Address_1']); //  "" 
-            }
-            if (!empty($response['Devotee_Address_2'])) {
-                $Devotee_Address_2 = urldecode($response['Devotee_Address_2']); //  "" 
-            }
-            if (!empty($response['Devotee_State'])) {
-                $Devotee_State = urldecode($response['Devotee_State']); //  "" 
-            }
-            if (!empty($response['Devotee_Zip'])) {
-                $Devotee_Zip = urldecode($response['Devotee_Zip']); //  "" 
-            }
-            if (!empty($response['Devotee_Country'])) {
-                $Devotee_Country = urldecode($response['Devotee_Country']); //  "" 
-            }
-            if (!empty($response['Comments'])) {
-                $Comments = urldecode($response['Comments']); //  "" 
-            }
-            if (!empty($response['Joined_Since'])) {
-                $Joined_Since = urldecode($response['Joined_Since']); //  "" 
-            }
-            
-            //$devotee_accommodation_id="";
-            //$response['Devotee_Gender']; // "" 
-            ////$response['Devotee_Record_Update_Date_Time']; // "2018-10-14 07:23:23" 
-            //$response['Devotee_Record_Updated_By']; //  "0"         
-            //$response['Devotee_ID_XML']; // NULL 
-            //$response['Photo_type']; // NULL 
-            if (!empty($response['Devotee_Photo'])) {  // NULL
-                $devotee_photo = $response['Devotee_Photo'];
-                //var_dump($devotee_photo);die;
-            }
-            //var_dump($response);die;
+
             if (!empty($response['Devotee_ID_Image'])) {  // NULL
                 $devotee_id_image = $response['Devotee_ID_Image'];
+            }  
+
+              if (!empty($response['Devotee_Photo'])) {  // NULL
+                $devotee_photo = $response['Devotee_Photo'];             
+            }
+
+           if (!empty($response['Accomodation_Key'])) {
+                $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
         }
         ?>
@@ -292,10 +306,18 @@ $debug = false;
                                                 <div class="col-md-5">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Devotee ID (non editable)</label>
-                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">
+                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">                                                        
                                                     </div>
                                                 </div>
-                                                <div class="col-md-7">
+                                                <?php if(!empty($devotee_status)) {
+                                                    if($devotee_status == 'B') { ?>
+                                                <div class="col-md-2">
+                                                    <div id="blsign" align="left">
+                                                        <label class="bmd-label-floating" name="blacklist_label" id="blacklist_label" align="center" color="red"> BLACK LISTED</label>
+                                                    </div>
+                                                </div>
+                                                <?php } }?>
+                                                <div class="col-md-3">
                                                         <div id="qrcode" align="right"></div>
                                                         <script type="text/javascript">
                                                             new QRCode(document.getElementById("qrcode"), {
@@ -307,7 +329,9 @@ $debug = false;
                                                             correctLevel : QRCode.CorrectLevel.H
                                                             }
                                                         );
+                                                        
                                                 </script>
+                                                
                                             </div>
 
                                             </div>
@@ -384,7 +408,7 @@ $debug = false;
                                                             }
                                                             ?>>Permanent</option>
                                                             <option value="T" <?php
-                                                            if ($devotee_type == "t" || $devotee_type == "T" || empty($devotee_type)) {
+                                                            if ($devotee_type == "t" || $devotee_type == "T" || $devotee_type = "" || empty($devotee_type)) {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Temporary</option>
@@ -455,7 +479,6 @@ $debug = false;
                                                     </div>
                                                 </div>
                                             </div>
-                                            
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
@@ -488,13 +511,11 @@ $debug = false;
                                                 <div class="col-md-4">
                                                     <div class="form-group" style="margin-top:62px;">
                                                         <label class="bmd-label-floating">Joined Since</label>
-                                                        <input type="text" class="form-control" name="joined_since" id="joined_since" value="<?php print_r($Joined_Since); ?>">
+                                                        <input type="text" class="form-control" name="joined_since" id="joined_since" value="<?php print_r($joined_since); ?>">
                                                     </div>
                                                 </div>
                                                 
                                             </div>
-                                            
-                                            
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group" >
@@ -555,7 +576,7 @@ $debug = false;
                                                         <div class="form-group">
                                                             
                                                             <!--<label class="bmd-label-floating"> Add additional Information</label>-->
-                                                            <textarea class="form-control" rows="2" name="comments" id="comments"> <?php print_r($Comments); ?></textarea>
+                                                            <textarea class="form-control" rows="2" name="comments" id="comments"> <?php print_r($comments); ?></textarea>
                                                         </div>
                                                     </div>
                                                 </div>

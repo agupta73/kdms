@@ -99,13 +99,13 @@ Class Devotee {
                     ", did.Devotee_ID_Image, did.Devotee_ID_XML " .
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
-                    ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_State as Devotee_station, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
+                   // ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_State as Devotee_station, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
                  "from " .
                     "Devotee d " .
                     "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accommodation_event = '". $eventId . "' AND Accomodation_Status = 'Allocated'  " .
-                    "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
+                    // "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
                     "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
@@ -162,14 +162,14 @@ Class Devotee {
                     ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_status " .
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
-                    ", dd.devotee_state " .
+                    ", d.devotee_station " .
                  "from " .
                     " Devotee d ".
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Devotee_Demographics dd on d.devotee_key = dd.devotee_key";
+                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " ;
+                    // " left outer join Devotee_Demographics dd on d.devotee_key = dd.devotee_key";
                 
         switch ($requestData){
             case "PWD": //Photo without Devotee Details                   
@@ -373,8 +373,7 @@ Class Devotee {
                     case "State" :
                     case "Devotee State" :
                     case "DevoteeState" :
-                        $searchClause = $searchClause . "((dd.devotee_state like '%" . str_replace(' ', '+', $subValue) . "%' OR dd.devotee_state like '%" .  $subValue . "%') OR ";
-                        $searchClause = $searchClause . "(d.devotee_station like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_station like '%" .  $subValue . "%')) AND ";
+                        $searchClause = $searchClause . "(d.devotee_station like '%" . str_replace(' ', '+', $subValue) . "%' OR d.devotee_station like '%" .  $subValue . "%') AND ";
                         break;
 
                     // Status
@@ -391,7 +390,7 @@ Class Devotee {
                     case "devotee cell phone number" :
                     case "Cell Phone Number" :
                     case "Devotee Cell Phone Number" :
-                        $searchClause = $searchClause . "(d.devotee_cell_phone_number like '%" . str_replace(' ', '', $subValue) . "%) OR d.devotee_cell_phone_number like '%" . $subValue . "%') AND ";
+                        $searchClause = $searchClause . "(d.devotee_cell_phone_number like '%" . str_replace(' ', '', $subValue) . "%' OR d.devotee_cell_phone_number like '%" . $subValue . "%') AND ";
                         break;
                     
                     // Remarks
