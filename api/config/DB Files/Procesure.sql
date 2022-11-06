@@ -795,7 +795,7 @@ DELIMITER ;
 -- //////////////////////////////////////
 -- // PROC_REPLACE_DEVOTEE_W_SEVA_I
 -- ////////////////////////////////////////
-DROP Procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
+DROP procedure PROC_REPLACE_DEVOTEE_W_SEVA_I;
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10),
@@ -803,25 +803,29 @@ CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_First_Name` VARCHAR(50),
 	IN `p_Devotee_Last_Name` VARCHAR(50),
 	IN `p_Devotee_Gender` VARCHAR(6),
+    IN `p_Devotee_DOB` DATE,
 	IN `p_Devotee_ID_Type` VARCHAR(10),
 	IN `p_Devotee_ID_Number` VARCHAR(50),
-	IN `p_Devotee_Station` VARCHAR(50),
-	IN `p_Devotee_Cell_Phone_Number` VARCHAR(15),
-	IN `p_Devotee_Status` VARCHAR(20),
-	IN `p_Devotee_Remarks` VARCHAR(250),
-	IN `p_Devotee_Referral` VARCHAR(100),
-	IN `p_Devotee_Seva_Id` VARCHAR(6),
-	IN `p_Devotee_Seva_Status` VARCHAR(10),
-	IN `p_Devotee_Record_Updated_By` VARCHAR(10),
-	IN `p_Devotee_Accommodation_ID` VARCHAR(10),
-	IN `p_Devotee_Accomodation_Status` VARCHAR(10),
 	IN `p_Devotee_Address_1` VARCHAR(100),
     IN `p_Devotee_Address_2` VARCHAR(100),
-    IN `p_Devotee_State` VARCHAR(25),
+    IN `p_Devotee_Station` VARCHAR(50),
+	IN `p_Devotee_State` VARCHAR(25),
     IN `p_Devotee_Zip` VARCHAR(12),
     IN `p_Devotee_Country` VARCHAR(20) ,
-    IN `p_Comments`  VARCHAR(250),
-    IN `p_Joined_Since`  VARCHAR(4),
+    IN `p_Devotee_Email` VARCHAR(40) ,
+    IN `p_Devotee_Cell_Phone_Number` VARCHAR(15),
+	IN `p_Devotee_Status` VARCHAR(20),
+	IN `p_Joined_Since`  VARCHAR(4),
+    IN `p_Devotee_Referral` VARCHAR(50),
+    IN `p_Devotee_Remarks` VARCHAR(250),
+	IN `p_Comments`  VARCHAR(250),
+    IN `p_Devotee_Record_Updated_By`  VARCHAR(10),
+    
+	IN `p_Devotee_Seva_Id` VARCHAR(6),
+	IN `p_Devotee_Seva_Status` VARCHAR(10),
+	IN `p_Devotee_Accommodation_ID` VARCHAR(10),
+	IN `p_Devotee_Accomodation_Status` VARCHAR(10),
+	
     IN `p_Event_ID` VARCHAR(10)
 	)
 BEGIN
@@ -841,45 +845,49 @@ BEGIN
         Devotee_First_Name,
         Devotee_Last_Name,
         Devotee_Gender,
+        Devotee_DOB,
         Devotee_ID_Type,
         Devotee_ID_Number,
+        Devotee_Address_1,
+    	Devotee_Address_2,
         Devotee_Station,
+        Devotee_State,
+    	Devotee_Zip,
+    	Devotee_Country,
+        Devotee_Email,
         Devotee_Cell_Phone_Number,
         Devotee_Status,
-        Devotee_Remarks,
+        Joined_Since,
         Devotee_Referral,
+        Devotee_Remarks,
+        Comments,
         Devotee_Record_Update_Date_Time,
-        Devotee_Record_Updated_By,
-    	-- Devotee_Address_1,
-    	-- Devotee_Address_2,
-    	-- Devotee_State,
-    	-- Devotee_Zip,
-    	-- Devotee_Country,
-    	Comments,
-    	Joined_Since
+        Devotee_Record_Updated_By
     )
 VALUES(
-    p_Devotee_Key,
-    p_Devotee_Type,
-    p_Devotee_First_Name,
-    p_Devotee_Last_Name,
-    p_Devotee_Gender,
-    p_Devotee_ID_Type,
-    p_Devotee_ID_Number,
-    p_Devotee_Station,
-    p_Devotee_Cell_Phone_Number,
-    p_Devotee_Status,
-    p_Devotee_Remarks,
-    p_Devotee_Referral,
-    NOW(),
-    p_Devotee_Record_Updated_By,
-	-- p_Devotee_Address_1,
-    -- p_Devotee_Address_2,
-    -- p_Devotee_State,
-    -- p_Devotee_Zip,
-    -- p_Devotee_Country,
-    p_Comments,
-    p_Joined_Since
+   		p_Devotee_Key,
+        p_Devotee_Type,
+        p_Devotee_First_Name,
+        p_Devotee_Last_Name,
+        p_Devotee_Gender,
+        p_Devotee_DOB,
+        p_Devotee_ID_Type,
+        p_Devotee_ID_Number,
+        p_Devotee_Address_1,
+    	p_Devotee_Address_2,
+        p_Devotee_Station,
+        p_Devotee_State,
+    	p_Devotee_Zip,
+    	p_Devotee_Country,
+        p_Devotee_Email,
+        p_Devotee_Cell_Phone_Number,
+        p_Devotee_Status,
+        p_Joined_Since,
+        p_Devotee_Referral,
+        p_Devotee_Remarks,
+        p_Comments,
+        NOW(),
+        p_Devotee_Record_Updated_By
 );
 
 -- Log Entry
@@ -887,19 +895,12 @@ IF DEBUG = true THEN
 		CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Devotee record replaced. Devotee ID: ', p_Devotee_Key));
 END IF;
 
+/* =========== Removing use of demographics table for now.. adding fields directly into devotee table =========================
 -- Demographics table Update - simply replace the record
 IF  (p_Devotee_Address_1 <> "" OR p_Devotee_State <> "" OR p_Devotee_Country <> "") THEN
 	-- SELECT count(*) INTO v_past_demographics_count  FROM Devotee_Demographics WHERE devotee_key = p_Devotee_Key AND Devotee_Demographics_Status = 'Current';
 
-    /* IF (v_past_demographics_count > 0) THEN
-
-		IF DEBUG = true THEN
-				CALL logIt(concat('PROC_REPLACE_DEVOTEE_W_SEVA_I: Past address Record Found. Devotee ID: ', p_Devotee_Key ), ' counts: ' , v_past_demographics_count);
-		END IF;
-
-		 UPDATE devotee_demographics SET Devotee_Demographics_Status = 'Past', Devotee_Record_Updated_By = p_Devotee_Record_Updated_By, Devotee_Record_Update_Date_Time =  NOW()
-         WHERE Devotee_Key = p_Devotee_Key AND Devotee_Demographics_Status = 'Current';
-        */
+    
 
         REPLACE INTO `devotee_demographics`
 			(`Devotee_Key`,
@@ -930,6 +931,8 @@ IF  (p_Devotee_Address_1 <> "" OR p_Devotee_State <> "" OR p_Devotee_Country <> 
                 );
 	-- END IF;
 END IF;
+ =========== Removing use of demographics table for now.. adding fields directly into devotee table ========================= */
+ -- ========================================================================================================================= --
 --
 -- Add accommodation record, if the accommodation is changed within the same event.
 -- If accommodation with in the current event is same as old accommodation
@@ -1127,6 +1130,45 @@ END IF;
 END$$
 DELIMITER ;
 
+
+-- /////////////////////////////////////////////
+-- // Testing of PROC_REPLACE_DEVOTEE_W_SEVA_I
+-- ////////////////////////////////////////////
+/*CALL `kdms2022`.`PROC_REPLACE_DEVOTEE_W_SEVA_I`
+('P181022956',
+'P',
+'Stored',
+'Procedure Test',
+'M',
+'2003-12-21',
+'DL',
+'235235ed',
+'address one field',
+'address two field',
+'Pleasanton',
+'CA',
+'94566',
+'USA',
+'test@test.com',
+'42343234',
+'A',
+'2003',
+'Anil',
+'This is testing of stored procedure',
+'no comments for now',
+'anil',
+'DKS',
+'Assigned',
+'RK',
+'Allocated',
+'2022NR');
+
+select * from devotee where devotee_key = 'P181022956';
+select * from devotee_accomodation where devotee_key = 'P181022956';
+select * from accommodation_availability where accomodation_key in ('RK','DS9');
+select * from devotee_seva where devotee_key = 'P181022956';
+select * from seva_availability where seva_id in ('DKS', 'REG')
+*/
 
 -- //////////////////////////////////////
 -- // PROC_INSERT_DEVOTEE_W_SEVA_I

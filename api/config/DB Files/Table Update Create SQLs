@@ -37,3 +37,15 @@ CREATE TABLE `seva_availability_archive` (
   PRIMARY KEY (`Seva_Id`,`Seva_Event`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- //////////////////////////////////////
+-- // devotee update
+-- ////////////////////////////////////////
+ALTER TABLE `devotee` 
+ADD COLUMN `Devotee_DOB` DATE NULL DEFAULT NULL AFTER `Devotee_Gender`,
+ADD COLUMN `Devotee_Address_1` VARCHAR(100) NULL DEFAULT NULL AFTER `Devotee_ID_Number`,
+ADD COLUMN `Devotee_Address_2` VARCHAR(100) NULL DEFAULT NULL AFTER `Devotee_Address_1`,
+ADD COLUMN `Devotee_State` VARCHAR(25) NULL DEFAULT NULL AFTER `Devotee_Station`,
+ADD COLUMN `Devotee_Zip` VARCHAR(15) NULL DEFAULT NULL AFTER `Devotee_State`,
+ADD COLUMN `Devotee_Country` VARCHAR(25) NULL DEFAULT 'India' AFTER `Devotee_Zip`,
+ADD COLUMN `Devotee_Email` VARCHAR(45) NULL DEFAULT NULL AFTER `Devotee_Country`,
+CHANGE COLUMN `Devotee_Station` `Devotee_Station` VARCHAR(100) NULL DEFAULT NULL COMMENT 'City of devotee' ;

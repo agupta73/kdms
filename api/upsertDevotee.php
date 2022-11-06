@@ -3,6 +3,7 @@
   include_once 'config/database.php';
   include_once 'Interface/devotees.php';
 
+  $debug=false;
   $database = new Database();
   $db = $database->getConnection();
 
@@ -11,7 +12,9 @@
   //echo json_encode($requestData); die;
   $res = array();
   $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData);
-  // echo json_encode($response); die;
+  
+  if($debug){     var_dump($requestData);  }
+
   if (!empty($requestData['requestType'])) {
       $response = array('flag' => false,'message'=>"Request failed", 'info'=>$requestData['requestType']);
     switch ($requestData['requestType']) {
@@ -25,8 +28,9 @@
             break;
         
         case "upsertDevotee":
-            //$response = array('flag' => false,'message'=>"Failed before calling upsertDevotee", 'info'=>$requestData['requestType']);
+            if($debug){     var_dump($requestData);  }            
             $res = $devotee->upsertDevotee($requestData);
+            if($debug){   echo "from upsert devotee php, after calling upsertDevotee ";  var_dump($res);   }
             break;
         
         default :
