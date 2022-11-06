@@ -1,3 +1,4 @@
+-- Please use the procedures.sql file
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10),
@@ -35,7 +36,7 @@ BEGIN
     DECLARE v_past_seva varchar(10);
 	DECLARE v_past_seva_count varchar(10);
     DECLARE DEBUG bool DEFAULT false;
-
+-- Change not needed to be commited
 -- Upsert Devotee Record
        REPLACE INTO devotee(
         Devotee_Key,
