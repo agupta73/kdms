@@ -11,7 +11,7 @@ $requestType = "";
 $requestData = array();
 
 if($debug){
-    var_dump($_POST);
+    var_dump($_POST); die;
 }
 
 if (!empty($_POST['requestType'])){
@@ -28,9 +28,10 @@ switch ($requestType) {
             'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments' ]; */
 
         //Included event ID in the field list
-        $fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
-            'devotee_station', 'devotee_cell_phone_number', 'devotee_remarks', 'devotee_referral', 'devotee_seva_id', 'devotee_accommodation_id',
-            'devotee_status', 'devotee_gender','requestType', 'joined_since', 'devotee_address_1', 'devotee_address_2', 'devotee_state','devotee_zip','devotee_country','comments', 'eventId' ];
+        $fields_as_post = ['devotee_key','devotee_type', 'devotee_first_name', 'devotee_last_name', 'devotee_gender', 'devotee_dob', 'devotee_id_type', 'devotee_id_number',
+        'devotee_address_1', 'devotee_address_2', 'devotee_station','devotee_state','devotee_zip','devotee_country',  'devotee_email', 'devotee_cell_phone_number', 'devotee_status', 
+         'devotee_referral', 'devotee_remarks', 'comments', 'devotee_seva_id', 'devotee_accommodation_id',
+             'requestType', 'joined_since',  'eventId' ];
 
         foreach ($fields_as_post as $fld) {
             if (!empty($_POST[$fld])) {
@@ -38,7 +39,7 @@ switch ($requestType) {
             }
         }
         
-        //echo $requestData; die;
+        if($debug){var_dump( $requestData); }
         
         $devoteeHandler = new clsDevoteeHandler($requestData);
         $response =  $devoteeHandler->upsertDevotee();

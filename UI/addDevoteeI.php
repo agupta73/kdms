@@ -29,12 +29,12 @@ $debug = false;
         $devotee_dob = "";
         $devotee_id_type = "";
         $devotee_id_number = "";
-        $Devotee_Address_1 = "" ; 
-        $Devotee_Address_2 = "" ; 
+        $devotee_address_1 = "" ; 
+        $devotee_address_2 = "" ; 
         $devotee_station = "";
-        $Devotee_State = "" ; 
-        $Devotee_Zip = "" ; 
-        $Devotee_Country = "" ; 
+        $devotee_state = "" ; 
+        $devotee_zip = "" ; 
+        $devotee_country = "" ; 
         $devotee_email = "";
         $devotee_cell_phone_number = "";
         $devotee_status = "";
@@ -109,11 +109,11 @@ $debug = false;
             }
 
             if (!empty($response['Devotee_Address_1'])) {
-                $Devotee_Address_1 = urldecode($response['Devotee_Address_1']); //  "" 
+                $devotee_address_1 = urldecode($response['Devotee_Address_1']); //  "" 
             }
 
             if (!empty($response['Devotee_Address_2'])) {
-                $Devotee_Address_2 = urldecode($response['Devotee_Address_2']); //  "" 
+                $devotee_address_2 = urldecode($response['Devotee_Address_2']); //  "" 
             }
 
             if (!empty($response['Devotee_Station'])) {
@@ -121,15 +121,15 @@ $debug = false;
             }
 
             if (!empty($response['Devotee_State'])) {
-                $Devotee_State = urldecode($response['Devotee_State']); //  "" 
+                $devotee_state = urldecode($response['Devotee_State']); //  "" 
             }
 
             if (!empty($response['Devotee_Zip'])) {
-                $Devotee_Zip = urldecode($response['Devotee_Zip']); //  "" 
+                $devotee_zip = urldecode($response['Devotee_Zip']); //  "" 
             }
 
             if (!empty($response['Devotee_Country'])) {
-                $Devotee_Country = urldecode($response['Devotee_Country']); //  "" 
+                $devotee_country = urldecode($response['Devotee_Country']); //  "" 
             }
 
             if (!empty($response['Devotee_Email'])) {
@@ -189,6 +189,11 @@ $debug = false;
                 var r =null; // so that we can access it outside .ajax();
                 var formData = $(formId).serialize();
                 var updateSuccess = false;
+                //alert(formData);
+                /* document.getElementById(formId).action = "/KDMS/Logic/requestManager.php";
+                     document.getElementById(formId).method = "POST";
+                     document.getElementById(formId).submit(); */
+
 
                 if (validateInput()) {
                     $.ajax({
@@ -197,7 +202,7 @@ $debug = false;
                         data: formData,
                         async: false,
                         success: function (response) {
-                            //alert(response);
+                            <?php if($debug) {echo "console.log(response);";} ?>
                             r = JSON.parse(response);
 
                             if (r['flag'] == true) {
@@ -250,12 +255,13 @@ $debug = false;
                         alert("Devotee record updated successfully!");
                         window.location.assign("<?=$config_data['webroot'];?>UI/index.php");
                     }
-                    /*
-                     document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-                     document.getElementById("myForm").method = "POST";
-                     document.getElementById(formId).submit();
-                     */
+                    
+                    // document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+                    // document.getElementById("myForm").method = "POST";
+                    // document.getElementById(formId).submit();
+                    
                 }
+                
             }
             function validateInput() {
                 var response = true;
@@ -313,7 +319,7 @@ $debug = false;
                                                     if($devotee_status == 'B') { ?>
                                                 <div class="col-md-2">
                                                     <div id="blsign" align="left">
-                                                        <label class="bmd-label-floating" name="blacklist_label" id="blacklist_label" align="center" color="red"> BLACK LISTED</label>
+                                                        <label class="bmd-label-floating" name="blacklist_label" id="blacklist_label" align="center" color="red"> BLACK LISTED </label>
                                                     </div>
                                                 </div>
                                                 <?php } }?>
@@ -336,21 +342,46 @@ $debug = false;
 
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
+                                                <div class="col-md-3" style="margin-top:36px;">
+                                                    <div class="form-group" >
                                                         <label class="bmd-label-floating">First Name</label>
                                                         <input type="text" class="form-control" name="devotee_first_name" id="devotee_first_name" value="<?php print_r($devotee_first_name); ?>">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3" style="margin-top:36px;">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Last Name</label>
                                                         <input type="text" class="form-control" name="devotee_last_name" id="devotee_last_name" value="<?php print_r($devotee_last_name); ?>">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3" >
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Gender</label>
+                                                        <!-- <input type="text" class="form-control" name="devotee_gender" id="devotee_gender" value="<?php print_r($devotee_gender); ?>"> -->
+                                                        <select type="text" class="form-control" name="devotee_gender" id="devotee_gender"  value="<?php print_r($devotee_gender); ?>">
+                                                            <option value="M" <?php
+                                                            if ($devotee_gender == "m"  || $devotee_gender == "M" || empty($devotee_status)) {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Male</option>
+                                                            <option value="F" <?php
+                                                            if ($devotee_status == "F"  || $devotee_status == "f") {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Female</option>                                                            
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3"style="margin-top:36px;">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Date of Birth</label>
+                                                        <input type="text" class="form-control" name="devotee_dob" id="devotee_dob" value="<?php print_r($devotee_dob); ?>">
+                                                        
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">ID Type</label>
                                                         <select type="text" class="form-control" name="devotee_id_type" id="devotee_id_type" value="<?php print_r($devotee_id_type); ?>">
@@ -392,13 +423,27 @@ $debug = false;
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group" style="margin-top:62px;">
                                                         <label class="bmd-label-floating">ID Number</label>
                                                         <input type="text" class="form-control" name="devotee_id_number" id="devotee_id_number" value="<?php print_r($devotee_id_number); ?>">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Phone No.</label>
+                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Email</label>
+                                                        <input type="text" class="form-control" name="devotee_email" id="devotee_email" value="<?php print_r($devotee_email); ?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Devotee Type</label>
                                                         <select type="text" class="form-control" name="devotee_type" id="devotee_type" value="<?php print_r($devotee_type); ?>">
@@ -415,9 +460,7 @@ $debug = false;
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <!-- <div class="form-group" style="margin-top:26px;"> -->
 
                                                     <div class="form-group" >
@@ -452,13 +495,42 @@ $debug = false;
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Phone No.</label>
-                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
+                                                        <label class="bmd-label-floating">Referral</label>
+                                                        <input type="text" class="form-control" name="devotee_referral" id="devotee_referral" value="<?php print_r($devotee_referral); ?>">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
+                                                    <div class="form-group" style="margin-top:62px;">
+                                                        <label class="bmd-label-floating">Joined Since</label>
+                                                        <input type="text" class="form-control" name="joined_since" id="joined_since" value="<?php print_r($joined_since); ?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Assigned Seva</label>
+
+                                                        <select type="text" class="form-control" name="devotee_seva_id" id="devotee_seva_id" >
+                                                            <?php
+                                                            foreach ($sevas as $seva) {
+                                                                print_r("<option value='" . $seva['Seva_Id'] . "'");
+                                                                if (empty($devotee_seva_id)) {
+                                                                    $devotee_seva_id = 'UN';
+                                                                }
+                                                                if ($devotee_seva_id == $seva['Seva_Id']) {
+                                                                    print_r("selected");
+                                                                }
+                                                                //Print_r(">" . $seva['Seva_Description'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                                Print_r(">" . urldecode($seva['Seva_Description']) . "</option>");
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Accommodation</label>
 
@@ -481,59 +553,22 @@ $debug = false;
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Assigned Seva</label>
-
-                                                        <select type="text" class="form-control" name="devotee_seva_id" id="devotee_seva_id" >
-                                                            <?php
-                                                            foreach ($sevas as $seva) {
-                                                                print_r("<option value='" . $seva['Seva_Id'] . "'");
-                                                                if (empty($devotee_seva_id)) {
-                                                                    $devotee_seva_id = 'UN';
-                                                                }
-                                                                if ($devotee_seva_id == $seva['Seva_Id']) {
-                                                                    print_r("selected");
-                                                                }
-                                                                //Print_r(">" . $seva['Seva_Description'] . " - " . $accommodation['Available_Count'] . "</option>");
-                                                                Print_r(">" . urldecode($seva['Seva_Description']) . "</option>");
-                                                            }
-                                                            ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Referral</label>
-                                                        <input type="text" class="form-control" name="devotee_referral" id="devotee_referral" value="<?php print_r($devotee_referral); ?>">
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Joined Since</label>
-                                                        <input type="text" class="form-control" name="joined_since" id="joined_since" value="<?php print_r($joined_since); ?>">
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
                                                     <div class="form-group" >
                                                         <label class="bmd-label-floating">Address Line 1</label>
-                                                        <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" value="<?php print_r($Devotee_Address_1); ?>">
+                                                        <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" value="<?php print_r($devotee_address_1); ?>">
                                                     </div>
                                                 </div>
-<!--                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top:62px;">
-                                                        <label class="bmd-label-floating">Phone No.</label>
-                                                        <input type="text" class="form-control" name="devotee_cell_phone_number" id="devotee_cell_phone_number" value="<?php print_r($devotee_cell_phone_number); ?>">
-                                                    </div>
-                                                </div>-->
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Address Line 2</label>
 
-                                                        <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" value="<?php print_r($Devotee_Address_2); ?>">
+                                                        <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" value="<?php print_r($devotee_address_2); ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">City / Station</label>
+                                                        <input type="text" class="form-control" name="devotee_station" id="devotee_station" value="<?php print_r($devotee_station); ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -541,20 +576,20 @@ $debug = false;
                                                 <div class="col-md-4">
                                                     <div class="form-group" >
                                                         <label class="bmd-label-floating">State</label>
-                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" value="<?php print_r($Devotee_State); ?>">
+                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" value="<?php print_r($devotee_state); ?>">
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Zip/Pin Code</label>
-                                                        <input type="text" class="form-control" name="devotee_zip" id="devotee_zip" value="<?php print_r($Devotee_Zip); ?>">
+                                                        <input type="text" class="form-control" name="devotee_zip" id="devotee_zip" value="<?php print_r($devotee_zip); ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Country</label>
-                                                        <input type="text" class="form-control" name="devotee_country" id="devotee_country" value="<?php print_r($Devotee_Country); ?>">
+                                                        <input type="text" class="form-control" name="devotee_country" id="devotee_country" value="<?php print_r($devotee_country); ?>">
                                                     </div>
                                                 </div>
                                             </div>
