@@ -814,7 +814,7 @@ Class Devotee {
 
         //Devotee DOB
         if (empty($requestData['devotee_dob'])){
-            $Devotee_DOB="";
+            $Devotee_DOB="1900-01-01";
         }
         elseif (validateDate(htmlspecialchars(strip_tags($requestData['devotee_dob'])))) {
 
@@ -890,11 +890,17 @@ Class Devotee {
             $Devotee_Country=htmlspecialchars(strip_tags($requestData['devotee_country']));
         }
 
+        /*if($this->debug){
+            echo "email >> "; 
+            var_dump(urldecode(strip_tags($requestData['devotee_email']))); 
+            echo "result: "; 
+            var_dump(filter_var(urldecode(strip_tags($requestData['devotee_email'])), FILTER_VALIDATE_EMAIL));             
+        }*/
         //Devotee email address
         if (empty($requestData['devotee_email'])) {
             $Devotee_Email = "";
-        } elseif (filter_var(htmlspecialchars(strip_tags($requestData['devotee_email'])), FILTER_VALIDATE_EMAIL)) {
-            $Devotee_Email = htmlspecialchars(strip_tags($requestData['devotee_email']));
+        } elseif (filter_var(urldecode(strip_tags($requestData['devotee_email'])), FILTER_VALIDATE_EMAIL)) {
+            $Devotee_Email = urldecode(strip_tags($requestData['devotee_email']));
         } else {
             $Devotee_Email = "";
             $errormsg .= " Email Address is invalid.";
@@ -1072,6 +1078,8 @@ Class Devotee {
 
         // prepare query
         $stmt = $this->conn->prepare($query);
+
+        if($this->debug){ var_dump($stmt); die;}
 
         if ($stmt->execute()) {
             $res['status'] = true;

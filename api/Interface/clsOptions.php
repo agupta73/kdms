@@ -462,7 +462,7 @@ class clsOptions {
                 break;
             
             Case "RefreshSeva":                
-                return $this->refreshSeva();
+                return $this->refreshSeva($requestData['key']);
                 break;
             
             default:
@@ -742,13 +742,13 @@ class clsOptions {
         return $AmenityDetail;
     }
         
-    private function refreshAccommodations($eventid){
+    private function refreshAccommodations($eventId){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $res['info']='';
 
-        $query = "CALL PROC_REFRESH_ACCO_COUNT_W_EVENT('$eventid')";
+        $query = "CALL PROC_REFRESH_ACCO_COUNT_W_EVENT('" . $eventId . "')";
 
         $stmt = $this->conn->prepare($query);
         
@@ -793,7 +793,7 @@ class clsOptions {
         $res['message'] = '';
         $res['info']='';
         
-        $query = "CALL PROC_REFRESH_SEVA_COUNT_I($eventId)";
+        $query = "CALL PROC_REFRESH_SEVA_COUNT_I('" . $eventId . "')";
         $stmt = $this->conn->prepare($query);
         
          if ($stmt->execute()) {

@@ -73,7 +73,7 @@ $debug = false;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
 
-            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);die;}
+            if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
 
             //assign values
             if (!empty($response['Devotee_Key'])) {
@@ -202,7 +202,8 @@ $debug = false;
                         data: formData,
                         async: false,
                         success: function (response) {
-                            <?php if($debug) {echo "console.log(response);";} ?>
+                            //console.log(response);
+                                
                             r = JSON.parse(response);
 
                             if (r['flag'] == true) {
@@ -264,29 +265,55 @@ $debug = false;
                 
             }
             function validateInput() {
-                var response = true;
-                var message = "";
-                if (document.getElementById("devotee_first_name").value == "") {
-                    message = "Devotee first name";
-                    response = false;
-                }
-
-                if (document.getElementById("devotee_last_name").value == "") {
-                    if (message != "") {
-                        message = message + " and last name";
-                    } else {
-                        message = "Devotee last name";
+                    var response = true;
+                    var message = "";
+                    if (document.getElementById("devotee_first_name").value == "") {
+                        message = "Devotee first name is missing.\n";
+                        response = false;
                     }
-                    response = false;
+
+                    if (document.getElementById("devotee_last_name").value == "") {
+                        message = message + "Devotee last name is missing. \n";
+                        response = false;
+                    }
+
+                    if (document.getElementById("devotee_email").value != "") {                        
+                        if (!validateEmail(document.getElementById("devotee_email").value)) {
+                            message = message + "Email is invalid.\n";
+                            response = false;
+                        }
+                    }
+
+                    if (document.getElementById("devotee_dob").value != "") {                        
+                        if (!validateDate(document.getElementById("devotee_dob").value)) {
+                            message = message + "Date of birth is invalid.\n";
+                            response = false;
+                        }
+                    }
+
+                    if (!response) {
+                        alert(message);
+                    }
+
+                    return response;
                 }
 
-                if (!response) {
-                    alert(message + " missing!!");
+                function validateEmail(email) {
+                    var re = /\S+@\S+\.\S+/;
+                    
+                    return re.test(email);
                 }
 
-                return response;
-            }
-
+                function validateDate(isoDate) {
+                    if (isNaN(Date.parse(isoDate))) {
+                        return false;
+                    } else {
+                        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
 
         </script>
     </head>

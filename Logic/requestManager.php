@@ -35,7 +35,7 @@ switch ($requestType) {
 
         foreach ($fields_as_post as $fld) {
             if (!empty($_POST[$fld])) {
-                $requestData[$fld] = urlencode($_POST[$fld]);
+                $requestData[$fld] = urlencode(trim($_POST[$fld]));
             }
         }
         

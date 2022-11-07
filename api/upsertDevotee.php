@@ -3,7 +3,7 @@
   include_once 'config/database.php';
   include_once 'Interface/devotees.php';
 
-  $debug=true;
+  $debug=false;
   $database = new Database();
   $db = $database->getConnection();
 
