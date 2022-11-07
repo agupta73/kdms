@@ -743,7 +743,7 @@ Class Devotee {
                             AND d.devotee_key = '" . $requestData . "'" .
                     " ORDER BY 
                         da.Accommodation_Event,ds.seva_event  ASC
-                    LIMIT 4";
+                        LIMIT 50";
 
         if($this->debug){     var_dump($query); }
 
