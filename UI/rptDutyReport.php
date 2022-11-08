@@ -1,93 +1,103 @@
 <?php
 $config_data = include("../site_config.php");
+include_once("../sessionCheck.php");
+$eventId = $config_data['event_id'];
+$debug = false;
 ?>
+
 <html>
-    <head>
-        <title> Seva Report </title>
-        
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                printdiv();
-            }, false);
-            
-            function printdiv() {
+<head>
+    <title> Seva Report </title>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            printdiv();
+        }, false);
+
+        function printdiv() {
             //alert(document.getElementById("requestType").value());
-//            document.getElementById("printForm").submit();
-            
-//            $.ajax({
-//                    url:'/KDMS/Logic/requestManager.php',
-//                    type:'POST',
-//                    data:{'devotee_key': "<?php echo $_GET['key']; ?>", 'requestType': "removeFromPrintQueue"},
-//                    async: false,
-//                    success:function(response){
-//                        alert("getting here..");
-//                          var r = JSON.parse(response);
-//                          
-//                          if(r['flag'] == true){
-//                              alert("Card removed from the printing queue!");
-//                              window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-//                          }
-//                          else{
-//                              alert(r['message']);
-//                              updateSuccess=false;
-//                          }   
-//                      }
-//                  });   
-                 
-                var newstr = document.getElementById("printpage").innerHTML;
-                var header = '<header><div align="center"><h3 style="color:#EB5005"> Seva Report </h3></div><br></header><hr><br>'
+            //            document.getElementById("printForm").submit();
 
-                var popupWin = window.open('', 'blank', 'width=800px,height=900px');
-                popupWin.document.open();
-                //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
-                popupWin.document.write('<html><body>' + newstr + '</html></br>');
-                popupWin.document.close();
-                window.close();
-                     
-                return false;
+            //            $.ajax({
+            //                    url:'/KDMS/Logic/requestManager.php',
+            //                    type:'POST',
+            //                    data:{'devotee_key': "<?php echo $_GET['key']; ?>", 'requestType': "removeFromPrintQueue"},
+            //                    async: falseå,
+            //                    success:function(response){
+            //                        alert("getting here..");
+            //                          var r = JSON.parse(response);
+            //                          
+            //                          if(r['flag'] == true){
+            //                              alert("Card removed from the printing queue!");
+            //                              window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+            //                          }
+            //                          else{
+            //                              alert(r['message']);
+            //                              updateSuccess=false;
+            //                          }   
+            //                      }
+            //                  });   
 
-            }
+            var newstr = document.getElementById("printpage").innerHTML;
+            var header = '<header><div align="center"><h3 style="color:#EB5005"> Seva Report </h3></div><br></header><hr><br>'
 
-        </script> 
-    </head>
-    <body>
+            var popupWin = window.open('', 'blank', 'width=800px,height=900px');
+            popupWin.document.open();
+            //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
+            popupWin.document.write('<html><body>' + newstr + '</html></br>');
+            popupWin.document.close();
+            window.close();
 
-       <div id="printpage">
-            <div id="report">
-                            <div>
-                                <u><label style="text-align:center; width:700px; font-weight:bold; font-size:20px;">Mal Pua Sevak Report</label></u>
-                                <br>
-                                <br>
-                                <table width="700px">
-                                    <tr>
-                                        <td>
-                                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Sr#</label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Name</label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Station</label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Cell Phone</label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Photo</label>
-                                        </td>
-                                    </tr>
-            <?php
+            return false;
+
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <div id="printpage">
+        <div id="report">
+            <div>
+                <u><label style="text-align:center; width:700px; font-weight:bold; font-size:20px;">Mal Pua Sevak Report</label></u>
+                <br>
+                <br>
+                <table width="700px">
+                    <tr>
+                        <td>
+                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Sr#</label>
+                        </td>
+                        <td>
+                            <label
+                                style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Name</label>
+                        </td>
+                        <td>
+                            <label
+                                style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Station</label>
+                        </td>
+                        <td>
+                            <label style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Cell
+                                Phone</label>
+                        </td>
+                        <td>
+                            <label
+                                style="text-align:center; width:220px; font-weight:bold; font-size:20px;">Photo</label>
+                        </td>
+                    </tr>
+                    <?php
             include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
             if (!empty($_GET['key'])) {
                 $devoteeSearch = new clsDevoteeSearch($_GET);
-                $response = $devoteeSearch->getDevoteeRecords();
+                $response = $devoteeSearch->getDevoteeRecords($eventId);
                 unset($devoteeSearch);
             }
-            
+
             // ["devotee_key"]=> string(9) "P19051428" ["Devotee_Name"]=> string(19) "KUNDAN+SINGH+ GAIRA" ["devotee_station"]=> string(8) "Nainital" ["devotee_cell_phone_number"]=> string(0) "" ["Devotee_ID_Image"], "Devotee_Photo"]
-                $recordCount = 0;
-            
+            $recordCount = 0;
+
             if (!empty($response)) {
                 foreach ($response as $devoteeRecord) {
                     $devotee_key = "--Unavailable--";
@@ -95,9 +105,9 @@ $config_data = include("../site_config.php");
                     $devotee_last_name = "--Unavailable--";
                     $devotee_station = "--Unavailable--";
                     $devotee_cell_phone_number = "--Unavailable--";
-//                    $accommodation_name = "--Unavailable--";
+                    //                    $accommodation_name = "--Unavailable--";
                     $devotee_photo = "";
-                    
+
                     if (!empty($devoteeRecord['devotee_key'])) {
                         $devotee_key = urldecode($devoteeRecord['devotee_key']);
                     }
@@ -114,62 +124,74 @@ $config_data = include("../site_config.php");
                         $devotee_cell_phone_number = urldecode($devoteeRecord['devotee_cell_phone_number']);
                     }
 
-//                    if (!empty($devoteeRecord['accomodation_name'])) {
+                    //                    if (!empty($devoteeRecord['accomodation_name'])) {
 //                        $accommodation_name = urldecode($devoteeRecord['accomodation_name']);
 //                    }
-
+            
                     if (!empty($devoteeRecord['Devotee_Photo'])) {
                         $devotee_photo = $devoteeRecord['Devotee_Photo'];
                     }
-                   
+
                     if ($devotee_key != "--Unavailable--") {
                         $recordCount = $recordCount + 1;
-                        ?>
-                      
-                                    <tr>
-                                        <td>
-                                            <label style="text-align:center; "><?php echo $recordCount; ?></label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; "><?php echo $devotee_name; ?></label>
-                                        </td>
-                                        <td>
-                                            <label style="text-align:center; "><?php echo $devotee_station; ?></label>
-                                        </td>
-                                        
-                                        <td>
-                                            <label style="text-align:center; "><?php echo $devotee_cell_phone_number; ?></label>
-                                        </td>
-                                        
-                                        <td>
-                                            <div>
-                                                <!--<img src="../assets/img/faces/doc.png" alt="devotee ID" height="80px" width="80px">-->
-                                              <?php
-                                                if ($devotee_photo == "") {
-                                                  print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80px" width="80px"></img>');
-                                              } else {
-                                                  print_r('<img src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" height="80px" width="80px"></img>');
-                                              }
+            ?>
+
+                    <tr>
+                        <td>
+                            <label style="text-align:center; ">
+                                <?php echo $recordCount; ?>
+                            </label>
+                        </td>
+                        <td>
+                            <label style="text-align:center; ">
+                                <?php echo $devotee_name; ?>
+                            </label>
+                        </td>
+                        <td>
+                            <label style="text-align:center; ">
+                                <?php echo $devotee_station; ?>
+                            </label>
+                        </td>
+
+                        <td>
+                            <label style="text-align:center; ">
+                                <?php echo $devotee_cell_phone_number; ?>
+                            </label>
+                        </td>
+
+                        <td>
+                            <div>
+                                <!--<img src="../assets/img/faces/doc.png" alt="devotee ID" height="80px" width="80px">-->
+                                <?php
+                        if ($devotee_photo == "") {
+                            print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80px" width="80px"></img>');
+                        } else {
+                            print_r('<img src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" height="80px" width="80px"></img>');
+                        }
                                               ?>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                
-            <?php } } } ?>
-      </table>
-                                <br>
-                                
                             </div>
-                        </div> 
-                        <br>
-                        <br> </div>
+                        </td>
+                    </tr>
+
+                    <?php }
+                }
+            } ?>
+                </table>
+                <br>
+
+            </div>
+        </div>
         <br>
-        <a href = "#" onclick="printdiv()"><button >Print </button> </a>
-        <!--<form id="printForm" action="<?=$config_data['webroot'];?>Logic/requestManager.php" method="POST">-->
-            <!--<input type="hidden" id="requestType" value="removeFromPrintQueue">-->
-<!--            <input type="hidden" id="devotee_key" value=" <?php print_r($_GET); ?>">-->
-            <!--<input type="hidden" id="devotee_key" value="Devotee_Key">-->
-        <!--</form>-->
-        
-    </body>
+        <br>
+    </div>
+    <br>
+    <a href="#" onclick="printdiv()"><button>Print </button> </a>
+    <!--<form id="printForm" action="<?= $config_data['webroot']; ?>Logic/requestManager.php" method="POST">-->
+    <!--<input type="hidden" id="requestType" value="removeFromPrintQueue">-->
+    <!--            <input type="hidden" id="devotee_key" value=" <?php print_r($_GET); ?>">-->
+    <!--<input type="hidden" id="devotee_key" value="Devotee_Key">-->
+    <!--</form>-->
+
+</body>
+
 </html>
