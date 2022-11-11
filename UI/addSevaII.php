@@ -8,6 +8,7 @@
   <?php
     include_once("header.php");
     include_once("../Logic/clsOptionHandler.php");
+    $config_data=include("../site_config.php");
   ?>
 </head>
 
@@ -17,6 +18,7 @@
     <?php
         include_once("nav.php");
         $sevaSearch = new clsOptionHandler("Seva");    
+        $sevaSearch->setEventId($config_data['event_id']);
         $response = $sevaSearch->getOptions();
         //var_dump($response); die;
         //string(3) "BKT" ["Seva_Description"]=> string(25) "Blanket Distribution Duty" } [1]=> array(2) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(7) "Mal Pua" } [2]=> array(2) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(14) "Prasaad Vitran" } [3]=> array(2) { ["Seva_Id"]=> string(2) "SS" ["Seva_Description"]=> string(10) "Shoe Stand" } [4]=> array(2) { ["Seva_Id"]=> string(3) "tst" ["Seva_Description"]=> string(22) "Testing+of+Seva+Update" } }

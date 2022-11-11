@@ -529,6 +529,7 @@ class clsOptions {
             $query = $query . " AND sa.assigned_count > 0 ";
         }
 
+        if($this->debug){echo $query;}
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
         $Sevas = array();
