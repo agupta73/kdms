@@ -614,6 +614,7 @@ Class Devotee {
                     , d.devotee_station, d.devotee_cell_phone_number 
                     , did.Devotee_ID_Image 
                     , dp.Devotee_Photo 
+                    , sm.Seva_description
                  from 
                      Devotee d 
                      left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
@@ -623,6 +624,7 @@ Class Devotee {
             $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
         }
 
+        $query = $query . " left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.Seva_ID = '" . $requestData . "' ORDER BY ds.Seva_ID Desc" ;
 
         //var_dump($query);die;
