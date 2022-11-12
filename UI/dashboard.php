@@ -31,9 +31,9 @@ if (!empty($_GET['sevaType'])) {
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
 if($debug){echo "Accociation response =: " ; var_dump($AccoResponse);}
-$sevaSearch = new clsOptionHandler("Seva");
+$sevaSearch = new clsOptionHandler("Seva"); //Constructor =>request=>optionType=>Seva
 $sevaSearch->setEventId($eventId);
-$sevaSearch->setOptionKey($sevaType);
+$sevaSearch->setOptionKey($sevaType); // Option Key for the API => either all or specific seva count (like assigned)
 $sevaRes = $sevaSearch->getOptions();
 //var_dump($response); die;
 //array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }

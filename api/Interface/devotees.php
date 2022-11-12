@@ -597,6 +597,7 @@ Class Devotee {
         $errormsg = "";
         $status = true;
         
+        /* //Seva ID can be empty now, meaning all sevas
         if (empty($requestData)) {
             $errormsg .= "Seva id not supplied.";
             $status = false;
@@ -608,6 +609,7 @@ Class Devotee {
             return $res;
             die;
         }
+        */
        
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
@@ -625,9 +627,14 @@ Class Devotee {
         }
 
         $query = $query . " left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
-        $query = $query . "WHERE ds.Seva_ID = '" . $requestData . "' ORDER BY ds.Seva_ID Desc" ;
+        $query = $query . "WHERE ds.seva_id is not null " ;
 
-        //var_dump($query);die;
+        if(($requestData != "") and ($requestData != "All")){
+            $query = $query . " AND ds.Seva_ID = '" . $requestData . "'" ;
+        }
+        $query = $query . " ORDER BY ds.Seva_ID Desc" ;
+
+        if($this->debug) {var_dump($query);}
                 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         

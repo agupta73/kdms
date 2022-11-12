@@ -253,14 +253,14 @@ $debug = false;
                                                 <label class="bmd-label-floating">Accommodation</label>            
                                                 <select type="text" class="form-control" name="devotee_accommodation_key" id="devotee_accommodation_key" >
                                                     <option value="">-Any Accommodation-</option>
-<?php
-if (!empty($accommodations)) {
-    foreach ($accommodations as $accommodation) {
-        print_r("<option value='" . $accommodation['accomodation_key'] . "'");
-        Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
-    }
-}
-?>
+                                                        <?php
+                                                        if (!empty($accommodations)) {
+                                                            foreach ($accommodations as $accommodation) {
+                                                                print_r("<option value='" . $accommodation['accomodation_key'] . "'");
+                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                            }
+                                                        }
+                                                        ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -305,7 +305,7 @@ if (!empty($accommodations)) {
                         <div class="card">
                             <div class="card-header card-header-primary">
                                 <h4 class="card-title" id="pageHeader">
-<?php print_r($gridTitle); ?>
+                                    <?php print_r($gridTitle); ?>
                                 </h4>
                             </div>
                             <form id="printForm">
@@ -314,13 +314,13 @@ if (!empty($accommodations)) {
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead class="text-primary">
-<?php if ($showSelection) {
-    Print_r("
-                                  <th>
-                                      Select <input type='checkbox' name='headerCheck' id='headerCheck' value='' onclick=checkAll(); return false;>
-                                  </th>");
-}
-?>
+                                                    <?php if ($showSelection) {
+                                                        Print_r("
+                                                                                    <th>
+                                                                                        Select <input type='checkbox' name='headerCheck' id='headerCheck' value='' onclick=checkAll(); return false;>
+                                                                                    </th>");
+                                                    }
+                                                    ?>
                                                 <th>
                                                     Name
                                                 </th>
