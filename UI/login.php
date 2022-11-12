@@ -130,7 +130,7 @@ if (!empty($requestData['loginID'])) {
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="bmd-label-floating">Username</label>
-                            <input type="text" class="form-control" name="loginID" id="loginID" value="<? echo $loginID; ?>">
+                            <input type="text" class="form-control" name="loginID" id="loginID" value="<?= $loginID;?>">
                           </div>
                         </div>
                       </div>
