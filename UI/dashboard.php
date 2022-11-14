@@ -1,3 +1,5 @@
+<head>
+        <title> KDMS Dashboard </title></head>
 <?php
 
 //TODO: refresh seva and accommodation counts is not working
