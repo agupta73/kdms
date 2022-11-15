@@ -159,7 +159,8 @@ td .table-data{
 
 @media (min-width: 992px) {
 	.main-panel {
-		min-width: 75%;
+		min-width: 85%;
+		width: 0;
 	}
 	.kdms-top-navbar {
 		width: 85%;
