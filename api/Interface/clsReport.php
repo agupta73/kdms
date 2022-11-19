@@ -69,6 +69,7 @@ class clsReport {
                 " am.accomodation_capacity - aa.available_count" .
                 " ) AS occupied_count," .
                 " aa.reserved_count," .
+                " am.accomodation_capacity, " .
                 " aa.allocated_count," .
                 " aa.Out_of_Availability_Count" .
                 " FROM" .
