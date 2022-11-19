@@ -47,6 +47,11 @@ class clsReport {
                 case "DevoteeCount": //Accommodation Counts
                     return $this->getDevoteeCounts($eventId);
                     break;
+                
+                case "DutyReport": //Accommodation Counts
+                    return $this->getDutyReport($eventId);
+                    
+                    break;
 
                 default :
                     $res['message'] = "Request type invalid!";
@@ -191,4 +196,46 @@ class clsReport {
         return $devoteeResults;
     }
 
+    private function getDutyReport($eventId) {
+        
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        if (empty($eventId)) {
+            $errormsg .= "Event ID is missing.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, d.devotee_cell_phone_number, dp.devotee_photo 
+                  FROM duty_location_master dlm 
+                    LEFT OUTER JOIN office_duty od ON dlm.duty_location_key = od.Duty_Location_Key
+                    LEFT OUTER JOIN devotee d ON od.devotee_key = d.devotee_key
+                    LEFT OUTER JOIN devotee_photo dp ON d.devotee_key = dp.devotee_key
+                  WHERE d.devotee_key IS NOT NULL AND od.duty_event =  '" . $eventId . "' ";
+
+
+        if($this->debug){echo $query; }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $dutyReportResult = array();
+        $i = 0;
+        while ($row = $results->fetchObject()) {
+            $row->{'devotee_photo'} = base64_encode($row->{'devotee_photo'});           
+            $dutyReportResult[] = $row;
+            $i = $i + 1;
+        }
+        if($this->debug){echo "from API, after calling function: "; var_dump($dutyReportResult);}
+        return $dutyReportResult;
+    }
 }
