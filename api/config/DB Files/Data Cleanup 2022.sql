@@ -5,6 +5,10 @@ select * from devotee where (devotee_gender = '' or devotee_gender is null) ;
 update devotee set devotee_gender = 'F' where (devotee_gender = '' or devotee_gender is null ) and right(devotee_first_name, 2) in ('la', 'ru', 'a+', 'ta', 'ri', 'na','ma', 'hi', 'pa', 'ya', 'ti', 'ha','ni', 'di', 'tu', 'ja', 'va') and right(devotee_first_name,4) not in ('adri', 'puri', 'dutt', 'datt','anti', 'shna');
 update devotee set devotee_gender = 'F' where (devotee_gender = '' or devotee_gender is null) and devotee_first_name in ('Suman', 'Madhu', 'Neelam', 'Devki'); 
 
+-- /////////////////////////////////////////////
+-- // To clean up white spaces before and after devotee names
+-- ////////////////////////////////////////////
+update devotee set devotee_first_name = trim(devotee_first_name), devotee_last_name = trim(devotee_last_name) 
 
 -- /////////////////////////////////////////////
 -- // To randomly populate missing Date of Births = TEST ENV. ONLY
