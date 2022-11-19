@@ -24,7 +24,7 @@ Class Devotee {
                             return $this->searchDevotee($requestData['key']);
                     break;
                 
-                    case "CUS": //Custom query
+                    case "CUS": //Custom query                            
                             return $this->searchDevotee($requestData['key'], $requestData['eventId']);
                     break;
                        
@@ -143,7 +143,7 @@ Class Devotee {
             $status = false;
         }
 
-        if($eventId = ""){
+        if($eventId == ""){
             $errormsg .= " Event ID is missing.";
             $status = false;
         }
@@ -155,7 +155,7 @@ Class Devotee {
             die;
         }
        
-        if($this->debug){ echo "request data from search devotee: ", $requestData; }
+        if($this->debug){ echo "request data from search devotee: ", $requestData, " event Id: ", $eventId; }
 
         $query = "select " .
                     "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .

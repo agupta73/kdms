@@ -164,7 +164,11 @@ $debug = false;
             $gridTitle = "";
             $showSelection = FALSE;
             $hideSearchArea = FALSE;
-            // var_dump($_GET);
+            if($debug){
+                var_dump($_GET);
+                
+            }
+            
 
             if (!empty($_GET['key'])) {
                 $searchKey = $_GET['key'];
@@ -192,7 +196,7 @@ $debug = false;
                         break;
                 }
 
-
+               
 
                 $devoteeSearch = new clsDevoteeSearch($_GET);
                 $response = $devoteeSearch->getDevoteeRecords($eventId);
@@ -203,6 +207,7 @@ $debug = false;
                 $hideSearchArea = TRUE;
             } else { //If custom search and criteria has not been specified, load accommodation options and available spots                
                 $loadAccommodation = new clsOptionHandler("Accommodation");
+                $loadAccommodation->setEventId($eventId);
                 $accommodations = $loadAccommodation->getOptions();
                 unset($loadAccommodations);
             }
@@ -257,7 +262,7 @@ $debug = false;
                                                         if (!empty($accommodations)) {
                                                             foreach ($accommodations as $accommodation) {
                                                                 print_r("<option value='" . $accommodation['accomodation_key'] . "'");
-                                                                Print_r(">" . $accommodation['Accomodation_Name'] . " - " . $accommodation['Available_Count'] . "</option>");
+                                                                Print_r(">" . urldecode($accommodation['Accomodation_Name']) . " - " . $accommodation['Available_Count'] . "</option>");
                                                             }
                                                         }
                                                         ?>
