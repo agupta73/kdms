@@ -164,12 +164,7 @@ $debug = false;
             $gridTitle = "";
             $showSelection = FALSE;
             $hideSearchArea = FALSE;
-            if($debug){
-                var_dump($_GET);
-                
-            }
             
-
             if (!empty($_GET['key'])) {
                 $searchKey = $_GET['key'];
 
@@ -195,8 +190,6 @@ $debug = false;
                         $gridTitle = "Devotee Search Result";
                         break;
                 }
-
-               
 
                 $devoteeSearch = new clsDevoteeSearch($_GET);
                 $response = $devoteeSearch->getDevoteeRecords($eventId);
@@ -321,9 +314,9 @@ $debug = false;
                                                 <thead class="text-primary">
                                                     <?php if ($showSelection) {
                                                         Print_r("
-                                                                                    <th>
-                                                                                        Select <input type='checkbox' name='headerCheck' id='headerCheck' value='' onclick=checkAll(); return false;>
-                                                                                    </th>");
+                                                                    <th>
+                                                                        Select <input type='checkbox' name='headerCheck' id='headerCheck' value='' onclick=checkAll(); return false;>
+                                                                    </th>");
                                                     }
                                                     ?>
                                                 <th>
