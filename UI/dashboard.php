@@ -310,7 +310,7 @@ unset($sevaSearch);
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWN" class="dash-link">Devotees with Own Arrangement:
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWNAR" class="dash-link">Devotees with Own Arrangement:
                                 <b>  <?php echo $response[4]['DevoteesWithOwnArrangements']; ?> </b> </a></div>
                     </div>
                     <div class="card-footer">

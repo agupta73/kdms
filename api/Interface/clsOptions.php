@@ -33,6 +33,7 @@ class clsOptions {
         
         switch ($option) {
             case "upsertAcco": 
+                if($this->debug){var_dump($requestData);}
                 $res=$this->upsertAccommodation($requestData);
                 break;
             
@@ -67,7 +68,8 @@ class clsOptions {
         
         $query = "";
         $Accommodation_Key="";
-        $Accommodation_Name="";
+        $Accommodation_Event="";
+        $Accommodation_Name="";     
         $Accomodation_Capacity=0;
         $Reserved_Count=0;
         $Out_of_Availability_Count=0;
@@ -83,6 +85,14 @@ class clsOptions {
             $Accommodation_Key = htmlspecialchars(strip_tags($requestData['accommodation_key']));
         }
         
+        if (!empty($requestData['eventId'])) {
+            $Accommodation_Event = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
+        else {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+
         if (!empty($requestData['accommodation_name'])) {
             $Accommodation_Name = htmlspecialchars(strip_tags($requestData['accommodation_name']));
         }
@@ -102,6 +112,8 @@ class clsOptions {
             $Out_of_Availability_Count = htmlspecialchars(strip_tags($requestData['out_of_availability_count']));
         }
         
+        if($this->debug){echo "preparing query now.. var_dump: "; var_dump($requestData);}
+
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
@@ -109,22 +121,26 @@ class clsOptions {
         }
 
         
-        $query= "CALL PROC_UPSERT_ACCO(";
-//    IN `p_Accomodation_Key` VARCHAR(5),
-//    IN `p_Accomodation_Name` VARCHAR(100),
-//    IN `p_Accomodation_Capacity` INT(11),
-//    IN `p_Reserved_Count` INT(11),
-//    IN `p_Out_of_Availability_Count` INT(11),
-//    IN `p_Accomodation_Updated_By` VARCHAR(10)
-
+        $query= "CALL PROC_UPSERT_ACCO_W_EVENT(";
+        /*
+        IN `p_Accomodation_Key` VARCHAR(5), 
+        IN `p_Accommodation_Event` VARCHAR(10), 
+        IN `p_Accomodation_Name` VARCHAR(100), 
+        IN `p_Accomodation_Capacity` INT(11), 
+        IN `p_Reserved_Count` INT(11), 
+        IN `p_Out_of_Availability_Count` INT(11), 
+        IN `p_Accomodation_Updated_By` VARCHAR(10)
+        */
          $query = $query . "'" .
                 $Accommodation_Key . "', '" . 
+                $Accommodation_Event . "', '" . 
                 $Accommodation_Name . "', " . 
                 $Accomodation_Capacity . ", " . 
                 $Reserved_Count . ", " . 
                 $Out_of_Availability_Count . ", '" . 
                 $Accommodation_Record_Updated_By . "')" ; 
         
+        if($this->debug){echo $query;}
   // prepare query
         $stmt = $this->conn->prepare($query);
         
