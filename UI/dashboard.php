@@ -356,7 +356,7 @@ unset($sevaSearch);
             </div>
         </div>
         <div class="row">
-                <div class="col-lg-9 col-md-9 col-sm-9">
+                <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
                     <div class="card">
                         <div class="card-header card-header-primary">
                             <h4 class="card-title">
@@ -475,7 +475,7 @@ unset($sevaSearch);
                             </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-3 col-sm-3">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12">
                     <div class="card">
                         <div class="card-header card-header-primary">
                             <!-- <h4 class="card-title">Seva Assignment Counts </h4> -->
@@ -499,7 +499,7 @@ unset($sevaSearch);
                                 <th align='left'>
                                     Seva
                                 </th>
-                                <th align='left'>
+                                <th align='left' class="assign-devotees">
                                     Assigned Devotees 
                                 </th>
                                 </thead>
