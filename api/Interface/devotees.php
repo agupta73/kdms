@@ -444,6 +444,7 @@ Class Devotee {
                         . "`Devotee_First_Name` like :requestData OR "
                         . "`Devotee_Last_Name` like :requestData OR "
                         . "`Devotee_Station` like :requestData OR "
+                        . "`Devotee_ID_Number` like :requestData OR "
                         . "`Devotee_Cell_Phone_Number` like :requestData";
 
                 $stmt = $this->conn->prepare($query);
