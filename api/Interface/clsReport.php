@@ -222,8 +222,9 @@ class clsReport {
             return $res;
             die;
         }
-        
-        $query = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, d.devotee_cell_phone_number, dp.devotee_photo 
+        //concat('(',substr(num_cleansed,1,3),') ',substr(num_cleansed,4,3),'-',substr(num_cleansed,7)) AS num_formatted
+        $query = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, dp.devotee_photo,
+                        IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
                   FROM duty_location_master dlm 
                     LEFT OUTER JOIN office_duty od ON dlm.duty_location_key = od.Duty_Location_Key
                     LEFT OUTER JOIN devotee d ON od.devotee_key = d.devotee_key
