@@ -14,9 +14,11 @@ $config_data = include("../site_config.php");
 
 $eventId = $config_data['event_id'];
 
+/* //not needed anymore, since the card where this information is shown, is moved to MKreports
 $getReport = new clsReportHandler();
-//$response = $getReport->getAccommodationCounts();
 $response = $getReport->getAccommodationCounts($eventId);
+unset($getReport);
+*/
 if($debug){echo "eventId =: ", $config_data['event_id'], $_GET['sevaType'] ; var_dump($response);}
 
 $accoType = "All";
@@ -30,6 +32,7 @@ if (!empty($_GET['sevaType'])) {
     $sevaType = $_GET['sevaType'];
 }
 
+$getReport = new clsReportHandler();
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
 if($debug){echo "Accociation response =: " ; var_dump($AccoResponse);}

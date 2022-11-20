@@ -37,6 +37,12 @@ class clsReport {
             $eventId = "";
         }
 
+        if (!empty($requestData['key'])) {
+            $key = $requestData['key'];
+        } else {
+            $key = "";
+        }
+
         $status = true;
         if (!empty($requestData['type'])) {
             switch ($requestData['type']) {
@@ -49,7 +55,8 @@ class clsReport {
                     break;
                 
                 case "DutyReport": //Accommodation Counts
-                    return $this->getDutyReport($eventId);
+
+                    return $this->getDutyReport($key, $eventId);
                     
                     break;
 
@@ -196,7 +203,7 @@ class clsReport {
         return $devoteeResults;
     }
 
-    private function getDutyReport($eventId) {
+    private function getDutyReport($key="",$eventId) {
         
         $res = array();
         $res['status'] = false;
@@ -222,6 +229,10 @@ class clsReport {
                     LEFT OUTER JOIN devotee d ON od.devotee_key = d.devotee_key
                     LEFT OUTER JOIN devotee_photo dp ON d.devotee_key = dp.devotee_key
                   WHERE d.devotee_key IS NOT NULL AND od.duty_event =  '" . $eventId . "' ";
+
+        if($key != ""){
+            $query = $query . " AND dlm.duty_location_key = '" . $key . "'";
+        }
 
 
         if($this->debug){echo $query; }

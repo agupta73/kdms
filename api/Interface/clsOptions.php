@@ -415,6 +415,10 @@ class clsOptions {
                   return $this->getSevas($requestData['key'], $requestData['eventId']); //Since event ID is passed in 'key' in request
                 break;
 
+            case "dutyLocations":
+                return $this->getDutyLocations($requestData['key'], $requestData['eventId']); //Since event ID is passed in 'key' in request
+                break;
+
             case "Event":
                 return $this->getEvents();
                 break;
@@ -564,6 +568,47 @@ class clsOptions {
         
         return $Sevas;
     }
+
+    private function getDutyLocations($key = "", $eventId = ""){
+        //        $res = array();
+        //        $res['status'] = false;
+        //        $res['message'] = '';
+        //        $errormsg = "";
+        //        $status = true;
+                
+                
+                $query = "SELECT dlm.*  
+                            FROM `duty_location_master` dlm 
+                            WHERE 1=1 ";
+        
+                /* if($eventId != "") {
+                    $query = $query . " AND sa.seva_event = '" . $eventId . "'";
+                }
+        
+                if($key == "Assigned") {
+                    $query = $query . " AND sa.assigned_count > 0 ";
+                }
+                */
+        
+                if($this->debug){echo $query;}
+                $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+                
+                $Locations = array();
+                $i = 0;
+                while($row = $results->fetchObject()){
+                    //var_dump($row);
+                    $Locations[]=$row;
+                    $i = $i+1;
+                }
+                //var_dump($AccomodationDetail);
+                if($i==0){
+                    $Locations['status'] = false;
+                    $Locations['message'] = "Location records not found!";
+                    $Locations['info'] = $results;
+                }
+                
+                return $Locations;
+            }
 
     private function getEvents(){
 //        $res = array();
