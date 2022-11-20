@@ -691,11 +691,9 @@ $debug = false;
                                 <?php if ($devotee_key != "") { ?>
                                      <div class="card card-profile">
                                         <div class="card-body" style="height:80px;" >
-
                                             <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
                                                 Manage Amenities
                                             </button>
-
                                         </div>
                                     </div>
                                     <!--Modal Window for Amenity Management-->
@@ -715,17 +713,14 @@ $debug = false;
                                     <!--Modal Window for Participation Records-->
 
                                     <?php include_once("participationRecords.php"); ?>
-
                                     <!--END - Modal Window for Participation Records-->
                                 <?php } ?>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <footer class="footer">
-
-                </footer>
+                <!-- <footer class="footer">
+                </footer> -->
             </div>
         </div>
     </div>
