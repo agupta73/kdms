@@ -167,6 +167,9 @@ td .table-data{
 	.kdms-active-event {
 		display: block;
 	}
+	.kdms-modal {
+		max-width: 575px;
+	}
 }
 
 @media (min-width: 992px) {
@@ -187,11 +190,6 @@ td .table-data{
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	a.dash-link {
-		/* white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis; */
-	}
 	.card.card-stats {
 		min-height: 257px;
 	}
@@ -207,6 +205,9 @@ td .table-data{
 	.kdms-active-event {
 		display: none;
 	}
+	.kdms-modal {
+		max-width: 800px;
+	}	
 }
 
 @media (min-width: 1504px) {
