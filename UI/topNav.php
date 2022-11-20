@@ -53,6 +53,8 @@
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="upsertEventII.php">Manage Events</a>
             <a class="dropdown-item" href="#">Initalize Event</a>
+            <a class="dropdown-item" onclick="clickHandler('#myFormID', 1); return false;">Refresh Accommodation Counts</a>
+            <a class="dropdown-item" onclick="clickHandler('#myFormID', 2); return false;">Refresh Seva Counts</a>
           </div>
         </li>
       </ul>

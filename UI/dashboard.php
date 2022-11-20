@@ -259,7 +259,7 @@ unset($sevaSearch);
                 </form>
             </div>
         </div>
-        <div class="row">
+       <!-- <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="card card-stats">
                     <div class="card-header card-header-warning card-header-icon">
@@ -315,9 +315,9 @@ unset($sevaSearch);
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons text-danger">home</i>
+                            <i class="material-icons text-danger">home</i> -->
                             <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
-                            <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
+                            <!-- <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
                                 <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
                         </div> 
                     </div>
@@ -356,7 +356,7 @@ unset($sevaSearch);
                     </div>             
                 </form>
             </div>
-        </div>
+        </div> -->
         <div class="row">
                 <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
                     <div class="card">
