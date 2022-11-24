@@ -214,7 +214,7 @@ class clsReport {
         if (empty($eventId)) {
             $errormsg .= "Event ID is missing.";
             $status = false;
-        }
+        }       
         
         if ($status == false) {
             $res['status'] = $status;
@@ -222,6 +222,8 @@ class clsReport {
             return $res;
             die;
         }
+
+        if($this->debug){echo "key passed is: ", $key; }
         //concat('(',substr(num_cleansed,1,3),') ',substr(num_cleansed,4,3),'-',substr(num_cleansed,7)) AS num_formatted
         $query = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, dp.devotee_photo,
                         IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
@@ -232,7 +234,13 @@ class clsReport {
                   WHERE d.devotee_key IS NOT NULL AND od.duty_event =  '" . $eventId . "' ";
 
         if($key != ""){
-            $query = $query . " AND dlm.duty_location_key = '" . $key . "'";
+            $key = trim(urldecode($key));
+            if(substr($key, 0) == "," or substr($key, -1) == ",") {
+                $key = trim($key, ",");
+            }
+            $key = str_replace(",", "','", $key);
+
+            $query = $query . " AND dlm.duty_location_key IN ('" . $key . "')";
         }
 
 
