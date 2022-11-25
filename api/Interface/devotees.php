@@ -40,6 +40,10 @@ Class Devotee {
                             return $this->getDevoteeAmenityDetails($requestData['key'], $requestData['eventId']);
                     break;
 
+                    case "DPRO": //Depricated Devotee participation records (Old)
+                        return $this->getParticipationRecord($requestData['key']);
+                        break;
+
                     case "DPR": //Devotee participation records
                         return $this->getParticipationRecords($requestData['key']);
                         break;
@@ -733,6 +737,67 @@ Class Devotee {
     }
 
     private function getParticipationRecords($requestData){
+        $query = array();
+        $participationResults = array();
+
+
+        //1. Devotee Accommodation Records
+        $query[0] = "SELECT
+                        da.devotee_key,
+                        IFNULL(em.event_description, '--') as 'Event',
+                        IFNULL(am.accomodation_name, '--') as 'Accommodation' , 
+                        IFNULL(DATE_FORMAT(da.arrival_date_time, '%M %d %Y'), '--') as 'OccupiedOn', 
+                        IFNULL(DATE_FORMAT(da.Departure_Date_Time, '%M %d %Y'), '--') as 'VacatedOn',                         
+                        IFNULL(da.Accommodation_Event, '--') as 'EventID' 
+                    FROM
+                        devotee_accomodation da 
+                        LEFT OUTER JOIN accommodation_master am ON da.accomodation_key = am.Accomodation_Key                        
+                        LEFT OUTER JOIN event_master em ON da.Accommodation_Event = em.Event_id
+                    WHERE
+                        am.Accomodation_Name is not null   
+                            AND da.devotee_key = '" . $requestData . "'
+                    ORDER BY 
+                        da.arrival_date_time  DESC
+                        LIMIT 50";
+
+        //2. Devotee Seva Records
+        $query[1] = "SELECT
+                        ds.devotee_key,
+                        IFNULL(em.event_description, '--') as 'Event',
+                        IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
+                        IFNULL(DATE_FORMAT(ds.assignment_date_time, '%M %d %Y'), '--') as 'AssignedOn',
+                        IFNULL(ds.seva_event, '--') as 'EventID' 
+                    FROM
+                        devotee_seva ds 
+                        LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
+                        LEFT OUTER JOIN event_master em ON ds.seva_event = em.Event_id
+                    WHERE                        
+                        ds.devotee_key = '" . $requestData . "'
+                    ORDER BY 
+                        ds.assignment_date_time  DESC
+                        LIMIT 50 ";
+        
+
+
+        //3. Devotee Amenity Records
+       // $query[2] = "SELECT sum(acco.Available_Count) as AvailableSpaces FROM `Accommodation_Availability` acco where acco.Available_Count < 1000";
+
+
+        for ($i = 0; $i < sizeof($query); $i++) {
+            $results = $this->conn->query($query[$i], MYSQLI_USE_RESULT);
+            $devoteeParticipationResult = array();
+            $j = 0;
+            while($row = $results->fetchObject()){
+                $devoteeParticipationResult[]=$row;
+                $j = $j+1;
+            }
+            $participationResults[$i] = $devoteeParticipationResult;
+            if($this->debug){var_dump($row);}            
+        }
+
+        return $participationResults;
+    }
+    private function getParticipationRecord($requestData){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';

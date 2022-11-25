@@ -32,6 +32,12 @@ private $debug = false;
 
     public function getParticipationRecord() {
 
+        $response = $this->get_records_from_API($this->request['devotee_key'], "DPRO");
+        return $response;
+
+    }
+    public function getParticipationRecords() {
+
         $response = $this->get_records_from_API($this->request['devotee_key'], "DPR");
         return $response;
 

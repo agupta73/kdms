@@ -4,6 +4,8 @@
   include_once 'config/database.php';
   include_once 'Interface/devotees.php';
 
+  $debug = false;
+
   $database = new Database();
   $db = $database->getConnection();
 
@@ -14,6 +16,7 @@
    //die;
   try{
         $res=$devotee->search($requestData);
+        if($debug){var_dump($res);}
         if($requestData['mode'] != 'DYN'){
           echo json_encode($res);
         }

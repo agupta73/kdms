@@ -9,80 +9,102 @@
                 <div class="modal-body">
                     <div class="card">
                         <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12"> 
-                                    <?php
-                                    $PRResponse = $devoteeSearch->getParticipationRecord();
-                                    //var_dump($amenityResponse);die;
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <?php
+                                    $devoteeParicipationSearch = new clsDevoteeSearch($requestData);
+                                    $PRResponse = $devoteeParicipationSearch->getParticipationRecords();
+                                    unset($devoteeParicipationSearch);
+                                    //var_dump($PRResponse);
                                     if (!empty($PRResponse)) {
                                         if (empty($PRResponse['message'])) {
                                     ?>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class=" text-primary">
-                                                <th>
-                                                    Event
-                                                </th>
-                                                <th>
-                                                    Accommodation
-                                                </th>
-                                                <th>
-                                                    Occupied On
-                                                </th>
-                                                <th>
-                                                    Vacated On
-                                                </th>
-                                                <th>
-                                                    Seva
-                                                </th>
-                                                <th>
-                                                    Assigned On
-                                                </th>
-                                            </thead>
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="scrollbar-dash" id="style-6">
-                                                        <table class="table table-striped">
-                                                            <?php
-                                            foreach ($PRResponse as $key => $PRValue) {
-                                                print_r("<td style='width: 150px;font-size: small'>");
-                                                print_r(urldecode($PRValue['Event']));
-                                                print_r("</td><td style='width: 150px' >");
-                                                print_r(urldecode($PRValue['Accommodation']));
-
-                                                print_r("</td><td style='width: 150px' >");
-                                                print_r($PRValue['OccupiedOn']);
-
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['VacatedOn']);
-
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r(urldecode($PRValue['Seva']));
-
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['AssignedOn']);
-
-                                                print_r("</td>");
-                                                if ($key < count($PRResponse)) {
-                                                    print_r("</tr><tr>");
-                                                }
-                                            }
-                                                            ?> 
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <?php
-                                        } else { ?>
-                                    <table>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="text-primary">
+                                            <th> Event </th>
+                                            <th> Accommodation </th>
+                                            <th> Occupied On </th>
+                                            <th> Vacated On </th>                                            
+                                        </thead>
                                         <tr>
-                                            <td style="align-content: center">
-                                                No Participation so far..
+                                            <td colspan="12">
+                                                <div class="scrollbar-dash" id="style-6">
+                                                    <table class="table table-striped">
+                                                        <?php
+                                                        
+                                                            foreach ($PRResponse[0] as $PRValue) {
+                                                                //var_dump($PRValue);
+                                                                print_r("<td style='width: 150px;font-size: small'>");
+                                                                print_r(urldecode($PRValue['Event']));
+                                                                print_r("</td><td style='width: 150px' >");
+                                                                print_r(urldecode($PRValue['Accommodation']));
+
+                                                                print_r("</td><td style='width: 150px' >");
+                                                                print_r($PRValue['OccupiedOn']);
+
+                                                                print_r("</td><td><style='width: 150px'>");
+                                                                print_r($PRValue['VacatedOn']);
+
+                                                            /* print_r("</td><td><style='width: 150px'>");
+                                                                print_r(urldecode($PRValue['Seva']));
+
+                                                                print_r("</td><td><style='width: 150px'>");
+                                                                print_r($PRValue['AssignedOn']);
+                                                                */
+
+                                                                print_r("</td></tr><tr>");                                                
+                                                            }
+                                                                            ?>
+                                                    </table>
+                                                </div>
                                             </td>
                                         </tr>
                                     </table>
-                                    <?php
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="text-primary">
+                                            <th> Event </th>
+                                            <th> Seva </th>
+                                            <th> Assigned On </th>                                                                                
+                                        </thead>
+                                        <tr>
+                                            <td colspan="12">
+                                                <div class="scrollbar-dash" id="style-6">
+                                                    <table class="table table-striped">
+                                                        <?php
+                                                        
+                                                            foreach ($PRResponse[1] as $PRValue) {
+                                                                //var_dump($PRValue);
+                                                                print_r("<td style='width: 200px;font-size: small'>");
+                                                                print_r(urldecode($PRValue['Event']));
+                                                                
+                                                                print_r("</td><td style='width: 200px' >");                                                               
+                                                                print_r(urldecode($PRValue['Seva']));
+
+                                                                print_r("</td><td><style='width: 150px'>");
+                                                                print_r($PRValue['AssignedOn']);
+                                                                
+
+                                                                print_r("</td></tr><tr>");                                                
+                                                            }
+                                                                            ?>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <?php
+                                        } else { ?>
+                                <table>
+                                    <tr>
+                                        <td style="align-content: center">
+                                            No Participation so far..
+                                        </td>
+                                    </tr>
+                                </table>
+                                <?php
                                         }
                                     }
                                     if ($debug) {
