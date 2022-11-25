@@ -9,8 +9,12 @@
     $config_data=include_once("../site_config.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");
-
+    
+    $debug = false;
+    
     $requestData = $_GET;
+
+    $eventId = $config_data['event_id'];
     
     $amenity_key = "";
     $amenity_name="";
@@ -27,8 +31,11 @@
         
         $optionHandler = new clsOptionHandler("AmenityDetail");  
         $optionHandler->setOptionKey($requestData['amenity_key']);
+        $optionHandler->setEventId($eventId);
         $response = $optionHandler->getOptions();
        
+        if($debug) { var_dump($response); die;}
+
         //var_dump($response);die;
         //assign values
         if(!empty($response['Amenity_Key'])){
@@ -192,6 +199,7 @@ function validateInput(){
                        <div class="col-md-6"></div>
                        <div class="col-md-6" >
                     <input type="hidden" name="requestType" id="requestType" value="upsertAmenity">
+                    <input type="hidden" name="eventId" id="eventId" value="<?php print_r($eventId); ?>">
                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                        </div>

@@ -23,6 +23,9 @@ class clsOptions {
     
     public function upsertOption($requestData) {
         $option = "";
+
+       if($this->debug){var_dump($requestData);}
+
         $res = array();
         if(!empty($requestData['requestType'])){
             $option=$requestData['requestType'];
@@ -30,7 +33,7 @@ class clsOptions {
         else{
             $option = "not provided";
         }
-        
+         
         switch ($option) {
             case "upsertAcco": 
                 if($this->debug){var_dump($requestData);}
@@ -46,7 +49,7 @@ class clsOptions {
                 break;
             
             case "upsertAmenity": 
-                //print_r("Reaching upsert option");
+                
                 $res=$this->upsertAmenity($requestData);
                 break;
             
@@ -315,8 +318,11 @@ class clsOptions {
         $Out_of_Availability_Count=0;
         $Amenity_Record_Updated_By='Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
+        $eventId = "";
 
         
+        if($this->debug){ var_dump($requestData); }
+
         if (empty($requestData['amenity_key'])) {
             $errormsg .= " Amenity Key is missing.";
             $status = false;
@@ -325,6 +331,14 @@ class clsOptions {
             $Amenity_Key = htmlspecialchars(strip_tags($requestData['amenity_key']));
         }
         
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else{
+            $eventId = htmlspecialchars(strip_tags(trim($requestData['eventId'])));
+        }
+
         if (!empty($requestData['amenity_name'])) {
             $Amenity_Name = htmlspecialchars(strip_tags($requestData['amenity_name']));
         }
@@ -365,13 +379,16 @@ class clsOptions {
 
          $query = $query . "'" .
                 $Amenity_Key . "', '" . 
+                $eventId . "', '" . 
                 $Amenity_Name . "', '" . 
                 $Amenity_Status . "', " . 
                 $Amenity_Quantity . ", " . 
                 $Reserved_Count . ", " . 
                 $Out_of_Availability_Count . ", '" . 
                 $Amenity_Record_Updated_By . "')" ; 
-        //var_dump($query);
+        
+        
+        if($this->debug){ echo $query; }
   // prepare query
         $stmt = $this->conn->prepare($query);
         
@@ -459,7 +476,7 @@ class clsOptions {
             
             Case "AmenityDetail":                
                 if(!empty($requestData['option_type'])){
-                    return $this->getAmenityDetail($requestData['key']);
+                    return $this->getAmenityDetail($requestData['key'], $requestData['eventId']);
                 }
                 else {
                     $res['message'] = "Option key not provided";
@@ -478,7 +495,7 @@ class clsOptions {
                 break;
             
             Case "RefreshAmenity":                
-                return $this->refreshAmenities();
+                return $this->refreshAmenities($requestData['key']);
                 break;
             
             Case "RefreshSeva":                
@@ -770,7 +787,7 @@ class clsOptions {
 
         return $EventDetail;
     }
-    private function getAmenityDetail($amenityKey){
+    private function getAmenityDetail($amenityKey, $eventId = ""){
 //        $res = array();
 //        $res['status'] = false;
 //        $res['message'] = '';
@@ -778,13 +795,26 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, aa.Available_Count, 
+$query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, IFNULL(aa.Available_Count, 0) as Available_Count, 
+            IFNULL(aa.Allocated_Count, 0) as Allocated_Count, IFNULL(aa.Reserved_Count, 0) as Reserved_Count, 
+            IFNULL(aa.Out_Of_Availability_Count,0) as Out_Of_Availability_Count, IFNULL(aa.Available_Count, 0) as Available_Count
+        FROM `Amenity_Master` am 
+            LEFT OUTER JOIN Amenities_Availability aa ON am.amenity_key = aa.amenity_key ";
+            
+         if($eventId != ""){
+            $query = $query . "AND allocation_event = '" . $eventId . "'";
+         }
+            
+        
+         $query = $query . " WHERE am.amenity_key =  '" . $amenityKey . "'";
+
+/* $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, aa.Available_Count, 
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
             FROM `Amenity_Master` am 
             LEFT OUTER JOIN Amenities_Availability aa 
             ON am.amenity_key = aa.amenity_key 
             WHERE am.amenity_key = '" . $amenityKey . "'";
-        
+        */
         //var_dump($query);
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -827,13 +857,13 @@ class clsOptions {
         return $res;
     }
     
-    private function refreshAmenities(){
+    private function refreshAmenities($eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $res['info']='';
         
-        $query = "CALL PROC_REFRESH_AMENITY_COUNT()";
+        $query = "CALL PROC_REFRESH_AMENITIES_COUNT('" . $eventId . "')";
         $stmt = $this->conn->prepare($query);
         
          if ($stmt->execute()) {

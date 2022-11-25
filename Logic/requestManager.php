@@ -51,7 +51,7 @@ switch ($requestType) {
     case "upsertAmenity":
         //$url = "http://localhost/kdms/api/upsertDevotee.php";
 
-         $fields_as_post = ['amenity_key','amenity_name','amenity_status','available_count','allocated_count','amenity_quantity','reserved_count','out_of_availability_count','requestType'];
+         $fields_as_post = ['amenity_key','amenity_name','amenity_status','available_count','allocated_count','amenity_quantity','reserved_count','out_of_availability_count','requestType', 'eventId'];
 
         foreach ($fields_as_post as $fld) {
             //if (!empty($_POST[$fld])) {

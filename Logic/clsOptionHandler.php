@@ -45,7 +45,7 @@ class clsOptionHandler {
         switch ($this->optionType) {
 
             case "Amenity":
-            Case "Event":
+            case "Event":
                 $response = $this->getOptionsFromAPI($this->optionType, "");
                 break;
 

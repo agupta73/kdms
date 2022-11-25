@@ -584,16 +584,19 @@ END$$
 -- ///////////////////
 -- // Proc_upsert_Amenity
 -- /////////////////////
+DROP PROCEDURE `PROC_UPSERT_AMENITY`;
+
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PROC_UPSERT_AMENITY`
-(IN `p_Amenity_Key` VARCHAR
-(5), IN `p_Amenity_Name` VARCHAR
-(100), IN `p_Amenity_Status` VARCHAR
-(20), IN `p_Amenity_Quantity` INT
-(11), IN `p_Reserved_Count` INT
-(11), IN `p_Out_of_Availability_Count` INT
-(11), IN `p_Amenity_Updated_By` VARCHAR
-(10))
+CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_UPSERT_AMENITY`(
+IN `p_Amenity_Key` VARCHAR(5), 
+IN `p_Allocation_Event` VARCHAR(10), 
+IN `p_Amenity_Name` VARCHAR(100), 
+IN `p_Amenity_Status` VARCHAR(20), 
+IN `p_Amenity_Quantity` INT, 
+IN `p_Reserved_Count` INT, 
+IN `p_Out_of_Availability_Count` INT, 
+IN `p_Amenity_Updated_By` VARCHAR(10)
+)
 BEGIN
     REPLACE
 INTO `Amenity_Master`
@@ -617,6 +620,7 @@ REPLACE
 INTO `Amenities_Availability`
 (
     `Amenity_Key`,
+    `Allocation_Event`,
     `Reserved_Count`,
     `Out_of_Availability_Count`,
     `Availability_Update_Date_Time`,
@@ -625,14 +629,20 @@ INTO `Amenities_Availability`
 VALUES
 (
     p_Amenity_Key,
+    p_Allocation_Event,
     p_Reserved_Count,
     p_Out_of_Availability_Count,
     NOW(), p_Amenity_Updated_By) ;
 CALL
-    PROC_REFRESH_AMENITY_COUNT
-() ;
+    PROC_REFRESH_AMENITIES_COUNT(p_Allocation_Event);
+
     END$$
 DELIMITER ;
+
+
+-- /////////////////////////////////////////////////////////
+-- // PROC_UPSERT_EVENT
+-- ////////////////////////////////////////////////////////
 
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_UPSERT_EVENT`(IN `p_Event_Id` VARCHAR(10), IN `p_Event_Description` VARCHAR(50), IN `p_Event_Status` VARCHAR(10))
