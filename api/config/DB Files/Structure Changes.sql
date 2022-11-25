@@ -73,4 +73,31 @@ ALTER TABLE `kdms2022`.`office_duty`
 CHANGE COLUMN `Officer_Key` `Officer_Key` VARCHAR(25) NOT NULL ,
 CHANGE COLUMN `Duty_Event` `Duty_Event` VARCHAR(10) NOT NULL ;
 
+-- ////////////////////////////////////////////////////////////////////////////
+-- // Added allocation_event column in amenity_availability table
+-- //////////////////////////////////////////////////////////////////////////////
+ALTER TABLE `kdms2022`.`amenities_availability` 
+ADD COLUMN `Allocation_event` VARCHAR(10) NOT NULL AFTER `Amenity_Key`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`Amenity_Key`, `Allocation_event`);
 
+-- ////////////////////////////////////////////////////////////////////////////
+-- //Created amenity_availability_archive table
+-- //////////////////////////////////////////////////////////////////////////////
+CREATE TABLE `amenities_availability_archive` (
+  `Amenity_Key` varchar(5) NOT NULL,
+  `Allocation_event` varchar(10) NOT NULL,
+  `Allocated_Count` int NOT NULL DEFAULT '0' COMMENT 'Number of pieces are allocated',
+  `Reserved_Count` int NOT NULL DEFAULT '0' COMMENT 'Number of pieces reserved/blocked',
+  `Out_of_Availability_Count` int NOT NULL DEFAULT '0' COMMENT 'Number of pieces that cannot be allocated for any reason (lost/damaged)',
+  `Available_Count` int NOT NULL DEFAULT '0' COMMENT 'Pieces available to allocate',
+  `Availability_Update_Date_Time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time of Creation/modification of availability record',
+  `Availability_Updated_By` varchar(10) DEFAULT NULL COMMENT 'UserID of the logged in user at the time of availability record creation/modification',
+  PRIMARY KEY (`Amenity_Key`,`Allocation_event`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Added allocation_event column in devotee_amenities_allocation table and removed allocation year from it
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ALTER TABLE `kdms2022`.`devotee_amenities_allocation` 
+CHANGE COLUMN `Amenity_Allocation_Year` `Allocation_Event` VARCHAR(10) NOT NULL COMMENT 'Year/festival for which Amenity was allocated' ;
