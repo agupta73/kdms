@@ -68,10 +68,9 @@ switch ($requestType) {
     
     case "manageAmenity":
         
-        if (!empty($_POST['devotee_key'])) {
+        if (!empty($_POST['devotee_key']) AND !empty($_POST['eventId'])) {
             //print_r("reaching here..");
-                $devoteeHandler = new clsDevoteeHandler($_POST);
-                
+                $devoteeHandler = new clsDevoteeHandler($_POST);                
                 $response =  $devoteeHandler->manageAmenityAllocation();
             }
         

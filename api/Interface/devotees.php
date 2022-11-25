@@ -37,7 +37,7 @@ Class Devotee {
                     break;
                 
                     case "DAD": //Devotee Amenity Details 
-                            return $this->getDevoteeAmenityDetails($requestData['key']);
+                            return $this->getDevoteeAmenityDetails($requestData['key'], $requestData['eventId']);
                     break;
 
                     case "DPR": //Devotee participation records
@@ -657,16 +657,27 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteeAmenityDetails($requestData){
+    private function getDevoteeAmenityDetails($devoteeKey = "", $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
-        $status = true;
-        
-        if (empty($requestData)) {
-            $errormsg .= "Devotee keys for Amenity not supplied.";
+        $status = true;     
+
+        if ($devoteeKey == "") {
+            $errormsg .= "Devotee key not supplied.";
             $status = false;
+        }
+        else {
+            $devoteeKey = htmlspecialchars(strip_tags($devoteeKey));
+        }
+
+        if ($eventId == "") {
+            $errormsg .= "Event ID not supplied.";
+            $status = false;
+        }
+        else {
+            $eventId = htmlspecialchars(strip_tags($eventId));
         }
         
         if ($status == false) {
@@ -676,6 +687,14 @@ Class Devotee {
             die;
         }
        
+        $query = "SELECT  AM.Amenity_Key, AM.Amenity_Name, IFNULL(DAA.Amenity_Quantity,0) AS Amenity_Quantity, IFNULL(AA.Available_Count, 0) AS Available_Count 
+                    FROM Amenity_Master AM 
+                    LEFT OUTER JOIN Devotee_Amenities_Allocation DAA ON DAA.Amenity_key = AM.Amenity_key                         
+                        AND DAA.Amenity_Quantity <> 0 AND DAA.Devotee_Key = '" . $devoteeKey . "'  
+                        AND DAA.allocation_event = '" . $eventId . "' 
+                    LEFT OUTER JOIN Amenities_Availability AA ON AM.Amenity_Key = AA.Amenity_Key" ;
+                    // ORDER BY Amenity_Allocation_Date_Time DESC" ;
+        /*
         $query = "SELECT " .
                     "AM.`Amenity_Key`, " . 
                     "AM.`Amenity_Name`, " . 
@@ -693,7 +712,7 @@ Class Devotee {
                     "AM.Amenity_Key = AA.Amenity_Key " .
                 "ORDER BY " .
                     "`Amenity_Allocation_Date_Time` DESC" ;
-        
+        */
            // var_dump($query);
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
         
@@ -1175,6 +1194,7 @@ Class Devotee {
         $Amenity_Quantities="";
         $Amenity_Key = array();
         $Amenity_Quantity = array();
+        $eventId = "";
         
         if (empty($requestData['devotee_key'])) {
             $errormsg .= " Devotee Key is missing.";
@@ -1200,6 +1220,14 @@ Class Devotee {
             $Amenity_Quantities=htmlspecialchars(strip_tags($requestData['amenity_quantity']));
         }
         
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else{
+            $eventId=htmlspecialchars(strip_tags($requestData['eventId']));
+        }
+
         $Amenity_Key = explode(",", $Amenity_Keys);
         $Amenity_Quantity = explode(",", $Amenity_Quantities);
         
@@ -1207,18 +1235,19 @@ Class Devotee {
             if(!empty($Amenity_Key[$key]) && !empty($Amenity_Quantity[$key])){
                 $query = "CALL `PROC_MANAGE_AMENITY`( '" .
                     $Devotee_Key . "','" .
-                    $Amenity_Key[$key] . "'," .
+                    $Amenity_Key[$key] . "','" .
+                    $eventId . "'," .
                     $Amenity_Quantity[$key] . ",'" .
                     $Amenity_Managed_By . "')";
                 
                 $stmt = $this->conn->prepare($query);
                 if ($stmt->execute()) {                    
-                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", Amenity_Key: " . $Amenity_Key[$key] . " processed!" ;
+                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", EventId: " . $eventId . ", Amenity_Key: " . $Amenity_Key[$key] . " processed!" ;
                 }
                 else{
                     $res['status'] = false;
                     $res['message'] = "[Amenity Management] Adding/Removing Devotee Amenity failed at API!! Error Info: " . $query;
-                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", Amenity_Key: " . $Amenity_Key[$key] . " failed to process!" ;
+                    $res['info'] = $res['info'] . " Devotee_Key: " . $Devotee_Key . ", EventId: " . $eventId . ", Amenity_Key: " . $Amenity_Key[$key] . " failed to process!" ;
                 }
             }            
         }        

@@ -23,9 +23,9 @@ private $debug = false;
         return $response;
     }
 
-    public function getDevoteeAmenities() {
+    public function getDevoteeAmenities($eventId="") {
 
-        $response = $this->get_records_from_API($this->request['devotee_key'], "DAD");                
+        $response = $this->get_records_from_API($this->request['devotee_key'], "DAD", $eventId);                
         return $response;
         
     }

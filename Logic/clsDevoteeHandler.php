@@ -10,6 +10,7 @@ class clsDevoteeHandler {
 
     private $requestData = array();
     private $api_type = 1;
+    private $debug = false;
 
     //Removed hard coding of URL
     //private $url = "http://localhost/KDMS/api/upsertDevotee.php";
@@ -57,6 +58,13 @@ class clsDevoteeHandler {
         // Add or edit data
         if (!empty($this->requestData)) {
             $response = $this->curl_rest($this->url, true, $this->requestData);
+        }
+
+        if($this->debug) {
+            echo "clsDevoteeHandler:manageAmenityAllocation: Request => <br>"; 
+            var_dump($this->requestData);
+            echo "<br> Response => "; 
+            var_dump($response);
         }
         return $response;
     }
