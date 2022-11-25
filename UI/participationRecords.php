@@ -4,7 +4,7 @@
         <div class="modal-dialog kdms-modal" role="document">
             <div class="modal-content">
                 <div class="card-header card-header-primary">
-                    <h4 class="card-title">Accommodation & Seva Records</h4>
+                    <h4 class="card-title">Accommodation, Seva & Amenity     Records</h4>
                 </div>
                 <div class="modal-body">
                     <div class="card">
@@ -85,6 +85,35 @@
                                                                 print_r("</td><td><style='width: 150px'>");
                                                                 print_r($PRValue['AssignedOn']);
                                                                 
+
+                                                                print_r("</td></tr><tr>");                                                
+                                                            }
+                                                                            ?>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="text-primary">
+                                            <th> Event </th>
+                                            <th> Allocations </th>                                            
+                                        </thead>
+                                        <tr>
+                                            <td colspan="12">
+                                                <div class="scrollbar-dash" id="style-6">
+                                                    <table class="table table-striped">
+                                                        <?php
+                                                        
+                                                            foreach ($PRResponse[2] as $PRValue) {
+                                                                //var_dump($PRValue);
+                                                                print_r("<td style='width: 200px;font-size: small'>");
+                                                                print_r(urldecode($PRValue['Event']));
+                                                                
+                                                                print_r("</td><td style='width: 200px' >");                                                               
+                                                                print_r(urldecode($PRValue['Allocations']));
 
                                                                 print_r("</td></tr><tr>");                                                
                                                             }

@@ -780,7 +780,13 @@ Class Devotee {
 
 
         //3. Devotee Amenity Records
-       // $query[2] = "SELECT sum(acco.Available_Count) as AvailableSpaces FROM `Accommodation_Availability` acco where acco.Available_Count < 1000";
+        $query[2] = "SELECT em.event_description AS Event, GROUP_CONCAT(am.amenity_name, ' - ', da2.amenity_quantity ORDER BY am.amenity_name ASC SEPARATOR '; ' ) AS Allocations 
+                    FROM devotee_amenities_allocation da1 
+                    LEFT OUTER JOIN devotee_amenities_allocation da2 ON da1.amenity_key = da2.amenity_key  AND da1.devotee_key = da2.devotee_key AND da1.allocation_event = da2.allocation_event
+                    LEFT OUTER JOIN amenity_master am ON da1.amenity_key = am.amenity_key
+                    LEFT OUTER JOIN event_master em ON da1.allocation_event = em.event_id
+                    WHERE da1.devotee_key = '" .$requestData . "'
+                    GROUP BY da1.allocation_event ";
 
 
         for ($i = 0; $i < sizeof($query); $i++) {
