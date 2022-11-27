@@ -129,8 +129,9 @@ CREATE TABLE `kdms2022`.`devotee_remarks` (
   `remark_type` VARCHAR(15) NOT NULL DEFAULT 'MISC',
   `remark_event` VARCHAR(10) NOT NULL,
   `rating` INT NULL,
-  `remark` VARCHAR(100) NULL,
+  `remark` VARCHAR(250) NULL,
   `remark_update_date_time` DATETIME NULL,
   `remark_updated_by` VARCHAR(10) NULL,
   PRIMARY KEY (`devotee_key`, `remark_type`, `remark_event`));
-  
+
+

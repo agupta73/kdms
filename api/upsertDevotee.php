@@ -45,6 +45,17 @@ if (!empty($requestData['requestType'])) {
             }
             break;
 
+        case "upsertRemark":
+            if ($debug) {
+                var_dump($requestData);
+            }
+            $res = $devotee->upsertDevoteeRemark($requestData);
+            if ($debug) {
+                echo "from upsert devotee remark php, after calling upsertDevoteeRemark ";
+                var_dump($res);
+            }
+            break;
+
         default:
             $response = array('flag' => false, 'message' => "Request type not specified or incorrect", 'info' => $requestData['requestType']);
             break;

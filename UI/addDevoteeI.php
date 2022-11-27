@@ -620,18 +620,19 @@ $debug = false;
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                            <!-- <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Remarks</label>
                                                         <div class="form-group">
                                                             
-                                                            <!--<label class="bmd-label-floating"> Add additional Information</label>-->
+                                                            
                                                             <textarea class="form-control" rows="2" name="devotee_remarks" id="devotee_remarks"> <?php print_r($devotee_remarks); ?></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div><div class="row">
+                                            </div> -->
+                                            <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Feedback/Coments</label>
@@ -692,7 +693,7 @@ $debug = false;
                                      <div class="card card-profile">
                                         <div class="card-body" style="height:80px;" >
                                             <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
-                                                Manage Amenities
+                                                Issue/Return Amenities
                                             </button>
                                         </div>
                                     </div>
@@ -705,7 +706,21 @@ $debug = false;
                                         <div class="card-body" style="height:80px;" >
 
                                             <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
-                                                Participation Records
+                                                Display Participation Records
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                    <!--Modal Window for Participation Records-->
+
+                                    <?php include_once("remarks.php"); ?>
+                                    <!--END - Modal Window for Participation Records-->
+
+                                    <div class="card card-profile">
+                                        <div class="card-body" style="height:80px;" >
+
+                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#RemarksModalLong">
+                                                Provide Remarks
                                             </button>
 
                                         </div>

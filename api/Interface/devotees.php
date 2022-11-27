@@ -1352,10 +1352,119 @@ Class Devotee {
         return strtoupper($id);
     }
 
-    }
-
     function validateDate($date, $format = 'Y-m-d'){
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
     }
+
+    public function upsertDevoteeRemark($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $query = "";
+        $devoteeKey = "";
+        $remarkType = "MISC";
+        $remarkEvent = "";
+        $rating = "0";
+        $remark = "";
+        $remarkUpdateDateTime = date('Y-m-d H:i:s');
+        $remarkUpatedBy = "Unknown";
+
+        if (empty($requestData['remark_event'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        } else {
+            $remarkEvent = htmlspecialchars(strip_tags($requestData['remark_event']));
+        }
+
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= " Devotee Key is missing.";
+            $status = false;
+        } else {
+            $devoteeKey = htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+
+        if (!empty($requestData['remark_type'])) {
+            $remarkType = htmlspecialchars(strip_tags($requestData['remark_type']));
+        }
+
+        if (!empty($requestData['rating'])) {
+            $rating = htmlspecialchars(strip_tags($requestData['rating']));
+        }
+
+        if (!empty($requestData['remark'])) {
+            $remark = htmlspecialchars(strip_tags($requestData['remark']));
+        }
+
+        if (!empty($requestData['remark_updated_by'])) {
+            $remarkUpatedBy = htmlspecialchars(strip_tags($requestData['remark_updated_by']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $queryCheck = "SELECT rating, remark FROM devotee_remarks WHERE devotee_key = '" . $devoteeKey . "' AND remark_type = '" . $remarkType . "' AND remark_event = '" . $remarkEvent . "'";
+
+
+        if ($this->debug) {
+            var_dump($queryCheck);
+        }
+
+        $results = $this->conn->query($queryCheck, MYSQLI_USE_RESULT);
+
+        if (!empty($row = $results->fetchObject())) {
+            //if($row->{'rating'} <> $rating) {
+            $rating = ($rating + $row->{'rating'}) / 2;
+            //}
+
+            $tempAr = explode(' || ', $row->{'remark'});
+            $lastRem = $tempAr[sizeof($tempAr) - 1];
+
+            //if(trim($lastRem) <> trim("[" . $remarkUpatedBy . "] " . $remark)){
+            $remark = $row->{'remark'} . " || [" . $remarkUpatedBy . "] " . $remark;
+            //}
+            if ($this->debug) {
+                echo ">>>>> temp rating: ", $row->{'rating'}, "Last rem: ", $lastRem, "current Remark: ", $remark, "<<<<<";
+            }
+        }
+
+
+
+        $query = "REPLACE INTO devotee_remarks (devotee_key, remark_type, remark_event, rating, remark, remark_update_date_time, remark_updated_by) 
+                 VALUES (   '" . $devoteeKey . "' , 
+                    '" . $remarkType . "' , 
+                    '" . $remarkEvent . "' , 
+                    " . $rating . ", 
+                    '" . $remark . "',
+                    '" . $remarkUpdateDateTime . "', 
+                    '" . $remarkUpatedBy . "' )";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $devoteeKey;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Remark] Upserting Remarks Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+
+    }
+}
 ?>

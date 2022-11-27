@@ -1,10 +1,10 @@
     <form id="formAmenity">
-        <div class="modal fade" id="ParticipationModalLong" tabindex="-1" role="dialog"
+        <div class="modal fade" id="RemarksModalLong" tabindex="-1" role="dialog"
             aria-labelledby="exampleModalLongTitle" aria-hidden="true">
             <div class="modal-dialog kdms-modal" role="document">
                 <div class="modal-content">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title">Accommodation, Seva & Amenity Records</h4>
+                        <h4 class="card-title">Devotee Remarks</h4>
                     </div>
                     <div class="modal-body">
                         <div class="card">
