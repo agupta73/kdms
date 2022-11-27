@@ -36,14 +36,15 @@
     <div class="main-panel">
       <div class="content">
         <div class="container-fluid">
-          <div class="card">
-            <div class="card-header card-header-primary">
-              <h4 class="card-title">Accommodation Records</h4>
-            </div>
-            <div class="row">
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-hover">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Accommodation Records</h4>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover" >
                     <thead class=" text-primary">
                       <th>
                         Accommodation Key
@@ -68,83 +69,90 @@
                       </th>
                     </thead>
                     <tbody>
-                      
-                        <?php
-                         $recordCount = 0;
-                         if (!empty($response)) {
-                           foreach ($response as $accommodationRecord) {
-                             $accomodationKey = "--Unavailable--";
-                             $accomodationName = "--Unavailable--";
-                             $accomodationCapacity = "--";
-                             $reservedCount = "--";
-                             $outOfAvailabilityCount = "--";
-                             $allocatedCount = "--";
-                             $availableCount = "--";
+                      <tr>
+                        <td colspan="12">
+                          <div class="scrollbar-dash" id="style-6">
+                            <table class="table table-striped">
+                              <?php
+                              $recordCount = 0;
+                              if (!empty($response)) {
+                                foreach ($response as $accommodationRecord) {
+                                  $accomodationKey = "--Unavailable--";
+                                  $accomodationName = "--Unavailable--";
+                                  $accomodationCapacity = "--";
+                                  $reservedCount = "--";
+                                  $outOfAvailabilityCount = "--";
+                                  $allocatedCount = "--";
+                                  $availableCount = "--";
 
 
-                             if (!empty($accommodationRecord['accomodation_key'])) {
-                               $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
-                             }
+                                  if (!empty($accommodationRecord['accomodation_key'])) {
+                                    $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
+                                  }
 
-                             if (!empty($accommodationRecord['Accomodation_Name'])) {
-                               $accomodationName = urldecode($accommodationRecord['Accomodation_Name']);
-                             }
+                                  if (!empty($accommodationRecord['Accomodation_Name'])) {
+                                    $accomodationName = urldecode($accommodationRecord['Accomodation_Name']);
+                                  }
 
-                             if (!empty($accommodationRecord['Accomodation_Capacity'])) {
-                               $accomodationCapacity = urldecode($accommodationRecord['Accomodation_Capacity']);
-                             }
+                                  if (!empty($accommodationRecord['Accomodation_Capacity'])) {
+                                    $accomodationCapacity = urldecode($accommodationRecord['Accomodation_Capacity']);
+                                  }
 
-                             if (!empty($accommodationRecord['Reserved_Count'])) {
-                               $reservedCount = urldecode($accommodationRecord['Reserved_Count']);
-                             }
+                                  if (!empty($accommodationRecord['Reserved_Count'])) {
+                                    $reservedCount = urldecode($accommodationRecord['Reserved_Count']);
+                                  }
 
-                             if (!empty($accommodationRecord['Out_Of_Availability_Count'])) {
-                               $outOfAvailabilityCount = $accommodationRecord['Out_Of_Availability_Count'];
-                             }
+                                  if (!empty($accommodationRecord['Out_Of_Availability_Count'])) {
+                                    $outOfAvailabilityCount = $accommodationRecord['Out_Of_Availability_Count'];
+                                  }
 
-                             if (!empty($accommodationRecord['Allocated_Count'])) {
-                               $allocatedCount = $accommodationRecord['Allocated_Count'];
-                             }
+                                  if (!empty($accommodationRecord['Allocated_Count'])) {
+                                    $allocatedCount = $accommodationRecord['Allocated_Count'];
+                                  }
 
-                             if (!empty($accommodationRecord['Available_Count'])) {
-                               $availableCount = $accommodationRecord['Available_Count'];
-                             }
+                                  if (!empty($accommodationRecord['Available_Count'])) {
+                                    $availableCount = $accommodationRecord['Available_Count'];
+                                  }
 
-                             if ($accomodationKey != "--Unavailable--") {
-                               $recordCount = $recordCount + 1;
-                               print_r("
-                             <tr>
-                             <td>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
-                             </td>
-                             <td>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
-                             </td>
-                             <td align='right'>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
-                             </td>
-                               <td align='right'>
-                                   <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
-                             </td>
-                             <td align='right'>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
-                             </td>
-                             <td align='right'>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
-                             </td>
-                             <td align='right'>
-                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
-                             </td>
-                             </tr>
-                             ");
+                                  if ($accomodationKey != "--Unavailable--") {
+                                    $recordCount = $recordCount + 1;
+                                    print_r("
+                                  <tr>
+                                  <td>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
+                                  </td>
+                                  <td>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                                  </td>
+                                  <td align='right'>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
+                                  </td>
+                                    <td align='right'>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                                  </td>
+                                  <td align='right'>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                  </td>
+                                  <td align='right'>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                                  </td>
+                                  <td align='right'>
+                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                                  </td>
+                                  </tr>
+                                  ");
 
-                             }
-                           }
-                         }
-                         ?>
+                                  }
+                                }
+                              }
+                              ?>
+                              </table>
+                            </div>
+                          </td>
+                      </tr>
                     </tbody>
                   </table>
-                
+                </div>
               </div>
             </div>
           </div>
