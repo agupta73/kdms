@@ -124,6 +124,35 @@
                                         </tr>
                                     </table>
                                 </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="text-primary">
+                                            <th> Event </th>
+                                            <th> Remarks </th>                                            
+                                        </thead>
+                                        <tr>
+                                            <td colspan="12">
+                                                <div class="scrollbar-dash" id="style-6">
+                                                    <table class="table table-striped">
+                                                        <?php
+                                                        
+                                                            foreach ($PRResponse[3] as $PRValue) {
+                                                                //var_dump($PRValue);
+                                                                print_r("<td style='width: 120px;font-size: small'>");
+                                                                print_r(urldecode($PRValue['Event']));
+                                                                
+                                                                print_r("</td><td style='width: 280px' >");                                                               
+                                                                print_r(str_replace('||', '<br>', urldecode($PRValue['Remarks'])));
+
+                                                                print_r("</td></tr><tr>");                                                
+                                                            }
+                                                                            ?>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                                 <?php
                                         } else { ?>
                                 <table>

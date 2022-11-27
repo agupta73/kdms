@@ -789,6 +789,14 @@ Class Devotee {
                     GROUP BY da1.allocation_event ";
 
 
+        //4. Devotee Remarks 
+        $query[3] = "SELECT em.event_description AS Event, group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' || ') AS Remarks 
+                    FROM devotee_remarks dr
+                    LEFT OUTER JOIN event_master em ON dr.remark_event = em.event_id
+                    WHERE dr.devotee_key = '" .$requestData . "'
+                    GROUP BY dr.remark_event
+                    ORDER BY em.event_description DESC ";
+
         for ($i = 0; $i < sizeof($query); $i++) {
             $results = $this->conn->query($query[$i], MYSQLI_USE_RESULT);
             $devoteeParticipationResult = array();
