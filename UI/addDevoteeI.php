@@ -4,7 +4,7 @@
 
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
-$debug = false;
+$debug = false  ;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +47,10 @@ $debug = false;
         $devotee_photo = "";
         $devotee_id_image = "";
         $eventId = $config_data['event_id'];
+        $userId = $_SESSION["LoginID"];
+        $remarkSubmitted = false;
+
+        if($debug) {echo "User ID: ", $userId; }
 
         //load accommodation options and available spots
         $loadAccommodation = new clsOptionHandler("Accommodation");
@@ -202,7 +206,7 @@ $debug = false;
                         data: formData,
                         async: false,
                         success: function (response) {
-                            //console.log(response);
+                            console.log(response);
                                 
                             r = JSON.parse(response);
 
@@ -218,7 +222,7 @@ $debug = false;
                     });
                     //Save and stay on the record
                     if (flag == 1 && updateSuccess) {
-                        alert("Devotee record updated successfully!");
+                        alert("Devotee record updated successfully!");                        
                         window.location.assign("<?=$config_data['webroot'];?>UI/addDevoteeI.php?devotee_key=" + r['info']);
                     }
                     //save and Print
@@ -319,6 +323,7 @@ $debug = false;
     </head>
 
     <body class="">
+    <link href="../assets/demo/demo.css" rel="stylesheet" />
         <div class="wrapper ">
             <?php
             include_once("nav.php");

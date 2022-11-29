@@ -1,182 +1,139 @@
-    <form id="formAmenity">
-        <div class="modal fade" id="RemarksModalLong" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-            <div class="modal-dialog kdms-modal" role="document">
-                <div class="modal-content">
-                    <div class="card-header card-header-primary">
-                        <h4 class="card-title">Devotee Remarks</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="card">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <?php
-                                    $devoteeParicipationSearch = new clsDevoteeSearch($requestData);
-                                    $PRResponse = $devoteeParicipationSearch->getParticipationRecords();
-                                    unset($devoteeParicipationSearch);
-                                    //var_dump($PRResponse);
-                                    if (!empty($PRResponse)) {
-                                        if (empty($PRResponse['message'])) {
-                                    ?>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class="text-primary">
-                                                <th> Event </th>
-                                                <th> Accommodation </th>
-                                                <th> Occupied On </th>
-                                                <th> Vacated On </th>
-                                            </thead>
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="scrollbar-dash" id="style-6">
-                                                        <table class="table table-striped">
-                                                            <?php
 
-                                            foreach ($PRResponse[0] as $PRValue) {
-                                                //var_dump($PRValue);
-                                                print_r("<td style='width: 150px;font-size: small'>");
-                                                print_r(urldecode($PRValue['Event']));
-                                                print_r("</td><td style='width: 150px' >");
-                                                print_r(urldecode($PRValue['Accommodation']));
-
-                                                print_r("</td><td style='width: 150px' >");
-                                                print_r($PRValue['OccupiedOn']);
-
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['VacatedOn']);
-
-                                                /* print_r("</td><td><style='width: 150px'>");
-                                                print_r(urldecode($PRValue['Seva']));
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['AssignedOn']);
-                                                */
-
-                                                print_r("</td></tr><tr>");
-                                            }
-                                                            ?>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+<div class="modal fade" id="RemarksModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog kdms-modal" role="document">
+        <div class="modal-content">
+            <form id="remarkForm">
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="col-md-12">
+                            <div class="card-header card-header-primary">
+                                <h4 class="card-title">Add Remarks</h4>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="bmd-label-floating">Remark Type </label>
+                                                <select type="text" class="form-control" name="remark_type"
+                                                    id="remark_type" value="MISC">
+                                                    <option value="MISC" selected>Miscellenous</option>
+                                                    <option value="ATTENDANCE">Attendance</option>
+                                                    <option value="ACCOMMODATION">Accommodation</option>
+                                                    <option value="SEVA">Seva</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="bmd-label-floating">Rating </label>
+                                                <select type="text" class="form-control" name="rating" id="rating"
+                                                    value="5">
+                                                    <option value="5" selected>Excellent</option>
+                                                    <option value="4">Very Good</option>
+                                                    <option value="3">Good</option>
+                                                    <option value="2">Fair</option>
+                                                    <option value="1">Can be better</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class="text-primary">
-                                                <th> Event </th>
-                                                <th> Seva </th>
-                                                <th> Assigned On </th>
-                                            </thead>
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="scrollbar-dash" id="style-6">
-                                                        <table class="table table-striped">
-                                                            <?php
-
-                                            foreach ($PRResponse[1] as $PRValue) {
-                                                //var_dump($PRValue);
-                                                print_r("<td style='width: 200px;font-size: small'>");
-                                                print_r(urldecode($PRValue['Event']));
-
-                                                print_r("</td><td style='width: 200px' >");
-                                                print_r(urldecode($PRValue['Seva']));
-
-                                                print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['AssignedOn']);
-
-
-                                                print_r("</td></tr><tr>");
-                                            }
-                                                            ?>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="bmd-label-floating">Remark (Optional) </label>
+                                                <textarea class="form-control" rows="1" name="remark"
+                                                    id="remark"> </textarea>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class="text-primary">
-                                                <th> Event </th>
-                                                <th> Allocations </th>
-                                            </thead>
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="scrollbar-dash" id="style-6">
-                                                        <table class="table table-striped">
-                                                            <?php
-
-                                            foreach ($PRResponse[2] as $PRValue) {
-                                                //var_dump($PRValue);
-                                                print_r("<td style='width: 200px;font-size: small'>");
-                                                print_r(urldecode($PRValue['Event']));
-
-                                                print_r("</td><td style='width: 200px' >");
-                                                print_r(urldecode($PRValue['Allocations']));
-
-                                                print_r("</td></tr><tr>");
-                                            }
-                                                            ?>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class="text-primary">
-                                                <th> Event </th>
-                                                <th> Remarks </th>
-                                            </thead>
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="scrollbar-dash" id="style-6">
-                                                        <table class="table table-striped">
-                                                            <?php
-
-                                            foreach ($PRResponse[3] as $PRValue) {
-                                                //var_dump($PRValue);
-                                                print_r("<td style='width: 120px;font-size: small'>");
-                                                print_r(urldecode($PRValue['Event']));
-
-                                                print_r("</td><td style='width: 280px' >");
-                                                print_r(str_replace('||', '<br>', urldecode($PRValue['Remarks'])));
-
-                                                print_r("</td></tr><tr>");
-                                            }
-                                                            ?>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <?php
-                                        } else { ?>
-                                    <table>
-                                        <tr>
-                                            <td style="align-content: center">
-                                                No Participation so far..
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <?php
-                                        }
-                                    }
-                                    if ($debug) {
-                                        var_dump($PRResponse);
-                                        die;
-                                    }
-                                    ?>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                    </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="requestType" id="requestType" value="upsertRemark">
+                    <input type="hidden" name="eventId" id="eventId" value="<?php echo $eventId; ?>">
+                    <input type="hidden" name="userId" id="userId" value="<?php echo $userId; ?>">
+                    <input type="hidden" id="devotee_key" name="devotee_key" value="<?php print_r($devotee_key); ?>">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="save-amenity" type="button" class="btn btn-primary"
+                        onclick="submitRemark('#remarkForm'); return false;">Submit Remark</button>                    
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+</div>
+
+<script>
+
+    //javascript function for ajax call
+    function submitRemark(formId) {
+        var formData = $(formId).serialize();
+        //alert(formData);
+        if (validateInput()) {
+            $.ajax({
+                url: '<?= $config_data['webroot'] ?>Logic/requestManager.php',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    // alert(response);
+                    var r = JSON.parse(response);
+
+                    if (r['flag'] == true) {
+                        //alert("Remark submitted successfully!");
+                        //clearRemarkForm(formId);  
+                        demo.showCustomAlert('bottom','center', 'success', 'Remark submitted successfully!');
+                    } else {
+                        demo.showCustomAlert('bottom','center', 'danger', r['message']);
+                        //alert(r['message']);
+                        updateSuccess = false;
+                    }
+                }
+            });
+        }
+
+        //   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
+        //   document.getElementById("myForm").method = "POST";
+        //   document.getElementById(formId).submit();
+
+    }
+
+    function clearRemarkForm(formId) {
+        for (i = 0; i < document.getElementById(formId).length; i++) {
+            /* if (document.getElementById(formId)[i].type == "text") {
+                document.getElementById(formId)[i].value = "";        
+            } */
+            strID = document.getElementById(formId)[i].id;
+            strLabelID = "";
+            if (strID.substring(0, 1) == "I" && document.getElementById(strID).value.trim().length != 0) {
+                strLabelID = strID.replace("I", "L");
+                document.getElementById(strLabelID).value = parseInt(document.getElementById(strLabelID).value) + parseInt(document.getElementById(strID).value);
+                document.getElementById(strID).value = "";
+            }
+            else if (strID.substring(0, 1) == "R" && document.getElementById(strID).value.trim().length != 0) {
+                strLabelID = strID.replace("R", "L");
+                document.getElementById(strLabelID).value = parseInt(document.getElementById(strLabelID).value) - parseInt(document.getElementById(strID).value);
+                document.getElementById(strID).value = "";
+            }
+        }
+    }
+
+    function validateRemark(formId) {
+        var valueEntered = false;
+        var valueNonNumber = false;
+
+        for (i = 0; i < document.getElementById(formId).length; i++) {
+            if (document.getElementById(formId)[i].type == "text") {
+                if (document.getElementById(formId)[i].value.trim().length == 0) {
+                    alert("Please enter number to issue or return amenity.");
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+    }
+</script>

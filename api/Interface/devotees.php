@@ -924,7 +924,7 @@ Class Devotee {
         if (empty($requestData['devotee_dob'])){
             $Devotee_DOB="1900-01-01";
         }
-        elseif (validateDate(htmlspecialchars(strip_tags($requestData['devotee_dob'])))) {
+        elseif ($this->validateDate(htmlspecialchars(strip_tags($requestData['devotee_dob'])))) {
 
             $Devotee_DOB=htmlspecialchars(strip_tags($requestData['devotee_dob']));
         }
@@ -1352,7 +1352,7 @@ Class Devotee {
         return strtoupper($id);
     }
 
-    function validateDate($date, $format = 'Y-m-d'){
+    public function validateDate($date, $format = 'Y-m-d'){
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
     }
@@ -1375,11 +1375,12 @@ Class Devotee {
         $remarkUpdateDateTime = date('Y-m-d H:i:s');
         $remarkUpatedBy = "Unknown";
 
-        if (empty($requestData['remark_event'])) {
+
+        if (empty($requestData['eventId'])) {
             $errormsg .= " Event ID is missing.";
             $status = false;
         } else {
-            $remarkEvent = htmlspecialchars(strip_tags($requestData['remark_event']));
+            $remarkEvent = htmlspecialchars(strip_tags($requestData['eventId']));
         }
 
         if (empty($requestData['devotee_key'])) {
@@ -1401,8 +1402,13 @@ Class Devotee {
             $remark = htmlspecialchars(strip_tags($requestData['remark']));
         }
 
-        if (!empty($requestData['remark_updated_by'])) {
-            $remarkUpatedBy = htmlspecialchars(strip_tags($requestData['remark_updated_by']));
+        if (!empty($requestData['userId'])) {
+            $remarkUpatedBy = htmlspecialchars(strip_tags($requestData['userId']));
+        }
+
+        if ($this->debug) {
+            echo "reaching here..";
+            echo $status, " ", $errormsg; 
         }
 
         if ($status == false) {
@@ -1415,25 +1421,31 @@ Class Devotee {
 
 
         if ($this->debug) {
-            var_dump($queryCheck);
+            echo "reaching here..";
+            var_dump($queryCheck); 
         }
 
         $results = $this->conn->query($queryCheck, MYSQLI_USE_RESULT);
 
         if (!empty($row = $results->fetchObject())) {
-            //if($row->{'rating'} <> $rating) {
+            if($row->{'rating'} <> $rating) {
             $rating = ($rating + $row->{'rating'}) / 2;
-            //}
+            }
 
             $tempAr = explode(' || ', $row->{'remark'});
             $lastRem = $tempAr[sizeof($tempAr) - 1];
 
-            //if(trim($lastRem) <> trim("[" . $remarkUpatedBy . "] " . $remark)){
-            $remark = $row->{'remark'} . " || [" . $remarkUpatedBy . "] " . $remark;
-            //}
-            if ($this->debug) {
-                echo ">>>>> temp rating: ", $row->{'rating'}, "Last rem: ", $lastRem, "current Remark: ", $remark, "<<<<<";
+            if($this->debug){echo "\n from UpsertDevoteeRemark: \n  Last remark: ", $lastRem, "\n current Remark: ", trim("[" . $remarkUpatedBy . "] " . $remark , "\n \n <<") ;}
+            if(trim($lastRem) <> trim("[" . $remarkUpatedBy . "] " . $remark)){
+                $remark = $row->{'remark'} . " || [" . $remarkUpatedBy . "] " . $remark;
             }
+            else{
+                $remark = $row->{'remark'} ;
+            }
+            
+        }
+        else {
+            $remark = "[" . $remarkUpatedBy . "] " . $remark;
         }
 
 
@@ -1444,10 +1456,11 @@ Class Devotee {
                     '" . $remarkEvent . "' , 
                     " . $rating . ", 
                     '" . $remark . "',
-                    '" . $remarkUpdateDateTime . "', 
+                    NOW(), 
                     '" . $remarkUpatedBy . "' )";
 
         if ($this->debug) {
+           echo "\n >>";
             var_dump($query);
         }
         // prepare query

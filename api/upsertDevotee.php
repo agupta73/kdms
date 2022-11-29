@@ -47,6 +47,7 @@ if (!empty($requestData['requestType'])) {
 
         case "upsertRemark":
             if ($debug) {
+                echo "from upsert devotee remark php, BEFORE calling upsertDevoteeRemark ";
                 var_dump($requestData);
             }
             $res = $devotee->upsertDevoteeRemark($requestData);

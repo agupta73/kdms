@@ -69,6 +69,21 @@ class clsDevoteeHandler {
         return $response;
     }
 
+    public function upsertRemark() {
+        $response = array();
+        // Add or edit data
+        if (!empty($this->requestData)) {
+            $response = $this->curl_rest($this->url, true, $this->requestData);
+        }
+
+        if($this->debug) {
+            echo "clsDevoteeHandler:upsertRemark: Request => <br>"; 
+            var_dump($this->requestData);
+            echo "<br> Response => "; 
+            var_dump($response);
+        }
+        return $response;
+    }
     private function curl_rest($url, $is_post = true, $post_fields = null, $request_type = null) {
 
         //open connection

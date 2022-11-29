@@ -251,6 +251,25 @@ demo = {
         align: align
       }
     });
+  },
+
+  showCustomAlert: function(from, align, pType, pMessage) {
+    //type = ['', 'info', 'danger', 'success', 'warning', 'rose', 'primary'];
+
+    //color = Math.floor((Math.random() * 6) + 1);
+
+    $.notify({
+      icon: "add_alert",
+      message: pMessage
+
+    }, {
+      type: pType,
+      timer: 2000,
+      placement: {
+        from: from,
+        align: align
+      }
+    });
   }
 
 }
