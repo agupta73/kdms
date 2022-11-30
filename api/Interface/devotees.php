@@ -634,8 +634,15 @@ Class Devotee {
         $query = $query . " left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
-        if(($requestData != "") and ($requestData != "All")){
-            $query = $query . " AND ds.Seva_ID = '" . $requestData . "'" ;
+        if(($requestData != "") and ($requestData != "All")){            
+                $requestData = trim(urldecode($requestData));
+                if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
+                    $key = trim($requestData, ",");
+                }
+                $requestData = str_replace(",", "','", $requestData);
+
+            //$query = $query . " AND ds.Seva_ID = '" . $requestData . "'" ;
+            $query = $query . " AND ds.Seva_ID IN ('" . $requestData . "')" ;
         }
         $query = $query . " ORDER BY ds.Seva_ID Desc" ;
 
