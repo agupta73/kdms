@@ -114,6 +114,11 @@ class clsReport {
                         " AND aa.Allocated_Count > 0 ";
                 break;
 
+            case "Allocated":
+                $query = $query .                        
+                        " aa.Allocated_Count > 0 ";
+                break;
+
             default:
                 $query = $query .
                         " aa.Available_Count <= 1000" ;
