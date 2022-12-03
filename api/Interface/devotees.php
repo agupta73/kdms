@@ -532,13 +532,14 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForAccommodation($requestData, $eventId = ""){
+    private function getDevoteesForAccommodation($requestData = "", $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
-        $status = true;
+        $status = false;
         
+        /*
         if (empty($requestData)) {
             $errormsg .= "Accommodation keys not supplied.";
             $status = false;
@@ -563,12 +564,35 @@ Class Devotee {
                      left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
                      left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
 
+*/
+
+        $query = "SELECT 
+                    d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) AS Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , acm.accomodation_name                     
+                 FROM 
+                    Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
+
         if($eventId <> "") {
             $query = $query . " AND da.Accommodation_event = '" . $eventId . "' ";
         }
 
-        $query = $query . " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key 
-                 where da.Accomodation_key = '" . $requestData . "' ORDER BY da.Devotee_Accomodation_update_date_time Desc" ;
+        $query = $query . " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key ";
+
+        if($requestData != ""){
+            $requestData = trim(urldecode($requestData));
+            if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
+                $requestData = trim($requestData, ",");
+            }
+            $requestData = str_replace(",", "','", $requestData);
+            $query = $query . " WHERE da.Accomodation_key IN ('" . $requestData . "') ORDER BY da.accomodation_key DESC"; 
+        }
+        else {
+            $query = $query . " ORDER BY da.accomodation_key ASC" ;
+        }
 
         if($this->debug){
             var_dump($query);die;
@@ -580,8 +604,8 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            //$row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            //$row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
             $devoteeSearchResult[]=$row;
             $i = $i+1;
         }
