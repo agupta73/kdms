@@ -537,21 +537,21 @@ Class Devotee {
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
-        $status = false;
-        
-        /*
-        if (empty($requestData)) {
-            $errormsg .= "Accommodation keys not supplied.";
-            $status = false;
+        $status = true;
+                
+        if ($eventId == "") {
+            $errormsg .= "Event ID not supplied.";
+            $status = false;           
         }
-        
+       
+                
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
             return $res;
             die;
         }
-       
+       /*
         $query = "select 
                     d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
                     , d.devotee_station, d.devotee_cell_phone_number 
@@ -567,21 +567,29 @@ Class Devotee {
 */
 
         $query = "SELECT 
-                    d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) AS Devotee_Name 
-                    , d.devotee_station, d.devotee_cell_phone_number 
-                    , acm.accomodation_name                     
+                    d.devotee_key
+                    , CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) AS Devotee_Name 
+                    , REPLACE(REPLACE(IFNULL(CONCAT(d.devotee_address_1, ', ', d.devotee_address_2, ', ', d.devotee_station, ', ', d.devotee_state, '-', d.devotee_zip, ', ', d.devotee_country), '--'), '+', ' '), ', ,', ',') AS Devotee_address
+                    , d.devotee_station
+                    , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
+                    , acm.accomodation_name   
+                    , da.accomodation_key
+                    , DATE_FORMAT(da.arrival_date_time,'%d/%m/%Y') AS arrival_date_time 
+                    , IF (d.devotee_gender = 'M', 'Male', IF (d.devotee_gender = 'F', 'Female', d.devotee_gender)) AS devotee_gender
+                    , d.devotee_id_type
+                    , d.devotee_id_number
+                    , IFNULL(d2a.allocations, '--') AS allocations
+                    , IFNULL(dr1.remarks, '--') AS remarks
                  FROM 
                     Devotee d 
-                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
-                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
+                    -- left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
+                    -- left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
+                    left outer join (SELECT daa.devotee_key, daa.allocation_event, GROUP_CONCAT(daa.amenity_key, ' - ', daa.amenity_quantity ORDER BY daa.amenity_key ASC SEPARATOR '; ' ) AS Allocations FROM devotee_amenities_allocation daa WHERE daa.allocation_event = '" . $eventId. "' GROUP BY daa.allocation_event, daa.devotee_key) d2a ON d.Devotee_Key=d2a.devotee_key 
+                    left outer join (SELECT dr.remark_event, dr.devotee_key, group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' || ') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
+                    left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
+                    left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key AND da.Accommodation_event = '" . $eventId . "'";
 
-        if($eventId <> "") {
-            $query = $query . " AND da.Accommodation_event = '" . $eventId . "' ";
-        }
-
-        $query = $query . " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key ";
-
+                    
         if($requestData != ""){
             $requestData = trim(urldecode($requestData));
             if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
@@ -591,7 +599,7 @@ Class Devotee {
             $query = $query . " WHERE da.Accomodation_key IN ('" . $requestData . "') ORDER BY da.accomodation_key DESC"; 
         }
         else {
-            $query = $query . " ORDER BY da.accomodation_key ASC" ;
+            $query = $query . " WHERE da.Accomodation_key IS NOT NULL ORDER BY da.accomodation_key ASC" ;
         }
 
         if($this->debug){
