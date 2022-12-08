@@ -585,7 +585,7 @@ Class Devotee {
                     -- left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
                     -- left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
                     left outer join (SELECT daa.devotee_key, daa.allocation_event, GROUP_CONCAT(daa.amenity_key, ' - ', daa.amenity_quantity ORDER BY daa.amenity_key ASC SEPARATOR '; ' ) AS Allocations FROM devotee_amenities_allocation daa WHERE daa.allocation_event = '" . $eventId. "' GROUP BY daa.allocation_event, daa.devotee_key) d2a ON d.Devotee_Key=d2a.devotee_key 
-                    left outer join (SELECT dr.remark_event, dr.devotee_key, group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' || ') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
+                    left outer join (SELECT dr.remark_event, dr.devotee_key, replace(group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' <br> '), '||', '<br>') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
                     left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key AND da.Accommodation_event = '" . $eventId . "'";
 
