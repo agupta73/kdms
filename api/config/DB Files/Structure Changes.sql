@@ -134,4 +134,17 @@ CREATE TABLE `kdms2022`.`devotee_remarks` (
   `remark_updated_by` VARCHAR(10) NULL,
   PRIMARY KEY (`devotee_key`, `remark_type`, `remark_event`));
 
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Added table devotee_attendance
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CREATE TABLE `kdms_gold_2022`.`devotee_attendance` (
+  `devotee_key` varchar(10) NOT NULL,
+  `seva_id` varchar(6) NOT NULL DEFAULT 'UN',
+  `attendance_date` date NOT NULL,
+  `rating` int DEFAULT 1,
+  `remark` varchar(250) DEFAULT NULL,
+  `attendance_update_date_time` datetime DEFAULT NULL,
+  `attendance_updated_by` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`devotee_key`,`seva_id`,`attendance_date`)
+) 
 

@@ -60,6 +60,10 @@ Class Devotee {
                             return $this->getDevoteesForSeva($requestData['key'], $requestData['eventId']);
                     break;
 
+                    case "DSA": //Devotees Seva Attendance
+                            return $this->getDevoteesAttendance($requestData['key'], $requestData['eventId']);
+                    break;
+
                     default :
                         return $this->getDetails($requestData['key']);                    
                     break;
@@ -700,6 +704,81 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
+    private function getDevoteesAttendance($requestData, $eventId = ""){
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        /* //Seva ID can be empty now, meaning all sevas
+        if (empty($requestData)) {
+            $errormsg .= "Seva id not supplied.";
+            $status = false;
+        }
+        
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        */
+       
+        $query = "select " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station, d.devotee_cell_phone_number ";
+                    //, did.Devotee_ID_Image 
+        $query = $query . ", dp.Devotee_Photo  
+                    , sm.Seva_description
+                    , IFNULL(da.rating, 'Unknown') AS attendance
+                 from 
+                     Devotee d ";
+                     //left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+        $query = $query . " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+                        if($eventId <> ""){
+                            $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
+                        }
+
+        $query = $query . " left outer join Devotee_Attendance da ON d.devotee_key=da.devotee_key AND ds.seva_id=da.seva_id AND da.attendance_date = CURDATE() 
+                            left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
+        $query = $query . "WHERE ds.seva_id is not null " ;
+
+        if(($requestData != "") and ($requestData != "All")){            
+                $requestData = trim(urldecode($requestData));
+                if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
+                    $key = trim($requestData, ",");
+                }
+                $requestData = str_replace(",", "','", $requestData);
+
+            //$query = $query . " AND ds.Seva_ID = '" . $requestData . "'" ;
+            $query = $query . " AND ds.Seva_ID IN ('" . $requestData . "')" ;
+        }
+        $query = $query . " ORDER BY ds.Seva_ID Desc" ;
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $devoteeSearchResult = array();
+        $i = 0;
+        while($row = $results->fetchObject()){
+            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            //$row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            $devoteeSearchResult[]=$row;
+            $i = $i+1;
+        }
+        //var_dump($devoteeSearchResult);die;
+        if($i==0){
+            $devoteeSearchResult['status'] = false;
+            $devoteeSearchResult['message'] = "No record found!";
+            $devoteeSearchResult['info'] = $results;
+        }
+        
+        return $devoteeSearchResult;
+    }
+
     private function getDevoteeAmenityDetails($devoteeKey = "", $eventId = ""){
         $res = array();
         $res['status'] = false;
