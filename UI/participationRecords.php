@@ -42,7 +42,7 @@
                                                 print_r("</td><td style='width: 150px' >");
                                                 print_r($PRValue['OccupiedOn']);
 
-                                                print_r("</td><td><style='width: 150px'>");
+                                                print_r("</td><td style='width: 150px'>");
                                                 print_r($PRValue['VacatedOn']);
 
                                                 /* print_r("</td><td><style='width: 150px'>");
@@ -75,13 +75,13 @@
 
                                             foreach ($PRResponse[1] as $PRValue) {
                                                 //var_dump($PRValue);
-                                                print_r("<td style='width: 200px;font-size: small'>");
+                                                print_r("<td style='width: 150px;font-size: small'>");
                                                 print_r(urldecode($PRValue['Event']));
 
-                                                print_r("</td><td style='width: 200px' >");
+                                                print_r("</td><td style='width: 150px' >");
                                                 print_r(urldecode($PRValue['Seva']));
 
-                                                print_r("</td><td><style='width: 150px'>");
+                                                print_r("</td><td style='width: 200px'>");
                                                 print_r($PRValue['Attendance']);
 
 

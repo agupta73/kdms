@@ -909,7 +909,7 @@ Class Devotee {
                         devotee_seva ds 
                         LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
                         LEFT OUTER JOIN event_master em ON ds.seva_event = em.Event_id
-                        LEFT OUTER JOIN (SELECT da.devotee_key, da.seva_id, GROUP_CONCAT(da.attendance_date, ': ', da.remark ORDER BY da.attendance_date ASC SEPARATOR ' <br> ') AS Attendance 
+                        LEFT OUTER JOIN (SELECT da.devotee_key, da.seva_id, GROUP_CONCAT(da.attendance_date, ': [', da.attendance_updated_by, '] - ', da.remark ORDER BY da.attendance_date ASC SEPARATOR ' <br> ') AS Attendance 
                         FROM devotee_attendance da GROUP BY da.devotee_key, da.seva_id)  da2 ON ds.devotee_key = da2.devotee_key AND ds.seva_id = da2.seva_id
                     WHERE                        
                         ds.devotee_key = '" . $requestData . "'
