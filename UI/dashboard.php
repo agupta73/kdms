@@ -14,11 +14,11 @@ $config_data = include("../site_config.php");
 
 $eventId = $config_data['event_id'];
 
-/* //not needed anymore, since the card where this information is shown, is moved to MKreports
+
 $getReport = new clsReportHandler();
 $response = $getReport->getAccommodationCounts($eventId);
 unset($getReport);
-*/
+
 if($debug){echo "eventId =: ", $config_data['event_id'], $_GET['sevaType'] ; var_dump($response);}
 
 $accoType = "All";
@@ -262,7 +262,7 @@ unset($sevaSearch);
                 </form>
             </div>
         </div>
-       <!-- <div class="row">
+       <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="card card-stats">
                     <div class="card-header card-header-warning card-header-icon">
@@ -320,7 +320,7 @@ unset($sevaSearch);
                         <div class="stats">
                             <i class="material-icons text-danger">home</i> -->
                             <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
-                            <!-- <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
+                            <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
                                 <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
                         </div> 
                     </div>
@@ -359,7 +359,7 @@ unset($sevaSearch);
                     </div>             
                 </form>
             </div>
-        </div> -->
+        </div> 
         <div class="row">
                 <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
                     <div class="card">
