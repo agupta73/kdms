@@ -380,9 +380,7 @@ unset($sevaSearch);
                                         <th align='left'>
                                             Capacity
                                         </th>
-                                        <th align='left'>
-                                            Available 
-                                        </th>
+                                        
                                         <th align='left'>
                                             Allocated 
                                         </th>
@@ -392,6 +390,9 @@ unset($sevaSearch);
                                         </th>
                                         <th align='left'>
                                             Unavailable 
+                                        </th>
+                                        <th align='left'>
+                                            Available 
                                         </th>
                                         </thead>
                                         <tbody >
