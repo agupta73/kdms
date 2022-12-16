@@ -65,7 +65,7 @@
                                             <thead class="text-primary">
                                                 <th> Event </th>
                                                 <th> Seva </th>
-                                                <th> Assigned On </th>
+                                                <th> Attendance </th>
                                             </thead>
                                             <tr>
                                                 <td colspan="12">
@@ -82,7 +82,7 @@
                                                 print_r(urldecode($PRValue['Seva']));
 
                                                 print_r("</td><td><style='width: 150px'>");
-                                                print_r($PRValue['AssignedOn']);
+                                                print_r($PRValue['Attendance']);
 
 
                                                 print_r("</td></tr><tr>");

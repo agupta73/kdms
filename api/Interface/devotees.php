@@ -880,6 +880,7 @@ Class Devotee {
                         LIMIT 50";
 
         //2. Devotee Seva Records
+        /*
         $query[1] = "SELECT
                         ds.devotee_key,
                         IFNULL(em.event_description, '--') as 'Event',
@@ -895,7 +896,26 @@ Class Devotee {
                     ORDER BY 
                         ds.assignment_date_time  DESC
                         LIMIT 50 ";
-        
+        */
+
+        $query[1] = "SELECT
+                        ds.devotee_key,
+                        IFNULL(em.event_description, '--') as 'Event',
+                        IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
+                        IFNULL(DATE_FORMAT(ds.assignment_date_time, '%M %d %Y'), '--') as 'AssignedOn',
+                        IFNULL(ds.seva_event, '--') as 'EventID' ,
+                        da2.Attendance                        
+                    FROM
+                        devotee_seva ds 
+                        LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
+                        LEFT OUTER JOIN event_master em ON ds.seva_event = em.Event_id
+                        LEFT OUTER JOIN (SELECT da.devotee_key, da.seva_id, GROUP_CONCAT(da.attendance_date, ': ', da.remark ORDER BY da.attendance_date ASC SEPARATOR ' <br> ') AS Attendance 
+                        FROM devotee_attendance da GROUP BY da.devotee_key, da.seva_id)  da2 ON ds.devotee_key = da2.devotee_key AND ds.seva_id = da2.seva_id
+                    WHERE                        
+                        ds.devotee_key = '" . $requestData . "'
+                    ORDER BY 
+                        ds.assignment_date_time  DESC
+                        LIMIT 50 ";
 
 
         //3. Devotee Amenity Records

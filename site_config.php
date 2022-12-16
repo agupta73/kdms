@@ -12,6 +12,10 @@ $webroot = $protocol . $host . $directoryName . $directory_seprator;
 //echo $webroot;die;
 $api_dir = $webroot . 'api' . $directory_seprator;
 
+//Change the timezone setting for PHP
+//date_default_timezone_set("Asia/Kolkata");
+date_default_timezone_set("America/Los_Angeles");
+
 //Set the event ID of the current event
 //Please see event_master table for available events or
 // use the manage event functionality, available from dashboard of application
