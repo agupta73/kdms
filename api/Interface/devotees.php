@@ -731,7 +731,8 @@ Class Devotee {
                     //, did.Devotee_ID_Image 
         $query = $query . ", dp.Devotee_Photo  
                     , sm.Seva_description
-                    , IFNULL(da.rating, 'Unknown') AS attendance
+                    , sm.seva_id
+                    , IF(ISNULL(da.rating), '--', IF(da.rating=5, 'Present','Absent')) AS attendance
                  from 
                      Devotee d ";
                      //left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
@@ -1592,6 +1593,129 @@ Class Devotee {
         } else {
             $res['status'] = false;
             $res['message'] = "[Remark] Upserting Remarks Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
+
+    }
+
+    public function upsertDevoteeAttendance($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $query = "";
+        $devoteeKey = "";
+        $sevaId = "UN";
+        $attendanceDate = date('Y-m-d');
+        $rating = "1";
+        $remark = "";
+        //$attendanceUpdateDateTime = date('Y-m-d H:i:s');
+        $attendanceUpatedBy = "Unknown";
+
+
+        if (empty($requestData['seva_id'])) {
+            $errormsg .= " Seva ID is missing.";
+            $status = false;
+        } else {
+            $sevaId = htmlspecialchars(strip_tags($requestData['seva_id']));
+        }
+
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= " Devotee Key is missing.";
+            $status = false;
+        } else {
+            $devoteeKey = htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+
+        if (!empty($requestData['attendance_date'])) {
+            $attendanceDate = htmlspecialchars(strip_tags($requestData['attendance_date']));
+        }
+
+        if (!empty($requestData['rating'])) {
+            $rating = htmlspecialchars(strip_tags($requestData['rating']));
+        }
+
+        if (!empty($requestData['remark'])) {
+            $remark = htmlspecialchars(strip_tags($requestData['remark']));
+        }
+
+        if (!empty($requestData['userId'])) {
+            $attendanceUpatedBy = htmlspecialchars(strip_tags($requestData['userId']));
+        }
+
+        if ($this->debug) {
+            echo "reaching here..";
+            echo $status, " ", $errormsg; 
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+/*
+        $queryCheck = "SELECT rating, remark FROM devotee_remarks WHERE devotee_key = '" . $devoteeKey . "' AND remark_type = '" . $remarkType . "' AND remark_event = '" . $remarkEvent . "'";
+
+
+        if ($this->debug) {
+            echo "reaching here..";
+            var_dump($queryCheck); 
+        }
+
+        $results = $this->conn->query($queryCheck, MYSQLI_USE_RESULT);
+
+        if (!empty($row = $results->fetchObject())) {
+            if($row->{'rating'} <> $rating) {
+            $rating = ($rating + $row->{'rating'}) / 2;
+            }
+
+            $tempAr = explode(' || ', $row->{'remark'});
+            $lastRem = $tempAr[sizeof($tempAr) - 1];
+
+            if($this->debug){echo "\n from UpsertDevoteeRemark: \n  Last remark: ", $lastRem, "\n current Remark: ", trim("[" . $remarkUpatedBy . "] " . $remark , "\n \n <<") ;}
+            if(trim($lastRem) <> trim("[" . $remarkUpatedBy . "] " . $remark)){
+                $remark = $row->{'remark'} . " || [" . $remarkUpatedBy . "] " . $remark;
+            }
+            else{
+                $remark = $row->{'remark'} ;
+            }
+            
+        }
+        else {
+            $remark = "[" . $remarkUpatedBy . "] " . $remark;
+        }
+
+*/
+
+        $query = "REPLACE INTO devotee_attendance (devotee_key, seva_id, attendance_date, rating, remark, attendance_update_date_time, attendance_updated_by) 
+                 VALUES (   '" . $devoteeKey . "' , 
+                    '" . $sevaId . "' , 
+                    '" . $attendanceDate . "' , 
+                    " . $rating . ", 
+                    '" . $remark . "',
+                    NOW(), 
+                     '" . $attendanceUpatedBy . "' )";
+
+        if ($this->debug) {
+           echo "\n >>";
+            var_dump($query);
+        }
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $devoteeKey;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Attendance] Upserting Attendance Failed at API!!";
             $res['info'] = $stmt;
         }
         return $res;

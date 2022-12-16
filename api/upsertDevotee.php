@@ -57,6 +57,17 @@ if (!empty($requestData['requestType'])) {
             }
             break;
 
+        case "upsertAttendance":
+            if ($debug) {
+                echo "from upsert devotee attendance php, BEFORE calling upsertDevoteeAttendance ";
+                var_dump($requestData);
+            }
+            $res = $devotee->upsertDevoteeAttendance($requestData);
+            if ($debug) {
+                echo "from upsert devotee attendance php, after calling upsertDevoteeAttendance ";
+                var_dump($res);
+            }
+            break;
         default:
             $response = array('flag' => false, 'message' => "Request type not specified or incorrect", 'info' => $requestData['requestType']);
             break;

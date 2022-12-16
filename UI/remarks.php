@@ -19,7 +19,7 @@
                                                 <select type="text" class="form-control" name="remark_type"
                                                     id="remark_type" value="MISC">
                                                     <option value="MISC" selected>Miscellenous</option>
-                                                    <option value="ATTENDANCE">Attendance</option>
+                                                    <!-- <option value="ATTENDANCE">Attendance</option> -->
                                                     <option value="ACCOMMODATION">Accommodation</option>
                                                     <option value="SEVA">Seva</option>
                                                 </select>

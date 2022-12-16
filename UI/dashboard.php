@@ -425,10 +425,6 @@ unset($sevaSearch);
                                                         $accomodationCapacity = urldecode($accommodationRecord['accomodation_capacity']);
                                                     }
                                                     
-                                                    if (!empty($accommodationRecord['available_count'])) {
-                                                        $availableCount = $accommodationRecord['available_count'];
-                                                    }
-
                                                     if (!empty($accommodationRecord['allocated_count'])) {
                                                         $allocatedCount = $accommodationRecord['allocated_count'];
                                                     }
@@ -440,7 +436,11 @@ unset($sevaSearch);
                                                     if (!empty($accommodationRecord['Out_of_Availability_Count'])) {
                                                         $outOfAvailabilityCount = $accommodationRecord['Out_of_Availability_Count'];
                                                     }
-
+                                                    
+                                                    if (!empty($accommodationRecord['available_count'])) {
+                                                        $availableCount = $accommodationRecord['available_count'];
+                                                    }
+                                                    
                                                     if ($accomodationKey != "--Unavailable--") {
                                                         $recordCount = $recordCount + 1;
 
@@ -453,9 +453,6 @@ unset($sevaSearch);
                                                                 <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "&eventId=" . $eventId . "'>"  . $accomodationCapacity . "</a>
                                                             </td>
                                                             <td align='left' class='table-data'>
-                                                                <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
-                                                            </td>
-                                                            <td align='left' class='table-data'>
                                                                 <a href='./devoteeSearchResult.php?mode=AOD&key=" . $accomodationKey . "&eventId=" . $eventId . "'>" . $allocatedCount . "</a>
                                                             </td>
                                                             
@@ -465,6 +462,9 @@ unset($sevaSearch);
                                                             
                                                             <td align='left' class='table-data'>
                                                                 <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                                            </td>
+                                                            <td align='left' class='table-data'>
+                                                                <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
                                                             </td>
                                                             </tr>
                                                             ");
