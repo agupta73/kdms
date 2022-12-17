@@ -392,12 +392,12 @@ $debug = false  ;
                                                         <!-- <input type="text" class="form-control" name="devotee_gender" id="devotee_gender" value="<?php print_r($devotee_gender); ?>"> -->
                                                         <select type="text" class="form-control" name="devotee_gender" id="devotee_gender"  value="<?php print_r($devotee_gender); ?>">
                                                             <option value="M" <?php
-                                                            if ($devotee_gender == "m"  || $devotee_gender == "M" || empty($devotee_status)) {
+                                                            if ($devotee_gender == "m"  || $devotee_gender == "M" || empty($devotee_gender)) {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Male</option>
                                                             <option value="F" <?php
-                                                            if ($devotee_status == "F"  || $devotee_status == "f") {
+                                                            if ($devotee_gender == "F"  || $devotee_gender == "f") {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Female</option>                                                            
@@ -499,26 +499,26 @@ $debug = false  ;
                                                         <!-- replaced devotee station field by devotee status -->
                                                         <label class="bmd-label-floating">Devotee Status</label>
                                                         <select type="text" class="form-control" name="devotee_status" id="devotee_status" >
+                                                            <option value="G" <?php
+                                                            if ($devotee_status == "g"  || $devotee_status == "G" || empty($devotee_status)) {
+                                                                print_r("selected");
+                                                            }
+                                                            ?>>Good</option>
                                                             <option value="A" <?php
-                                                            if ($devotee_status == "a"  || $devotee_status == "A" || empty($devotee_status)) {
+                                                            if ($devotee_status == "a"  || $devotee_status == "A") {
                                                                 print_r("selected");
                                                             }
-                                                            ?>>Active</option>
-                                                            <option value="I" <?php
-                                                            if ($devotee_status == "i"  || $devotee_status == "I") {
-                                                                print_r("selected");
-                                                            }
-                                                            ?>>Inactive</option>
+                                                            ?>>Average</option>
                                                             <option value="D" <?php
                                                             if ($devotee_status == "d"  || $devotee_status == "D") {
                                                                 print_r("selected");
                                                             }
                                                             ?>>Day Visitor</option>
-                                                            <!-- <option value="L" <?php
-                                                            if ($devotee_status == "l"  || $devotee_status == "L") {
+                                                            <option value="S" <?php
+                                                            if ($devotee_status == "s"  || $devotee_status == "S") {
                                                                 print_r("selected");
                                                             }
-                                                            ?>>Departed</option> -->
+                                                            ?>>Senior Citizen</option>
                                                             <option value="B" <?php
                                                             if ($devotee_status == "b"  || $devotee_status == "B") {
                                                                 print_r("selected");

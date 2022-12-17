@@ -11,6 +11,23 @@ update devotee set devotee_gender = 'F' where (devotee_gender = '' or devotee_ge
 update devotee set devotee_first_name = trim(devotee_first_name), devotee_last_name = trim(devotee_last_name) 
 
 -- /////////////////////////////////////////////
+-- // To reassign devotee status as per new standard
+-- ////////////////////////////////////////////
+update devotee set devotee_status = 'G' where devotee_status = 'A';
+update devotee set devotee_status = 'A' where devotee_status = 'I';
+update devotee set devotee_status = 'S' where devotee_status is null;
+
+-- /////////////////////////////////////////////
+-- // To clean up incomplete devotee records
+-- ////////////////////////////////////////////
+select * from devotee_seva where devotee_key in (select devotee_key  from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%');
+select * from devotee_accomodation where devotee_key in (select devotee_key  from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%');
+select * from devotee_remarks where devotee_key in (select devotee_key  from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%');
+select * from devotee_amenities_allocation where devotee_key in (select devotee_key  from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%');
+select * from devotee_photo where devotee_key in (select devotee_key  from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%');
+select * from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%';
+
+-- /////////////////////////////////////////////
 -- // To randomly populate missing Date of Births = TEST ENV. ONLY
 -- ******** DO NOT USE IN PRODUCTION ************
 -- ////////////////////////////////////////////
@@ -47,3 +64,4 @@ Update devotee SET devotee_dob =
     WHEN  LEFT(devotee_last_name,1) = 't' THEN '2002-11-30' 
 END ) 
  WHERE devotee_dob IS NULL OR devotee_dob = '1900-01-01' ;
+

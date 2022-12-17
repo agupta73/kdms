@@ -267,9 +267,10 @@ $debug = false;
                                                 <label class="bmd-label-floating">Status</label>
                                                 <select type="text" class="form-control" name="devotee_status" id="devotee_status" >
                                                     <option value="">-All Status-</option>
-                                                    <option value="A">Active</option>
-                                                    <option value="I">Inactive</option>
+                                                    <option value="G">Good</option>
+                                                    <option value="A">Average</option>
                                                     <option value="D">Day Visitor</option>
+                                                    <option value="S">Senior Citizen</option>
                                                     <option value="B">Black Listed</option>
                                                 </select>
                                             </div>
