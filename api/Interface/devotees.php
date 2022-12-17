@@ -904,17 +904,17 @@ Class Devotee {
                         IFNULL(sm.seva_description, '-unknown-') as 'Seva',  
                         IFNULL(DATE_FORMAT(ds.assignment_date_time, '%M %d %Y'), '--') as 'AssignedOn',
                         IFNULL(ds.seva_event, '--') as 'EventID' ,
-                        da2.Attendance                        
+                        IFNULL(da2.Attendance, '--') as Attendance
                     FROM
                         devotee_seva ds 
                         LEFT OUTER JOIN seva_master sm ON ds.seva_id = sm.seva_id
                         LEFT OUTER JOIN event_master em ON ds.seva_event = em.Event_id
-                        LEFT OUTER JOIN (SELECT da.devotee_key, da.seva_id, GROUP_CONCAT(da.attendance_date, ': [', da.attendance_updated_by, '] - ', da.remark ORDER BY da.attendance_date ASC SEPARATOR ' <br> ') AS Attendance 
-                        FROM devotee_attendance da GROUP BY da.devotee_key, da.seva_id)  da2 ON ds.devotee_key = da2.devotee_key AND ds.seva_id = da2.seva_id
+                        LEFT OUTER JOIN (SELECT da.devotee_key, da.seva_id,  da.seva_event, GROUP_CONCAT(da.attendance_date, '=> ', da.remark ORDER BY da.attendance_date ASC SEPARATOR ' <br> ') AS Attendance 
+                        FROM devotee_attendance da GROUP BY da.devotee_key, da.seva_id, da.seva_event)  da2 ON ds.devotee_key = da2.devotee_key AND ds.seva_id = da2.seva_id AND ds.seva_event = da2.seva_event
                     WHERE                        
-                        ds.devotee_key = '" . $requestData . "'
+                        ds.devotee_key =  '" . $requestData . "'
                     ORDER BY 
-                        ds.assignment_date_time  DESC
+                        da2.seva_event  DESC
                         LIMIT 50 ";
 
 
@@ -936,7 +936,9 @@ Class Devotee {
                     GROUP BY dr.remark_event
                     ORDER BY em.event_description DESC ";
 
+        if ($this->debug) {            var_dump($query);        }
         for ($i = 0; $i < sizeof($query); $i++) {
+
             $results = $this->conn->query($query[$i], MYSQLI_USE_RESULT);
             $devoteeParticipationResult = array();
             $j = 0;
@@ -1630,6 +1632,7 @@ Class Devotee {
 
         $query = "";
         $devoteeKey = "";
+        $sevaEvent = "";
         $sevaId = "UN";
         $attendanceDate = date('Y-m-d');
         $rating = "1";
@@ -1637,6 +1640,12 @@ Class Devotee {
         //$attendanceUpdateDateTime = date('Y-m-d H:i:s');
         $attendanceUpatedBy = "Unknown";
 
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        } else {
+            $sevaEvent = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
 
         if (empty($requestData['seva_id'])) {
             $errormsg .= " Seva ID is missing.";
@@ -1712,9 +1721,10 @@ Class Devotee {
 
 */
 
-        $query = "REPLACE INTO devotee_attendance (devotee_key, seva_id, attendance_date, rating, remark, attendance_update_date_time, attendance_updated_by) 
+        $query = "REPLACE INTO devotee_attendance (devotee_key, seva_id, seva_event, attendance_date, rating, remark, attendance_update_date_time, attendance_updated_by) 
                  VALUES (   '" . $devoteeKey . "' , 
                     '" . $sevaId . "' , 
+                    '" . $sevaEvent . "' , 
                     '" . $attendanceDate . "' , 
                     " . $rating . ", 
                     '" . $remark . "',

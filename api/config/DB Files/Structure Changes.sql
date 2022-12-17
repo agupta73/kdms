@@ -147,4 +147,11 @@ CREATE TABLE `kdms_gold_2022`.`devotee_attendance` (
   `attendance_updated_by` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`devotee_key`,`seva_id`,`attendance_date`)
 ) 
-
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Added column seva_event to table devotee_attendance and made it part of primary key
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ALTER TABLE `kdms2022`.`devotee_attendance` 
+ADD COLUMN `seva_event` VARCHAR(10) NOT NULL AFTER `attendance_date`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`devotee_key`, `seva_id`, `attendance_date`, `seva_event`);
+;
