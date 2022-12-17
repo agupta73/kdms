@@ -377,16 +377,20 @@ if (!empty($response)) {
             
             $devoteeStatus = urldecode($devoteeRecord['devotee_status']);
             switch ($devoteeStatus) {
-                case "A":
-                    $devoteeStatusDetail = "Active";
+                case "G":
+                    $devoteeStatusDetail = "Good";
                     break;
 
-                case "I":
-                    $devoteeStatusDetail = "Inactive";
+                case "A":
+                    $devoteeStatusDetail = "Average";
                     break;
 
                 case "D":
                     $devoteeStatusDetail = "Day Visitor";
+                    break;
+
+                case "S":
+                    $devoteeStatusDetail = "Senior Citizen";
                     break;
 
                 case "B":
