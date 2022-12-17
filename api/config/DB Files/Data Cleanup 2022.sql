@@ -28,6 +28,13 @@ select * from devotee_photo where devotee_key in (select devotee_key  from devot
 select * from devotee where devotee_first_name is NULL or devotee_first_name like '%delete%' or Devotee_Last_Name like '%delete%';
 
 -- /////////////////////////////////////////////
+-- // To remove devotee_seva records with non-existent sevas
+-- ////////////////////////////////////////////
+delete from devotee_seva where seva_id in ('PH1', '','B')
+-- check management list
+select * from devotee where devotee_key in (select devotee_key from devotee_seva where seva_id in (select seva_id from seva_master where seva_description like '%manage%' ))
+
+-- /////////////////////////////////////////////
 -- // To randomly populate missing Date of Births = TEST ENV. ONLY
 -- ******** DO NOT USE IN PRODUCTION ************
 -- ////////////////////////////////////////////

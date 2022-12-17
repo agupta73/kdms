@@ -756,6 +756,9 @@ Class Devotee {
             //$query = $query . " AND ds.Seva_ID = '" . $requestData . "'" ;
             $query = $query . " AND ds.Seva_ID IN ('" . $requestData . "')" ;
         }
+        else { //if printing for all sevas, don't include unassigned sevas in the report
+            $query = $query . " AND ds.Seva_ID NOT IN ('UN')" ;
+        }
         $query = $query . " ORDER BY ds.Seva_ID Desc" ;
 
         if($this->debug) {var_dump($query);}
