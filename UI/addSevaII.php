@@ -6,6 +6,12 @@
     KDMS (Add Accommodation II) 
   </title>
   <?php
+   $config_data = include("../site_config.php");
+   if (session_status() === PHP_SESSION_NONE){
+       session_start();
+     }
+   $current_page_id = 'KD-SEVA-II';
+   include_once("../sessionCheck.php");
     include_once("header.php");
     include_once("../Logic/clsOptionHandler.php");
     $config_data=include("../site_config.php");

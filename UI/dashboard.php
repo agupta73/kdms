@@ -6,6 +6,8 @@
 
 $debug= false;
 include_once("header.php");
+$current_page_id = "KD-DSBRD";
+include_once("../sessionCheck.php");
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsReportHandler.php");
 include_once("../Logic/clsOptionHandler.php");

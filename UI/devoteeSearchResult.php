@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <?php
+$config_data = include("../site_config.php");
+if (session_status() === PHP_SESSION_NONE){
+    session_start();
+  }
+$current_page_id = 'KD-DVT-SCR';
 include_once("../sessionCheck.php");
 include_once("header.php");
 include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
 include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
-$config_data = include("../site_config.php");
+
 $eventId = $config_data['event_id'];
 $debug = false;
 //if($debug){var_dump( $_GET);}

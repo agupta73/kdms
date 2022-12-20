@@ -21,9 +21,12 @@ date_default_timezone_set("America/Los_Angeles");
 // use the manage event functionality, available from dashboard of application
 $event_id = "2022JB";
 
+$checkAccess = true;
+
 return [
     'webroot' => $webroot,
     'api_dir' => $api_dir,
-    'event_id' => $event_id
+    'event_id' => $event_id,
+    'check_access' => $checkAccess
 ];
 ?>

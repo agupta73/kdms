@@ -1,6 +1,12 @@
 <?php
 $debug = false;
 //include_once("../initialize.php");
+if (session_status() === PHP_SESSION_NONE){
+  session_start();
+}
+
+
+$current_page_id = "KD-DSBRD";
 include_once("../sessionCheck.php");
 $config_data=include("../site_config.php");
 ?>

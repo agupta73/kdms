@@ -1,9 +1,13 @@
 <?php
 
 //TODO: Amenity management needs event segregation
-
+$config_data = include("../site_config.php");
+if (session_status() === PHP_SESSION_NONE){
+    session_start();
+  }
+$current_page_id = 'KD-DVT-I';
 include_once("../sessionCheck.php");
-$config_data=include("../site_config.php");
+//$config_data=include("../site_config.php");
 $debug = false  ;
 ?>
 <!DOCTYPE html>

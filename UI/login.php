@@ -16,13 +16,7 @@ session_start();
 </head>
 <body>
 <?php
-//TODO: 1. Kill session (move code from nav.php
-//2. start session
-//3. validate credentials
-//3. add session variables
-//- login ID
-//- authority
-//- event ID/Desc
+
 
 if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
 //Distroy session, if active
@@ -43,6 +37,7 @@ $role="";
 $name = "";
 $email = "";
 $phone ="";
+$access = "";
 $message = "";
 //Setting login ID and password to display on the login screen
 //if(isset($_POST['loginID'])){$loginID = $_POST['loginID']; }
@@ -81,6 +76,13 @@ if (!empty($requestData['loginID'])) {
     if(!empty($response['User_Phone'])){
         $phone=  urldecode($response['User_Phone']); // "Gupta"
     }
+    
+    if(!empty($response['Access'])){
+      if($response['Access'] != ""){
+        $access =  urldecode($response['Access']); 
+      }
+    }
+    
     if($debug){
         echo "<br>","login: ", $loginID, "<br>";
         var_dump($password);
@@ -88,7 +90,7 @@ if (!empty($requestData['loginID'])) {
         var_dump($name);
         var_dump($email);
         var_dump($phone);
-
+        var_dump($access);
     }
     if(!empty($loginID)){
         if($debug){echo "reaching non-empty login ID..";}
@@ -97,6 +99,7 @@ if (!empty($requestData['loginID'])) {
         $_SESSION["UserName"] = $name;
         $_SESSION["UserEmail"] = $email;
         $_SESSION["Role"] = $role;
+        $_SESSION["Access"] = $access;
         $url = $config_data['webroot']."UI/Index.php";
         header("Location: ".$url);
         exit();
@@ -106,7 +109,7 @@ if (!empty($requestData['loginID'])) {
         $message = "Incorrect credentials!";
         $loginID = $requestData['loginID'];
         $password = $requestData['password'];
-        if($debug){echo "LoginID: ", $loginID, " password: " , $password, " Message: " , $message;}
+        if($debug){echo "LoginID: ", $loginID, " password: " , $password, " Message: " , $message, " Access: " , $access; }
     }
 
 }

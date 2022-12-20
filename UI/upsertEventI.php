@@ -11,7 +11,12 @@
   //TODO: Notify user if no event is current or more than one event is current
   //TODO: Log out if the current event ID is not same as the event ID in the event management page. Alert user to change the event ID in site_config
 
-    $config_data=include_once("../site_config.php");
+  $config_data = include("../site_config.php");
+  if (session_status() === PHP_SESSION_NONE){
+      session_start();
+    }
+  $current_page_id = 'KD-EVNT-I';
+  include_once("../sessionCheck.php");
     include_once("header.php");  
     include_once("../Logic/clsOptionHandler.php");
 
