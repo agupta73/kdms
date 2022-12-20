@@ -53,10 +53,17 @@ class clsAdmin {
 
     //Returns accommodations and their counts
     private function checkLogin($userID, $password) {
-        $query = "SELECT" .
-                " * FROM user_master" .
-                " WHERE " .
-                " User_Key = '" . $userID . "' AND User_Password = '" . $password . "'";
+        $query = "SELECT 
+                    um.User_Key
+                    , um.User_Name
+                    , um.User_Role
+                    , um.User_Email
+                    , um.User_Phone
+                    , IFNULL(GROUP_CONCAT(ua.asset_key SEPARATOR ',' ), '') as Access
+                FROM user_master um 
+                LEFT OUTER JOIN user_access ua ON (um.user_key = ua.user_role_key OR um.user_role = ua.user_role_key) AND ua.access_value <> 'NONE' AND ua.access_value IS NOT NULL
+                WHERE  um.User_Key = '" . $userID . "' AND um.User_Password = '" . $password . "'
+                GROUP BY um.user_role, um.user_key ";
 
         if($this->debug){
             echo "from clsAdmin->checkLogin ", $query, "<br>";

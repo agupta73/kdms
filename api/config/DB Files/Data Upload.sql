@@ -1374,3 +1374,36 @@ VALUES
 '2022JB',
 'Unassigned'
 );
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Adding values for the asset list table
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-ACCO-I', 'KDMS.addaccommodationI','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-ACCO-II', 'KDMS.addaccommodationII','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-DVT-I', 'KDMS.adddevoteeI','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-SEVA-I', 'KDMS.addsevaI','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-SEVA-II', 'KDMS.addsevaII','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-DSBRD', 'KDMS.dashboard','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-DVT-SCR', 'KDMS.devoteesearchresult','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-DVT-DSP', 'KDMS.displaydevotees','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-PRT_ID', 'KDMS.printid','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-PRT-CRD', 'KDMS.rptcardprint','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-PRT-CDS', 'KDMS.rptcardsprint','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-AMT-I', 'KDMS.upsertamenityI','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-AMT-II', 'KDMS.upsertamenityII','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-EVNT-I', 'KDMS.upserteventI','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KD-EVNT-II', 'KDMS.upserteventII','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KR-DSBRD', 'KMREPORTS.dashboard','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KR-R-ACCO', 'KMREPORTS.rptacco','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KR-R-ATTN', 'KMREPORTS.rptattendanceReport','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KR-R-DUTY', 'KMREPORTS.rptdutyreport','anil', NOW());
+INSERT INTO `kdms2022`.`asset_list` (`asset_key`,`asset_name`,`asset_updated_by`,`asset_update_date_time`) VALUES ('KR-R-OFDT', 'KMREPORTS.rptofficeduty','anil', NOW());
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Adding initial values for the user master and user access tables
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+INSERT INTO `kdms_gold_2022`.`user_master` VALUES ('admin', 'Admin - Special User', 'admin@gmail.com', 'admin', '999-999-9999', 'ADMIN');
+INSERT INTO `kdms_gold_2022`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'ADMIN', asset_key, 'ALL','anil',NOW() from asset_list;
+INSERT INTO `kdms2022`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'SPRUSR', asset_key, 'ALL','anil',NOW() from asset_list WHERE asset_key like 'KD-%';
+INSERT INTO `kdms_gold_2022`.`user_master` (`User_Key`, `User_Name`, `User_Email`, `User_Password`, `User_Phone`, `User_Role`) VALUES ('mgmt', 'Management User', 'Management User', 'mgmt', '888-888-8888', 'MGMTUSR');
+INSERT INTO `kdms2022`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'MGMTUSR', asset_key, 'ALL','anil',NOW() from asset_list WHERE asset_key like 'KR-%';
