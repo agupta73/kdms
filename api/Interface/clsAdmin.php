@@ -11,36 +11,59 @@
  *
  * @author agupta
  */
-class clsAdmin {
+class clsAdmin
+{
 
     private $conn;
     public $debug = false;
-// constructor with $db as database connection
-    public function __construct($db) {
+    // constructor with $db as database connection
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    public function processAdminTask($requestData) {
+    public function processAdminTask($requestData)
+    {
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
-
-        $userID = $requestData['loginID'];
-        $password = $requestData['password'];
-        $type =  $requestData['type'];
-
-        if($this->debug){
-            echo "from clsAdmin - User ID : ", $userID, " Password: ", $password, " Type: ", $type , "<br>";
-        }
+       
+        $type = $requestData['type'];
 
         $status = true;
         if (!empty($type)) {
             switch ($type) {
                 case "login": //User Login
+                    $userID = $requestData['loginID'];
+                    $password = $requestData['password'];
+                    if ($this->debug) {
+                        echo "from clsAdmin - User ID : ", $userID, " Password: ", $password, " Type: ", $type, "<br>";
+                    }
                     return $this->checkLogin($userID, $password);
                     break;
 
-                default :
+                case "favorites": //User Login
+                    $userID = $requestData['user_key'];
+                    $favType = "";
+                    if(!empty($requestData['fav_type'])){
+                        $favType = $requestData['fav_type'];
+                    }
+                    
+                    if ($this->debug) {
+                        echo "from clsAdmin - User ID : ", $userID,  "<br>";
+                    }
+                    return $this->checkFavorites($userID, $favType);
+                    break;
+                    
+                case "upsertFav": //User Favorites
+                    if ($this->debug) {
+                        echo "from clsAdmin - request Data: " ;
+                        var_dump($requestData);
+                    }
+                    return $this->upsertUserFavorite($requestData);
+                    break;
+
+                default:
                     $res['message'] = "Request type invalid!";
                     return $res;
                     break;
@@ -51,8 +74,8 @@ class clsAdmin {
         }
     }
 
-    //Returns accommodations and their counts
-    private function checkLogin($userID, $password) {
+    private function checkLogin($userID, $password)
+    {
         $query = "SELECT 
                     um.User_Key
                     , um.User_Name
@@ -65,25 +88,139 @@ class clsAdmin {
                 WHERE  um.User_Key = '" . $userID . "' AND um.User_Password = '" . $password . "'
                 GROUP BY um.user_role, um.user_key ";
 
-        if($this->debug){
+        if ($this->debug) {
             echo "from clsAdmin->checkLogin ", $query, "<br>";
         }
         $results = $this->conn->query($query, MYSQLI_USE_RESULT);
 
 
         $loginResult = array();
-        if(!empty($row = $results->fetchObject())){
-            $loginResult=$row;
-        }
-        else{
+        if (!empty($row = $results->fetchObject())) {
+            $loginResult = $row;
+        } else {
             $loginResult['status'] = false;
             $loginResult['message'] = "Devotee details not found!";
             $loginResult['info'] = $results;
         }
-        if($this->debug){
-            echo "Result from clsAdmin->checkLogin ",  "<br>";
+        if ($this->debug) {
+            echo "Result from clsAdmin->checkLogin ", "<br>";
             var_dump($loginResult);
         }
         return $loginResult;
+    }
+
+    private function checkFavorites($userID, $favType = "")
+    {
+        $query = "SELECT fav_url, fav_public, fav_type
+                  FROM user_favorites 
+                  WHERE (fav_public = 'YES' OR user_key = '" . $userID . "') ";
+        
+        if($favType != ""){
+            $query = $query . " AND fav_type = '" . $favType . "'";
+        }
+        
+        $query = $query . " ORDER BY fav_public, fav_url";
+
+        if ($this->debug) {
+            echo "from clsAdmin->checkLogin ", $query, "<br>";
+        }
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $favResult = array();
+        $i = 0;
+        while ($row = $results->fetchObject()) {
+            $favResult[] = $row;
+            $i = $i + 1;
+        }
+        return $favResult;
+    }
+    public function upsertUserFavorite($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $query = "";
+        $userKey = "";
+        $favType = "REPORT";
+        $favURL = "";
+        $favPublic = "NO";
+        $favUpdatedBy = "Unknown";
+
+        if (empty($requestData['user_key'])) {
+            $errormsg .= " User Key is missing.";
+            $status = false;
+        } else {
+            $userKey = htmlspecialchars(strip_tags($requestData['user_key']));
+        }
+
+        if (empty($requestData['fav_type'])) {
+            $errormsg .= " Favorite Type is missing.";
+            $status = false;
+        } else {
+            $favType = htmlspecialchars(strip_tags($requestData['fav_type']));
+        }
+
+        if (!empty($requestData['fav_url'])) {
+            $favURL = htmlspecialchars(strip_tags($requestData['fav_url']));
+        }
+
+        if (!empty($requestData['fav_public'])) {
+            $favPublic = htmlspecialchars(strip_tags($requestData['fav_public']));
+        }
+
+        if (!empty($requestData['fav_update_by'])) {
+            $favUpdatedBy = htmlspecialchars(strip_tags($requestData['fav_update_by']));
+        }
+
+        if ($this->debug) {
+            echo "reaching here..";
+            echo $status, " ", $errormsg;
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        $query = "REPLACE INTO `user_favorites`
+                (`user_key`,
+                `fav_type`,
+                `fav_url`,
+                `fav_public`,
+                `fav_updated_by`,
+                `fav_update_date_time`) 
+                VALUES 
+                ('" . $userKey . "', 
+                '" . $favType . "', 
+                '" . $favURL . "', 
+                '" . $favPublic . "', 
+                '" . $favUpdatedBy . "', 
+                NOW()) ";
+
+        if ($this->debug) {
+            echo "\n >>";
+            var_dump($query);
+        }
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($stmt->execute()) {
+            //var_dump($stmt);
+            $res['status'] = true;
+            $res['message'] = "";
+            $res['info'] = $userKey;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Attendance] Upserting User Favorites Failed at API!!";
+            $res['info'] = $stmt;
+        }
+        return $res;
     }
 }

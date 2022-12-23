@@ -183,3 +183,16 @@ CREATE TABLE `kdms2022`.`asset_list` (
   `asset_updated_by` VARCHAR(10) NOT NULL,
   `asset_update_date_time` DATETIME NOT NULL,
   PRIMARY KEY (`asset_key`));
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // Added table user_favorite
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CREATE TABLE `kdms2022`.`user_favorites` (
+  `user_key` VARCHAR(10) NOT NULL,
+  `fav_type` VARCHAR(10) NOT NULL DEFAULT 'REPORT',
+  `fav_url` VARCHAR(250) NOT NULL DEFAULT 'http://google.com' ,
+  `fav_public` VARCHAR(10) NOT NULL DEFAULT 'NO',
+  `fav_updated_by` VARCHAR(10) NULL,
+  `fav_update_date_time` DATETIME NULL,
+  PRIMARY KEY (`user_key`, `fav_url`));
+
