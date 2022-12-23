@@ -189,10 +189,10 @@ CREATE TABLE `kdms2022`.`asset_list` (
 -- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CREATE TABLE `kdms2022`.`user_favorites` (
   `user_key` VARCHAR(10) NOT NULL,
+  `fav_name` VARCHAR(100) NOT NULL DEFAULT 'Favorite' 
   `fav_type` VARCHAR(10) NOT NULL DEFAULT 'REPORT',
   `fav_url` VARCHAR(250) NOT NULL DEFAULT 'http://google.com' ,
   `fav_public` VARCHAR(10) NOT NULL DEFAULT 'NO',
   `fav_updated_by` VARCHAR(10) NULL,
   `fav_update_date_time` DATETIME NULL,
-  PRIMARY KEY (`user_key`, `fav_url`));
-
+  PRIMARY KEY (`user_key`, `fav_name`));

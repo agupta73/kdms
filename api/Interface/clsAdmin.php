@@ -111,7 +111,7 @@ class clsAdmin
 
     private function checkFavorites($userID, $favType = "")
     {
-        $query = "SELECT fav_url, fav_public, fav_type
+        $query = "SELECT fav_url, fav_public, fav_type, fav_name
                   FROM user_favorites 
                   WHERE (fav_public = 'YES' OR user_key = '" . $userID . "') ";
         
@@ -148,6 +148,7 @@ class clsAdmin
 
         $query = "";
         $userKey = "";
+        $favName = "Favorite";
         $favType = "REPORT";
         $favURL = "";
         $favPublic = "NO";
@@ -160,6 +161,14 @@ class clsAdmin
             $userKey = htmlspecialchars(strip_tags($requestData['user_key']));
         }
 
+        if (empty($requestData['fav_name'])) {
+            $errormsg .= " Favorite Name is missing.";
+            $status = false;
+        } else {
+            $favName = htmlspecialchars(strip_tags($requestData['fav_name']));
+        }
+        
+        
         if (empty($requestData['fav_type'])) {
             $errormsg .= " Favorite Type is missing.";
             $status = false;
@@ -191,6 +200,7 @@ class clsAdmin
         }
         $query = "REPLACE INTO `user_favorites`
                 (`user_key`,
+                `fav_name`,
                 `fav_type`,
                 `fav_url`,
                 `fav_public`,
@@ -198,6 +208,7 @@ class clsAdmin
                 `fav_update_date_time`) 
                 VALUES 
                 ('" . $userKey . "', 
+                '" . $favName . "', 
                 '" . $favType . "', 
                 '" . $favURL . "', 
                 '" . $favPublic . "', 
