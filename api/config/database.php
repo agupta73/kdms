@@ -4,6 +4,8 @@ class Database {
 
     private $host = "USMLAGUPTA.local:3306";
     private $db_name = "kdms2022";
+
+    private $inv_db_name = 'kinv';
 	//private $db_name = "kdms_testing";
 	
     private $username = "kdms";
@@ -11,12 +13,18 @@ class Database {
     public $conn;
 
     // get the database connection
-    public function getConnection() {
+    public function getConnection($module = "") {
         $this->conn = null;
 
         try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
+            if($module = "inv"){
+                $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->inv_db_name, $this->username, $this->password);                
+            }
+            else {
+                $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);                
+            }
             $this->conn->exec("set names utf8");
+            
         } catch (PDOException $exception) {
             echo "Connection error: " . $exception->getMessage();
         }
