@@ -12,7 +12,7 @@ $db = $database->getConnection("inv");
 $inventory = new inventory($db);
 $submitMethod = "";
 
-if (isset($_GET)) {
+if (!empty($_GET)) {
   $requestData = $_GET;
   $submitMethod = "GET";
 } else {
@@ -26,56 +26,142 @@ $response = array('flag' => false, 'message' => "Request failed", 'info' => $req
 
 if ($debug) {
   var_dump($requestData);
+  var_dump($_GET);
+  var_dump($_POST);
 }
 
 if (!empty($requestData['requestType'])) {
   $response = array('flag' => false, 'message' => "Request failed", 'info' => $requestData['requestType']);
-
-  switch ($requestData['requestType']) {
-    case "fill_category":
-    case "fill_location_rack":
-    case "fill_supplier":
-    case "fill_company":
-    case "fill_tax":
-    case "fill_item":
-    case "get_product_array":
-    case "Get_tax_field":
-    case "Get_total_no_of_product":
-    case "Get_total_product_purchase":
-    case "Get_total_product_sale":
-    case "Count_outstock_product":
-    case "Get_currency_symbol":
-    case "Get_Product_company_code":
-    case "Get_category_name":
-    case "Get_order_tax_percentage":
-    case "Get_user_name_from_id":
-    case "Get_product_name":   
-      try {
-        $res = $inventory->search($requestData);
+  try {
+    switch ($requestData['requestType']) {
+      case "fill_category":
+        $res = $inventory->fill_category();
         echo json_encode($res);
         die;
-      } catch (Exception $e) {
-        $response['message'] = $e->getMessage();
-      }
-      break;
+        break;
 
-    case "upsertCategory":
-      try {
-        $res = $inventory->upsert($requestData);
+      case "fill_location_rack":
+        $res = $inventory->fill_location_rack();
         echo json_encode($res);
         die;
-        if ($debug) {
-          echo "from upsert category php, after calling API ";
-          var_dump($res);
+        break;
+
+      case "fill_supplier":
+        $res = $inventory->fill_supplier();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "fill_company":
+        $res = $inventory->fill_company();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "fill_tax":
+        $res = $inventory->fill_tax();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "fill_item":
+        $res = $inventory->fill_item();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "get_product_array":
+        $res = $inventory->get_product_array();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_tax_field":
+        $res = $inventory->Get_tax_field();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_total_no_of_product":
+        $res = $inventory->Get_total_no_of_product();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_total_product_purchase":
+        $res = $inventory->Get_total_product_purchase();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_total_product_sale":
+        $res = $inventory->Get_total_product_sale();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Count_outstock_product":
+        $res = $inventory->Count_outstock_product();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_currency_symbol":
+        $res = $inventory->Get_currency_symbol();
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_Product_company_code":
+        $res = $inventory->Get_Product_company_code($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_category_name":
+        $res = $inventory->Get_category_name($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_order_tax_percentage":
+        $res = $inventory->Get_order_tax_percentage($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_user_name_from_id":
+        $res = $inventory->Get_user_name_from_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
+      case "Get_product_name":
+        $res = $inventory->Get_product_name($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
+      case "upsertCategory":
+        try {
+          $res = $inventory->upsert($requestData);
+          echo json_encode($res);
+          die;
+          if ($debug) {
+            echo "from upsert category php, after calling API ";
+            var_dump($res);
+          }
+        } catch (Exception $e) {
+          $response['message'] = $e->getMessage();
         }
-      } catch (Exception $e) {
-        $response['message'] = $e->getMessage();
-      }
-      break;
+        break;
 
-    default:
-      $response = array('flag' => false, 'message' => "Request type not specified or incorrect", 'info' => $requestData['requestType']);
-      break;
+      default:
+        $response = array('flag' => false, 'message' => "Request type not specified or incorrect", 'info' => $requestData['requestType']);
+        break;
+    }
+  } catch (Exception $e) {
+    $response['message'] = $e->getMessage();
   }
 } else {
   $response = array('flag' => false, 'message' => "Request data empty", 'info' => $requestData);

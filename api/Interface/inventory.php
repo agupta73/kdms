@@ -356,5 +356,683 @@ Class inventory {
         return $res;
          
     }
+
+    public function fill_category() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM category_ims WHERE category_status = 'Enable' ORDER BY category_name ASC" ;
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function fill_location_rack() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM location_rack_ims WHERE location_rack_status = 'Enable' ORDER BY location_rack_name ASC" ;
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function fill_supplier() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM supplier_ims WHERE supplier_status = 'Enable' ORDER BY supplier_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function fill_company() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM item_manufacuter_company_ims WHERE company_status = 'Enable' ORDER BY company_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function fill_tax() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM tax_ims WHERE tax_status = 'Enable' ORDER BY tax_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function fill_item() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM item_ims 
+                    WHERE item_status = 'Enable' 
+                    ORDER BY item_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function get_product_array() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM item_purchase_ims 
+                    INNER JOIN item_ims 
+                    ON item_ims.item_id =  item_purchase_ims.item_id 
+                    WHERE item_purchase_ims.item_purchase_status = 'Enable' 
+                    AND item_ims.item_status = 'Enable' 
+                    AND item_ims.item_available_quantity > 0 
+                    ORDER BY item_ims.item_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function Get_tax_field() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT * FROM tax_ims WHERE tax_status = 'Enable' ORDER BY tax_name ASC" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
+    public function Get_total_no_of_product() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT COUNT(item_id) AS Total FROM item_ims 
+		WHERE item_status = 'Enable' AND item_available_quantity > 0 " ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $output = array();
+        foreach($results as $row)
+		{
+            $i++;
+            $output["Total"] = $row["Total"];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $output;
+        }	
+    }
+    public function Get_total_product_purchase() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT SUM(item_purchase_total_cost) AS Total FROM item_purchase_ims 
+		            WHERE item_purchase_status = 'Enable'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $output = array();
+        foreach($results as $row)
+		{
+            $i++;
+            $output["Total"] = $row["Total"];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $output;
+        }	
+    }
+    public function Get_total_product_sale() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT SUM(order_total_amount) AS Total FROM order_ims 
+		            WHERE order_status = 'Enable'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $output = array();
+        foreach($results as $row)
+		{
+            $i++;
+            $output["Total"] = $row["Total"];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $output;
+        }		             
+    }
+    public function Count_outstock_product() {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT COUNT(item_id) AS Total FROM item_ims WHERE item_status = 'Enable' AND item_available_quantity <= 0 " ;
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+     }
+    public function Get_currency_symbol() { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+        
+        $query = "SELECT store_currency FROM store_ims LIMIT 1" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $i = 0;
+        $result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = $i . " results found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function Get_Product_company_code($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_manufacuter_company_id = "";
+       
+        
+        if (empty($requestData['item_manufacuter_company_id'])) {
+            $errormsg .= "item_manufacuter_company id not supplied.";
+            $status = false;
+        }
+        else {
+            $item_manufacuter_company_id = htmlspecialchars(strip_tags($requestData['item_manufacuter_company_id']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT company_short_name FROM item_manufacuter_company_ims WHERE item_manufacuter_company_id = '" . $item_manufacuter_company_id . "'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }
+    }
+    public function Get_category_name($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $category_id = "";
+       
+        
+        if (empty($requestData['category_id'])) {
+            $errormsg .= "category id not supplied.";
+            $status = false;
+        }
+        else {
+            $category_id = htmlspecialchars(strip_tags($requestData['category_id']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT category_name FROM category_ims 
+		        WHERE category_id = '". $category_id ."'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
+    public function Get_order_tax_percentage($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $order_id = "";
+       
+        
+        if (empty($requestData['order_id'])) {
+            $errormsg .= "order id not supplied.";
+            $status = false;
+        }
+        else {
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT order_tax_percentage FROM order_ims 
+		        WHERE order_id = ". $order_id  ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $output = array();
+        $i=0;
+		foreach($results as $row)
+		{
+            $i++;		
+			$output['order_tax_percentage'] = $row['order_tax_percentage'];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $output;
+        }	
+    }
+    public function Get_user_name_from_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $user_id = "";
+       
+        
+        if (empty($requestData['user_id'])) {
+            $errormsg .= "User id not supplied.";
+            $status = false;
+        }
+        else {
+            $user_id = htmlspecialchars(strip_tags($requestData['user_id']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT user_name FROM user_ims 
+		            WHERE user_id = '". $user_id ."'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		foreach($results as $row)
+		{
+            $i++;		
+			$user_name = $row["user_name"];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $user_name;
+        }	
+    }
+    public function Get_product_name($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = "";
+        $item_purchase_id = "";
+        
+        if (empty($requestData['item_id'])) {
+            $errormsg .= "Item id not supplied.";
+            $status = false;
+        }
+        else {
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+        
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= "Item purchase id not supplied.";
+            $status = false;
+        }
+        else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+        
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT * FROM item_ims 
+                    INNER JOIN item_manufacuter_company_ims ON item_manufacuter_company_ims.item_manufacuter_company_id = item_ims.item_manufactured_by 
+                    WHERE item_ims.item_id = '" . $item_id . "'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $data = array();
+
+		foreach($results as $row)
+		{
+			$data['item_name'] = $row['item_name'];
+			$data['company_short_name'] = $row['company_short_name'];
+		}
+
+		$query = "SELECT * FROM item_purchase_ims 
+		            WHERE item_purchase_id = '" . $item_purchase_id . "'";
+
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+
+        $i=0;
+		foreach($results as $row)
+		{
+            $i++;
+			$data['item_batch_no'] = $row['item_batch_no'];
+			$data['expiry_date'] = $row['item_expired_month'] . ' / ' . $row["item_expired_year"];
+			$data['item_sale_price_per_unit'] = $row["item_sale_price_per_unit"];
+		}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $data;
+        }		
+    }      
 }
 ?>
