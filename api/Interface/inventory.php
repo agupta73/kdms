@@ -1033,6 +1033,348 @@ Class inventory {
         else{
             return $data;
         }		
-    }      
+    }
+    public function fetch_chart_data($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $start_date = "";
+        $end_date = "";
+
+
+        if (empty($requestData['start_date'])) {
+            $errormsg .= "start_date not supplied.";
+            $status = false;
+        } else {
+            $start_date = htmlspecialchars(strip_tags($requestData['start_date']));
+        }
+
+        if (empty($requestData['end_date'])) {
+            $errormsg .= "end_date not supplied.";
+            $status = false;
+        } else {
+            $end_date = htmlspecialchars(strip_tags($requestData['end_date']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT SUM(order_total_amount) AS Total, DATE(order_added_on) AS Order_date FROM order_ims 
+                    WHERE order_status = 'Enable' 
+                    AND DATE(order_added_on) >= '". $start_date ."' 
+                    AND DATE(order_added_on) <= '". $end_date ."' 
+                    GROUP BY Order_date";
+
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }
+        //if ($i == 0) {
+        //    $res['status'] = false;
+        //    $res['message'] = "No record found!";
+        //    $res['info'] = $results;
+        //    return $res;
+        //} else {
+            return $result;
+        //}
+    }
+    public function fetch_out_stock_product($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "";
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM item_ims 
+                    INNER JOIN category_ims 
+                    ON category_ims.category_id = item_ims.item_category 
+                    INNER JOIN  item_manufacuter_company_ims 
+                    ON  item_manufacuter_company_ims.item_manufacuter_company_id = item_ims.item_manufactured_by 
+                    INNER JOIN location_rack_ims 
+                    ON location_rack_ims.location_rack_id = item_ims.item_location_rack 
+                    WHERE item_ims.item_status = 'Enable' 
+                    AND item_ims.item_available_quantity < 1 ";
+
+        if($search_value <> "" ){
+            $query .= 'AND (item_ims.item_name LIKE "%'.$search_value.'%" ';
+			$query .= 'OR item_manufacuter_company_ims.company_name LIKE "%'.$search_value.'%" ';
+			$query .= 'OR item_ims.item_available_quantity LIKE "%'.$search_value.'%" ';
+			$query .= 'OR location_rack_ims.location_rack_name LIKE "%'.$search_value.'%" ';
+			$query .= 'OR item_ims.item_status LIKE "%'.$search_value.'%" ';
+			$query .= 'OR item_ims.item_add_datetime LIKE "%'.$search_value.'%" ';
+			$query .= 'OR item_ims.item_update_datetime LIKE "%'.$search_value.'%") ';
+        }
+
+        if($order_0_col <> "" AND $order_0_dir <> ""){
+            $query .=  'ORDER BY '.$order_0_col.', '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY item_ims.item_name ASC ';
+        }
+
+        if($length != -1)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        //if ($i == 0) {
+        //    $res['status'] = false;
+        //    $res['message'] = "No record found!";
+        //    $res['info'] = $results;
+        //    return $res;
+        //} else {
+            return $result;
+        //} 
+    }
+    public function purchase_item($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+
+        $item_id                      = "";         //  $formdata['item_id'],
+        $supplier_id                  = "";         //  $formdata['supplier_id'],
+        $item_batch_no                = "";         //  $formdata['item_batch_no'],
+        $item_purchase_qty            = 1;         //  $formdata['item_purchase_qty'], 
+        $available_quantity           = "";         //  $formdata['item_purchase_qty'], 
+        $item_purchase_price_per_unit = 1;         //  $formdata['item_purchase_price_per_unit'],
+        $item_purchase_total_cost     = 1;         //  $total_cost,
+        $item_manufacture_month       = "MONTH(NOW())";         //  $formdata['item_manufacture_month'],
+        $item_manufacture_year        = "YEAR(NOW())";         //  $formdata['item_manufacture_year'],
+        $item_expired_month           = "MONTH(NOW())";         //  $formdata['item_expired_month'],
+        $item_expired_year            = "YEAR(NOW()) + 10";         //  $formdata['item_expired_year'],
+        $item_sale_price_per_unit     = 1;         //  $formdata['item_sale_price_per_unit'],
+        $item_purchase_datetime       = "NOW()";      //  $object->now,
+        $item_purchase_status         = "Enable";         //  'Enable',
+        $item_purchase_enter_by       = "unknown";  //  $_SESSION['LoginID'],
+        
+
+        if(empty($requestData['item_id'])) { 
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        }
+        else{
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if(empty($requestData['supplier_id'])) { 
+            $errormsg .= " supplier_id is missing.";
+            $status = false;
+        }
+        else{
+            $supplier_id=htmlspecialchars(strip_tags($requestData['supplier_id']));
+        }
+
+        if(empty($requestData['item_batch_no'])) { 
+            $errormsg .= " item_batch_no is missing.";
+            $status = false;
+        }
+        else{
+            $item_batch_no = htmlspecialchars(strip_tags($requestData['item_batch_no']));
+        }
+
+        if(empty($requestData['item_purchase_qty'])) { 
+            $errormsg .= " item_purchase_qty is missing.";
+            $status = false;
+        }
+        else{
+            $item_purchase_qty = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+        }
+
+        if(empty($requestData['available_quantity'])) {
+            $available_quantity = $item_purchase_qty;
+        }
+        else{
+            $available_quantity = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+        
+        }
+
+        if(!empty($requestData['item_purchase_price_per_unit'])) {
+            $item_purchase_price_per_unit = htmlspecialchars(strip_tags($requestData['item_purchase_price_per_unit']));
+        }
+
+        if(!empty($requestData['item_purchase_total_cost'])) {
+            $item_purchase_total_cost  = htmlspecialchars(strip_tags($requestData['item_purchase_total_cost']));
+        }
+
+        if(!empty($requestData['item_manufacture_month'])) {             
+            $item_manufacture_month  = htmlspecialchars(strip_tags($requestData['item_manufacture_month']));
+        }
+
+        if(!empty($requestData['item_manufacture_year'])) {             
+            $item_manufacture_year = htmlspecialchars(strip_tags($requestData['item_manufacture_year']));
+        }
+
+        if(!empty($requestData['item_expired_month'])) {             
+            $item_expired_month = htmlspecialchars(strip_tags($requestData['item_expired_month']));
+        }
+
+        if (!empty($requestData['item_expired_year'])) {            
+            $item_expired_year = htmlspecialchars(strip_tags($requestData['item_expired_year']));
+        }
+
+        if(!empty($requestData['item_sale_price_per_unit'])) {            
+            $item_sale_price_per_unit=htmlspecialchars(strip_tags($requestData['item_sale_price_per_unit']));
+        }
+
+        //if(empty($requestData['item_purchase_datetime'])) { 
+
+        //}
+
+        if(!empty($requestData['item_purchase_status'])) {             
+            $item_purchase_status = htmlspecialchars(strip_tags($requestData['item_purchase_status']));
+        }
+
+        if(empty($requestData['item_purchase_enter_by'])) {
+            $item_purchase_enter_by = "unknown";
+        }
+        else{
+            $item_purchase_enter_by = htmlspecialchars(strip_tags($requestData['item_purchase_enter_by']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        //Use replace function for insert as well as update thru stored procedure
+        $query = "INSERT INTO item_purchase_ims 
+                    (
+                        item_id, 
+                        supplier_id, 
+                        item_batch_no, 
+                        item_purchase_qty, 
+                        available_quantity, 
+                        item_purchase_price_per_unit, 
+                        item_purchase_total_cost, 
+                        item_manufacture_month, 
+                        item_manufacture_year, 
+                        item_expired_month, 
+                        item_expired_year, 
+                        item_sale_price_per_unit, 
+                        item_purchase_datetime, 
+                        item_purchase_status, 
+                        item_purchase_enter_by
+                    ) 
+                    VALUES 
+                    (
+                        '" . $item_id . "', 
+                        '" . $supplier_id . "',
+                        '" . $item_batch_no . "',
+                        " . $item_purchase_qty . ",
+                        " . $available_quantity . ",
+                        " . $item_purchase_price_per_unit . ",
+                        " . $item_purchase_total_cost . ",
+                        " . $item_manufacture_month . ",
+                        " . $item_manufacture_year . ",
+                        " . $item_expired_month . ",
+                        " . $item_expired_year . ",
+                        " . $item_sale_price_per_unit . ",
+                        NOW(),
+                        '" . $item_purchase_status . "',
+                        '" . $item_purchase_enter_by . "'
+                    )  ";
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if($this->debug){ var_dump($stmt); die;}
+
+        if ($stmt->execute()) {
+
+            $query = "UPDATE item_ims 
+                    SET item_available_quantity = item_available_quantity + " . $item_purchase_qty . " 
+                    WHERE item_id = '" . $item_id . "'";
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Purchase!!";
+                $res['info'] = $item_id;
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Updating Item Available Quantity Failed, but purchase successfully added at API!!";
+                if ($this->debug) {
+                    $res['info'] = $query;
+                } else {
+                    $res['info'] = $stmt;
+                }
+            }
+        }
+        else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Adding Purchase Failed at API!!";
+            if ($this->debug) {
+                $res['info'] = $query;
+            } else {
+                $res['info'] = $stmt;
+            }
+        }
+        return $res;         
+    }
 }
 ?>

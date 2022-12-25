@@ -7,7 +7,7 @@ include_once 'Interface/inventory.php';
 $debug = false;
 
 $database = new Database();
-$db = $database->getConnection("inv");
+$db = $database->getInvConnection();
 
 $inventory = new inventory($db);
 $submitMethod = "";
@@ -142,18 +142,28 @@ if (!empty($requestData['requestType'])) {
         die;
         break;
 
+      case "fetch_chart_data":
+        $res = $inventory->fetch_chart_data($requestData);
+        echo json_encode($res);
+        die;
+        break;
+  
+      case "fetch_out_stock_product":
+        $res = $inventory->fetch_out_stock_product($requestData);
+        echo json_encode($res);
+        die;
+        break;
+  
+      case "purchase_item":
+        $res = $inventory->purchase_item($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
       case "upsertCategory":
-        try {
-          $res = $inventory->upsert($requestData);
-          echo json_encode($res);
-          die;
-          if ($debug) {
-            echo "from upsert category php, after calling API ";
-            var_dump($res);
-          }
-        } catch (Exception $e) {
-          $response['message'] = $e->getMessage();
-        }
+        $res = $inventory->upsert($requestData);
+        echo json_encode($res);
+        die;        
         break;
 
       default:
