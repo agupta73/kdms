@@ -17,7 +17,7 @@ class Database {
         $this->conn = null;
 
         try {
-            if($module = "inv"){
+            if($module == "inv"){
                 $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->inv_db_name, $this->username, $this->password);                
             }
             else {
