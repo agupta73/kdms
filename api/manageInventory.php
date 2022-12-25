@@ -32,7 +32,24 @@ if (!empty($requestData['requestType'])) {
   $response = array('flag' => false, 'message' => "Request failed", 'info' => $requestData['requestType']);
 
   switch ($requestData['requestType']) {
-    case "serachCategories":
+    case "fill_category":
+    case "fill_location_rack":
+    case "fill_supplier":
+    case "fill_company":
+    case "fill_tax":
+    case "fill_item":
+    case "get_product_array":
+    case "Get_tax_field":
+    case "Get_total_no_of_product":
+    case "Get_total_product_purchase":
+    case "Get_total_product_sale":
+    case "Count_outstock_product":
+    case "Get_currency_symbol":
+    case "Get_Product_company_code":
+    case "Get_category_name":
+    case "Get_order_tax_percentage":
+    case "Get_user_name_from_id":
+    case "Get_product_name":   
       try {
         $res = $inventory->search($requestData);
         echo json_encode($res);
