@@ -668,26 +668,21 @@ $debug = false  ;
                             </div>
 
                             <div class="col-md-4">
-                                <div class="card card-profile">
-                                    <div class="card-body" style="height:280px;" data-toggle="modal" data-target="#CameraModalLong" data-backdrop="static"  data-keyboard="false">
-
-
-                                        </br>
-
+                                <div class="card card-profile card-devotee-image-profile">
+                                    <div class="card-body" data-toggle="modal" data-target="#CameraModalLong" data-backdrop="static"  data-keyboard="false">
 <!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
                                         <?php
                                         if ($devotee_photo == "") {
-                                            echo '<div  id="photo2"><img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img></div>';
+                                            echo '<div  id="photo2"><img class="devoteeImage" src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img></div>';
                                         } else {
-                                            echo '<div  id="photo2"><img src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" width="240px"></img></div>';
+                                            echo '<div  id="photo2"><img class="devoteeImage" src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" width="240px"></img></div>';
                                         }
                                         ?> 
-                                        <canvas id="canvas2" style="margin-top:-5%;"></canvas>
+                                        <!-- <canvas id="canvas2"></canvas> -->
                                     </div>
                                 </div>
                                 <div class="card card-profile">
-                                    <div class="card-body" style="height:280px;" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false">
-                                        </br>
+                                    <div class="card-body" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false">
                                         <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
                                         <?php
                                         if ($devotee_id_image == "") {
