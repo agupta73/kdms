@@ -239,3 +239,21 @@ td .table-data{
 th.assign-devotees {
 	text-align: center;
 }
+
+
+.devoteeImage {
+	height: auto;
+	width: auto;
+}
+
+.card-devotee-image-profile {
+	max-height: 350px;
+}
+
+.kdms-modal-addDevotee {
+	max-width: 1300px;
+}
+
+.kdms-adddevotee-card-title {
+	display: inline;
+}
