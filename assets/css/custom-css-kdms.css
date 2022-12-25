@@ -249,3 +249,11 @@ th.assign-devotees {
 .card-devotee-image-profile {
 	max-height: 350px;
 }
+
+.kdms-modal-addDevotee {
+	max-width: 1300px;
+}
+
+.kdms-adddevotee-card-title {
+	display: inline;
+}
