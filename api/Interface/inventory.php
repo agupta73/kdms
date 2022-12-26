@@ -1034,6 +1034,62 @@ Class inventory {
             return $data;
         }		
     }
+    public function Get_item_purchase_qty($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_purchase_id = "";
+       
+        
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= "item_purchase_id not supplied.";
+            $status = false;
+        }
+        else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT item_purchase_qty FROM item_purchase_ims 
+                    WHERE item_purchase_id = '". $item_purchase_id ."'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        /*while($row = $results->fetchObject()){
+            $result[]=$row['item_purchase_qty'];
+            $i++;
+        }*/
+        foreach($results as $row)
+		{
+            $i++;
+            $result["item_purchase_qty"] = $row["item_purchase_qty"];
+		}
+	
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function fetch_chart_data($requestData)
     {
         $res = array();
@@ -1375,6 +1431,392 @@ Class inventory {
             }
         }
         return $res;         
+    }
+
+    public function update_purchase($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = ""; //  $formdata['item_id'],
+        $supplier_id = ""; //  $formdata['supplier_id'],
+        $item_batch_no = ""; //  $formdata['item_batch_no'],
+        $item_purchase_qty = 1; //  $formdata['item_purchase_qty'], 
+        $available_quantity = ""; //  $formdata['item_purchase_qty'], 
+        $item_purchase_price_per_unit = 1; //  $formdata['item_purchase_price_per_unit'],
+        $item_purchase_total_cost = 1; //  $total_cost,
+        $item_manufacture_month = "MONTH(NOW())"; //  $formdata['item_manufacture_month'],
+        $item_manufacture_year = "YEAR(NOW())"; //  $formdata['item_manufacture_year'],
+        $item_expired_month = "MONTH(NOW())"; //  $formdata['item_expired_month'],
+        $item_expired_year = "YEAR(NOW()) + 10"; //  $formdata['item_expired_year'],
+        $item_sale_price_per_unit = 1; //  $formdata['item_sale_price_per_unit'],        
+        $item_purchase_id = ""; //  $item_purchase_id
+        $original_item_purchase_qty = 0;
+
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= " item_purchase_id is missing.";
+            $status = false;
+        } else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+
+        if (empty($requestData['item_id'])) {
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        } else {
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if (empty($requestData['supplier_id'])) {
+            $errormsg .= " supplier_id is missing.";
+            $status = false;
+        } else {
+            $supplier_id = htmlspecialchars(strip_tags($requestData['supplier_id']));
+        }
+
+        if (empty($requestData['item_batch_no'])) {
+            $errormsg .= " item_batch_no is missing.";
+            $status = false;
+        } else {
+            $item_batch_no = htmlspecialchars(strip_tags($requestData['item_batch_no']));
+        }
+
+        if (empty($requestData['item_purchase_qty'])) {
+            $errormsg .= " item_purchase_qty is missing.";
+            $status = false;
+        } else {
+            $item_purchase_qty = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+        }
+
+        if (empty($requestData['available_quantity'])) {
+            $available_quantity = $item_purchase_qty;
+        } else {
+            $available_quantity = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+
+        }
+
+        if (!empty($requestData['item_purchase_price_per_unit'])) {
+            $item_purchase_price_per_unit = htmlspecialchars(strip_tags($requestData['item_purchase_price_per_unit']));
+        }
+
+        if (!empty($requestData['item_purchase_total_cost'])) {
+            $item_purchase_total_cost = htmlspecialchars(strip_tags($requestData['item_purchase_total_cost']));
+        }
+
+        if (!empty($requestData['item_manufacture_month'])) {
+            $item_manufacture_month = htmlspecialchars(strip_tags($requestData['item_manufacture_month']));
+        }
+
+        if (!empty($requestData['item_manufacture_year'])) {
+            $item_manufacture_year = htmlspecialchars(strip_tags($requestData['item_manufacture_year']));
+        }
+
+        if (!empty($requestData['item_expired_month'])) {
+            $item_expired_month = htmlspecialchars(strip_tags($requestData['item_expired_month']));
+        }
+
+        if (!empty($requestData['item_expired_year'])) {
+            $item_expired_year = htmlspecialchars(strip_tags($requestData['item_expired_year']));
+        }
+
+        if (!empty($requestData['item_sale_price_per_unit'])) {
+            $item_sale_price_per_unit = htmlspecialchars(strip_tags($requestData['item_sale_price_per_unit']));
+        }
+
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        //check if purchase qty was changed
+        $tmpRequest = array('item_purchase_id' => $item_purchase_id);
+        $tmpResult = $this->Get_item_purchase_qty($tmpRequest);
+        if($this->debug){
+            echo "<br>>>>after getting the original item purchase quantity. Results: "; 
+            var_dump($tmpResult);
+        }
+        foreach ($tmpResult as $temp_row) {
+            $original_item_purchase_qty = $tmpResult['item_purchase_qty'];
+        }
+        
+        unset($tmpRequest);
+        unset($tmpResult);
+        if ($this->debug) {
+            echo "<br>>>> from the section where item IMS is updated with change in purchase quantity:";
+            echo "<br>original quantity: ", $original_item_purchase_qty;
+            echo "<br>updated quantity: ", $item_purchase_qty, "<br><br>";
+        }
+        
+        $query = "UPDATE item_purchase_ims         
+                  SET                     
+                    item_id    =                '" . $item_id . "', 
+                    supplier_id =               '" . $supplier_id . "',
+                    item_batch_no =             '" . $item_batch_no . "',
+                    item_purchase_qty =          " . $item_purchase_qty . ",
+                    available_quantity =         " . $available_quantity . ",
+                    item_purchase_price_per_unit=" . $item_purchase_price_per_unit . ",
+                    item_purchase_total_cost =   " . $item_purchase_total_cost . ",
+                    item_manufacture_month =     " . $item_manufacture_month . ",
+                    item_manufacture_year =      " . $item_manufacture_year . ",
+                    item_expired_month =         " . $item_expired_month . ",
+                    item_expired_year =          " . $item_expired_year . ",
+                    item_sale_price_per_unit =   " . $item_sale_price_per_unit . "
+                WHERE item_purchase_id =         " . $item_purchase_id;
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);            
+        }
+
+        if ($stmt->execute()) {
+            
+            if ($original_item_purchase_qty != $item_purchase_qty) {
+                if ($this->debug) {
+                    echo "<br>>>> from the section where item IMS is updated with change in purchase quantity:";
+                    echo "<br>original quantity: ", $original_item_purchase_qty;
+                    echo "<br>updated quantity: ", $item_purchase_qty;
+                }
+                $final_update_qty = 0;
+                if ($original_item_purchase_qty > $item_purchase_qty) {
+                    $final_update_qty = $original_item_purchase_qty - $item_purchase_qty;
+
+                    $iQuery = "  UPDATE item_ims 
+                                SET item_available_quantity = item_available_quantity - " . $final_update_qty . " 
+                                WHERE item_id = '" . $item_id . "'
+                    ";
+                } else {
+                    $final_update_qty = $item_purchase_qty - $original_item_purchase_qty;
+
+                    $iQuery = " UPDATE item_ims 
+                                SET item_available_quantity = item_available_quantity + " . $final_update_qty . " 
+                                WHERE item_id = '" . $item_id . "'
+                    ";
+                }
+
+
+                $stmt = $this->conn->prepare($iQuery);
+                if ($this->debug) {
+                    var_dump($stmt);
+                }
+                if ($stmt->execute()) {
+                    $res['status'] = true;
+                    $res['message'] = "[Inventory] Successfully Updated Purchase!!";
+                    $res['info'] = $item_id;
+                } else {
+                    $res['status'] = false;
+                    $res['message'] = "[Inventory] Updating Item Available Quantity Failed, but purchase successfully updated at API!!";
+                    if ($this->debug) {
+                        $res['info'] = $query;
+                    } else {
+                        $res['info'] = $stmt;
+                    }
+                }
+            } else {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Purchase. No adjustment needed on the item table!!";
+                $res['info'] = $item_id;
+            }
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Updating Purchase Failed at API!!";
+            if ($this->debug) {
+                $res['info'] = $query;
+            } else {
+                $res['info'] = $stmt;
+            }
+        }
+        return $res;
+    }
+
+    public function delete_purchase($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = ""; //  $formdata['item_id'],
+        $supplier_id = ""; //  $formdata['supplier_id'],
+        $item_batch_no = ""; //  $formdata['item_batch_no'],
+        $item_purchase_qty = 1; //  $formdata['item_purchase_qty'], 
+        $available_quantity = ""; //  $formdata['item_purchase_qty'], 
+        $item_purchase_price_per_unit = 1; //  $formdata['item_purchase_price_per_unit'],
+        $item_purchase_total_cost = 1; //  $total_cost,
+        $item_manufacture_month = "MONTH(NOW())"; //  $formdata['item_manufacture_month'],
+        $item_manufacture_year = "YEAR(NOW())"; //  $formdata['item_manufacture_year'],
+        $item_expired_month = "MONTH(NOW())"; //  $formdata['item_expired_month'],
+        $item_expired_year = "YEAR(NOW()) + 10"; //  $formdata['item_expired_year'],
+        $item_sale_price_per_unit = 1; //  $formdata['item_sale_price_per_unit'],        
+        $item_purchase_id = ""; //  $item_purchase_id
+        $original_item_purchase_qty = 0;
+
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= " item_purchase_id is missing.";
+            $status = false;
+        } else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+
+        if (empty($requestData['item_id'])) {
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        } else {
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if (empty($requestData['supplier_id'])) {
+            $errormsg .= " supplier_id is missing.";
+            $status = false;
+        } else {
+            $supplier_id = htmlspecialchars(strip_tags($requestData['supplier_id']));
+        }
+
+        if (empty($requestData['item_batch_no'])) {
+            $errormsg .= " item_batch_no is missing.";
+            $status = false;
+        } else {
+            $item_batch_no = htmlspecialchars(strip_tags($requestData['item_batch_no']));
+        }
+
+        if (empty($requestData['item_purchase_qty'])) {
+            $errormsg .= " item_purchase_qty is missing.";
+            $status = false;
+        } else {
+            $item_purchase_qty = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+        }
+
+        if (empty($requestData['available_quantity'])) {
+            $available_quantity = $item_purchase_qty;
+        } else {
+            $available_quantity = htmlspecialchars(strip_tags($requestData['item_purchase_qty']));
+
+        }
+
+        if (!empty($requestData['item_purchase_price_per_unit'])) {
+            $item_purchase_price_per_unit = htmlspecialchars(strip_tags($requestData['item_purchase_price_per_unit']));
+        }
+
+        if (!empty($requestData['item_purchase_total_cost'])) {
+            $item_purchase_total_cost = htmlspecialchars(strip_tags($requestData['item_purchase_total_cost']));
+        }
+
+        if (!empty($requestData['item_manufacture_month'])) {
+            $item_manufacture_month = htmlspecialchars(strip_tags($requestData['item_manufacture_month']));
+        }
+
+        if (!empty($requestData['item_manufacture_year'])) {
+            $item_manufacture_year = htmlspecialchars(strip_tags($requestData['item_manufacture_year']));
+        }
+
+        if (!empty($requestData['item_expired_month'])) {
+            $item_expired_month = htmlspecialchars(strip_tags($requestData['item_expired_month']));
+        }
+
+        if (!empty($requestData['item_expired_year'])) {
+            $item_expired_year = htmlspecialchars(strip_tags($requestData['item_expired_year']));
+        }
+
+        if (!empty($requestData['item_sale_price_per_unit'])) {
+            $item_sale_price_per_unit = htmlspecialchars(strip_tags($requestData['item_sale_price_per_unit']));
+        }
+
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        //check if purchase qty was changed
+        $tmpRequest = array('item_purchase_id' => $item_purchase_id);
+        $tmpResult = $this->Get_item_purchase_qty($tmpRequest);
+        foreach ($tmpResult as $temp_row) {
+            $original_item_purchase_qty = $temp_row["item_purchase_qty"];
+        }
+        unset($tmpRequest);
+        unset($tmpResult);
+
+        
+        $query = "UPDATE item_purchase_ims         
+                  SET                     
+                    item_id    =                '" . $item_id . "', 
+                    supplier_id =               '" . $supplier_id . "',
+                    item_batch_no =             '" . $item_batch_no . "',
+                    item_purchase_qty =          " . $item_purchase_qty . ",
+                    available_quantity =         " . $available_quantity . ",
+                    item_purchase_price_per_unit=" . $item_purchase_price_per_unit . ",
+                    item_purchase_total_cost =   " . $item_purchase_total_cost . ",
+                    item_manufacture_month =     " . $item_manufacture_month . ",
+                    item_manufacture_year =      " . $item_manufacture_year . ",
+                    item_expired_month =         " . $item_expired_month . ",
+                    item_expired_year =          " . $item_expired_year . ",
+                    item_sale_price_per_unit =   " . $item_sale_price_per_unit . "
+                WHERE item_purchase_id =         " . $item_purchase_id;
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            
+            if ($original_item_purchase_qty != $item_purchase_qty) {
+                $final_update_qty = 0;
+                if ($original_item_purchase_qty > $item_purchase_qty) {
+                    $final_update_qty = $original_item_purchase_qty - $item_purchase_qty;
+
+                    $query = "  UPDATE item_ims 
+                                SET item_available_quantity = item_available_quantity - " . $final_update_qty . " 
+                                WHERE item_id = '" . $item_id . "'
+                    ";
+                } else {
+                    $final_update_qty = $item_purchase_qty - $original_item_purchase_qty;
+
+                    $query = " UPDATE item_ims 
+                                SET item_available_quantity = item_available_quantity + " . $final_update_qty . " 
+                                WHERE item_id = '" . $item_id . "'
+                    ";
+                }
+
+                if ($this->debug) {
+                    var_dump($stmt);
+                }
+
+                if ($stmt->execute()) {
+                    $res['status'] = true;
+                    $res['message'] = "[Inventory] Successfully Updated Purchase!!";
+                    $res['info'] = $item_id;
+                } else {
+                    $res['status'] = false;
+                    $res['message'] = "[Inventory] Updating Item Available Quantity Failed, but purchase successfully updated at API!!";
+                    if ($this->debug) {
+                        $res['info'] = $query;
+                    } else {
+                        $res['info'] = $stmt;
+                    }
+                }
+            }
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Updating Purchase Failed at API!!";
+            if ($this->debug) {
+                $res['info'] = $query;
+            } else {
+                $res['info'] = $stmt;
+            }
+        }
+        return $res;
     }
 }
 ?>
