@@ -153,13 +153,25 @@ if (!empty($requestData['requestType'])) {
         echo json_encode($res);
         die;
         break;
-  
+        
+      case "fetch_purchase":
+        $res = $inventory->fetch_purchase($requestData);
+        echo json_encode($res);
+        die;
+        break;  
+          
       case "Get_item_purchase_qty":
         $res = $inventory->Get_item_purchase_qty($requestData);
         echo json_encode($res);
         die;
         break;
 
+      case "Get_item_purchase_record":
+        $res = $inventory->Get_item_purchase_record($requestData);
+        echo json_encode($res);
+        die;
+        break;
+  
       case "purchase_item":
         $res = $inventory->purchase_item($requestData);
         echo json_encode($res);
