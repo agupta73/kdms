@@ -5,8 +5,8 @@ Class inventory {
     
     private $conn;
     
-    private $debug = false;
     
+    private $debug = false;
 // constructor with $db as database connection
     public function __construct($db) {
         $this->conn = $db;
@@ -27,7 +27,7 @@ Class inventory {
         return "to be implemented";
     }
   
-    public function upsert($requestData) {
+    public function delete_upsert($requestData) {
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -573,36 +573,36 @@ Class inventory {
             return $result;
         }
     }
-    public function Get_tax_field() { 
-        $res = array();
-        $res['status'] = false;
-        $res['message'] = '';
-        $errormsg = "";
-        $status = true;
+    // public function Get_tax_field() { 
+    //     $res = array();
+    //     $res['status'] = false;
+    //     $res['message'] = '';
+    //     $errormsg = "";
+    //     $status = true;
         
-        $query = "SELECT * FROM tax_ims WHERE tax_status = 'Enable' ORDER BY tax_name ASC" ;
+    //     $query = "SELECT * FROM tax_ims WHERE tax_status = 'Enable' ORDER BY tax_name ASC" ;
 
 
-        if($this->debug) {var_dump($query);}
+    //     if($this->debug) {var_dump($query);}
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
-        $i = 0;
-        $result = array();
-        while($row = $results->fetchObject()){
-            $result[]=$row;
-            $i++;
-        }	
+    //     $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+    //     $i = 0;
+    //     $result = array();
+    //     while($row = $results->fetchObject()){
+    //         $result[]=$row;
+    //         $i++;
+    //     }	
 
-        if($i==0){
-            $res['status'] = false;
-            $res['message'] = $i . " results found!";
-            $res['info'] = $results;
-            return $res;
-        }
-        else{
-            return $result;
-        }	
-    }
+    //     if($i==0){
+    //         $res['status'] = false;
+    //         $res['message'] = $i . " results found!";
+    //         $res['info'] = $results;
+    //         return $res;
+    //     }
+    //     else{
+    //         return $result;
+    //     }	
+    // }
     public function Get_total_no_of_product() { 
         $res = array();
         $res['status'] = false;
@@ -793,7 +793,8 @@ Class inventory {
         
         $i=0;
 		$result = array();
-        while($row = $results->fetchObject()){
+        foreach($results as $row){
+        //while($row = $results->fetchObject()){
             $result[]=$row;
             $i++;
         }	
@@ -1146,6 +1147,58 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_items_for_purchase_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_purchase_id = "";
+       
+        
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= " item_purchase_id is missing.";
+            $status = false;
+        } else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT * FROM item_purchase_ims 
+                    INNER JOIN item_ims ON item_ims.item_id =  item_purchase_ims.item_id 
+                    WHERE item_purchase_ims.item_purchase_id = '" . $item_purchase_id . "'" ;
+        
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function fetch_chart_data($requestData)
     {
         $res = array();
@@ -1394,6 +1447,698 @@ Class inventory {
             return $result;
         //} 
     }
+
+    public function get_order_for_order_id($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $order_id = 0;
+
+        if(!empty($requestData['order_id'])) {             
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+        
+        $query = " SELECT * FROM order_ims ";
+        if($order_id != 0){
+            $query .= "WHERE order_id = '" . $order_id . "'";
+        }
+        
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function get_order_item_for_order_id($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $order_id = "";
+
+        if(empty($requestData['order_id'])) { 
+            $errormsg .= " order_id is missing.";
+            $status = false;
+        }
+        else{
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+        
+        $query = " SELECT * FROM order_item_ims WHERE order_id = '" . $order_id . "'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function fetch_orders($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $is_master = false;
+        $user_id = "";        
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if(!empty($requestData['is_master'])) {            
+            $is_master = htmlspecialchars(strip_tags($requestData['is_master']));
+        }
+        
+        if(!empty($requestData['user_id'])) {            
+            $user_id = htmlspecialchars(strip_tags($requestData['user_id']));
+        }
+        
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM order_ims  ";
+                    // INNER JOIN user_ims ON user_ims.user_id = order_ims.order_created_by ";
+                    //INNER JOIN  supplier_ims ON  supplier_ims.supplier_id = item_purchase_ims.supplier_id  ";
+
+        $where = 'WHERE ';
+        if($is_master == false){
+            $where .= " order_ims.order_created_by = '". $user_id ."' AND ";
+        }
+
+        if ($search_value != "") {
+            $query .= $where . '(order_ims.order_id LIKE "%'. $search_value.'%" ';
+			$query .= 'OR order_ims.buyer_name LIKE "%'. $search_value.'%" ';
+			$query .= 'OR order_ims.order_total_amount LIKE "%'. $search_value.'%" ';
+			$query .= 'OR order_ims.order_added_on LIKE "%'. $search_value.'%" ';
+			$query .= 'OR order_ims.order_updated_on LIKE "%'. $search_value.'%" ';
+			$query .= 'OR order_ims.order_status LIKE "%'. $search_value.'%") ';
+        }
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY order_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function create_order($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+   
+        $buyer_name = ""; 
+        $order_total_amount = 0; 
+        $order_created_by = "unknown"; 
+        $order_status = "Enable"; 
+        $order_added_on = "NOW()"; 
+        $order_updated_on = "NOW()"; 
+        $order_tax_name = ""; 
+        $order_tax_percentage = 0;
+        /*
+        
+       */
+
+       if(empty($requestData['buyer_name'])) { 
+            $errormsg .= " buyer_name is missing.";
+            $status = false;
+        }
+        else{
+            $buyer_name = htmlspecialchars(strip_tags($requestData['buyer_name']));
+        }
+
+        if(!empty($requestData['order_total_amount'])) {             
+            $order_total_amount = htmlspecialchars(strip_tags($requestData['order_total_amount']));
+        }
+
+        if(!empty($requestData['order_created_by'])) {             
+            $order_created_by = htmlspecialchars(strip_tags($requestData['order_created_by']));
+        }
+
+        if(!empty($requestData['order_status'])) {             
+            $order_status = htmlspecialchars(strip_tags($requestData['order_status']));
+        }
+
+        if(!empty($requestData['order_added_on'])) {             
+            $order_added_on = htmlspecialchars(strip_tags($requestData['order_added_on']));
+        }
+
+        if(!empty($requestData['order_updated_on'])) {             
+            $order_updated_on = htmlspecialchars(strip_tags($requestData['order_updated_on']));
+        }
+
+        if(!empty($requestData['order_tax_name'])) {             
+            $order_tax_name = htmlspecialchars(strip_tags($requestData['order_tax_name']));
+        }
+
+        if(!empty($requestData['order_tax_percentage'])) {             
+            $order_tax_percentage = htmlspecialchars(strip_tags($requestData['order_tax_percentage']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        
+        $query = "INSERT INTO order_ims 
+                    (
+                        buyer_name, 
+                        order_total_amount, 
+                        order_created_by, 
+                        order_status, 
+                        order_added_on, 
+                        order_updated_on, 
+                        order_tax_name, 
+                        order_tax_percentage
+                    ) 
+                VALUES 
+                    (
+                         '" . $buyer_name . "',  
+                          " . $order_total_amount . ",  
+                         '" . $order_created_by . "',  
+                         '" . $order_status . "',  
+                          " . $order_added_on . ",  
+                          " . $order_updated_on . ",  
+                         '" . $order_tax_name . "',  
+                         '" . $order_tax_percentage . "'
+                    ) ";
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if($this->debug){ var_dump($stmt); die;}
+
+        if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Order!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Order creation failed at API!!";
+                if ($this->debug) {
+                    $res['info'] = $query;
+                } else {
+                    $res['info'] = $stmt;
+                }
+            }
+       
+        return $res;         
+    }
+
+    public function create_order_line($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+   
+        $order_id = 0; 
+        $item_id = 0; 
+        $item_purchase_id = 0; 
+        $item_quantity = 0; 
+        $item_price = 0;         
+        
+
+       if(empty($requestData['order_id'])) { 
+            $errormsg .= " order_id is missing.";
+            $status = false;
+        }
+        else{
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+        
+        if(empty($requestData['item_id'])) { 
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        }
+        else{
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if(!empty($requestData['item_purchase_id'])) {             
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+
+        if(!empty($requestData['item_quantity'])) {             
+            $item_quantity = htmlspecialchars(strip_tags($requestData['item_quantity']));
+        }
+
+        if(!empty($requestData['item_price'])) {             
+            $item_price = htmlspecialchars(strip_tags($requestData['item_price']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        
+        $query = "INSERT INTO order_item_ims 
+                    (
+                        order_id, 
+                        item_id, 
+                        item_purchase_id, 
+                        item_quantity, 
+                        item_price
+                    ) 
+                VALUES 
+                    (
+                         " . $order_id . ",  
+                          " . $item_id . ",  
+                          " . $item_purchase_id . ",  
+                          " . $item_quantity . ",  
+                          " . $item_price . "
+                    ) ";
+
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if($this->debug){ var_dump($stmt); die;}
+
+        if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Order Line!!";
+                $res['info'] = $this->conn->lastInsertId();
+
+                $query = "UPDATE item_purchase_ims 
+                            SET available_quantity = available_quantity - ". $item_quantity ." 
+                            WHERE item_purchase_id = ". $item_purchase_id  ;
+
+                $stmt = $this->conn->prepare($query);
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Order Line and updated item purchase record available quantity!!";
+                $res['info'] = $order_id;
+
+                $query = "UPDATE item_ims 
+                            SET item_available_quantity = item_available_quantity - ". $item_quantity ." 
+                            WHERE item_id = ". $item_id ;
+
+                $stmt = $this->conn->prepare($query);
+
+                if ($stmt->execute()) {
+                    $res['status'] = true;
+                    $res['message'] = "[Inventory] Successfully Added Order Line and updated item purchase & item available quantities!!";
+                    $res['info'] = $order_id;
+                }
+                else {
+                    $res['status'] = false;
+                    $res['message'] = "[Inventory] Successfully Added Order Line and updated item purchase available quantities, but failed to update item available quantity!!";
+                    $res['info'] = $query;
+                }
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Successfully Added Order Line but failed to update item purchase and item available quantity!!";
+                $res['info'] = $query;
+            }
+
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Order line creation failed at API!!";
+            if ($this->debug) {
+                $res['info'] = $query;
+            } else {
+                $res['info'] = $stmt;
+            }
+        }
+       
+        return $res;         
+    }
+    public function remove_order_line($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $order_item_id = 0;
+
+        if (empty($requestData['order_item_id'])) {
+            $errormsg .= " order_item_id is missing.";
+            $status = false;
+        } else {
+            $order_item_id = htmlspecialchars(strip_tags($requestData['order_item_id']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM order_item_ims 
+                    WHERE order_item_id = " . $order_item_id . " ";
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        foreach ($results as $item_row) {
+            $i++;
+
+            $item_id = $item_row["item_id"];
+            $item_purchase_id = $item_row["item_purchase_id"];
+            $item_quantity = $item_row["item_quantity"];
+            $item_price = $item_row["item_price"];
+            $order_id = $item_row["order_id"];
+            $request = array('order_id' => $order_id);
+            $tax_per_arr = explode(',', $this->Get_order_tax_percentage($request)['order_tax_percentage']);
+            $item_amt_with_tax = 0;
+            $item_amt_without_tax = $item_quantity * $item_price;
+            $tax_amt = 0;
+
+            for ($i = 0; $i < count($tax_per_arr); $i++) {
+                $tax_amt = floatval($tax_amt) + floatval($item_amt_without_tax * $tax_per_arr[$i] / 100);
+            }
+            $item_amt_with_tax = floatval($item_amt_without_tax) + floatval($tax_amt);
+
+            if ($this->debug) {
+                echo "\n item_row: ";
+                var_dump($item_row);
+                echo "\n item_id: ";
+                var_dump($item_id);
+                echo "\n item_quantity: ";
+                var_dump($item_quantity);
+                echo "\n tax_per_arr: ";
+                var_dump($tax_per_arr);
+                echo "\n item_amt_without_tax; ";
+                var_dump($item_amt_without_tax);
+                echo "\n tax_amt: ";
+                var_dump($tax_amt);
+                echo "\n item_amt_with_tax: ";
+                var_dump($item_amt_with_tax);
+                echo "\n ====end===";
+            }
+
+            $query = "DELETE FROM order_item_ims WHERE order_item_id = " . $order_item_id;
+            $stmt = $this->conn->prepare($query);
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Deleted Order Line!!";
+                $res['info'] = $order_item_id;
+
+                $sub_query = array();
+                $sub_query[0] = "UPDATE order_ims 
+                                SET order_total_amount = order_total_amount - " . $item_amt_with_tax . " 
+                                WHERE order_id = " . $order_id;
+
+                $sub_query[1] = "UPDATE item_purchase_ims 
+                                SET available_quantity = available_quantity + " . $item_quantity . " 
+                                WHERE item_purchase_id = " . $item_purchase_id;
+
+                $sub_query[2] = "UPDATE item_ims 
+                                SET item_available_quantity = item_available_quantity + " . $item_quantity . " 
+                                WHERE item_id = " . $item_id;
+
+                for ($i = 0; $i < sizeof($sub_query); $i++) {
+                    $stmt = $this->conn->prepare($sub_query[$i]);
+
+                    if (!$stmt->execute()) {
+                        $res['status'] = false;
+                        $res['message'] = "[Inventory] Updating Item Available Quantity Failed, but order successfully deleted at API!!";
+                        $res['info'] = $stmt;
+                        break;
+                    }
+                }
+
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Order line removal failed at API!!";
+                if ($this->debug) {
+                    $res['info'] = $query;
+                } else {
+                    $res['info'] = $stmt;
+                }
+            }
+        }
+        return $res;
+    }
+    public function update_order($requestData)
+    {
+        //>>Declarations
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $buyer_name = "";
+        $order_total_amount = 0;
+        $order_updated_on = 'NOW()';
+        $order_tax_name = "";
+        $order_tax_percentage = 0;
+        $order_id = 0;
+        $item_id = array();
+        $item_purchase_id = array();
+        $item_quantity = array();
+        $item_price = array();
+
+
+        if (empty($requestData['order_id'])) {
+            $errormsg .= " order_id is missing.";
+            $status = false;
+        } else {
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+
+        if (empty($requestData['item_id'])) {
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        } else {
+            if($this->debug){
+                var_dump(explode(',', $requestData['item_id']));
+                //$item_id = explode(',', $requestData['item_id']);
+            } else {
+                $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+            }
+            
+        }
+
+        if (empty($requestData['item_purchase_id'])) {
+            $errormsg .= " item_purchase_id is missing.";
+            $status = false;
+        } else {
+            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+        }
+
+        if (empty($requestData['buyer_name'])) {
+            $errormsg .= " buyer_name is missing.";
+            $status = false;
+        } else {
+            $buyer_name = htmlspecialchars(strip_tags($requestData['buyer_name']));
+        }
+
+        if (!empty($requestData['order_total_amount'])) {
+            $order_total_amount = htmlspecialchars(strip_tags($requestData['order_total_amount']));
+        }
+
+        if (!empty($requestData['order_updated_on'])) {
+            $order_updated_on = htmlspecialchars(strip_tags($requestData['order_updated_on']));
+        }
+
+        if (!empty($requestData['order_tax_name'])) {
+            $order_tax_name = htmlspecialchars(strip_tags($requestData['order_tax_name']));
+        }
+
+        if (!empty($requestData['order_tax_percentage'])) {
+            $order_tax_percentage = htmlspecialchars(strip_tags($requestData['order_tax_percentage']));
+        }
+
+        if (!empty($requestData['item_price'])) {
+            $item_price = htmlspecialchars(strip_tags($requestData['item_price']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+        //<< endof declarations
+        // Update order header
+        $query = "UPDATE order_ims 
+                    SET buyer_name = '" . $buyer_name . "', 
+                    order_total_amount = " . $order_total_amount . ", 
+                    order_updated_on = " . $order_updated_on . ", 
+                    order_tax_name = '" . $order_tax_name . "', 
+                    order_tax_percentage = " . $order_tax_percentage . " 
+                    WHERE order_id = " . $order_id;
+
+        $stmt = $this->conn->prepare($query);
+
+        if($this->debug ){
+            var_dump($stmt);
+        }
+
+        // if order header successfully updated
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Updated Order!!";
+            $res['info'] = $order_id;
+            
+            //get records for each line item
+            for ($i = 0; $i < count($item_id); $i++) {
+                $query = "SELECT * FROM order_item_ims 
+                            WHERE order_id = '" . $order_id . "' 
+                            AND item_id = '" . $item_id[$i] . "' 
+                            AND item_purchase_id = '" . $item_purchase_id[$i] . "'";
+
+                $order_item_result = $this->conn->query($query, MYSQLI_USE_RESULT);
+                if($this->debug ){
+                    var_dump($order_item_result);
+                }
+                $i = 0;
+                //and check if the quantity was changed in any line
+                foreach ($order_item_result as $order_item_row) {
+                    $i++;
+                    $itemid = $order_item_row["item_id"];
+                    $itempurchaseid = $order_item_row["item_purchase_id"];
+                    $itemquantity = $order_item_row["item_quantity"];
+                    $medicineprice = $order_item_row["item_price"];
+
+                    //If the quantity was actually changed, modify the line records
+                    if ($itemquantity != $item_quantity[$i]) {
+                        $query = " UPDATE order_item_ims 
+                                    SET item_quantity = " . $item_quantity[$i] . "
+                                    WHERE order_item_id = " . $order_item_row['order_item_id'];
+
+                        $stmt = $this->conn->prepare($query);
+
+                        if($this->debug ){
+                            var_dump($stmt);
+                        }
+                        if ($stmt->execute()) {
+                            $res['status'] = true;
+                            $res['message'] = "[Inventory] Successfully Updated Order Item table!!";
+                            $res['info'] = $order_id;
+
+                            $final_update_qty = 0;
+                            $sub_query = array();
+                            //changed the purchase and item available quantity also, if the line quantity was changed
+                            if ($itemquantity > $item_quantity[$i]) {
+                                $final_update_qty = $itemquantity - $item_quantity[$i];
+
+
+                                $sub_query[0] = "UPDATE item_purchase_ims 
+                                                    SET available_quantity = available_quantity + " . $final_update_qty . " 
+                                                    WHERE item_purchase_id = '" . $item_purchase_id[$i] . "'";
+
+                                $sub_query[1] = "UPDATE item_ims 
+                                                    SET item_available_quantity = item_available_quantity + " . $final_update_qty . " 
+                                                    WHERE item_id = '" . $item_id[$i] . "'";
+                            } else {
+                                $final_update_qty = $item_quantity[$i] - $itemquantity;
+
+                                $sun_query[0] = " UPDATE item_purchase_ims 
+                                                    SET available_quantity = available_quantity - " . $final_update_qty . " 
+                                                    WHERE item_purchase_id = '" . $item_purchase_id[$i] . "'";
+
+
+                                $sub_query[1] = " UPDATE item_ims 
+                                                    SET item_available_quantity = item_available_quantity - " . $final_update_qty . " 
+                                                    WHERE item_id = '" . $item_id[$i] . "'";
+                            }
+                            for ($i = 0; $i < sizeof($sub_query); $i++) {
+                                $stmt = $this->conn->prepare($sub_query[$i]);
+
+                                if ($this->debug) {var_dump($stmt);}
+
+                                if (!$stmt->execute()) {
+                                    $res['status'] = false;
+                                    $res['message'] = "[Inventory] Updating Order quantities on item and item purchase Failed, but order and lines successfully updated at API!!";
+                                    $res['info'] = $stmt;
+                                    break;
+                                }
+                            }
+
+                        } else {
+                            $res['status'] = false;
+                            $res['message'] = "[Inventory] Successfully Updated Order table, but order item table failed to update!!";
+                            $res['info'] = $order_id;
+                        }
+
+
+                    }
+                }
+            }
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Successfully Updated Order table, but order item table failed to update!!";
+            $res['info'] = $order_id;
+        }
+        return $res;
+    }
+    
     public function purchase_item($requestData) {
         $res = array();
         $res['status'] = false;
@@ -1588,7 +2333,88 @@ Class inventory {
         }
         return $res;         
     }
+    public function delete_order($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
 
+        $order_id = "";
+        
+        if (empty($requestData['order_id'])) {
+            $errormsg .= " order_id is missing.";
+            $status = false;
+        } else {
+            $order_id = htmlspecialchars(strip_tags($requestData['order_id']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        //get order items
+        $query = "SELECT * FROM order_item_ims WHERE order_id = ". $order_id ;
+
+        
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        if($this->debug) {var_dump($results);}
+
+        $i=0;
+        $sub_query = array();
+        foreach($results as $item_row)
+		{   
+            $i++;         
+            $sub_query[0] = "UPDATE item_purchase_ims 
+                        SET available_quantity = available_quantity + ". $item_row['item_quantity'] ." 
+                        WHERE item_purchase_id = '". $item_row['item_purchase_id'] ."'";
+
+            $sub_query[1] = "UPDATE item_ims 
+                        SET item_available_quantity = item_available_quantity + ". $item_row['item_quantity'] ." 
+                        WHERE item_id = '". $item_row['item_id'] ."'";
+
+            for ($j = 0; $j < sizeof($sub_query); $j++) {
+                $stmt = $this->conn->prepare($sub_query[$j]);
+
+                if ($this->debug) {var_dump($stmt);}
+
+                if (!$stmt->execute()) {
+                    $res['status'] = false;
+                    $res['message'] = "[Inventory] Updating Order quantities on item and item purchase Failed at API!!";
+                    $res['info'] = $stmt;
+                    return $res;
+                    break;
+                }
+            }
+		}
+        
+        $sub_query2 = array();
+        $sub_query2[0] = "DELETE FROM order_item_ims WHERE order_id = '".$order_id."'";
+        $sub_query2[1] = "DELETE FROM order_ims WHERE order_id = '".$order_id."'";
+        
+        for ($k = 0; $k < sizeof($sub_query2); $k++) {
+            $stmt = $this->conn->prepare($sub_query2[$k]);
+
+            if ($this->debug) {var_dump($stmt);}
+
+            if (!$stmt->execute()) {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Deleting Order or order item Failed at API!!";
+                $res['info'] = $stmt;
+                return $res;
+                break;
+            } 
+        }
+        $res['status'] = true;
+        $res['message'] = "[Inventory] Order Deleted Successfully!!";
+        $res['info'] = $order_id;
+        return $res;
+    }
     public function update_purchase($requestData)
     {
         $res = array();

@@ -77,7 +77,7 @@ if (!empty($requestData['requestType'])) {
         break;
 
       case "Get_tax_field":
-        $res = $inventory->Get_tax_field();
+        $res = $inventory->fill_tax();
         echo json_encode($res);
         die;
         break;
@@ -171,7 +171,13 @@ if (!empty($requestData['requestType'])) {
         echo json_encode($res);
         die;
         break;
-  
+    
+      case "get_items_for_purchase_id":
+        $res = $inventory->get_items_for_purchase_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
       case "purchase_item":
         $res = $inventory->purchase_item($requestData);
         echo json_encode($res);
@@ -190,8 +196,50 @@ if (!empty($requestData['requestType'])) {
         die;        
         break;
       
-      case "upsertCategory":
-        $res = $inventory->upsert($requestData);
+      case "fetch_orders":
+        $res = $inventory->fetch_orders($requestData);
+        echo json_encode($res);
+        die;
+        break;    
+      
+      case "get_order_for_order_id":
+        $res = $inventory->get_order_for_order_id($requestData);
+        echo json_encode($res);
+        die;
+        break; 
+      
+      case "get_order_item_for_order_id":
+        $res = $inventory->get_order_item_for_order_id($requestData);
+        echo json_encode($res);
+        die;
+        break; 
+        
+      case "create_order":
+        $res = $inventory->create_order($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "create_order_line":
+        $res = $inventory->create_order_line($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+  
+      case "remove_order_line":
+        $res = $inventory->remove_order_line($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "update_order":
+        $res = $inventory->update_order($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "delete_order":
+        $res = $inventory->delete_order($requestData);
         echo json_encode($res);
         die;        
         break;
