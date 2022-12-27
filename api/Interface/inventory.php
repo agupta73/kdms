@@ -785,7 +785,7 @@ Class inventory {
         }
         
         $query = "SELECT company_short_name FROM item_manufacuter_company_ims WHERE item_manufacuter_company_id = '" . $item_manufacuter_company_id . "'" ;
-
+        //$query = "SELECT * FROM item_manufacuter_company_ims WHERE item_manufacuter_company_id = '" . $item_manufacuter_company_id . "'" ;
 
         if($this->debug) {var_dump($query);}
                 
@@ -793,20 +793,18 @@ Class inventory {
         
         $i=0;
 		$result = array();
-        foreach($results as $row){
-        //while($row = $results->fetchObject()){
-            $result[]=$row;
+        //foreach($results as $row){
+        while($row = $results->fetchObject()){
+        //    $result[]=$row['company_short_name'];
+        $result[]=$row;
             $i++;
         }	
         if($i==0){
-            $res['status'] = false;
-            $res['message'] = "No record found!";
-            $res['info'] = $results;
-            return $res;
+            $result= array('company_short_name'=>'Company not found');
         }
-        else{
+        
             return $result;
-        }
+        
     }
     public function Get_category_name($requestData) { 
         $res = array();
@@ -1183,6 +1181,7 @@ Class inventory {
         $i=0;
 		$result = array();
         while($row = $results->fetchObject()){
+            //foreach($results as $row){
             $result[]=$row;
             $i++;
         }	
