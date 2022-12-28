@@ -63,6 +63,12 @@ if (!empty($requestData['requestType'])) {
         echo json_encode($res);
         die;
         break;
+      
+      case "fill_tax_raw":
+        $res = $inventory->fill_tax();
+        echo json_encode($res);
+        die;
+        break;
 
       case "fill_item":
         $res = $inventory->fill_item();
