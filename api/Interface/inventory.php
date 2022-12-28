@@ -1963,6 +1963,10 @@ Class inventory {
         $item_quantity = array();
         $item_price = array();
 
+        if($this->debug){
+            echo "\n Passed data: ";
+            var_dump($requestData);
+        }
 
         if (empty($requestData['order_id'])) {
             $errormsg .= " order_id is missing.";
@@ -1974,21 +1978,15 @@ Class inventory {
         if (empty($requestData['item_id'])) {
             $errormsg .= " item_id is missing.";
             $status = false;
-        } else {
-            if($this->debug){
-                var_dump(explode(',', $requestData['item_id']));
-                //$item_id = explode(',', $requestData['item_id']);
-            } else {
-                $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
-            }
-            
+        } else {                
+                $item_id = json_decode($requestData['item_id'], true);
         }
-
+ 
         if (empty($requestData['item_purchase_id'])) {
             $errormsg .= " item_purchase_id is missing.";
             $status = false;
         } else {
-            $item_purchase_id = htmlspecialchars(strip_tags($requestData['item_purchase_id']));
+            $item_purchase_id  = json_decode($requestData['item_purchase_id'], true);
         }
 
         if (empty($requestData['buyer_name'])) {
@@ -2014,8 +2012,23 @@ Class inventory {
             $order_tax_percentage = htmlspecialchars(strip_tags($requestData['order_tax_percentage']));
         }
 
+        if (!empty($requestData['item_quantity'])) {
+            $item_quantity = json_decode($requestData['item_quantity'], true);
+        }
+
         if (!empty($requestData['item_price'])) {
-            $item_price = htmlspecialchars(strip_tags($requestData['item_price']));
+            $item_price = json_decode($requestData['item_price'], true);
+        }
+
+        if($this->debug ){
+            echo "\n item Ids: ";
+            var_dump($item_id);
+            echo "\n item_purchase_ids: ";
+            var_dump($item_purchase_id);
+            echo "\n item_quantity: ";
+            var_dump($item_quantity);
+            echo "\n item_price: ";
+            var_dump($item_price);            
         }
 
         if ($status == false) {
@@ -2030,12 +2043,13 @@ Class inventory {
                     order_total_amount = " . $order_total_amount . ", 
                     order_updated_on = " . $order_updated_on . ", 
                     order_tax_name = '" . $order_tax_name . "', 
-                    order_tax_percentage = " . $order_tax_percentage . " 
+                    order_tax_percentage = '" . $order_tax_percentage . "' 
                     WHERE order_id = " . $order_id;
 
         $stmt = $this->conn->prepare($query);
 
         if($this->debug ){
+            echo "\n Order IMS update statement: ";
             var_dump($stmt);
         }
 
@@ -2044,7 +2058,10 @@ Class inventory {
             $res['status'] = true;
             $res['message'] = "[Inventory] Successfully Updated Order!!";
             $res['info'] = $order_id;
-            
+            if($this->debug ){
+                echo "\n item Ids: ";
+                var_dump($item_id);
+            }
             //get records for each line item
             for ($i = 0; $i < count($item_id); $i++) {
                 $query = "SELECT * FROM order_item_ims 
@@ -2054,12 +2071,13 @@ Class inventory {
 
                 $order_item_result = $this->conn->query($query, MYSQLI_USE_RESULT);
                 if($this->debug ){
+                    echo "\n Order lines found: ";
                     var_dump($order_item_result);
                 }
-                $i = 0;
+                
                 //and check if the quantity was changed in any line
                 foreach ($order_item_result as $order_item_row) {
-                    $i++;
+                    
                     $itemid = $order_item_row["item_id"];
                     $itempurchaseid = $order_item_row["item_purchase_id"];
                     $itemquantity = $order_item_row["item_quantity"];
@@ -2074,6 +2092,7 @@ Class inventory {
                         $stmt = $this->conn->prepare($query);
 
                         if($this->debug ){
+                            echo "\n order item updated statement: ";
                             var_dump($stmt);
                         }
                         if ($stmt->execute()) {
@@ -2098,7 +2117,7 @@ Class inventory {
                             } else {
                                 $final_update_qty = $item_quantity[$i] - $itemquantity;
 
-                                $sun_query[0] = " UPDATE item_purchase_ims 
+                                $sub_query[0] = " UPDATE item_purchase_ims 
                                                     SET available_quantity = available_quantity - " . $final_update_qty . " 
                                                     WHERE item_purchase_id = '" . $item_purchase_id[$i] . "'";
 
@@ -2107,15 +2126,21 @@ Class inventory {
                                                     SET item_available_quantity = item_available_quantity - " . $final_update_qty . " 
                                                     WHERE item_id = '" . $item_id[$i] . "'";
                             }
-                            for ($i = 0; $i < sizeof($sub_query); $i++) {
-                                $stmt = $this->conn->prepare($sub_query[$i]);
+                            for ($j = 0; $j < sizeof($sub_query); $j++) {
+                                $stmt = $this->conn->prepare($sub_query[$j]);
 
-                                if ($this->debug) {var_dump($stmt);}
+                                if ($this->debug) {
+                                    echo "\n item and purchase quantity update statement: ";
+                                    var_dump($stmt);}
 
                                 if (!$stmt->execute()) {
                                     $res['status'] = false;
                                     $res['message'] = "[Inventory] Updating Order quantities on item and item purchase Failed, but order and lines successfully updated at API!!";
                                     $res['info'] = $stmt;
+                                    if($this->debug){
+                                        echo "\n failure occured: ";
+                                        var_dump($res);
+                                    }
                                     break;
                                 }
                             }
@@ -2123,17 +2148,23 @@ Class inventory {
                         } else {
                             $res['status'] = false;
                             $res['message'] = "[Inventory] Successfully Updated Order table, but order item table failed to update!!";
-                            $res['info'] = $order_id;
+                            $res['info'] = $stmt;
+                            if($this->debug){
+                                echo "\n failure occured: ";
+                                var_dump($res);
+                            }
                         }
-
-
                     }
                 }
             }
         } else {
             $res['status'] = false;
-            $res['message'] = "[Inventory] Successfully Updated Order table, but order item table failed to update!!";
-            $res['info'] = $order_id;
+            $res['message'] = "[Inventory] Failed to Updated Order table and didn't try rest of the dependent talbles!!";
+            $res['info'] = $stmt;
+            if($this->debug){
+                echo "\n failure occured: ";
+                var_dump($res);
+            }
         }
         return $res;
     }
