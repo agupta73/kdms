@@ -190,6 +190,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;
   
+      case "get_category_for_category_id":
+        $res = $inventory->get_category_for_category_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+  
       case "purchase_item":
         $res = $inventory->purchase_item($requestData);
         echo json_encode($res);
@@ -220,6 +226,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;    
       
+      case "fetch_category":
+        $res = $inventory->fetch_category($requestData);
+        echo json_encode($res);
+        die;
+        break;    
+      
       case "get_order_for_order_id":
         $res = $inventory->get_order_for_order_id($requestData);
         echo json_encode($res);
@@ -238,6 +250,24 @@ if (!empty($requestData['requestType'])) {
         die;        
         break;
       
+      case "add_category":
+        $res = $inventory->add_category($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+      
+      case "edit_category":
+        $res = $inventory->edit_category($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+       
+      case "delete_category":
+        $res = $inventory->delete_category($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+        
       case "add_product":
         $res = $inventory->add_product($requestData);
         echo json_encode($res);

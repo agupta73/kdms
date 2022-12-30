@@ -1253,6 +1253,60 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_category_for_category_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $category_id = "";
+       
+        
+        if (!empty($requestData['category_id'])) {
+            $category_id = htmlspecialchars(strip_tags(trim($requestData['category_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM category_ims ";
+        if($category_id != "") {
+            $query .= "WHERE category_id = '" . $category_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function fetch_chart_data($requestData)
     {
         $res = array();
@@ -1733,6 +1787,298 @@ Class inventory {
             $i++;
         }        
         return $result;        
+    }
+    public function fetch_category($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM category_ims ";
+                    
+
+
+        if ($search_value != "") {
+            $query .= 'WHERE category_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR category_status LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY category_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function add_category($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $category_name = "";
+        $category_status = 'Enable';
+        $category_datetime = "NOW()";
+
+        if (empty($requestData['category_name'])) {
+            $errormsg .= " category_name is missing.";
+            $status = false;
+        } else {
+            $category_name = htmlspecialchars(strip_tags($requestData['category_name']));
+        }
+
+        
+        if (!empty($requestData['category_status'])) {
+            $category_status = htmlspecialchars(strip_tags($requestData['category_status']));
+        }
+
+        if (!empty($requestData['category_datetime'])) {
+            $category_datetime = htmlspecialchars(strip_tags($requestData['category_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM category_ims WHERE category_name = '" . $category_name . "'" ;
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Category Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO category_ims 
+                    (
+                        category_name, 
+                        category_status, 
+                        category_datetime
+                    ) 
+                 VALUES 
+                    (
+                        '" . $category_name . "', 
+                        '" . $category_status . "',  
+                        " . $category_datetime . "
+                    )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Category!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Category creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_category($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $category_id = "";
+        $category_name = "";
+        
+        if (empty($requestData['category_id'])) {
+            $errormsg .= " category_id is missing.";
+            $status = false;
+        } else {
+            $category_id = htmlspecialchars(strip_tags($requestData['category_id']));
+        }
+
+        if (empty($requestData['category_name'])) {
+            $errormsg .= " category_name is missing.";
+            $status = false;
+        } else {
+            $category_name = htmlspecialchars(strip_tags($requestData['category_name']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM category_ims 
+                    WHERE category_name = '". $category_name ."' 
+                    AND category_id != '". $category_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Category Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "UPDATE category_ims 
+                        SET category_name = '" . $category_name . "'
+                        WHERE category_id = '" . $category_id . "'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Category!!";
+                $res['info'] = $query;
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Category update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_category($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $category_id = "";
+        $category_status = "Disable";
+
+        if (empty($requestData['category_id'])) {
+            $errormsg .= " category_id is missing.";
+            $status = false;
+        } else {
+            $category_id = htmlspecialchars(strip_tags($requestData['category_id']));
+        }
+
+        if (!empty($requestData['category_status'])) {
+            $category_status = htmlspecialchars(strip_tags($requestData['category_status']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE category_ims 
+                    SET category_status = '" . $category_status . "'
+                    WHERE category_id = '" . $category_id . "'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Deleted Category!!";
+            $res['info'] = $query;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Category deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
     }
     public function add_product($requestData)
     {
