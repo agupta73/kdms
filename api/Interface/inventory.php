@@ -907,7 +907,7 @@ Class inventory {
             return $output;
         }	
     }
-    public function Get_user_name_from_id($requestData) { 
+   /* public function Get_user_name_from_id($requestData) { 
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -958,6 +958,7 @@ Class inventory {
             return $user_name;
         }	
     }
+    */
     public function Get_product_name($requestData) { 
         $res = array();
         $res['status'] = false;

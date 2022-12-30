@@ -28,7 +28,12 @@ class clsAdmin
         $res['status'] = false;
         $res['message'] = '';
        
-        $type = $requestData['type'];
+        if(isset($requestData['type'])){
+            $type = $requestData['type'];
+        } else {
+            $type = $requestData['requestType'];
+        }
+        
 
         $status = true;
         if (!empty($type)) {
@@ -55,6 +60,14 @@ class clsAdmin
                     return $this->checkFavorites($userID, $favType);
                     break;
                     
+                case "Get_user_name_from_id": //User Favorites
+                    if ($this->debug) {
+                        echo "from clsAdmin - request Data: " ;
+                        var_dump($requestData);
+                    }
+                    return $this->Get_user_name_from_id($requestData);
+                    break;
+
                 case "upsertFav": //User Favorites
                     if ($this->debug) {
                         echo "from clsAdmin - request Data: " ;
@@ -62,7 +75,6 @@ class clsAdmin
                     }
                     return $this->upsertUserFavorite($requestData);
                     break;
-
                 default:
                     $res['message'] = "Request type invalid!";
                     return $res;
@@ -108,7 +120,54 @@ class clsAdmin
         }
         return $loginResult;
     }
+    public function Get_user_name_from_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
 
+        $user_id = "";
+       
+        
+        if (empty($requestData['user_key'])) {
+            $errormsg .= "User key not supplied.";
+            $status = false;
+        }
+        else {
+            $user_key = htmlspecialchars(strip_tags($requestData['user_key']));
+        }
+        
+       
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+        
+        $query = "SELECT user_name FROM user_master 
+		            WHERE user_key = '". $user_key ."'" ;
+
+
+        if($this->debug) {var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		foreach($results as $row)
+		{
+            $i++;		
+			$user_name = $row["user_name"];
+		}
+
+        if($i==0){
+            return "# User Not Found #";
+        }
+        else{
+            return $user_name;
+        }	
+    }
     private function checkFavorites($userID, $favType = "")
     {
         $query = "SELECT fav_url, fav_public, fav_type, fav_name
