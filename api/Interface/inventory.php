@@ -1198,6 +1198,60 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_item_for_item_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = "";
+       
+        
+        if (!empty($requestData['item_id'])) {
+            $item_id = htmlspecialchars(strip_tags(trim($requestData['item_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM item_ims ";
+        if($item_id != "") {
+            $query .= "WHERE item_id = '" . $item_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function fetch_chart_data($requestData)
     {
         $res = array();
@@ -1446,7 +1500,6 @@ Class inventory {
             return $result;
         //} 
     }
-
     public function get_order_for_order_id($requestData)
     {
         $res = array();
@@ -1602,6 +1655,387 @@ Class inventory {
             $i++;
         }        
         return $result;        
+    }
+
+    public function fetch_product($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM item_ims 
+                    INNER JOIN category_ims ON category_ims.category_id = item_ims.item_category 
+                    INNER JOIN  item_manufacuter_company_ims ON  item_manufacuter_company_ims.item_manufacuter_company_id = item_ims.item_manufactured_by 
+                    INNER JOIN location_rack_ims ON location_rack_ims.location_rack_id = item_ims.item_location_rack ";
+                    
+
+
+        if ($search_value != "") {
+            $query .= 'WHERE item_ims.item_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR item_manufacuter_company_ims.company_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR category_ims.category_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR location_rack_ims.location_rack_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR item_ims.item_status LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY item_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function add_product($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_name = "";
+        $item_manufactured_by = "";
+        $item_category = "";
+        $item_available_quantity = 0;
+        $item_location_rack = "";
+        $item_status = 'Enable';
+        $item_add_datetime = "NOW()";
+        $item_update_datetime = "NOW()";
+
+
+        if (empty($requestData['item_name'])) {
+            $errormsg .= " item_name is missing.";
+            $status = false;
+        } else {
+            $item_name = htmlspecialchars(strip_tags($requestData['item_name']));
+        }
+
+        if (empty($requestData['item_manufactured_by'])) {
+            $errormsg .= " item_manufactured_by is missing.";
+            $status = false;
+        } else {
+            $item_manufactured_by = htmlspecialchars(strip_tags($requestData['item_manufactured_by']));
+        }
+
+        if (empty($requestData['item_category'])) {
+            $errormsg .= " item_category is missing.";
+            $status = false;
+        } else {
+            $item_category = htmlspecialchars(strip_tags($requestData['item_category']));
+        }
+
+        if (!empty($requestData['item_available_quantity'])) {
+            $item_available_quantity = htmlspecialchars(strip_tags($requestData['item_available_quantity']));
+        }
+
+        if (!empty($requestData['item_location_rack'])) {
+            $item_location_rack = htmlspecialchars(strip_tags($requestData['item_location_rack']));
+        }
+
+        if (!empty($requestData['item_status'])) {
+            $item_status = htmlspecialchars(strip_tags($requestData['item_status']));
+        }
+
+        if (!empty($requestData['item_add_datetime'])) {
+            $item_add_datetime = htmlspecialchars(strip_tags($requestData['item_add_datetime']));
+        }
+
+        if (!empty($requestData['item_update_datetime'])) {
+            $item_update_datetime = htmlspecialchars(strip_tags($requestData['item_update_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM item_ims 
+                    WHERE item_name = '" . $item_name . "' 
+                    AND item_manufactured_by = '" . $item_manufactured_by . "'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Product Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO item_ims 
+                    (
+                        item_name, 
+                        item_manufactured_by, 
+                        item_category,
+                        item_available_quantity, 
+                        item_location_rack, 
+                        item_status, 
+                        item_add_datetime, 
+                        item_update_datetime
+                    ) 
+                 VALUES 
+                    (
+                        '" . $item_name . "', 
+                        '" . $item_manufactured_by . "',  
+                        '" . $item_category . "', 
+                        " . $item_available_quantity . ",  
+                        '" . $item_location_rack . "',  
+                        '" . $item_status . "', 
+                        " . $item_add_datetime . ",  
+                        " . $item_update_datetime . "
+                    )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Product!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Product creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_product($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = "";
+        $item_name = "";
+        $item_manufactured_by = "";
+        $item_category = "";
+        $item_location_rack = "";
+        $item_update_datetime = "NOW()";
+
+
+        if (empty($requestData['item_id'])) {
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        } else {
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if (empty($requestData['item_name'])) {
+            $errormsg .= " item_name is missing.";
+            $status = false;
+        } else {
+            $item_name = htmlspecialchars(strip_tags($requestData['item_name']));
+        }
+
+        if (empty($requestData['item_manufactured_by'])) {
+            $errormsg .= " item_manufactured_by is missing.";
+            $status = false;
+        } else {
+            $item_manufactured_by = htmlspecialchars(strip_tags($requestData['item_manufactured_by']));
+        }
+
+        if (empty($requestData['item_category'])) {
+            $errormsg .= " item_category is missing.";
+            $status = false;
+        } else {
+            $item_category = htmlspecialchars(strip_tags($requestData['item_category']));
+        }
+
+        if (!empty($requestData['item_location_rack'])) {
+            $item_location_rack = htmlspecialchars(strip_tags($requestData['item_location_rack']));
+        }
+        
+        if (!empty($requestData['item_update_datetime'])) {
+            $item_update_datetime = htmlspecialchars(strip_tags($requestData['item_update_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM item_ims 
+                    WHERE item_name = '". $item_name ."' 
+                    AND item_manufactured_by = '". $item_manufactured_by ."'
+                    AND item_id != '". $item_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Product Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "UPDATE item_ims 
+                        SET item_name        = '". $item_name ."', 
+                        item_manufactured_by = '". $item_manufactured_by ."', 
+                        item_category        = '". $item_category ."', 
+                        item_location_rack   = '". $item_location_rack ."', 
+                        item_update_datetime = ". $item_update_datetime ." 
+                      WHERE item_id          = '". $item_id ."'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Product!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Product update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_product($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_id = "";
+        $item_status = "Disable";
+        $item_update_datetime = "NOW()";
+
+
+        if (empty($requestData['item_id'])) {
+            $errormsg .= " item_id is missing.";
+            $status = false;
+        } else {
+            $item_id = htmlspecialchars(strip_tags($requestData['item_id']));
+        }
+
+        if (!empty($requestData['item_status'])) {
+            $item_status = htmlspecialchars(strip_tags($requestData['item_status']));
+        }
+
+        if (!empty($requestData['item_update_datetime'])) {
+            $item_update_datetime = htmlspecialchars(strip_tags($requestData['item_update_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE item_ims 
+                    SET item_status = '" . $item_status . "', 
+                    item_update_datetime = " . $item_update_datetime . "
+                    WHERE item_id = '". $item_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Deleted Product!!";
+            $res['info'] = $this->conn->lastInsertId();
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Product deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
     }
     public function create_order($requestData) {
         $res = array();
