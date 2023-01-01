@@ -1361,6 +1361,61 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_location_for_location_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $location_rack_id = "";
+       
+        
+        if (!empty($requestData['location_rack_id'])) {
+            $location_rack_id = htmlspecialchars(strip_tags(trim($requestData['location_rack_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM location_rack_ims ";
+        
+        if($location_rack_id != "") {
+            $query .= "WHERE location_rack_id =  '" . $location_rack_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
         public function fetch_chart_data($requestData)
     {
         $res = array();
@@ -1892,6 +1947,75 @@ Class inventory {
         }
         else {
             $query .= 'ORDER BY tax_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+
+    public function fetch_location_rack($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM location_rack_ims ";
+                    
+        if ($search_value != "") {
+            $query .= 'WHERE location_rack_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR location_rack_status LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY location_rack_id DESC ';
         }
 
         if($length != -1 AND $length != 0)
@@ -2760,6 +2884,228 @@ Class inventory {
         } else {
             $res['status'] = false;
             $res['message'] = "[Inventory] Tax deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
+    }
+
+    public function add_location_rack($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $location_rack_name = "";
+        $location_rack_status= 'Enable';
+        $location_rack_datetime = "NOW()";
+
+        if (empty($requestData['location_rack_name'])) {
+            $errormsg .= " location_rack_name is missing.";
+            $status = false;
+        } else {
+            $location_rack_name = htmlspecialchars(strip_tags($requestData['location_rack_name']));
+        }
+
+        if (!empty($requestData['location_rack_status'])) {
+            $location_rack_status = htmlspecialchars(strip_tags($requestData['location_rack_status']));
+        }
+
+        if (!empty($requestData['location_rack_datetime'])) {
+            $location_rack_datetime = htmlspecialchars(strip_tags($requestData['location_rack_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM location_rack_ims WHERE location_rack_name = '". $location_rack_name ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Tax Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO location_rack_ims 
+                        (
+                            location_rack_name, 
+                            location_rack_status, 
+                            location_rack_datetime
+                        ) 
+                     VALUES 
+                        (
+                            '" . $location_rack_name . "',
+                            '" . $location_rack_status . "', 
+                            " . $location_rack_datetime ."
+                        )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Location Rack!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Location Rack creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_location_rack($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $location_rack_name = "";
+        $location_rack_id = "";
+
+        if (empty($requestData['location_rack_id'])) {
+            $errormsg .= " location_rack_id is missing.";
+            $status = false;
+        } else {
+            $location_rack_id = htmlspecialchars(strip_tags($requestData['location_rack_id']));
+        }
+
+        if (empty($requestData['location_rack_name'])) {
+            $errormsg .= " location_rack_name is missing.";
+            $status = false;
+        } else {
+            $location_rack_name = htmlspecialchars(strip_tags($requestData['location_rack_name']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM location_rack_ims 
+                    WHERE location_rack_name = '". $location_rack_name ."' 
+                    AND location_rack_id != '". $location_rack_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Location Rack Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "UPDATE location_rack_ims 
+                        SET location_rack_name = '" . $location_rack_name . "'
+                        WHERE location_rack_id = '" . $location_rack_id . "'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Location Rack!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Location Rack update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_location_rack($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $location_rack_id = "";
+        $location_rack_status = "Disable";
+        
+        if (empty($requestData['location_rack_id'])) {
+            $errormsg .= " location_rack_id is missing.";
+            $status = false;
+        } else {
+            $location_rack_id = htmlspecialchars(strip_tags($requestData['location_rack_id']));
+        }
+
+        if (!empty($requestData['location_rack_status'])) {
+            $location_rack_status = htmlspecialchars(strip_tags($requestData['location_rack_status']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE location_rack_ims 
+                    SET location_rack_status = '" . $location_rack_status . "'
+                    WHERE location_rack_id = '" . $location_rack_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Deleted Location Rack !!";
+            $res['info'] = $this->conn->lastInsertId();
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Location Rack deletion failed at API!!";
             $res['info'] = $query;
         }
         return $res;

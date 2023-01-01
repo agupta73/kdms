@@ -202,6 +202,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;
 
+      case "get_location_for_location_id":
+        $res = $inventory->get_location_for_location_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+                
       case "purchase_item":
         $res = $inventory->purchase_item($requestData);
         echo json_encode($res);
@@ -238,6 +244,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break; 
 
+      case "fetch_location_rack":
+        $res = $inventory->fetch_location_rack($requestData);
+        echo json_encode($res);
+        die;
+        break; 
+        
       case "fetch_category":
         $res = $inventory->fetch_category($requestData);
         echo json_encode($res);
@@ -280,6 +292,24 @@ if (!empty($requestData['requestType'])) {
         die;        
         break;
         
+      case "add_location_rack":
+        $res = $inventory->add_location_rack($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+      
+      case "edit_location_rack":
+        $res = $inventory->edit_location_rack($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+        
+      case "delete_location_rack":
+        $res = $inventory->delete_location_rack($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+                
       case "add_product":
         $res = $inventory->add_product($requestData);
         echo json_encode($res);
