@@ -1307,7 +1307,61 @@ Class inventory {
             return $result;
         }	
     }
-    public function fetch_chart_data($requestData)
+    public function get_tax_for_tax_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $tax_id = "";
+       
+        
+        if (!empty($requestData['tax_id'])) {
+            $tax_id = htmlspecialchars(strip_tags(trim($requestData['tax_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM tax_ims ";
+        if($tax_id != "") {
+            $query .= "WHERE tax_id = '" . $tax_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
+        public function fetch_chart_data($requestData)
     {
         $res = array();
         $res['status'] = false;
@@ -1767,6 +1821,77 @@ Class inventory {
         }
         else {
             $query .= 'ORDER BY item_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function fetch_tax($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM tax_ims ";
+                    
+        if ($search_value != "") {
+            $query .= 'WHERE tax_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR tax_percentage LIKE "%'. $search_value .'%" ';
+			$query .= 'OR tax_status LIKE "%'. $search_value .'%" ';
+			$query .= 'OR tax_added_on LIKE "%'. $search_value .'%" ';
+			$query .= 'OR tax_updated_on LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY tax_id DESC ';
         }
 
         if($length != -1 AND $length != 0)

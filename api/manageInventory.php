@@ -195,7 +195,13 @@ if (!empty($requestData['requestType'])) {
         echo json_encode($res);
         die;
         break;
-  
+
+      case "get_tax_for_tax_id":
+        $res = $inventory->get_tax_for_tax_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+
       case "purchase_item":
         $res = $inventory->purchase_item($requestData);
         echo json_encode($res);
@@ -226,6 +232,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;    
       
+      case "fetch_tax":
+        $res = $inventory->fetch_tax($requestData);
+        echo json_encode($res);
+        die;
+        break; 
+
       case "fetch_category":
         $res = $inventory->fetch_category($requestData);
         echo json_encode($res);
