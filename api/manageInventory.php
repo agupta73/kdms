@@ -286,6 +286,24 @@ if (!empty($requestData['requestType'])) {
         die;        
         break;
 
+      case "add_tax":
+        $res = $inventory->add_tax($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "edit_tax":
+        $res = $inventory->edit_tax($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "delete_tax":
+        $res = $inventory->delete_tax($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
       case "create_order_line":
         $res = $inventory->create_order_line($requestData);
         echo json_encode($res);

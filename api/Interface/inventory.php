@@ -2384,6 +2384,263 @@ Class inventory {
         return $res;
     
     }
+    public function add_tax($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $tax_name= "";
+        $tax_percentage = "";
+        $tax_status =  "Enable";
+        $tax_added_on = "NOW()";
+        $tax_updated_on = "NOW()";
+
+
+        if (empty($requestData['tax_name'])) {
+            $errormsg .= " tax_name is missing.";
+            $status = false;
+        } else {
+            $tax_name = htmlspecialchars(strip_tags($requestData['tax_name']));
+        }
+
+        if (empty($requestData['tax_percentage'])) {
+            $errormsg .= " tax_percentage is missing.";
+            $status = false;
+        } else {
+            $tax_percentage = htmlspecialchars(strip_tags($requestData['tax_percentage']));
+        }
+
+        if (empty($requestData['tax_status'])) {
+            $errormsg .= " tax_status is missing.";
+            $status = false;
+        } else {
+            $tax_status = htmlspecialchars(strip_tags($requestData['tax_status']));
+        }
+
+        if (!empty($requestData['tax_added_on'])) {
+            $tax_added_on = htmlspecialchars(strip_tags($requestData['tax_added_on']));
+        }
+
+        if (!empty($requestData['tax_updated_on'])) {
+            $tax_updated_on = htmlspecialchars(strip_tags($requestData['tax_updated_on']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM tax_ims WHERE tax_name = '" .$tax_name . "'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Tax Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO tax_ims 
+                        (
+                            tax_name, 
+                            tax_percentage, 
+                            tax_status, 
+                            tax_added_on, 
+                            tax_updated_on
+                        ) 
+                    VALUES 
+                        (
+                            '" . $tax_name . "', 
+                            '" . $tax_percentage . "',
+                            '" . $tax_status . "',
+                            " . $tax_added_on . ",
+                            " . $tax_updated_on . "
+                        )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Tax!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Tax creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_tax($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $tax_id = "";
+        $tax_name = "";
+        $tax_percentage = "";
+        $tax_updated_on = "NOW()";
+        
+
+
+        if (empty($requestData['tax_id'])) {
+            $errormsg .= " tax_id is missing.";
+            $status = false;
+        } else {
+            $tax_id = htmlspecialchars(strip_tags($requestData['tax_id']));
+        }
+
+        if (empty($requestData['tax_name'])) {
+            $errormsg .= " tax_name is missing.";
+            $status = false;
+        } else {
+            $tax_name = htmlspecialchars(strip_tags($requestData['tax_name']));
+        }
+
+        if (!empty($requestData['tax_percentage'])) {
+            $tax_percentage = htmlspecialchars(strip_tags($requestData['tax_percentage']));
+        }
+        
+        if (!empty($requestData['tax_updated_on'])) {
+            $tax_updated_on = htmlspecialchars(strip_tags($requestData['tax_updated_on']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM tax_ims 
+                    WHERE tax_name = '". $tax_name ."' 
+                    AND tax_id != '". $tax_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Product Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "UPDATE tax_ims 
+                        SET tax_name = '" . $tax_name . "', 
+                        tax_percentage = '" .$tax_percentage . "', 
+                        tax_updated_on = " .$tax_updated_on . " 
+                        WHERE tax_id = '" . $tax_id . "'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Txt!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Tax update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_tax($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $tax_id = "";
+        $tax_status = "Disable";
+        
+        if (empty($requestData['tax_id'])) {
+            $errormsg .= " tax_id is missing.";
+            $status = false;
+        } else {
+            $tax_id = htmlspecialchars(strip_tags($requestData['tax_id']));
+        }
+
+        if (!empty($requestData['tax_status'])) {
+            $tax_status = htmlspecialchars(strip_tags($requestData['tax_status']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE tax_ims 
+                    SET tax_status = '" . $tax_status . "' 
+                    WHERE tax_id = '" . $tax_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Deleted Tax!!";
+            $res['info'] = $this->conn->lastInsertId();
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Tax deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
+    }
+
     public function create_order($requestData) {
         $res = array();
         $res['status'] = false;
