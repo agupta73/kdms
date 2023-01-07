@@ -1307,6 +1307,60 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_supplier_for_supplier_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $supplier_id = "";
+       
+        
+        if (!empty($requestData['supplier_id'])) {
+            $supplier_id = htmlspecialchars(strip_tags(trim($requestData['supplier_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM supplier_ims ";
+        if($supplier_id != "") {
+            $query .= "WHERE supplier_id = '" . $supplier_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function get_tax_for_tax_id($requestData) { 
         $res = array();
         $res['status'] = false;
@@ -2106,6 +2160,358 @@ Class inventory {
             $i++;
         }        
         return $result;        
+    }
+    public function fetch_supplier($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM supplier_ims ";
+                    
+
+
+        if ($search_value != "") {
+            $query .= 'WHERE supplier_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR supplier_address LIKE "%'. $search_value .'%" ';
+			$query .= 'OR supplier_contact_no LIKE "%'. $search_value .'%" ';
+			$query .= 'OR supplier_email LIKE "%'. $search_value .'%" ';
+			$query .= 'OR supplier_status LIKE "%'. $search_value .'%" ';
+			$query .= 'OR supplier_datetime LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY supplier_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
+    public function add_supplier($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $supplier_name = "";
+        $supplier_address = "";
+        $supplier_contact_no = "";
+        $supplier_email = "";
+        $supplier_status = 'Enable';
+        $supplier_datetime = 'NOW()';
+
+        if (empty($requestData['supplier_name'])) {
+            $errormsg .= " supplier_name is missing.";
+            $status = false;
+        } else {
+            $supplier_name = htmlspecialchars(strip_tags($requestData['supplier_name']));
+        }
+
+        if (empty($requestData['supplier_address'])) {
+            $errormsg .= " supplier_address is missing.";
+            $status = false;
+        } else {
+            $supplier_address = htmlspecialchars(strip_tags($requestData['supplier_address']));
+        }
+
+        if (empty($requestData['supplier_contact_no'])) {
+            $errormsg .= " supplier_contact_no is missing.";
+            $status = false;
+        } else {
+            $supplier_contact_no = htmlspecialchars(strip_tags($requestData['supplier_contact_no']));
+        }
+
+        if (empty($requestData['supplier_email'])) {
+            $errormsg .= " supplier_email is missing.";
+            $status = false;
+        } else {
+            $supplier_email = htmlspecialchars(strip_tags($requestData['supplier_email']));
+        }
+
+        if (!empty($requestData['supplier_status'])) {
+            $supplier_status = htmlspecialchars(strip_tags($requestData['supplier_status']));
+        }
+
+        if (!empty($requestData['supplier_datetime'])) {
+            $supplier_datetime = htmlspecialchars(strip_tags($requestData['supplier_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM supplier_ims WHERE supplier_email = '". $supplier_email ."'" ;
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = '<li>Supplier Already Exists</li>';
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO supplier_ims 
+                        (
+                            supplier_name, 
+                            supplier_address, 
+                            supplier_contact_no, 
+                            supplier_email, 
+                            supplier_status, 
+                            supplier_datetime
+                        ) 
+                      VALUES 
+                        (
+                            '" . $supplier_name . "', 
+                            '" . $supplier_address . "', 
+                            '" . $supplier_contact_no . "',
+                            '" . $supplier_email . "',
+                            '" . $supplier_status . "',
+                            " . $supplier_datetime . "
+                        )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added Supplier!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Supplier creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_supplier($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $supplier_name = "";
+        $supplier_address = "";
+        $supplier_contact_no = "";
+        $supplier_email = "";
+        $supplier_id = "";
+        
+        if (empty($requestData['supplier_id'])) {
+            $errormsg .= " supplier_id is missing.";
+            $status = false;
+        } else {
+            $supplier_id = htmlspecialchars(strip_tags($requestData['supplier_id']));
+        }
+
+        if (empty($requestData['supplier_name'])) {
+            $errormsg .= " supplier_name is missing.";
+            $status = false;
+        } else {
+            $supplier_name = htmlspecialchars(strip_tags($requestData['supplier_name']));
+        }
+
+        if (empty($requestData['supplier_address'])) {
+            $errormsg .= " supplier_address is missing.";
+            $status = false;
+        } else {
+            $supplier_address = htmlspecialchars(strip_tags($requestData['supplier_address']));
+        }
+
+        if (empty($requestData['supplier_contact_no'])) {
+            $errormsg .= " supplier_contact_no is missing.";
+            $status = false;
+        } else {
+            $supplier_contact_no = htmlspecialchars(strip_tags($requestData['supplier_contact_no']));
+        }
+
+        if (empty($requestData['supplier_email'])) {
+            $errormsg .= " supplier_email is missing.";
+            $status = false;
+        } else {
+            $supplier_email = htmlspecialchars(strip_tags($requestData['supplier_email']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM supplier_ims 
+                    WHERE supplier_email = '". $supplier_email ."' 
+                    AND supplier_id != '". $supplier_id ."'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Supplier Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "UPDATE supplier_ims 
+                        SET supplier_name = '" . $supplier_name . "', 
+                        supplier_address = '" . $supplier_address . "', 
+                        supplier_contact_no = '" . $supplier_contact_no . "', 
+                        supplier_email = '" . $supplier_email . "'
+                        WHERE supplier_id = '" . $supplier_id . "'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Supplier!!";
+                $res['info'] = $query;
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Supplier update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_supplier($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $supplier_id = "";
+        $supplier_status = "Disable";
+
+        if (empty($requestData['supplier_id'])) {
+            $errormsg .= " supplier_id is missing.";
+            $status = false;
+        } else {
+            $supplier_id = htmlspecialchars(strip_tags($requestData['supplier_id']));
+        }
+
+        if (!empty($requestData['supplier_status'])) {
+            $supplier_status = htmlspecialchars(strip_tags($requestData['supplier_status']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE supplier_ims 
+                    SET supplier_status = '" . $supplier_status . "'
+                    WHERE supplier_id = '" . $supplier_id . "'";
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully Deleted Supplier!!";
+            $res['info'] = $query;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Supplier deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
     }
     public function add_category($requestData)
     {
