@@ -1253,6 +1253,60 @@ Class inventory {
             return $result;
         }	
     }
+    public function get_company_for_company_id($requestData) { 
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $company_id = "";
+       
+        
+        if (!empty($requestData['company_id'])) {
+            $company_id = htmlspecialchars(strip_tags(trim($requestData['company_id'])));
+        }
+               
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+            die;
+        }
+
+        $query = "SELECT * FROM item_manufacuter_company_ims ";
+        if($company_id != "") {
+            $query .= "WHERE item_manufacuter_company_id = '" . $company_id . "'" ;
+        }
+
+        if($this->debug) {
+            echo "/n request data: ";
+            var_dump($requestData);
+            echo "/n query: ";
+            var_dump($query);}
+                
+        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        
+        $i=0;
+		$result = array();
+        while($row = $results->fetchObject()){
+            //foreach($results as $row){
+            $result[]=$row;
+            $i++;
+        }	
+        
+        if($this->debug) {var_dump($result);}
+
+        if($i==0){
+            $res['status'] = false;
+            $res['message'] = "No record found!";
+            $res['info'] = $results;
+            return $res;
+        }
+        else{
+            return $result;
+        }	
+    }
     public function get_category_for_category_id($requestData) { 
         $res = array();
         $res['status'] = false;
@@ -1951,6 +2005,78 @@ Class inventory {
         }        
         return $result;        
     }
+
+    public function fetch_company($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $search_value = "";
+        $order_0_col = "";
+        $order_0_dir = "";
+        $start = "0";
+        $length = "0";
+
+
+        if (!empty($requestData['search_value'])) {            
+            $search_value = htmlspecialchars(strip_tags($requestData['search_value']));
+        }
+
+        if (!empty($requestData['order_0_col'])) {            
+            $order_0_col = htmlspecialchars(strip_tags($requestData['order_0_col']));
+        }
+
+        if (!empty($requestData['order_0_dir'])) {            
+            $order_0_dir = htmlspecialchars(strip_tags($requestData['order_0_dir']));
+        }
+
+        if (!empty($requestData['start'])) {            
+            $start = htmlspecialchars(strip_tags($requestData['start']));
+        }
+
+        if (!empty($requestData['length'])) {            
+            $length = htmlspecialchars(strip_tags($requestData['length']));
+        }
+
+        $query = "SELECT * FROM item_manufacuter_company_ims ";
+                    
+
+
+        if ($search_value != "") {
+            $query .= 'WHERE company_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR company_short_name LIKE "%'. $search_value .'%" ';
+			$query .= 'OR company_status LIKE "%'. $search_value .'%" ';
+		}
+
+        if($order_0_col != "" ){
+            $query .=  'ORDER BY '.$order_0_col.' '.$order_0_dir.' ';       
+        }
+        else {
+            $query .= 'ORDER BY item_manufacuter_company_id DESC ';
+        }
+
+        if($length != -1 AND $length != 0)
+		{
+			$query .= 'LIMIT ' . $start . ', ' . $length;
+		}
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        $result = array();
+        while ($row = $results->fetchObject()) {
+            $result[] = $row;
+            $i++;
+        }        
+        return $result;        
+    }
     public function fetch_tax($requestData)
     {
         $res = array();
@@ -2508,6 +2634,263 @@ Class inventory {
         } else {
             $res['status'] = false;
             $res['message'] = "[Inventory] Supplier deletion failed at API!!";
+            $res['info'] = $query;
+        }
+        return $res;
+    
+    }
+    public function add_company($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $company_name = "";
+        $company_short_name = "";
+        $company_status = 'Enable';
+        $company_added_datetime =  'NOW()';
+        $company_updated_datetime = 'NOW()';
+        
+
+        if (empty($requestData['company_name'])) {
+            $errormsg .= " company_name is missing.";
+            $status = false;
+        } else {
+            $company_name = htmlspecialchars(strip_tags($requestData['company_name']));
+        }
+
+        if (empty($requestData['company_short_name'])) {
+            $errormsg .= " company_short_name is missing.";
+            $status = false;
+        } else {
+            $company_short_name = htmlspecialchars(strip_tags($requestData['company_short_name']));
+        }
+
+        if (!empty($requestData['company_status'])) {
+            $company_status = htmlspecialchars(strip_tags($requestData['company_status']));
+        }
+
+        if (!empty($requestData['company_added_datetime'])) {
+            $company_added_datetime = htmlspecialchars(strip_tags($requestData['company_added_datetime']));
+        }
+
+        if (!empty($requestData['company_updated_datetime'])) {
+            $company_updated_datetime = htmlspecialchars(strip_tags($requestData['company_updated_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM item_manufacuter_company_ims WHERE company_name = '". $company_name ."'" ;
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = '<li>Company Name Already Exists</li>';
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = "INSERT INTO item_manufacuter_company_ims 
+                        (
+                            company_name, 
+                            company_short_name, 
+                            company_status, 
+                            company_added_datetime, 
+                            company_updated_datetime
+                        ) 
+                      VALUES 
+                        (
+                            '" . $company_name . "', 
+                            '" . $company_short_name . "',  
+                            '" . $company_status . "',  
+                            " . $company_added_datetime . ", 
+                            " . $company_updated_datetime . "
+                        )";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Added company!!";
+                $res['info'] = $this->conn->lastInsertId();
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Company creation failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function edit_company($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_manufacuter_company_id   = "";
+        $company_name                  = "";
+        $company_short_name            = "";
+        $company_updated_datetime      = 'NOW()';
+        
+        if (empty($requestData['item_manufacuter_company_id'])) {
+            $errormsg .= " item_manufacuter_company_id is missing.";
+            $status = false;
+        } else {
+            $item_manufacuter_company_id = htmlspecialchars(strip_tags($requestData['item_manufacuter_company_id']));
+        }
+
+        if (empty($requestData['company_name'])) {
+            $errormsg .= " company_name is missing.";
+            $status = false;
+        } else {
+            $company_name = htmlspecialchars(strip_tags($requestData['company_name']));
+        }
+
+        if (empty($requestData['company_short_name'])) {
+            $errormsg .= " company_short_name is missing.";
+            $status = false;
+        } else {
+            $company_short_name = htmlspecialchars(strip_tags($requestData['company_short_name']));
+        }
+
+       
+        if (!empty($requestData['company_updated_datetime'])) {
+            $company_updated_datetime = htmlspecialchars(strip_tags($requestData['company_updated_datetime']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "SELECT * FROM item_manufacuter_company_ims 
+                    WHERE company_name = '" . $company_name . "' 
+                    AND item_manufacuter_company_id != " . $item_manufacuter_company_id ;
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+
+        $i = 0;
+        
+        while ($row = $results->fetchObject()) {
+            $i++;
+        }   
+        if ($i > 0) {
+            $res['status'] = false;
+            $res['message'] = "<li>Company Name Already Exists</li>";
+            $res['info'] = $query;
+            return $res;
+        } else {
+
+            $query = " UPDATE item_manufacuter_company_ims 
+                        SET 
+                            company_name = '" . $company_name . "', 
+                            company_short_name = '" . $company_short_name . "', 
+                            company_updated_datetime = " . $company_updated_datetime . "
+                        WHERE 
+                            item_manufacuter_company_id = '" . $item_manufacuter_company_id . "'";
+
+            // prepare query
+            $stmt = $this->conn->prepare($query);
+
+            if ($this->debug) {
+                var_dump($stmt);
+                die;
+            }
+
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = "[Inventory] Successfully Updated Company!!";
+                $res['info'] = $query;
+            } else {
+                $res['status'] = false;
+                $res['message'] = "[Inventory] Company update failed at API!!";
+                $res['info'] = $query;
+            }
+            return $res;
+        }
+    }
+    public function delete_company($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "";
+        $status = true;
+
+        $item_manufacuter_company_id = "";
+        $company_status = "Disable";
+
+        if (empty($requestData['item_manufacuter_company_id'])) {
+            $errormsg .= " item_manufacuter_company_id is missing.";
+            $status = false;
+        } else {
+            $item_manufacuter_company_id = htmlspecialchars(strip_tags($requestData['item_manufacuter_company_id']));
+        }
+
+        if (!empty($requestData['company_status'])) {
+            $company_status = htmlspecialchars(strip_tags($requestData['company_status']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $query = "UPDATE item_manufacuter_company_ims 
+                    SET company_status = '" . $company_status . "'
+                    WHERE item_manufacuter_company_id = " . $item_manufacuter_company_id ;
+
+        if ($this->debug) {
+            var_dump($query);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($this->debug) {
+            var_dump($stmt);
+            die;
+        }
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = "[Inventory] Successfully " . $company_status . "d Company!!";
+            $res['info'] = $query;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Inventory] Company " . $company_status . "ment failed at API!!";
             $res['info'] = $query;
         }
         return $res;

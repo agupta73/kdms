@@ -190,6 +190,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;
   
+      case "get_company_for_company_id":
+        $res = $inventory->get_company_for_company_id($requestData);
+        echo json_encode($res);
+        die;
+        break;
+        
       case "get_category_for_category_id":
         $res = $inventory->get_category_for_category_id($requestData);
         echo json_encode($res);
@@ -244,6 +250,12 @@ if (!empty($requestData['requestType'])) {
         die;
         break;    
       
+      case "fetch_company":
+        $res = $inventory->fetch_company($requestData);
+        echo json_encode($res);
+        die;
+        break;   
+
       case "fetch_tax":
         $res = $inventory->fetch_tax($requestData);
         echo json_encode($res);
@@ -286,6 +298,24 @@ if (!empty($requestData['requestType'])) {
         die;        
         break;
       
+      case "add_company":
+        $res = $inventory->add_company($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "edit_company":
+        $res = $inventory->edit_company($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+
+      case "delete_company":
+        $res = $inventory->delete_company($requestData);
+        echo json_encode($res);
+        die;        
+        break;
+        
       case "add_supplier":
         $res = $inventory->add_supplier($requestData);
         echo json_encode($res);
