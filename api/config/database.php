@@ -3,8 +3,8 @@
 class Database
 {
 
-    private $host = "USMLAGUPTA.local:3306";
-    private $db_name = "kdms2022";
+    private $host = "KainchiDell:3306";
+    private $db_name = "kdms_gold";
 
     private $inv_db_name = 'kinv_gold';
     //private $db_name = "kdms_testing";
