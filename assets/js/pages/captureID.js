@@ -1,9 +1,9 @@
 (function () {
-    // The width and height of the captured photo. We will set the
+    // The width and height of the captured photoID. We will set the
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
 
-    var width = 320;    // We will scale the photo width to this
+    var width = 620;    // We will scale the photoID width to this
     var height = 0;     // This will be computed based on the input stream
 
     // |streaming| indicates whether or not we're currently streaming
@@ -16,9 +16,9 @@
     // will be set by the startup() function.
 
     var video = null;
-    var canvas = null;
+    var IDcanvas = null;
     //var canvas2 = null;
-    var photo = null;
+    var photoID = null;
     //var photo2 = null;
     var devoteeID = null;
     var startbutton = null;
@@ -27,9 +27,9 @@
 
     function startup() {
         video = document.getElementById('video');
-        canvas = document.getElementById('canvas');
+        IDcanvas = document.getElementById('canvasID');
         //canvas2 = document.getElementById('canvas2');
-        photo = document.getElementById('photo');
+        photoID = document.getElementById('photoID');
       //  photo2 = document.getElementById('photo2');
         devoteeID = document.getElementById('devotee_key_modal');
         startbutton = document.getElementById('click-pic');
@@ -63,91 +63,91 @@
                 }
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
-                canvas.setAttribute('width', width);
-                canvas.setAttribute('height', height);
-                var context = canvas.getContext('2d');
-                context.beginPath();
-                context.fillStyle = "#AAA";
-                 context.fillRect(0, 0, canvas.width, canvas.height);
-                // var context = canvas.getContext('2d');
-                // context.lineWidth = 117;
-                // context.strokeStyle = '#c00';
-                // context.fillStyle="#F9E5E5";
-                // context.lineCap = 'round';
-               // canvas2.setAttribute('width', width);
-               // canvas2.setAttribute('height', height);
+                IDcanvas.setAttribute('width', width);
+                IDcanvas.setAttribute('height', height);
                 streaming = true;
             }
         }, false);
 
-        startbutton.addEventListener('click', function (ev) {
-            takepicture();
-            ev.preventDefault();
-        }, false);
+        // startbutton.addEventListener('click', function (ev) {
+        //     takepicture();
+        //     ev.preventDefault();
+        // }, false);
         uploadbutton.addEventListener('click', function (ev) {
-            uploadImage();
+            uploadIDImage();
             ev.preventDefault();
         }, false);
 
         clearphoto();
     }
 
-    // Fill the photo with an indication that none has been
+    // Fill the photoID with an indication that none has been
     // captured.
 
     function clearphoto() {
-        var context = canvas.getContext('2d');
+        var context = IDcanvas.getContext('2d');
         context.fillStyle = "#AAA";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        var data = canvas.toDataURL('image/png');
-        photo.setAttribute('src', data);
+        context.fillRect(0, 0, IDcanvas.width, IDcanvas.height);
+        var data = IDcanvas.toDataURL('image/png');
+        photoID.setAttribute('src', data);
         //photo2.setAttribute('src', data);
     }
 
-    // Capture a photo by fetching the current contents of the video
+    // Capture a photoID by fetching the current contents of the video
     // and drawing it into a canvas, then converting that to a PNG
-    // format data URL. By drawing it on an offscreen canvas and then
+    // format data URL. By drawing it on an offscreen IDcanvas and then
     // drawing that to the screen, we can change its size and/or apply
     // other changes before drawing it.
     // context.drawImage(video, 0, 0);
-    function takepicture() {
-        var context = canvas.getContext('2d');
-        if (width && height) {
-            canvas.width = width;
-            canvas.height = height;
-            // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-            // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
-            context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
-            // context.drawImage(video, 0, 0, width, height);
-            var data = canvas.toDataURL('image/png');
-            photo.setAttribute('src', data);
-            uploadbutton.style.visibility = 'visible';
-        } else {
-            clearphoto();
-        }
+    // function takepicture() {
+    //     var context = IDcanvas.getContext('2d');
+    //     if (width && height) {
+    //         IDcanvas.width = width;
+    //         IDcanvas.height = height;
+    //         // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+    //         // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
+    //         context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
+    //         // context.drawImage(video, 0, 0, width, height);
+    //         var data = IDcanvas.toDataURL('image/png');
+    //         photoID.setAttribute('src', data);
+    //         uploadbutton.style.visibility = 'visible';
+    //     } else {
+    //         clearphoto();
+    //     }
+    // }
+    function isCanvasBlank(IDcanvas) {
+        return !IDcanvas.getContext('2d')
+            .getImageData(0, 0, IDcanvas.width, IDcanvas.height).data
+            .some(channel => channel !== 0);
     }
 
-    function draw(base64_image_data) {
-        var context = canvas.getContext('2d');
-        var image = new Image();
-        image.onload = function() {
-            context.drawImage(image, 0, 0, width, height);
+    function drawIDImage(base64_image_data) {
+        var context = IDcanvas.getContext('2d');
+        if (isCanvasBlank(IDcanvas)) {
+            var image = new Image();
+            image.onload = function() {
+                context.drawImage(image, 0, 0, width/2, height);
+            }
+        } else {
+            // Todo: can append the canvas image here.
+            image.onload = function() {
+                context.drawImage(image, 0, 0, width/2, height);
+            }
         }
-        canvas.width = width;
-        canvas.height = height;
+        IDcanvas.width = width;
+        IDcanvas.height = height;
         image.src = base64_image_data;
 
-        var data = canvas.toDataURL('image/png');
-        photo.setAttribute('src', data);
+        var data = IDcanvas.toDataURL('image/png');
+        photoID.setAttribute('src', data);
         uploadbutton.style.visibility = 'visible';
     }
 
-    function uploadImage() {
-        var dataUrl = canvas.toDataURL();
+    function uploadIDImage() {
+        var dataUrl = IDcanvas.toDataURL();
         if (devoteeID.value != "") {
             $.ajax({
-                url: '../api/managePhoto.php',
+                url: '../api/managePhotoID.php',
                 method: 'POST',
                 data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
             }).done(function () {
@@ -159,7 +159,7 @@
             });
         } else {
             $.ajax({
-                url: '../api/managePhoto.php',
+                url: '../api/managePhotoID.php',
                 method: 'POST',
                 data: {image: dataUrl, api_type: 3}
             }).done(function (data) {
@@ -182,42 +182,42 @@
           reader.onerror = error => reject(error);
         });
     }
-      
+
     document
-    .getElementById("cameraFileInput")
+    .getElementById("cameraIDFileInput")
     .addEventListener("change", function () {
         getBase64(this.files[0]).then(
         base64_image_data => {
-            draw(base64_image_data)
+            drawIDImage(base64_image_data)
         }
         );
     });
     
-    $('#CameraModalLong').on('show.bs.modal', function () {
-        startup();
-    });
+    // $('#CameraModalLong').on('show.bs.modal', function () {
+    //     startup();
+    // });
     startup();
-    $('#CameraModalLong').on('hidden.bs.modal', function () {
-        camera.stop();
-    });
+    // $('#CameraModalLong').on('hidden.bs.modal', function () {
+    //     camera.stop();
+    // });
 })();
 
 // code for devotee image scaling.
-$('#zoomInDevoteeImage').on('click', function (event) {
-    let zoomOutDevoteeImage = document.getElementById("zoomOutDevoteeImage");
-    let devotee_image_element = document.getElementById("devoteeImage");
-    this.style.display = "none";
-    zoomOutDevoteeImage.style.display = "block";
-    devotee_image_element.style.transform = "scale(1.5)";
-    devotee_image_element.style.transition = "transform 0.25s ease";
-});
+// $('#zoomInDevoteeImage').on('click', function (event) {
+//     let zoomOutDevoteeImage = document.getElementById("zoomOutDevoteeImage");
+//     let devotee_image_element = document.getElementById("devoteeImage");
+//     this.style.display = "none";
+//     zoomOutDevoteeImage.style.display = "block";
+//     devotee_image_element.style.transform = "scale(1.5)";
+//     devotee_image_element.style.transition = "transform 0.25s ease";
+// });
 
-$('#zoomOutDevoteeImage').on('click', function (event) {
-    this.style.display = 'none';
-    let zoomInDevoteeImage = document.getElementById("zoomInDevoteeImage");
-    let devotee_image_element = document.getElementById("devoteeImage");
-    this.style.display = "none";
-    zoomInDevoteeImage.style.display = "block";
-    devotee_image_element.style.transform = "scale(1)";
-    devotee_image_element.style.transition = "transform 0.25s ease";
-});
+// $('#zoomOutDevoteeImage').on('click', function (event) {
+//     this.style.display = 'none';
+//     let zoomInDevoteeImage = document.getElementById("zoomInDevoteeImage");
+//     let devotee_image_element = document.getElementById("devoteeImage");
+//     this.style.display = "none";
+//     zoomInDevoteeImage.style.display = "block";
+//     devotee_image_element.style.transform = "scale(1)";
+//     devotee_image_element.style.transition = "transform 0.25s ease";
+// });

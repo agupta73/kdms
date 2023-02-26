@@ -253,7 +253,8 @@ include_once("../sessionCheck.php");
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
-              <video id="video" width="300" height="250" autoplay></video>
+              <video class="photoImage" 
+ id="video" width="180" height="230" autoplay></video>
               <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
             </div>
 

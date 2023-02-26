@@ -370,12 +370,35 @@ $debug = false  ;
                                                             colorLight : "#ffffff",
                                                             correctLevel : QRCode.CorrectLevel.H
                                                             }
-                                                        );
-                                                        
-                                                </script>
-                                                
-                                            </div>
-
+                                                        );   
+                                                    </script>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <?php if ($devotee_key != "") { ?>
+                                                        <!-- <div class="card card-profile"> -->
+                                                            <!-- <div class="card-body" > -->
+                                                                <button class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#AmenityModalLong">
+                                                                    Issue/Return Amenities
+                                                                </button>
+                                                                <button class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
+                                                                    Participation Records
+                                                                </button>
+                                                                <button class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#RemarksModalLong">
+                                                                    Provide Remarks
+                                                                </button>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+                                                        <!--Modal Window for Amenity Management-->
+                                                        <?php include_once("amenityMgmtModal.php"); ?>
+                                                        <!--END - Modal Window for Amenity Management-->
+                                                        <!--Modal Window for Participation Records-->
+                                                        <?php include_once("remarks.php"); ?>
+                                                        <!--END - Modal Window for Participation Records-->
+                                                        <!--Modal Window for Participation Records-->
+                                                        <?php include_once("participationRecords.php"); ?>
+                                                        <!--END - Modal Window for Participation Records-->
+                                                    <?php } ?>
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-3" style="margin-top:36px;">
@@ -669,71 +692,89 @@ $debug = false  ;
 
                             <div class="col-md-4">
                                 <div class="card card-profile card-devotee-image-profile">
-                                    <div class="card-body" data-toggle="modal" data-target="#CameraModalLong" data-backdrop="static"  data-keyboard="false">
-<!--                  <img src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="200px"></img>-->
+                                    <!-- <div class="card-body photo-preview" data-toggle="modal" data-target="#CameraModalLong" data-backdrop="static"  data-keyboard="false"> -->
+                                    <div class="card-body photo-preview">
                                         <?php
                                         if ($devotee_photo == "") {
-                                            echo '<div  id="photo2"><img class="devoteeImage" src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img></div>';
+                                            echo '<div  id="photo2"><img class="devoteeImageStatic" src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img></div>';
                                         } else {
-                                            echo '<div  id="photo2"><img class="devoteeImage" src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" width="240px"></img></div>';
+                                            echo '<div  id="photo2"><img class="devoteeImage" id="devoteeImage" src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image"></img></div>';
                                         }
                                         ?> 
-                                        <!-- <canvas id="canvas2"></canvas> -->
                                     </div>
+                                    <i id="zoomInDevoteeImage" class="material-icons resetScaling">zoom_in</i>
+                                    <i id="zoomOutDevoteeImage" class="material-icons resetScaling">zoom_out</i>
+                                </div>
+                                <div class="card card-profile card-devotee-image-profile">
+                                    <!-- Camera image -->
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay video-live-preview">
+                                            <video class="photoImage" id="video" width="180" height="230" autoplay></video>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay">
+                                            <canvas class="photoCanvas" id="canvas" ></canvas>
+                                            <div id="photo"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col videoliveplay">
+                                            <label class="cameraFileInput" for="cameraFileInput">
+                                                <span class="btn upload-photo">Upload</span>
+                                                <span class="btn open-camera">Open camera</span>
+                                                <!-- The hidden file `input` for opening the native camera -->
+                                                <input
+                                                    id="cameraFileInput"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    capture="environment"
+                                                />
+                                            </label>
+                                            <button id="click-pic" class="btn btn-danger">
+                                                Capture
+                                            </button>                            
+                                            <button id="upload-pic" type="button" class="btn btn-primary">Save</button>
+                                            <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
+                                        </div>
+                                    </div>
+                                    <!-- end of camera image -->
                                 </div>
                                 <div class="card card-profile">
-                                    <div class="card-body" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false">
+                                    <!-- <div class="card-body" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false"> -->
+                                    <div class="card-body">
                                         <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
                                         <?php
-                                        if ($devotee_id_image == "") {
-                                            echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
-                                        } else {
-                                            echo '<img src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
-                                        }
+                                        // if ($devotee_id_image == "") {
+                                        //     echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
+                                        // } else {
+                                        //     echo '<img src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
+                                        // }
                                         ?> 
+                                        <div class="row">
+                                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay">
+                                                <canvas class="photoIDCanvas" id="canvasID" ></canvas>
+                                                <div id="photoID"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col videoliveplay">
+                                                <label class="cameraIDFileInput" for="cameraIDFileInput">
+                                                    <span class="btn upload-doc">Upload</span>
+                                                    <span class="btn open-camera">Open camera</span>
+                                                    <!-- The hidden file `input` for opening the native camera -->
+                                                    <input
+                                                        id="cameraIDFileInput"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        capture="environment"
+                                                    />
+                                                </label>                           
+                                                <button id="upload-doc" type="button" class="btn btn-primary">Save</button>
+                                                <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
-                                <?php if ($devotee_key != "") { ?>
-                                     <div class="card card-profile">
-                                        <div class="card-body" style="height:80px;" >
-                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#AmenityModalLong">
-                                                Issue/Return Amenities
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <!--Modal Window for Amenity Management-->
-                                    <?php include_once("amenityMgmtModal.php"); ?>
-
-                                    <!--END - Modal Window for Amenity Management-->
-
-                                    <div class="card card-profile">
-                                        <div class="card-body" style="height:80px;" >
-
-                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
-                                                Display Participation Records
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                    <!--Modal Window for Participation Records-->
-
-                                    <?php include_once("remarks.php"); ?>
-                                    <!--END - Modal Window for Participation Records-->
-
-                                    <div class="card card-profile">
-                                        <div class="card-body" style="height:80px;" >
-
-                                            <button class="btn btn-primary btn-med" data-toggle="modal" data-target="#RemarksModalLong">
-                                                Provide Remarks
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                    <!--Modal Window for Participation Records-->
-
-                                    <?php include_once("participationRecords.php"); ?>
-                                    <!--END - Modal Window for Participation Records-->
-                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -746,8 +787,8 @@ $debug = false  ;
 
     <!-- Modal -->
     <div class="modal fade" id="CameraModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-        <div class="modal-dialog" role="document" >
-            <div class="modal-content" style="width:800px;height:500px;">
+        <div class="modal-dialog camera-modal-content" role="document" >
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -756,17 +797,32 @@ $debug = false  ;
                 </div>
                 <div class="modal-body" >
                     <div class="row">
-                        <div class="col-md-6">
-                            <video id="video" width="300" height="250" autoplay></video>
-                            <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
+                        <div class="col videoliveplay video-live-preview">
+                            <video class="photoImage" id="video" width="180" height="230" autoplay></video>
                         </div>
-
-                        <div class="col-md-5">
-                            <canvas id="canvas" ></canvas>
+                        <div class="col videoliveplay">
+                            <canvas class="photoCanvas" id="canvas" ></canvas>
                             <div id="photo"></div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col videoliveplay">
+                            <button id="click-pic" class="btn btn-secondary">
+                                Snap Photo
+                            </button>                            
+                            <label class="cameraFileInput" for="cameraFileInput">
+                                <span class="btn open-camera">Open camera</span>
+                                <span class="btn upload-photo">Upload</span>
+                                <!-- The hidden file `input` for opening the native camera -->
+                                <input
+                                    id="cameraFileInput"
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                />
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -793,7 +849,6 @@ $debug = false  ;
                     <div class="modal-body" >
                         <div class="row">
                             <div class="col-md-12">
-
                                 <div class="form-group">
                                     <?php
                                     echo '<input type="hidden" name="request_from" value="addDevoteeI.php">';
@@ -826,6 +881,7 @@ $debug = false  ;
 <!--   Core JS Files   -->
 <?php include_once("scriptJS.php") ?>
 <script src="../assets/js/pages/capture.js"></script>
+<script src="../assets/js/pages/captureID.js"></script>
 
 </body>
 
