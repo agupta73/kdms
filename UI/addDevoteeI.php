@@ -743,11 +743,11 @@ $debug = false  ;
                                     <div class="card-body">
                                         <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
                                         <?php
-                                        // if ($devotee_id_image == "") {
-                                        //     echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
-                                        // } else {
-                                        //     echo '<img src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
-                                        // }
+                                        if ($devotee_id_image == "") {
+                                            echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
+                                        } else {
+                                            echo '<img src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
+                                        }
                                         ?> 
                                         <div class="row">
                                             <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay">

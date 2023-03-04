@@ -103,12 +103,7 @@ Class Image {
          */
         // To devotee table 
 
-        if ($is_update) {  //
-//            $query0 = "UPDATE Devotee_Photo
-//                        SET
-//                        Devotee_Photo=:photo 
-//                        WHERE 
-//                        Devotee_Key=:id";
+        if ($is_update) {
             $query0 = "REPLACE INTO Devotee_Photo
                         SET
                         Devotee_Key=:id,
@@ -149,6 +144,68 @@ Class Image {
             $stmt2->bindParam(":photo", $unencoded);
             $stmt2->bindParam(":type", $type);
             $stmt2->bindParam(":status", $status);
+            
+            if (!$stmt2->execute()) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    public function uploadDocumentID($requestData, $devotee_id, $is_update) {
+
+        $rawData = $requestData['image'];
+        $filteredData = explode(',', $rawData);
+        $unencoded = base64_decode($filteredData[1]);
+        //$unencoded = base64_decode($rawData);
+        $type = "self";
+        $status = 1;
+        // Now save this info to db
+        /*
+         * If it is update ,insert data to Devotee_photo table only.
+         * Else create an empty row in Devotee table with given id
+         */
+        // To devotee table 
+
+        if ($is_update) {  //
+
+            $query0 = "REPLACE INTO Devotee_ID
+                        SET
+                        Devotee_Key=:id,
+                        Devotee_ID_Image=:photo,
+                        Devotee_ID_Type=:type";
+            $stmt = $this->conn->prepare($query0);
+            $stmt->bindParam(":photo", $unencoded);
+            $stmt->bindParam(":id", $devotee_id);
+            $stmt->bindParam(":type", $type);
+
+            if (!$stmt->execute()) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            // In devotee table
+            $query02 = "INSERT INTO Devotee
+                   SET
+                Devotee_Key=:id";
+            $stmt02 = $this->conn->prepare($query02);
+            $stmt02->bindParam(":id", $devotee_id);
+            if (!$stmt02->execute()) {
+                return false;
+            }
+        
+            // In photo table
+            $query2 = "INSERT INTO Devotee_ID
+                   SET
+                Devotee_Key=:id,
+                Devotee_ID_Image=:photo,
+                Devotee_ID_Type=:type";
+            $stmt2 = $this->conn->prepare($query2);
+            $stmt2->bindParam(":id", $devotee_id);
+            $stmt2->bindParam(":photo", $unencoded);
+            $stmt2->bindParam(":type", $type);
             
             if (!$stmt2->execute()) {
                 return false;

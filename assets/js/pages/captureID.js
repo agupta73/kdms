@@ -21,7 +21,6 @@
     var photoID = null;
     //var photo2 = null;
     var devoteeID = null;
-    var startbutton = null;
     var uploadbutton = null;
     var camera = null;
 
@@ -32,8 +31,7 @@
         photoID = document.getElementById('photoID');
       //  photo2 = document.getElementById('photo2');
         devoteeID = document.getElementById('devotee_key_modal');
-        startbutton = document.getElementById('click-pic');
-        uploadbutton = document.getElementById('upload-pic');
+        uploadbutton = document.getElementById('upload-doc');
 
         navigator.getMedia = (navigator.getUserMedia ||
                 navigator.webkitGetUserMedia ||
@@ -69,10 +67,6 @@
             }
         }, false);
 
-        // startbutton.addEventListener('click', function (ev) {
-        //     takepicture();
-        //     ev.preventDefault();
-        // }, false);
         uploadbutton.addEventListener('click', function (ev) {
             uploadIDImage();
             ev.preventDefault();
@@ -98,23 +92,6 @@
     // format data URL. By drawing it on an offscreen IDcanvas and then
     // drawing that to the screen, we can change its size and/or apply
     // other changes before drawing it.
-    // context.drawImage(video, 0, 0);
-    // function takepicture() {
-    //     var context = IDcanvas.getContext('2d');
-    //     if (width && height) {
-    //         IDcanvas.width = width;
-    //         IDcanvas.height = height;
-    //         // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-    //         // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
-    //         context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
-    //         // context.drawImage(video, 0, 0, width, height);
-    //         var data = IDcanvas.toDataURL('image/png');
-    //         photoID.setAttribute('src', data);
-    //         uploadbutton.style.visibility = 'visible';
-    //     } else {
-    //         clearphoto();
-    //     }
-    // }
     function isCanvasBlank(IDcanvas) {
         return !IDcanvas.getContext('2d')
             .getImageData(0, 0, IDcanvas.width, IDcanvas.height).data
@@ -125,32 +102,36 @@
         var context = IDcanvas.getContext('2d');
         if (isCanvasBlank(IDcanvas)) {
             var image = new Image();
+            image.src = base64_image_data;
             image.onload = function() {
                 context.drawImage(image, 0, 0, width/2, height);
             }
+            IDcanvas.width = width;
+            IDcanvas.height = height;
         } else {
-            // Todo: can append the canvas image here.
-            image.onload = function() {
-                context.drawImage(image, 0, 0, width/2, height);
+            var second_image = new Image();
+            var first_image = new Image();
+            second_image.src = base64_image_data;
+            console.log(base64_image_data);
+            first_image.src = photoID.getAttribute('src');
+            second_image.onload = function() {
+                context.drawImage(first_image, 0, 0, width/2, height);
+                context.drawImage(second_image, width/2, 0, width/2, height);
             }
+            IDcanvas.width = width;
+            IDcanvas.height = height;
         }
-        IDcanvas.width = width;
-        IDcanvas.height = height;
-        image.src = base64_image_data;
-
-        var data = IDcanvas.toDataURL('image/png');
-        photoID.setAttribute('src', data);
-        uploadbutton.style.visibility = 'visible';
+        photoID.setAttribute('src', base64_image_data);
     }
 
     function uploadIDImage() {
         var dataUrl = IDcanvas.toDataURL();
         if (devoteeID.value != "") {
             $.ajax({
-                url: '../api/managePhotoID.php',
+                url: '../api/managePhoto.php',
                 method: 'POST',
-                data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
-            }).done(function () {
+                data: {image: dataUrl, api_type: 4, devotee_key: devoteeID.value}
+            }).done(function (resp) {
                 var url = window.location.href;
                 alert('Devotee Image updated!!');
                 $('#CameraModalLong').modal('hide');
@@ -161,7 +142,7 @@
             $.ajax({
                 url: '../api/managePhotoID.php',
                 method: 'POST',
-                data: {image: dataUrl, api_type: 3}
+                data: {image: dataUrl, api_type: 4}
             }).done(function (data) {
                 data = $.parseJSON(data);
                 var newId = data.message;
