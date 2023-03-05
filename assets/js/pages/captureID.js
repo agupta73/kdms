@@ -3,7 +3,7 @@
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
 
-    var width = 620;    // We will scale the photoID width to this
+    var width = 1020;    // We will scale the photoID width to this
     var height = 0;     // This will be computed based on the input stream
 
     // |streaming| indicates whether or not we're currently streaming
@@ -50,14 +50,20 @@
                     console.log("An error occurred! " + err);
                 });
 
-
         video.addEventListener('canplay', function (ev) {
+            height = video.videoHeight / (video.videoWidth / width);
+            if (isNaN(height)) {
+                height = width / (4 / 3);
+            }
+            video.setAttribute('width', width);
+            video.setAttribute('height', height);
+            IDcanvas.setAttribute('width', width);
+            IDcanvas.setAttribute('height', height);
             if (!streaming) {
                 height = video.videoHeight / (video.videoWidth / width);
 
                 if (isNaN(height)) {
                     height = width / (4 / 3);
-                    //height = width;
                 }
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
@@ -72,20 +78,20 @@
             ev.preventDefault();
         }, false);
 
-        clearphoto();
+        // clearphoto();
     }
 
     // Fill the photoID with an indication that none has been
     // captured.
 
-    function clearphoto() {
-        var context = IDcanvas.getContext('2d');
-        context.fillStyle = "#AAA";
-        context.fillRect(0, 0, IDcanvas.width, IDcanvas.height);
-        var data = IDcanvas.toDataURL('image/png');
-        photoID.setAttribute('src', data);
-        //photo2.setAttribute('src', data);
-    }
+    // function clearphoto() {
+    //     var context = IDcanvas.getContext('2d');
+    //     context.fillStyle = "#AAA";
+    //     context.fillRect(0, 0, IDcanvas.width, IDcanvas.height);
+    //     var data = IDcanvas.toDataURL('image/png');
+    //     photoID.setAttribute('src', data);
+    //     //photo2.setAttribute('src', data);
+    // }
 
     // Capture a photoID by fetching the current contents of the video
     // and drawing it into a canvas, then converting that to a PNG

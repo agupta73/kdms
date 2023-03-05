@@ -168,22 +168,25 @@ Class Image {
          */
         // To devotee table 
 
-        if ($is_update) {  //
-
+        if ($is_update) {
             $query0 = "REPLACE INTO Devotee_ID
                         SET
-                        Devotee_Key=:id,
                         Devotee_ID_Image=:photo,
+                        Devotee_Key=:id,
                         Devotee_ID_Type=:type";
             $stmt = $this->conn->prepare($query0);
             $stmt->bindParam(":photo", $unencoded);
             $stmt->bindParam(":id", $devotee_id);
             $stmt->bindParam(":type", $type);
-
-            if (!$stmt->execute()) {
-                return false;
-            } else {
-                return true;
+            try {
+                if (!$stmt->execute()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } catch (Exception $e) {
+                echo 'Error : ' . $e->getMessage();
+                die;
             }
         } else {
             // In devotee table
@@ -198,20 +201,38 @@ Class Image {
         
             // In photo table
             $query2 = "INSERT INTO Devotee_ID
-                   SET
-                Devotee_Key=:id,
-                Devotee_ID_Image=:photo,
-                Devotee_ID_Type=:type";
+                        SET
+                        Devotee_Key=:id,
+                        Devotee_ID_Image=:photo,
+                        Devotee_ID_Type=:type";
             $stmt2 = $this->conn->prepare($query2);
             $stmt2->bindParam(":id", $devotee_id);
             $stmt2->bindParam(":photo", $unencoded);
             $stmt2->bindParam(":type", $type);
             
-            if (!$stmt2->execute()) {
-                return false;
-            } else {
-                return true;
+            try {
+                $stmt->execute();
+                $error_info = $stmt->errorInfo();
+                if (!empty($error_info[0] != '00000')) {
+                    print_r($error_info);
+                    die;
+                }
+                //print_r($stmt->errorInfo());
+            } catch (Exception $e) {
+                echo 'Error : ' . $e->getMessage();
+                die;
             }
+            // if (!$stmt2->execute()) {
+            //     $error_info = $stmt->errorInfo();
+            //     if (!empty($error_info[0] != '00000')) {
+            //         print_r($error_info);
+            //         die;
+            //     }
+            //     // return false;
+            // } 
+            // else {
+            //      return true;
+            // }
         }
     }
 

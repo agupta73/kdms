@@ -72,7 +72,6 @@
               </div>
               <?php
               if (!empty($amenities)) {
-
               ?>
               <div class="col-md-8">
                 <div class="card-header card-header-primary">
@@ -115,10 +114,7 @@
                   </table>
                 </div>
               </div>
-
               <?php
-
-
               }
               ?>
             </div>
@@ -137,8 +133,8 @@
       </div>
     </div>
   </div>
-
 </form>
+
 <script>
 
   //javascript function for ajax call
