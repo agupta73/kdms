@@ -314,6 +314,7 @@ $debug = false;
                             </div>
                             <form id="printForm">
                                 <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" >
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table">
@@ -325,28 +326,27 @@ $debug = false;
                                                                     </th>");
                                                     }
                                                     ?>
-                                                <th>
-                                                    Name
-                                                </th>
-                                                <th>
-                                                    Devotee ID
-                                                </th>
-                                                <th>
-                                                    Status
-                                                </th>
-                                                <th>
-                                                    Station
-                                                </th>
-                                                <th>
-                                                    Cell Number
-                                                </th>
-                                                <th>
-                                                    Photo
-                                                </th>
-                                                <th>
-                                                    ID Image
-                                                </th>
-
+                                                    <th>
+                                                        Name
+                                                    </th>
+                                                    <th>
+                                                        Devotee ID
+                                                    </th>
+                                                    <th>
+                                                        Status
+                                                    </th>
+                                                    <th>
+                                                        Station
+                                                    </th>
+                                                    <th>
+                                                        Cell Number
+                                                    </th>
+                                                    <th>
+                                                        Photo
+                                                    </th>
+                                                    <th>
+                                                        ID Image
+                                                    </th>
                                                 </thead>
                                                 <tbody>
 <?php
@@ -424,20 +424,20 @@ if (!empty($response)) {
                 print_r("<td> <input type='checkbox' name='" . $recordCount . "' id='" . $recordCount . "' value='" . $devoteeKey . "'> </td>");
             }
             print_r(" <td>
-                                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
-                                                     </td>
-                                                     <td>
-                                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
-                                                     </td>
-                                                     <td>
-                                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStatusDetail . "</a>
-                                                     </td>
-                                                     <td>
-                                                         <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
-                                                     </td>
-                                                       <td>
-                                                           <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
-                                                     </td><td>");
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeName . "</a>
+                        </td>
+                        <td>
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
+                        </td>
+                        <td>
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStatusDetail . "</a>
+                        </td>
+                        <td>
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
+                        </td>
+                        <td>
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
+                        </td><td>");
             //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
             if ($devoteePhoto == "") {
                 print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="75px"></img>');
@@ -459,31 +459,30 @@ if (!empty($response)) {
     }
 }
 ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-8" >
-                                        <div class="card-body">
-
-                                            <button type="submit" <?php if (!$showSelection) {
-                                                        print_r("hidden='true'");
-                                                    } ?> class="btn btn-success pull-right" >Cancel</button>
-                                            <button type="submit" hidden='true' class="btn btn-success pull-right">Add Devotee without photo/image</button>
-                                            
-                                            <button type="submit" <?php if (!$showSelection) {
-                                                        print_r("hidden='true'");
-                                                    } ?> class="btn btn-success pull-right" onclick="removePrint('printForm', 1); return false;">Cancel Print for Selected Cards</button>
-                                            <button type="submit" <?php if (!$showSelection) {
-                                                        print_r("hidden='true'");
-                                                    } ?> class="btn btn-success pull-right" onclick="submitPrint('printForm', 1); return false;">Print Selected Cards</button>
-                                            <div class="clearfix"></div>
-
-                                        </div>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                            </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" >
+                                    <div class="card-body">
 
+                                        <button type="submit" <?php if (!$showSelection) {
+                                                    print_r("hidden='true'");
+                                                } ?> class="btn btn-success pull-right" >Cancel</button>
+                                        <button type="submit" hidden='true' class="btn btn-success pull-right">Add Devotee without photo/image</button>
+                                        
+                                        <button type="submit" <?php if (!$showSelection) {
+                                                    print_r("hidden='true'");
+                                                } ?> class="btn btn-success pull-right" onclick="removePrint('printForm', 1); return false;">Cancel Print for Selected Cards</button>
+                                        <button type="submit" <?php if (!$showSelection) {
+                                                    print_r("hidden='true'");
+                                                } ?> class="btn btn-success pull-right" onclick="submitPrint('printForm', 1); return false;">Print Selected Cards</button>
+                                        <div class="clearfix"></div>
+
+                                    </div>
+                                </div>
+                            </div>
                             </form>
                         </div>
                     </div>
