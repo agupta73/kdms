@@ -169,33 +169,34 @@ function validateInput(){
 
   <!-- Modal -->
     <div class="modal fade" id="CameraModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-      <div class="modal-dialog" role="document" >
-        <div class="modal-content" style="width:800px;height:500px;">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" >
-            <div class="row">
-              <div class="col-md-6">
-                <video id="video" width="300" height="250" autoplay></video>
-                <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
-              </div>
+      <div class="modal-dialog camera-modal-content" role="document" >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body" >
+                  <div class="row">
+                    <div class="col-md-6">
+                      <video class="photoImage" 
+ id="video" width="180" height="230" autoplay></video>
+                      <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
+                    </div>
 
-              <div class="col-md-5">
-            <canvas id="canvas" ></canvas>
-            <div id="photo"></div>
-            </div>
-          </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
-            <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
-          </div>
-        </div>
+                    <div class="col-md-5">
+                  <canvas id="canvas" ></canvas>
+                  <div id="photo"></div>
+                  </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
+                  <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
+                </div>
+              </div>
       </div>
     </div>
 

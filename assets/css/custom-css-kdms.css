@@ -12,7 +12,7 @@ Custom scroll-bar for KDMS
 
 .scrollbar-dash
 {
-	height: 300px;
+	height: 200px;
     width: inherit;
 	overflow-y: scroll;
 }
@@ -25,7 +25,7 @@ Custom scroll-bar for KDMS
 #wrapper
 {
 	text-align: center;
-	/* width: 500px; */
+	/* width: 500px;*/
 	margin: auto;
 }
 
@@ -242,13 +242,22 @@ th.assign-devotees {
 
 
 .devoteeImage {
-	height: auto;
-	width: auto;
+	/* height: 320px;
+	width: 240px; */
+	max-width: 150px !important;
+    max-height: 180px !important;
+	/* max-width: 320px !important;
+    max-height: 240px !important; */
 }
 
-.card-devotee-image-profile {
-	max-height: 350px;
+.devoteeImageStatic {
+	height: 100%;
+	width: 100%;
 }
+
+/* .card-devotee-image-profile {
+	max-height: 350px;
+} */
 
 .kdms-modal-addDevotee {
 	max-width: 1300px;
@@ -256,4 +265,243 @@ th.assign-devotees {
 
 .kdms-adddevotee-card-title {
 	display: inline;
+}
+
+/* camera modal custom CSS */
+@media (max-width: 991px)  {
+	.camera-modal-content {
+		max-width: 600px !important;
+	}
+	.upload-photo {
+		display: none;
+	}
+	.upload-doc {
+		display: none;
+	}
+	.open-camera {
+		display: block;
+	}
+	.video-live-preview {
+		display: none;
+	}
+	.click-pic {
+		display: none;
+	}
+	#click-pic {
+		display: none;
+	}
+}
+
+@media (min-width: 992px) {
+	.camera-modal-content {
+		max-width: 550px !important;
+	}
+	.upload-photo {
+		display: block;
+	}
+	.upload-doc {
+		display: none;
+	}
+	.open-camera {
+		display: block;
+	}
+	.video-live-preview {
+		display: block;
+	}
+	.click-pic {
+		display: none;
+	}
+	#click-pic {
+		display: none;
+	}
+}
+
+@media (min-width: 1504px) {
+	.camera-modal-content {
+		max-width: 550px !important;
+	}
+	.upload-photo {
+		display: block;
+	}
+	.upload-doc {
+		display: block;
+	}
+	.click-pic {
+		display: block;
+	}
+	#click-pic {
+		display: inline;
+	}
+	.open-camera {
+		display: none;
+	}
+	.video-live-preview {
+		display: block;
+	}
+	
+}
+
+
+#cameraFileInput, #cameraIDFileInput {
+	display: none;
+}
+
+.photoImage {
+    width: 150px !important;
+    height: 180px !important;
+	object-fit: cover;
+}
+
+.photoCanvas {
+    width: 150px !important;
+    height: 180px !important;
+    /* object-fit: cover; */
+	/* object-fit: cover; */
+}
+.photoIDCanvas {
+	width: 586px !important;
+    /* width: 340px !important; */
+    height: 320px !important;
+    /* object-fit: cover; */
+	/* object-fit: contain; */
+}
+
+.videoliveplay {
+	margin-top:auto;
+	margin-bottom:auto;
+	text-align:center;
+}
+
+.photo-preview {
+	margin: 0 auto;
+	min-height: 218px;
+}
+
+.resetScaling {
+	position: absolute;
+    right: 10px;
+    height: 34px;
+    width: 34px;
+	cursor: pointer; 
+}
+
+.devoteeImage {
+	width: 200px;
+  	height: 300px;
+	z-index: 1000;
+}
+
+.photoCanvas {
+	margin-top: 20px;
+}
+.photoImage {
+	margin-top: 20px;
+}
+
+.action-btn {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+/* mobile */
+@media (max-width: 991px)  {
+	.id-upload-modal {
+		max-width: 1000px;
+		height: 300px;
+	}
+	.scan-id-container {
+		border: 2px dotted darkgrey;
+	}
+	.scan-image-container {
+		border: none;
+	}
+	.id-image-preview {
+		border: 2px solid darkgrey;
+		max-width: 260px;
+	}
+	.scan-id-action-section {
+		margin-top: 15px;
+	}
+	.photo-id-preview {
+		object-fit: contain;
+		max-width: 325px;
+   		width: 100%;
+	}
+	.photoIDCanvas {
+		width: 325px !important;
+		object-fit: contain;
+		transform: rotate(90deg);
+	}
+}
+/* ipad */
+@media (min-width: 992px) {
+	.id-upload-modal {
+		max-width: 1000px;
+		height: 300px;
+	}
+	.scan-id-container {
+		border: 2px dotted darkgrey;
+	}
+	.scan-image-container {
+		border-right: 2px dotted darkgrey;
+	}
+	.id-image-preview {
+		border: 2px solid darkgrey;
+		max-width: 260px;
+	}
+	.scan-id-action-section {
+		margin-top: 15px;
+	}
+	.photo-id-preview {
+		object-fit: contain;
+		max-width: 325px;
+   		width: 100%;
+	}
+}
+/* desktop or laptop */
+@media (min-width: 1504px) {
+	.id-upload-modal {
+		max-width: 1000px;
+		height: 300px;
+	}
+	.scan-id-container {
+		border: 2px dotted darkgrey;
+	}
+	.scan-image-container {
+		border-right: 2px dotted darkgrey;
+	}
+	.id-image-preview {
+		border: 2px solid darkgrey;
+		max-width: 260px;
+	}
+	.scan-id-action-section {
+		margin-top: 15px;
+	}
+	.videoliveplay-left {
+		text-align:right;
+	}
+	.videoliveplay-right {
+		text-align:left;
+	}
+}
+
+.blacklist_label {
+	color: #F5F5F5; 
+	font-weight: 500; 
+	font-size: 12px; 
+	margin-top: 15px;
+}
+
+.blacklist_container {
+	text-align: center;
+	background-color: red;
+	animation: blinker 1s linear infinite;
+	width: 100px;
+	height: 50px;
+	background: red;
+	border-radius: 100px / 50px;
+}
+
+.id-image-preview-container {
+	justify-content: center;
 }

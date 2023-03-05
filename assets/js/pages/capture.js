@@ -61,11 +61,19 @@
                     height = width / (4 / 3);
                     //height = width;
                 }
-
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
                 canvas.setAttribute('width', width);
                 canvas.setAttribute('height', height);
+                var context = canvas.getContext('2d');
+                context.beginPath();
+                context.fillStyle = "#AAA";
+                 context.fillRect(0, 0, canvas.width, canvas.height);
+                // var context = canvas.getContext('2d');
+                // context.lineWidth = 117;
+                // context.strokeStyle = '#c00';
+                // context.fillStyle="#F9E5E5";
+                // context.lineCap = 'round';
                // canvas2.setAttribute('width', width);
                // canvas2.setAttribute('height', height);
                 streaming = true;
@@ -94,7 +102,6 @@
 
         var data = canvas.toDataURL('image/png');
         photo.setAttribute('src', data);
-
         //photo2.setAttribute('src', data);
     }
 
@@ -103,24 +110,37 @@
     // format data URL. By drawing it on an offscreen canvas and then
     // drawing that to the screen, we can change its size and/or apply
     // other changes before drawing it.
-
+    // context.drawImage(video, 0, 0);
     function takepicture() {
         var context = canvas.getContext('2d');
         if (width && height) {
             canvas.width = width;
             canvas.height = height;
-//            canvas2.width = width;
-//            canvas2.height = height;
-            context.drawImage(video, 0, 0, width, height);
-            // context2.drawImage(video, 0, 0, width, height);
-
+            // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+            // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
+            context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
+            // context.drawImage(video, 0, 0, width, height);
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
-            //   photo2.setAttribute('src', data);
             uploadbutton.style.visibility = 'visible';
         } else {
             clearphoto();
         }
+    }
+
+    function draw(base64_image_data) {
+        var context = canvas.getContext('2d');
+        var image = new Image();
+        image.onload = function() {
+            context.drawImage(image, 0, 0, width, height);
+        }
+        canvas.width = width;
+        canvas.height = height;
+        image.src = base64_image_data;
+
+        var data = canvas.toDataURL('image/png');
+        photo.setAttribute('src', data);
+        uploadbutton.style.visibility = 'visible';
     }
 
     function uploadImage() {
@@ -135,6 +155,7 @@
                 alert('Devotee Image updated!!');
                 $('#CameraModalLong').modal('hide');
                 window.location = url;
+                window.location.reload();
             });
         } else {
             $.ajax({
@@ -151,32 +172,52 @@
                 window.location = url;
             });
         }
-
-        //photo2.innerHTML = "";
-//        var context2 = canvas2.getContext('2d');
-//        if (width && height) {
-//            canvas2.width = width;
-//            canvas2.height = height;
-//            context2.drawImage(video, 0, 0, width, height);
-//
-//            var data = canvas.toDataURL('image/png');
-//            photo2.setAttribute('src', data);
-//        } else {
-//            clearphoto();
-//        }
-
     }
 
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+    }
+      
+    document
+    .getElementById("cameraFileInput")
+    .addEventListener("change", function () {
+        getBase64(this.files[0]).then(
+        base64_image_data => {
+            draw(base64_image_data)
+        }
+        );
+    });
+    
     $('#CameraModalLong').on('show.bs.modal', function () {
         startup();
     });
+    startup();
     $('#CameraModalLong').on('hidden.bs.modal', function () {
         camera.stop();
-//console.log(navigator.mediaDevices);//.getTracks());//.forEach(function(track) { track.stop(); })
-        //navigator.mediaDevices.
     });
-    // Set up our event listener to run the startup process
-    // once loading is complete.
-    // window.addEventListener('load', startup, false);
 })();
 
+// code for devotee image scaling.
+$('#zoomInDevoteeImage').on('click', function (event) {
+    let zoomOutDevoteeImage = document.getElementById("zoomOutDevoteeImage");
+    let devotee_image_element = document.getElementById("devoteeImage");
+    this.style.display = "none";
+    zoomOutDevoteeImage.style.display = "block";
+    devotee_image_element.style.transform = "scale(1.5)";
+    devotee_image_element.style.transition = "transform 0.25s ease";
+});
+
+$('#zoomOutDevoteeImage').on('click', function (event) {
+    this.style.display = 'none';
+    let zoomInDevoteeImage = document.getElementById("zoomInDevoteeImage");
+    let devotee_image_element = document.getElementById("devoteeImage");
+    this.style.display = "none";
+    zoomInDevoteeImage.style.display = "block";
+    devotee_image_element.style.transform = "scale(1)";
+    devotee_image_element.style.transition = "transform 0.25s ease";
+});

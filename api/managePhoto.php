@@ -29,13 +29,6 @@ if ($api_type == 3) {
     }
     // Create object
     $imageClass = new Image($db);
-    // Old method to convert raw data
-//    $rawData = $requestData['image'];
-//        $filteredData = explode(',', $rawData);
-//        $unencoded = base64_decode($filteredData[0]);
-//        echo $unencoded;
-//        die;
-
     if ($imageClass->upload($requestData, $devotee_key, $is_update)) {
         if ($new) {
             res_success($devotee_key);
@@ -47,12 +40,6 @@ if ($api_type == 3) {
         res_error('Error while  updating devotee image !');
     }
 } else if ($api_type == 4) {  // Upload ID/scanned document
-    if (empty($_FILES['devotee-id-scan']) || $_FILES['devotee-id-scan']['error'] != 0) {
-        res_error('file missing or failed to uplaod !');
-    } else {
-        $requestData['file'] = $_FILES['devotee-id-scan'];
-    }
-
     $is_update = false;
     include_once $Interface_path . 'Image.php';
     include_once 'config/database.php';
@@ -69,21 +56,16 @@ if ($api_type == 3) {
         $is_update = true;
         $devotee_key = $requestData['devotee_key'];
     }
-    // Create object of  Image class
+    // Create object
     $imageClass = new Image($db);
-
-    if ($imageClass->uploadDocument($requestData, $devotee_key, $is_update)) {
-        // Since it is normal post , So relaod page
-        if(!empty($requestData['request_from'])){
-            $redirect='../UI/'.$requestData['request_from'].'?devotee_key=' . $devotee_key;
-             header('Location: ' .$redirect);
-        }else{
-            res_success('Data updated !');
+    if ($imageClass->uploadDocumentID($requestData, $devotee_key, $is_update)) {
+        if ($new) {
+            res_success($devotee_key);
+        } else {
+            res_success('Devotee document id image updated successfully !');
         }
-       
-        die;
     } else {
-        res_error('Error while  updating devotee\'s document !');
+        res_error('Error while updating document id image !');
     }
 }
 

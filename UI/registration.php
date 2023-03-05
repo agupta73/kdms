@@ -192,8 +192,8 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
 
             <!-- Modal -->
             <div class="modal fade" id="CameraModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                <div class="modal-dialog" role="document" >
-                    <div class="modal-content" style="width:800px;height:500px;">
+                <div class="modal-dialog camera-modal-content" role="document" >
+                    <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -203,7 +203,8 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                         <div class="modal-body" >
                             <div class="row">
                                 <div class="col-md-6">
-                                    <video id="video" width="300" height="250" autoplay></video>
+                                    <video class="photoImage" 
+ id="video" width="180" height="230" autoplay></video>
                                     <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
                                 </div>
 
@@ -212,26 +213,6 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                                     <div id="photo"></div>
                                 </div>
                             </div>
-                            <script>
-                                //            var video = document.getElementById('video');
-                                //              // Get access to the camera!
-                                //              if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                                //                // Not adding `{ audio: true }` since we only want video now
-                                //                navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-                                //                    video.src = window.URL.createObjectURL(stream);
-                                //                    video.play();
-                                //                });
-                                //              }
-                                //              // Elements for taking the snapshot
-                                //              var canvas = document.getElementById('canvas');
-                                //              var context = canvas.getContext('2d');
-                                //              var video = document.getElementById('video');
-                                //
-                                //              // Trigger photo take
-                                //              document.getElementById("snap").addEventListener("click", function() {
-                                //              	context.drawImage(video, 0, 0, 300, 300);
-                                //              });
-                                //            </script>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
