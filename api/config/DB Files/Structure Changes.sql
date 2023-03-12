@@ -196,3 +196,7 @@ CREATE TABLE `kdms2022`.`user_favorites` (
   `fav_updated_by` VARCHAR(10) NULL,
   `fav_update_date_time` DATETIME NULL,
   PRIMARY KEY (`user_key`, `fav_name`));
+
+-- Modify Blob columns to support storing high quality images (Devotee ID and Devotee Photo).
+ALTER TABLE Devotee_ID MODIFY COLUMN Devotee_ID_Image LONGBLOB;
+ALTER TABLE devotee_photo MODIFY COLUMN Devotee_Photo LONGBLOB;
