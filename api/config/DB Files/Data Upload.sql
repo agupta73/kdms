@@ -1407,3 +1407,20 @@ INSERT INTO `kdms_gold_2022`.`user_access`(`user_role_key`,`asset_key`,`access_v
 INSERT INTO `kdms2022`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'SPRUSR', asset_key, 'ALL','anil',NOW() from asset_list WHERE asset_key like 'KD-%';
 INSERT INTO `kdms_gold_2022`.`user_master` (`User_Key`, `User_Name`, `User_Email`, `User_Password`, `User_Phone`, `User_Role`) VALUES ('mgmt', 'Management User', 'Management User', 'mgmt', '888-888-8888', 'MGMTUSR');
 INSERT INTO `kdms2022`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'MGMTUSR', asset_key, 'ALL','anil',NOW() from asset_list WHERE asset_key like 'KR-%';
+INSERT INTO `kdms2023`.`user_master` VALUES ('support', 'Technology Support User', 'kainchi_tech_support@gmail.com', 'support', '999-999-9999', 'SUPPORT');
+INSERT INTO `kdms2023`.`user_access`(`user_role_key`,`asset_key`,`access_value`,`access_updated_by`,`access_update_date_time`) SELECT 'SUPPORT', asset_key, 'ALL','anil',NOW() from asset_list;
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // archive office duty data and setup office duty initial record for the next event
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+insert into office_duty_archive select * from office_duty;
+update office_duty_archive set duty_status = 'Completed';
+UPDATE  kdms2023.office_duty set duty_event = '2023JB'
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- // archive seva availability data 
+-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+insert into seva_availability_archive 
+select seva_id, seva_event, count(devotee_key) as assigned_count, '2022-06-16 15:00:00' as archieval_update_date_time , 'Script' as Archived_by from devotee_seva  
+where seva_id in (select seva_id from seva_master)
+group by seva_id, seva_event

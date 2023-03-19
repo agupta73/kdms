@@ -652,9 +652,23 @@ Class Devotee {
         }
         */
        
+        /* $query = "select " .
+                    "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
+                    , d.devotee_station
+                    , d.devotee_cell_phone_number 
+                    , did.Devotee_ID_Image 
+                    , dp.Devotee_Photo 
+                    , sm.Seva_description
+                 from 
+                     Devotee d 
+                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+        */
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
-                    , d.devotee_station, d.devotee_cell_phone_number 
+                    , d.devotee_station 
+                    , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
                     , did.Devotee_ID_Image 
                     , dp.Devotee_Photo 
                     , sm.Seva_description
@@ -727,7 +741,8 @@ Class Devotee {
        
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
-                    , d.devotee_station, d.devotee_cell_phone_number ";
+                    , d.devotee_station
+                    , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number ";
                     //, did.Devotee_ID_Image 
         $query = $query . ", dp.Devotee_Photo  
                     , sm.Seva_description
