@@ -7,7 +7,7 @@ class Database
     private $db_name = "kdms2023";
 
     private $inv_db_name = 'kinv2023';
-    //private $db_name = "kdms_testing";
+    
 
     private $username = "kdms";
     private $password = "kdms";
