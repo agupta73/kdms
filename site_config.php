@@ -19,8 +19,8 @@ date_default_timezone_set("America/Los_Angeles");
 //Set the event ID of the current event
 //Please see event_master table for available events or
 // use the manage event functionality, available from dashboard of application
-$event_id = "2023JB";
-
+//$event_id = "2023JB";
+$event_id = "2022JB";
 $checkAccess = true;
 
 return [

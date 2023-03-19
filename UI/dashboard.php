@@ -331,7 +331,7 @@ unset($sevaSearch);
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <form name="myForm" id="myFormID">
                     <input type="hidden" name="requestType" id="requestType" value="refreshAcco">
-                    <input type="hidden" name="eventId" id="eventId" value="<? echo $config_data['event_id']; ?>">
+                    <input type="hidden" name="eventId" id="eventId" value="<?php echo $config_data['event_id']; ?>">
                     <div class="card card-stats">
                         <div class="card-header card-header-danger card-header-icon">
                             <div class="card-icon">

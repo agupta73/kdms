@@ -143,7 +143,7 @@ function validateInput(){
                        <div class="col-md-6"></div>
                        <div class="col-md-6" >
                     <input type="hidden" name="requestType" id="requestType" value="upsertSeva">
-                           <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>">
+                           <input type="hidden" name="eventId" id="eventId" value="<?php echo $eventId; ?>">
                     <button type="reset" class="btn btn-success pull-right">Cancel</button>
                     <button class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                        </div>
