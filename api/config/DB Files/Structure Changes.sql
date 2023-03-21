@@ -203,6 +203,13 @@ CREATE TABLE `kdms2022`.`user_favorites` (
 ALTER TABLE Devotee_ID MODIFY COLUMN Devotee_ID_Image LONGBLOB;
 ALTER TABLE devotee_photo MODIFY COLUMN Devotee_Photo LONGBLOB;
 
+-- for kdms ocr temprory bucket.
+CREATE TABLE `kdms_ocr_image_bucket` (
+  `image_name` VARCHAR(500) NOT NULL,
+  `image` longblob,
+  `status` int DEFAULT '1' COMMENT '0=inactive;1=active;',
+  `image_uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time of creation/modification of devotee photo',
+  PRIMARY KEY (`image_name`)
 
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- Create office_duty_archive table

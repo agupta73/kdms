@@ -85,6 +85,12 @@ $config_data=include("../site_config.php");
           <p>Devotee Cards for Printing</p>
         </a>
       </li>         
+      <li class="nav-item ">
+        <a class="nav-link" href="./OCRReaderView.php">
+          <i class="material-icons">badge</i>
+          <p>KDMS OCR (Coming Soon)</p>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
