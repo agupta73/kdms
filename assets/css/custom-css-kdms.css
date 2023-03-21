@@ -505,3 +505,80 @@ th.assign-devotees {
 .id-image-preview-container {
 	justify-content: center;
 }
+
+/* kdms ocr specific CSS */
+
+.image-selection-area {
+	min-width: 100%;
+	height: 100%;
+	min-height: 200px;
+	background-color: #ffffff;
+	border: 2px solid #808080;
+	border-radius: 5px;
+}
+
+.image-selection-area-label {
+	font-size: 24px;
+}
+
+.ocr-id-image-preview-section {
+	min-width: 100%;
+	min-height: 250px;
+	height: 100%;
+	/* min-height: 200px; */
+	background-color: #ffffff;
+	border: 3px dotted #808080;
+	border-radius: 10px;
+}
+
+.gender-kdms-ocr-view {
+	margin-top: 0 !important;
+}
+.dragBox {
+    width: 100%;
+    height: 200px;
+	margin: 0 auto;
+	position: relative;
+	text-align: center;
+	font-weight: bold;
+	line-height: 95px;
+	color: #999;
+	border: 2px dashed #ccc;
+	display: inline-block;
+	transition: transform 0.3s;
+	font-size: 24px;
+  }
+  input[type="file"] {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	opacity: 0;
+	top: 0;
+	left: 0;
+  }
+  .draging {
+	transform: scale(1.1);
+  }
+  
+.action-btns {
+	display: flex;
+    justify-content: left;
+}
+.ocr-image-upload-parser-preview {
+	height: 100px;
+	width: 100px;
+	margin: 10px;
+    padding: 5px;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+
+.selected-images {
+	min-height: 150px;
+}
+
+#ocr_image_preview {
+	display: flex;
+    max-width: 100%;
+    overflow-x: scroll;
+}
