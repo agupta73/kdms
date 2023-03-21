@@ -205,7 +205,7 @@ $debug = false  ;
 
                 if (validateInput()) {
                     $.ajax({
-                        url: '<? echo $config_data['webroot'];?>Logic/requestManager.php',
+                        url: '<?php echo $config_data['webroot'];?>Logic/requestManager.php',
                         type: 'POST',
                         data: formData,
                         async: false,
@@ -712,7 +712,7 @@ $debug = false  ;
                                                 </div>
                                             </div>
                                             <input type="hidden" name="requestType" id="requestType" value="upsertDevotee">
-                                            <input type="hidden" name="eventId" id="eventId" value="<? echo $eventId; ?>">
+                                            <input type="hidden" name="eventId" id="eventId" value="<?php echo $eventId; ?>">
                                             <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);

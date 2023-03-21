@@ -142,7 +142,7 @@ if (!empty($requestData['loginID'])) {
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="bmd-label-floating">Password</label>
-                            <input type="password" class="form-control" name="password" id="password" value="<? echo $password; ?>">
+                            <input type="password" class="form-control" name="password" id="password" value="<?php echo $password; ?>">
                                 <input type="hidden" name="type" id="type" value="login">
                           </div>
                         </div>
@@ -151,7 +151,7 @@ if (!empty($requestData['loginID'])) {
                           <div class="row">
                               <div class="col-md-12">
                                   <p class="text-danger">
-                                      <? echo $message; ?> </p>
+                                      <?php echo $message; ?> </p>
                               </div>
                           </div>
 

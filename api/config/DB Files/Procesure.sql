@@ -1409,10 +1409,10 @@ DELIMITER ;
 -- ////////////////////////////////////////
 -- // PROC_INITIALIZE_EVENT
 -- ////////////////////////////////////////
-DROP Procedure proc_initialize_event;
+DROP PROCEDURE PROC_INITIALIZE_EVENT;
 
 DELIMITER $$
-CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_INITIALIZE_EVENT`(
+CREATE PROCEDURE `PROC_INITIALIZE_EVENT`(
 	IN `p_Event_ID` VARCHAR(10)
 )
 BEGIN
@@ -1453,6 +1453,9 @@ BEGIN
     END;
 	*/
     START TRANSACTION;
+    DROP TEMPORARY TABLE IF exists t_aa_result;
+    DROP TEMPORARY TABLE IF exists t_sa_result;
+    DROP TEMPORARY TABLE IF exists t_ama_result;
 	-- ACCOMMODATION ARCHIVAL 
 	-- Create temporary table with records to be archieved (event ID in closed status, and not in current or future status)
 	CREATE TEMPORARY TABLE t_aa_result
@@ -1665,7 +1668,7 @@ BEGIN
     WHERE  aa.amenity_key is null;
     
     -- Call refresh seva counts procedure to true up the counts
-    CALL `PROC_REFRESH_AMENITY_COUNT`(p_Event_ID);
+	CALL `PROC_REFRESH_AMENITIES_COUNT`(p_Event_ID);
 
     -- >>> DEBUG block
        IF DEBUG THEN
@@ -1707,7 +1710,7 @@ UNION select 'seva_availability_archive', count(*) from seva_availability_archiv
 CALL `PROC_INITIALIZE_EVENT`('2022JB');
 
 select 'accommodation_availability', count(*) from accommodation_availability 
-UNION select 'accommodation_availability_archive', count(*) from accommodation_availability_archive 
+UNION select 'accommPROC_INITIALIZE_EVENTodation_availability_archive', count(*) from accommodation_availability_archive 
 UNION select 'seva_availability', count(*) from seva_availability 
 UNION select 'seva_availability_archive', count(*) from seva_availability_archive;
 */

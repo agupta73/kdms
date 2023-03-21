@@ -4,7 +4,7 @@
   
   <div class="container-fluid py-1 px-3 kdms-top-nav">
     <div class="kdms-active-event">
-      <h3><? echo $_SESSION['eventDesc']; ?></h3>
+      <h3><?php echo $_SESSION['eventDesc']; ?></h3>
     </div>
     <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top kdms-toggle-navbar">
       <div class="container-fluid">
@@ -30,7 +30,7 @@
       </div>
       <ul class="navbar-nav  justify-content-end kdms-navbar-items">
         <li class="nav-item d-flex align-items-center kdms-user-role">
-          <h6 class="font-weight-bolder mb-0 kdms-user"><? echo $_SESSION['UserName'], " - ", $_SESSION['Role']; ?></h6>
+          <h6 class="font-weight-bolder mb-0 kdms-user"><?php echo $_SESSION['UserName'], " - ", $_SESSION['Role']; ?></h6>
         </li>
         <li class="nav-item d-flex align-items-center">
           <a href="login.php" class="nav-link font-weight-bold px-0 text-body">
