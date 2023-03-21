@@ -88,9 +88,9 @@ $config_data=include("../site_config.php");
       <li class="nav-item ">
         <a class="nav-link" href="./OCRReaderView.php">
           <i class="material-icons">badge</i>
-          <p>KDMS OCR</p>
+          <p>KDMS OCR (Coming Soon)</p>
         </a>
-      </li>         
+      </li>
     </ul>
   </div>
 </div>
