@@ -574,7 +574,8 @@ th.assign-devotees {
 }
 
 .selected-images {
-	min-height: 150px;
+	/* min-height: 150px; */
+	display: none;
 }
 
 #ocr_image_preview {
