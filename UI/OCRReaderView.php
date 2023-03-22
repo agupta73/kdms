@@ -7,21 +7,12 @@ if (session_status() === PHP_SESSION_NONE) {
 $current_page_id = 'KD-DVT-SCR';
 include_once("../sessionCheck.php");
 include_once("header.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
-
-$eventId = $config_data['event_id'];
-$debug = false;
-//if($debug){var_dump( $_GET);}
 ?>
 <html lang="en">
 
 <head>
     <title> KDMS (OCR Reader) </title>
-    <?php
-    include_once("header.php");
-    ?>
 </head>
 
 <body class="">
@@ -41,13 +32,14 @@ $debug = false;
                                         <!-- <label class="bmd-label-floating image-selection-area-label">
                                             Drag and Drop
                                             Images Here</label> -->
-                                        <span class="dragBox" >
+                                        <span class="dragBox">
                                             Click or Drag and Drop images here
-                                            <input type="file" onChange="dragNdrop(event)"  ondragover="drag()" ondrop="drop()" id="uploadFile"  multiple="multiple" />
+                                            <input type="file" onChange="dragNdrop(event)" ondragover="drag()"
+                                                ondrop="drop()" id="uploadFile" multiple="multiple" />
                                         </span>
-                                        <button class="btn btn-success pull-right">
+                                        <!-- <button class="btn btn-success pull-right">
                                             <i class="material-icons">upload_file</i> Upload to temp bucket
-                                        </button>
+                                        </button> -->
                                         <!-- Todo: css changes to position the button on bottom middle with icon -->
                                         <!-- <button class="btn btn-info pull-right">Upload Image</button> -->
                                     </div>
@@ -73,71 +65,46 @@ $debug = false;
                                             <table class="table">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">#Sr. No.</th>
+                                                        <th scope="col">#Sr.</th>
                                                         <th scope="col">Name</th>
                                                         <th scope="col">Is file used</th>
                                                         <th scope="col">Uploaded at</th>
                                                         <th scope="col">Actions</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row">1</th>
-                                                        <td>Image 1</td>
-                                                        <td>
-                                                            <i class="material-icons">check</i>
-                                                        </td>
-                                                        <td>Time of upload</td>
-                                                        <td class="action-btns">
-                                                            <button class="btn btn-success pull-right">
-                                                                <i class="material-icons">upload_file</i>
-                                                            </button>
-                                                            <button class="btn btn-info pull-right">
-                                                                <i class="material-icons">visibility</i>
-                                                            </button>
-                                                            <button class="btn btn-danger pull-right">
-                                                                <i class="material-icons">delete</i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">2</th>
-                                                        <td>Image 2</td>
-                                                        <td>
-                                                            <i class="material-icons">check</i>
-                                                        </td>
-                                                        <td>Time of upload</td>
-                                                        <td class="action-btns">
-                                                            <button class="btn btn-success pull-right">
-                                                                <i class="material-icons">upload_file</i>
-                                                            </button>
-                                                            <button class="btn btn-info pull-right">
-                                                                <i class="material-icons">visibility</i>
-                                                            </button>
-                                                            <button class="btn btn-danger pull-right">
-                                                                <i class="material-icons">delete</i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">3</th>
-                                                        <td>Image 3</td>
-                                                        <td>
-                                                            <i class="material-icons">close</i>
-                                                        </td>
-                                                        <td>Time of upload</td>
-                                                        <td class="action-btns">
-                                                            <button class="btn btn-success pull-right">
-                                                                <i class="material-icons">upload_file</i>
-                                                            </button>
-                                                            <button class="btn btn-info pull-right">
-                                                                <i class="material-icons">visibility</i>
-                                                            </button>
-                                                            <button class="btn btn-danger pull-right">
-                                                                <i class="material-icons">delete</i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
+                                                <tbody id="tempbucket_table_body">
+                                                    <?php
+                                                    // for ($index = 0; $index < count($response); $index++) {
+                                                    //     $image_sr_no = $index + 1;
+                                                    //     $each_row_data = (array) $response['data'][$index];
+                                                    //     $image_name = $each_row_data['image_name'];
+                                                    //     $status = $each_row_data['status'];
+                                                    //     $image_uploaded_at = $each_row_data['image_uploaded_at'];
+                                                    //     // print_r($response);
+                                                    //     echo '<tr>';
+                                                    //     echo '<th scope="row">' . $image_sr_no . '</td>';
+                                                    //     echo '<td>' . $image_name . '</td>';
+                                                    //     if ($status) {
+                                                    //         echo '<td><i class="material-icons">check</i></td>';
+                                                    //     } else {
+                                                    //         echo '<td><i class="material-icons">close</i></td>';
+                                                    //     }
+                                                    //     echo '<td>' . $image_uploaded_at . '</td>';
+                                                    //     echo '<td class="action-btns">
+                                                    //             <button class="btn btn-success pull-right">
+                                                    //                 <i class="material-icons">upload_file</i>
+                                                    //             </button>
+                                                    //             <button class="btn btn-info pull-right">
+                                                    //                 <i class="material-icons">visibility</i>
+                                                    //             </button>
+                                                    //             <button data-image="' . $image_name . '" class="btn btn-danger pull-right remove_image">
+                                                    //                 <i class="material-icons">delete</i>
+                                                    //             </button>
+                                                    //         </td>';
+                                                    //     echo '</tr>';
+                                                    // }
+
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -156,15 +123,16 @@ $debug = false;
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Name</label>
-                                                        <input type="text" class="form-control"
-                                                            name="devotee_name" id="devotee_name">
+                                                        <input type="text" class="form-control" name="devotee_name"
+                                                            id="ocr_form_devotee_name">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4" >
+                                                <div class="col-md-4">
                                                     <div class="form-group gender-kdms-ocr-view">
                                                         <label class="bmd-label-floating">Gender</label>
-                                                        <!-- <input type="text" class="form-control" name="devotee_gender" id="devotee_gender" value="<?php print_r($devotee_gender); ?>"> -->
-                                                        <select type="text" class="form-control" name="devotee_gender" id="devotee_gender"  value="<?php print_r($devotee_gender); ?>">
+                                                        <select type="text" class="form-control" name="devotee_gender" id="ocr_form_devotee_gender"
+                                                            id="ocr_form_devotee_gender"
+                                                            value="">
                                                             <option value="-" <?php
                                                             // if ($devotee_gender == "m"  || $devotee_gender == "M" || empty($devotee_gender)) {
                                                             //     print_r("selected");
@@ -179,38 +147,40 @@ $debug = false;
                                                             // if ($devotee_gender == "F"  || $devotee_gender == "f") {
                                                             //     print_r("selected");
                                                             // }
-                                                            ?>>Female</option>                                                            
+                                                            ?>>Female</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Date of Birth</label>
-                                                        <input type="text" class="form-control" name="devotee_dob" id="devotee_dob" value="<?php 
-                                                        // print_r($devotee_dob); 
-                                                        ?>">
+                                                        <input type="text" class="form-control" name="devotee_dob"
+                                                            id="ocr_form_devotee_dob" value="<?php
+                                                            // print_r($devotee_dob); 
+                                                            ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">ID Number</label>
                                                         <input type="text" class="form-control" name="devotee_id_number"
-                                                            id="devotee_id_number">
+                                                            id="ocr_form_devotee_id_number">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Mobile</label>
-                                                        <input type="text" class="form-control" name="devotee_cell_number"
-                                                            id="devotee_cell_number">
+                                                        <input type="text" class="form-control"
+                                                            name="devotee_cell_number" id="devotee_cell_number">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Address</label>
-                                                            <!--<label class="bmd-label-floating"> Add additional Information</label>-->
-                                                            <textarea class="form-control" rows="2" name="comments" id="comments"> 
-                                                                <?php 
+                                                        <!--<label class="bmd-label-floating"> Add additional Information</label>-->
+                                                        <textarea class="form-control" rows="2" name="address"
+                                                            id="ocr_form_devotee_address">
+                                                                <?php
                                                                 // print_r($comments); 
                                                                 ?>
                                                             </textarea>
