@@ -19,6 +19,9 @@ include_once("header.php");
     <div class="wrapper ">
         <?php include_once("nav.php"); ?>
         <div class="main-panel">
+            <div id="loading">
+                <img id="loading-image" src="loader.gif" alt="Loading..." />
+            </div>
             <!-- Navbar -->
             <div class="card">
                 <div class="card-body">
@@ -56,7 +59,7 @@ include_once("header.php");
                                 <div class="col-12">
                                     <!-- uploaded image list area -->
                                     <div class="card-body">
-                                        <button class="btn btn-warning pull-right">
+                                        <button class="btn btn-warning pull-right" onclick="remove_all_image_from_temp_bucket()">
                                             <i class="material-icons">clear_all</i>
                                             clear bucket
                                         </button>
@@ -73,38 +76,6 @@ include_once("header.php");
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tempbucket_table_body">
-                                                    <?php
-                                                    // for ($index = 0; $index < count($response); $index++) {
-                                                    //     $image_sr_no = $index + 1;
-                                                    //     $each_row_data = (array) $response['data'][$index];
-                                                    //     $image_name = $each_row_data['image_name'];
-                                                    //     $status = $each_row_data['status'];
-                                                    //     $image_uploaded_at = $each_row_data['image_uploaded_at'];
-                                                    //     // print_r($response);
-                                                    //     echo '<tr>';
-                                                    //     echo '<th scope="row">' . $image_sr_no . '</td>';
-                                                    //     echo '<td>' . $image_name . '</td>';
-                                                    //     if ($status) {
-                                                    //         echo '<td><i class="material-icons">check</i></td>';
-                                                    //     } else {
-                                                    //         echo '<td><i class="material-icons">close</i></td>';
-                                                    //     }
-                                                    //     echo '<td>' . $image_uploaded_at . '</td>';
-                                                    //     echo '<td class="action-btns">
-                                                    //             <button class="btn btn-success pull-right">
-                                                    //                 <i class="material-icons">upload_file</i>
-                                                    //             </button>
-                                                    //             <button class="btn btn-info pull-right">
-                                                    //                 <i class="material-icons">visibility</i>
-                                                    //             </button>
-                                                    //             <button data-image="' . $image_name . '" class="btn btn-danger pull-right remove_image">
-                                                    //                 <i class="material-icons">delete</i>
-                                                    //             </button>
-                                                    //         </td>';
-                                                    //     echo '</tr>';
-                                                    // }
-
-                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -118,7 +89,6 @@ include_once("header.php");
                                     <!-- data preview and edit section -->
                                     <div class="card-body">
                                         <h4>Data Preview and Edit Section</h4>
-                                        <form id="searchForm">
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
@@ -187,9 +157,8 @@ include_once("header.php");
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="reset" class="btn btn-warning pull-right">Cancel</button>
-                                            <button class="btn btn-success pull-right">Submit</button>
-                                        </form>
+                                            <button id="kdms_ocr_clear" class="btn btn-warning pull-right" onclick="kdms_ocr_clear_btn()">Clear</button>
+                                            <button id="kdms_ocr_submit" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn()">Submit</button>
                                         <!--<div class="clearfix"></div>-->
                                     </div>
                                 </div>
@@ -198,12 +167,11 @@ include_once("header.php");
                                 <div class="col-12">
                                     <!-- image preview section -->
                                     <h4>Image Preview</h4>
-                                    <div id="ocr_selected_image_preview" class="card-body ocr-id-image-preview-section">
-                                        
+                                        <div class="card-body ocr-id-image-preview-section" id="ocr_selected_image_preview" >
+                                        </div>
                                         <!-- <label class="bmd-label-floating">First Name</label>
                                         <button type="reset" class="btn btn-success pull-right">Cancel</button>
                                         <button class="btn btn-success pull-right">Search</button> -->
-                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -523,12 +523,14 @@ th.assign-devotees {
 
 .ocr-id-image-preview-section {
 	min-width: 100%;
+	height: auto;
 	min-height: 250px;
-	height: 100%;
 	/* min-height: 200px; */
 	background-color: #ffffff;
 	border: 3px dotted #808080;
 	border-radius: 10px;
+	display: flex;
+    justify-content: center;
 }
 
 .gender-kdms-ocr-view {
@@ -582,4 +584,35 @@ th.assign-devotees {
 	display: flex;
     max-width: 100%;
     overflow-x: scroll;
+}
+
+#loading {
+	position: fixed;
+	display: block;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	text-align: center;
+	opacity: 0.7;
+	background-color: #fff;
+	z-index: 99;
+}
+  
+#loading-image {
+	position: absolute;
+	top: 100px;
+	z-index: 100;
+}
+
+.ocr-selected-parser-preview-image {
+	max-width: 300px;
+	max-height: 225px;
+}
+
+#active-preview-image:active {
+	scale: 2.2;
+}
+#active-preview-image {
+	object-fit: contain;
 }
