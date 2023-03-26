@@ -1,22 +1,13 @@
 function dragNdrop(event) {
     let number_of_files = event.target.files.length;
     for (let each_file_index = 0; each_file_index < number_of_files; each_file_index++) {
-        // let fileName = URL.createObjectURL(event.target.files[each_file_index]);
-        // let preview = document.getElementById("ocr_image_preview");
-        // let previewImg = document.createElement("img");
-        // previewImg.setAttribute("src", fileName);
-        // previewImg.setAttribute("class", "ocr-image-upload-parser-preview");
-        // preview.appendChild(previewImg);
         let file = event.target.files[each_file_index];
         let file_name = event.target.files[each_file_index].name;
         let reader_file = new FileReader();
         reader_file.readAsDataURL(file);
         reader_file.onload = () => {
-            // const base64String = reader_file.result.replace('data:', '').replace(/^.+,/, '');
             const base64String = reader_file.result;
-            // console.log(base64String); // Step 4: Display or save the base64 string
             // call to the image upload API
-            // Todo: error response changes.
             $.ajax({
                 url: '../api/manage_kdms_ocr_image_bucket.php',
                 method: 'POST',
@@ -36,15 +27,6 @@ function drag() {
 function drop() {
     document.getElementById('uploadFile').parentNode.className = 'dragBox';
 }
-// (function($) {
-//     $.fn.hasScrollBar = function() {
-//         return this.get(0).scrollHeight > this.height();
-//     }
-// })(jQuery);
-
-// if ($('#ocr_image_preview').hasScrollBar()) {
-//     console.log('arrow');
-// }
 
 function remove_image(image_name) {
     let deletePrompt = confirm("Are you sure you want to delete "+image_name+" ?");
@@ -134,17 +116,6 @@ function render_matched_records(response_data) {
     get_bootstrap_modal().show();
 }
 
-function validateDate(isoDate) {
-    if (isNaN(Date.parse(isoDate))) {
-        return false;
-    } else {
-        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 function create_devotee_record(
     first_name,
     last_name,
@@ -153,24 +124,20 @@ function create_devotee_record(
     id_number,
     address
 ) {
-    alert('Record created, click to edit the record in new tab for add addional data!');
     const request_type = 'upsertDevotee';
-    const devotee_id_type = 'Aadhar';
+    const devotee_id_type = 'Aadhaar';
     const devotee_type = 'T';
     const eventId = get_event_id();
     const devotee_first_name = first_name;
     const devotee_last_name = last_name;
     const devotee_gender = gender;
     const devotee_dob = dob;
-    if (validateDate(devotee_dob)) {
-        alert('Invalid DOB');
-    }
-    const devotee_id_number = id_number.replace(" ", "");
+    const devotee_id_number = id_number;
     const devotee_address_1 = address;
 
     const request_data = {
-        request_type: request_type,
         devotee_id_type: devotee_id_type,
+        requestType: request_type,
         devotee_type: devotee_type,
         eventId: eventId,
         devotee_first_name: devotee_first_name,
@@ -252,7 +219,14 @@ please parse the ID or use the traditional way to create the record!');
             });
         } else {
             // create devotee function call
-            create_devotee_record();
+            create_devotee_record(
+                first_name,
+                last_name,
+                ocr_form_devotee_gender,
+                ocr_form_devotee_dob,
+                ocr_form_devotee_id_number,
+                ocr_form_devotee_address
+            );
         }
     }
 }

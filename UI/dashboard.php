@@ -320,7 +320,7 @@ unset($sevaSearch);
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons text-danger">home</i> -->
+                            <i class="material-icons text-danger">home</i>
                             <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
                             <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
                                 <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
