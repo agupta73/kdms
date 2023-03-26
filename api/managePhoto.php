@@ -62,10 +62,10 @@ if ($api_type == 3) {
         if ($new) {
             res_success($devotee_key);
         } else {
-            res_success('Devotee document id image updated successfully !');
+            res_success('Devotee document id image updated successfully!');
         }
     } else {
-        res_error('Error while updating document id image !');
+        res_error('Error while updating document id image!');
     }
 }
 

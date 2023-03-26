@@ -484,11 +484,11 @@ $debug = false  ;
                                                                 print_r("selected");
                                                             }
                                                             ?>>--Not Selected--</option>
-                                                            <option value="Adhaar" <?php
-                                                            if ($devotee_id_type == "Adhaar") {
+                                                            <option value="Aadhaar" <?php
+                                                            if ($devotee_id_type == "Aadhaar") {
                                                                 print_r("selected");
                                                             }
-                                                            ?>>Addhar</option>
+                                                            ?>>Aadhaar</option>
                                                             <option value="DL" <?php
                                                             if ($devotee_id_type == "DL") {
                                                                 print_r("selected");

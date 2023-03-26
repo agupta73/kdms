@@ -1,31 +1,24 @@
 function dragNdrop(event) {
     let number_of_files = event.target.files.length;
     for (let each_file_index = 0; each_file_index < number_of_files; each_file_index++) {
-        // let fileName = URL.createObjectURL(event.target.files[each_file_index]);
-        // let preview = document.getElementById("ocr_image_preview");
-        // let previewImg = document.createElement("img");
-        // previewImg.setAttribute("src", fileName);
-        // previewImg.setAttribute("class", "ocr-image-upload-parser-preview");
-        // preview.appendChild(previewImg);
         let file = event.target.files[each_file_index];
         let file_name = event.target.files[each_file_index].name;
         let reader_file = new FileReader();
         reader_file.readAsDataURL(file);
         reader_file.onload = () => {
-            // const base64String = reader_file.result.replace('data:', '').replace(/^.+,/, '');
             const base64String = reader_file.result;
-            // console.log(base64String); // Step 4: Display or save the base64 string
             // call to the image upload API
-            // Todo: error response changes.
             $.ajax({
                 url: '../api/manage_kdms_ocr_image_bucket.php',
                 method: 'POST',
                 data: {image: base64String, image_name: file_name}
             }).done(function (response) {
-                alert('Selected Images uploaded sucessfully!');
-                let url = window.location.href;
-                window.location = url;
-                window.location.reload();
+                $('#loading').show();
+                if (each_file_index === (number_of_files-1)) {
+                    let url = window.location.href;
+                    window.location = url;
+                    window.location.reload();
+                }
             });
         };
     }
@@ -36,15 +29,6 @@ function drag() {
 function drop() {
     document.getElementById('uploadFile').parentNode.className = 'dragBox';
 }
-// (function($) {
-//     $.fn.hasScrollBar = function() {
-//         return this.get(0).scrollHeight > this.height();
-//     }
-// })(jQuery);
-
-// if ($('#ocr_image_preview').hasScrollBar()) {
-//     console.log('arrow');
-// }
 
 function remove_image(image_name) {
     let deletePrompt = confirm("Are you sure you want to delete "+image_name+" ?");
@@ -61,19 +45,29 @@ function remove_image(image_name) {
     }
 }
 
+function update_image_status() {
+    const image_name = document.getElementById("active-preview-image").getAttribute('data-image-name');
+    $.ajax({
+        url: '../api/manage_kdms_ocr_image_bucket.php',
+        method: 'POST',
+        data: {image_name: image_name, api_type: 4}
+    }).done(function () {
+        console.log('image process flag updated.')
+    });
+}
+
 function remove_all_image_from_temp_bucket(image_name_list) {
-    let deletePrompt = confirm("Are you sure you want to delete all images?");
+    let deletePrompt = confirm("Are you sure you want to delete all the unused images?");
     if (deletePrompt) {
-        // Todo:
-        // $.ajax({
-        //     url: '../api/manage_kdms_ocr_image_bucket.php',
-        //     method: 'POST',
-        //     data: {image_name: image_name, api_type: 2}
-        // }).done(function (response) {
-        //     let url = window.location.href;
-        //     window.location = url;
-        //     window.location.reload();
-        // });
+        $.ajax({
+            url: '../api/manage_kdms_ocr_image_bucket.php',
+            method: 'POST',
+            data: {api_type: 3}
+        }).done(function (response) {
+            let url = window.location.href;
+            window.location = url;
+            window.location.reload();
+        });
     }
 }
 
@@ -109,11 +103,17 @@ function render_matched_records(response_data) {
         let station = response_data[i]['devotee_station'];
         let status = response_data[i]['devotee_status'];
         let devotee_photo = response_data[i]['Devotee_Photo'];
+
+        let devotee_image_tag = '<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="75px"></img>';
+
+        if (devotee_photo != "") {
+            devotee_image_tag = `<img class="search-result-image-scale" src="data:image/jpeg;base64,${devotee_photo}" height="50px" width="50px" alt="devotee_image"/>`;
+        }
         innerTableHTML += `
             <tr>
                 <th scope="row">${i+1}</td>
                 <td>
-                    <img class="search-result-image-scale" src="data:image/jpeg;base64,${devotee_photo}" height="50px" width="50px" alt="devotee_image"/>
+                   ${devotee_image_tag}
                 </td>
                 <td>${key}</td>'
                 <td>${name}</td>
@@ -124,53 +124,46 @@ function render_matched_records(response_data) {
                 <a href="addDevoteeI.php?devotee_key=${key}" target="_blank">
                     <button class="btn btn-info pull-right">
                         <i class="material-icons">edit</i>
+                        Edit
                     </button>
                 </a>
+
+                <button class="btn btn-success pull-right" onclick="merge_record('${key}')">
+                    <i class="material-icons">call_merge</i>
+                    Merge
+                </button>
                 </td>
             </tr>
         `;
     }
     devotee_matched_records_table_body.innerHTML = innerTableHTML;
-    get_bootstrap_modal().show();
+    show_modal  ();
 }
 
-function validateDate(isoDate) {
-    if (isNaN(Date.parse(isoDate))) {
-        return false;
-    } else {
-        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function create_devotee_record(
+function upsert_devotee_record(
     first_name,
     last_name,
     gender,
     dob,
     id_number,
-    address
+    address,
+    is_update=false,
+    devotee_key=undefined,
 ) {
-    alert('Record created, click to edit the record in new tab for add addional data!');
     const request_type = 'upsertDevotee';
-    const devotee_id_type = 'Aadhar';
+    const devotee_id_type = 'Aadhaar';
     const devotee_type = 'T';
     const eventId = get_event_id();
     const devotee_first_name = first_name;
     const devotee_last_name = last_name;
     const devotee_gender = gender;
     const devotee_dob = dob;
-    if (validateDate(devotee_dob)) {
-        alert('Invalid DOB');
-    }
-    const devotee_id_number = id_number.replace(" ", "");
+    const devotee_id_number = id_number;
     const devotee_address_1 = address;
 
     const request_data = {
-        request_type: request_type,
         devotee_id_type: devotee_id_type,
+        requestType: request_type,
         devotee_type: devotee_type,
         eventId: eventId,
         devotee_first_name: devotee_first_name,
@@ -180,12 +173,30 @@ function create_devotee_record(
         devotee_id_number: devotee_id_number,
         devotee_address_1: devotee_address_1
     }
+    if (is_update){
+        request_data['devotee_key']=devotee_key;
+    }
     $.ajax({
         url: '../api/upsertDevotee.php',
         method: 'POST',
         data: request_data
     }).done(function (response) {
-        alert('Record created, click to edit the record in new tab for add addional data!');
+        const response_data = JSON.parse(response);
+        update_scan_image(response_data.info);
+        update_image_status();
+        alert('Record updated successfully!');
+        hide_modal();
+    });
+}
+
+function update_scan_image(devotee_key) {
+    let image_data = document.getElementById("active-preview-image").getAttribute('src');
+    $.ajax({
+        url: '../api/managePhoto.php',
+        method: 'POST',
+        data: {image: image_data, api_type: 4, devotee_key: devotee_key}
+    }).done(function (response) {
+        console.log(response);
     });
 }
 
@@ -199,21 +210,24 @@ function kdms_ocr_submit_btn(create_anyway=false) {
     const ocr_form_devotee_address = form_fields['ocr_form_devotee_address'].innerHTML;
 
     // split name in first name and last name
-    if (ocr_form_devotee_name === null) {
-        alert('No first and last name to proceed registration, \
+    if (ocr_form_devotee_name === null || ocr_form_devotee_name === "") {
+        alert('No first/ last name to proceed registration, \
 please parse the ID or use the traditional way to create the record!');
     } else {
         let name_array = ocr_form_devotee_name.split(" ");
         const first_name = name_array[0].trim();
         let last_name = ""
+        let last_name_with_middle_name = ""
         if (name_array.length > 1) {
             last_name = name_array[1].trim();
+            last_name_with_middle_name = last_name
         }
         if (name_array.length > 2) {
             // for e.g., JUGAL DUMKA can be split as JUGAL as First name and DUMKA as last name
             // e.g.,2 - BACCHI SINGH RAWAT - can be split as Bacchi as first name and rawat as last name we can 
             // ignore the middle name here for search then use FIRST and LAST NAME 
             last_name = name_array[name_array.length-1].trim();
+            last_name_with_middle_name = [name_array.shift(), name_array.join(' ')][1];
         }
         if (create_anyway === false) {
             const event_id = get_event_id();
@@ -231,9 +245,9 @@ please parse the ID or use the traditional way to create the record!');
                         let consent_prompt = confirm('No record found with the data, Do you want to create record with the current data.');
                         if (consent_prompt) {
                             if (ocr_form_devotee_id_number !== "") {
-                                create_devotee_record(
+                                upsert_devotee_record(
                                     first_name,
-                                    last_name,
+                                    last_name_with_middle_name,
                                     ocr_form_devotee_gender,
                                     ocr_form_devotee_dob,
                                     ocr_form_devotee_id_number,
@@ -252,9 +266,52 @@ please parse the ID or use the traditional way to create the record!');
             });
         } else {
             // create devotee function call
-            create_devotee_record();
+            upsert_devotee_record(
+                first_name,
+                last_name_with_middle_name,
+                ocr_form_devotee_gender,
+                ocr_form_devotee_dob,
+                ocr_form_devotee_id_number,
+                ocr_form_devotee_address
+            );
         }
     }
+}
+
+function merge_record(devotee_key) {
+    const form_fields = get_form_fields();
+    const ocr_form_devotee_name = form_fields['ocr_form_devotee_name'].value;
+    const ocr_form_devotee_gender = form_fields['ocr_form_devotee_gender'].value;
+    const ocr_form_devotee_dob = form_fields['ocr_form_devotee_dob'].value;
+    const ocr_form_devotee_id_number = form_fields['ocr_form_devotee_id_number'].value;
+    const ocr_form_devotee_address = form_fields['ocr_form_devotee_address'].innerHTML;
+    
+    let name_array = ocr_form_devotee_name.split(" ");
+    const first_name = name_array[0].trim();
+    let last_name = ""
+    let last_name_with_middle_name = ""
+    if (name_array.length > 1) {
+        last_name = name_array[1].trim();
+        last_name_with_middle_name = last_name
+    }
+    if (name_array.length > 2) {
+        // for e.g., JUGAL DUMKA can be split as JUGAL as First name and DUMKA as last name
+        // e.g.,2 - BACCHI SINGH RAWAT - can be split as Bacchi as first name and rawat as last name we can 
+        // ignore the middle name here for search then use FIRST and LAST NAME 
+        last_name = name_array[name_array.length-1].trim();
+        last_name_with_middle_name = [name_array.shift(), name_array.join(' ')][1];
+    }
+    upsert_devotee_record(
+        first_name,
+        last_name_with_middle_name,
+        ocr_form_devotee_gender,
+        ocr_form_devotee_dob,
+        ocr_form_devotee_id_number,
+        ocr_form_devotee_address,
+        is_update=true,
+        devotee_key=devotee_key
+    );
+
 }
 
 function kdms_ocr_clear_btn() {
@@ -268,6 +325,8 @@ function kdms_ocr_clear_btn() {
     form_fields['ocr_form_devotee_id_number'].value = "";
     form_fields['ocr_form_devotee_id_number'].parentNode.classList.remove('is-filled');
     form_fields['ocr_form_devotee_address'].innerHTML = "";
+    let preview = document.getElementById('ocr_selected_image_preview');
+    preview.innerHTML = "";
 }
 
 function update_form(response_data) {
@@ -296,21 +355,23 @@ function update_form(response_data) {
     form_fields['ocr_form_devotee_address'].parentNode.classList.add('is-filled');
 }
 
-function set_image(base64_image_data) {
+function set_image(base64_image_data, image_name) {
     let preview = document.getElementById('ocr_selected_image_preview');
     let previewImg = document.createElement("img");
     previewImg.setAttribute("src", `data:image/png;base64,${base64_image_data}`);
     previewImg.setAttribute("class", "ocr-selected-parser-preview-image");
     previewImg.setAttribute("id", "active-preview-image");
+    previewImg.setAttribute("data-image-name", image_name);
     preview.innerHTML = "";
     preview.appendChild(previewImg);
 }
 
 function parse_image(ele) {
     let image_data = ele.getAttribute('data-image');
+    let image_name = ele.getAttribute('data-image-name');
     const kdms_ocr_url = "http://localhost:5001/api/v1/kdms-ocr/";
     $('#loading').show();
-    set_image(image_data);
+    set_image(image_data, image_name);
     $.ajax({
         url: kdms_ocr_url,
         method: 'POST',
@@ -341,12 +402,13 @@ const get_data = () => {
                     <td>${image_name}</td>'
                     <td>
                         <i class="material-icons">
-                        ${status?'close':'check'}
+                        ${status==0?'close':'check'}
                         </i>
                     </td>
                     <td>${image_uploaded_at}</td>
                     <td class="action-btns">
                         <button class="btn btn-success pull-right"
+                            data-image-name="${image_name}"
                             data-image="${image_data}"
                             onClick="parse_image(this)"
                         >
@@ -363,8 +425,11 @@ const get_data = () => {
     });
 }
 
-function get_bootstrap_modal() {
-    return $("#myModal").modal();
+function show_modal() {
+    return $("#myModal").modal("show");
+}
+function hide_modal() {
+    return $("#myModal").modal("hide");
 }
 
 $(document).ready(function () {

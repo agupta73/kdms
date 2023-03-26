@@ -5,7 +5,7 @@ class clsReportHandler {
     private $url;
 
     private $request = array();
-    private $debug = true;
+    private $debug = false;
     //put your code here
 
     public function __construct() {

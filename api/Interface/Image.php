@@ -160,7 +160,6 @@ Class Image {
         $unencoded = base64_decode($filteredData[1]);
         //$unencoded = base64_decode($rawData);
         $type = "self";
-        $status = 1;
         // Now save this info to db
         /*
          * If it is update ,insert data to Devotee_photo table only.

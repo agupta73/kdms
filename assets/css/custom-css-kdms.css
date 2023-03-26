@@ -620,3 +620,6 @@ th.assign-devotees {
 .search-result-image-scale:active {
 	scale: 3;
 }
+.table-responsive-ocr-temp-image-upload {
+	height: 400px;
+}

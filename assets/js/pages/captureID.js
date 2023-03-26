@@ -145,19 +145,20 @@
                 window.location.reload();
             });
         } else {
-            $.ajax({
-                url: '../api/managePhotoID.php',
-                method: 'POST',
-                data: {image: dataUrl, api_type: 4}
-            }).done(function (data) {
-                data = $.parseJSON(data);
-                var newId = data.message;
-                var url = window.location.href;
-                url = url + '?devotee_key=' + newId;
-                alert('Image uploaded to new Devotee record!!');
-                $('#CameraModalLong').modal('hide');
-                window.location = url;
-            });
+            // $.ajax({
+            //     url: '../api/managePhoto.php',
+            //     method: 'POST',
+            //     data: {image: dataUrl, api_type: 4}
+            // }).done(function (data) {
+            //     data = $.parseJSON(data);
+            //     var newId = data.message;
+            //     var url = window.location.href;
+            //     url = url + '?devotee_key=' + newId;
+            //     alert('Image uploaded to new Devotee record!!');
+            //     $('#CameraModalLong').modal('hide');
+            //     window.location = url;
+            // });
+            alert('please add the data related to devotee first!');
         }
     }
 
