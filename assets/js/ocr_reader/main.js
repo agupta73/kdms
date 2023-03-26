@@ -13,10 +13,12 @@ function dragNdrop(event) {
                 method: 'POST',
                 data: {image: base64String, image_name: file_name}
             }).done(function (response) {
-                alert('Selected Images uploaded sucessfully!');
-                let url = window.location.href;
-                window.location = url;
-                window.location.reload();
+                $('#loading').show();
+                if (each_file_index === (number_of_files-1)) {
+                    let url = window.location.href;
+                    window.location = url;
+                    window.location.reload();
+                }
             });
         };
     }
@@ -49,13 +51,13 @@ function update_image_status() {
         url: '../api/manage_kdms_ocr_image_bucket.php',
         method: 'POST',
         data: {image_name: image_name, api_type: 4}
-    }).done(function (response) {
+    }).done(function () {
         console.log('image process flag updated.')
     });
 }
 
 function remove_all_image_from_temp_bucket(image_name_list) {
-    let deletePrompt = confirm("Are you sure you want to delete all images?");
+    let deletePrompt = confirm("Are you sure you want to delete all the unused images?");
     if (deletePrompt) {
         $.ajax({
             url: '../api/manage_kdms_ocr_image_bucket.php',
@@ -101,11 +103,17 @@ function render_matched_records(response_data) {
         let station = response_data[i]['devotee_station'];
         let status = response_data[i]['devotee_status'];
         let devotee_photo = response_data[i]['Devotee_Photo'];
+
+        let devotee_image_tag = '<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="75px"></img>';
+
+        if (devotee_photo != "") {
+            devotee_image_tag = `<img class="search-result-image-scale" src="data:image/jpeg;base64,${devotee_photo}" height="50px" width="50px" alt="devotee_image"/>`;
+        }
         innerTableHTML += `
             <tr>
                 <th scope="row">${i+1}</td>
                 <td>
-                    <img class="search-result-image-scale" src="data:image/jpeg;base64,${devotee_photo}" height="50px" width="50px" alt="devotee_image"/>
+                   ${devotee_image_tag}
                 </td>
                 <td>${key}</td>'
                 <td>${name}</td>
@@ -129,7 +137,7 @@ function render_matched_records(response_data) {
         `;
     }
     devotee_matched_records_table_body.innerHTML = innerTableHTML;
-    get_bootstrap_modal().show();
+    show_modal  ();
 }
 
 function upsert_devotee_record(
@@ -176,7 +184,8 @@ function upsert_devotee_record(
         const response_data = JSON.parse(response);
         update_scan_image(response_data.info);
         update_image_status();
-        alert('Record created, click to edit the record in new tab for add addional data!');
+        alert('Record updated successfully!');
+        hide_modal();
     });
 }
 
@@ -416,8 +425,11 @@ const get_data = () => {
     });
 }
 
-function get_bootstrap_modal() {
-    return $("#myModal").modal();
+function show_modal() {
+    return $("#myModal").modal("show");
+}
+function hide_modal() {
+    return $("#myModal").modal("hide");
 }
 
 $(document).ready(function () {

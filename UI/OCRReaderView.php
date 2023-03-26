@@ -223,5 +223,5 @@ $eventId = $config_data['event_id'];
     </div>
 </body>
 <?php include_once("scriptJS.php") ?>
-<script src="../assets/js/ocr_reader/file_upload.js"></script>
+<script src="../assets/js/ocr_reader/main.js"></script>
 </html>
