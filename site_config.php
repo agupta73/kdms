@@ -3,7 +3,7 @@
 // User defind configuration
 $directoryName = "kdms"; //name of main folder
 $directory_seprator = '/';
-$protocol = 'http://';
+$protocol = 'https://';
 //---------------------------------------
 // Don't change here
 
