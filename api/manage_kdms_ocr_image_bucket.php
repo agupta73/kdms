@@ -49,9 +49,36 @@ if ($api_type == 2) {
     $db = $database->getConnection();
     // Create object
     $imageClass = new TempBucketImageUpload($db);
-    $result = $imageClass->delete_images($requestData);
     if ($imageClass->delete_images($requestData)) {
         res_success('image deleted from temp bucket successfully!');
+    } else {
+        res_error('Error occurred while deleting image from temp bucket!');
+    }
+}
+
+if ($api_type == 3) {
+    include_once $Interface_path . 'kdms_ocr_image_bucket_upload.php';
+    include_once 'config/database.php';
+    $database = new Database();
+    $db = $database->getConnection();
+    // Create object
+    $imageClass = new TempBucketImageUpload($db);
+    if ($imageClass->delete_all_proceesed_images($requestData)) {
+        res_success('image deleted from temp bucket successfully!');
+    } else {
+        res_error('Error occurred while deleting image from temp bucket!');
+    }
+}
+
+if ($api_type == 4) {
+    include_once $Interface_path . 'kdms_ocr_image_bucket_upload.php';
+    include_once 'config/database.php';
+    $database = new Database();
+    $db = $database->getConnection();
+    // Create object
+    $imageClass = new TempBucketImageUpload($db);
+    if ($imageClass->update_status($requestData)) {
+        res_success('image s from temp bucket successfully!');
     } else {
         res_error('Error occurred while deleting image from temp bucket!');
     }

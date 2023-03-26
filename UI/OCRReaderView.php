@@ -60,12 +60,12 @@ $eventId = $config_data['event_id'];
                                 <div class="col-12">
                                     <!-- uploaded image list area -->
                                     <div class="card-body">
+                                        <h4>Temprory bucket list view</h4>
                                         <button class="btn btn-warning pull-right" onclick="remove_all_image_from_temp_bucket()">
                                             <i class="material-icons">clear_all</i>
                                             clear bucket
                                         </button>
-                                        <h4>Temprory bucket list view</h4>
-                                        <div class="table-responsive">
+                                        <div class="table-responsive table-responsive-ocr-temp-image-upload">
                                             <table class="table">
                                                 <thead>
                                                     <tr>

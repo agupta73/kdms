@@ -488,7 +488,7 @@ $debug = false  ;
                                                             if ($devotee_id_type == "Aadhaar") {
                                                                 print_r("selected");
                                                             }
-                                                            ?>>Addhar</option>
+                                                            ?>>Aadhaar</option>
                                                             <option value="DL" <?php
                                                             if ($devotee_id_type == "DL") {
                                                                 print_r("selected");

@@ -30,11 +30,40 @@ Class TempBucketImageUpload {
             return true;
         }
     }
+
+    public function update_status($requestData) {
+        // if image_name is empty then clear bucket with all status 1 images
+        $query2 = "UPDATE kdms_ocr_image_bucket set status=1
+                        WHERE
+                    image_name=:id";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(":id", $requestData['image_name']);
+        if (!$stmt2->execute()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function delete_images($requestData) {
         // if image_name is empty then clear bucket with all status 1 images
         $query2 = "DELETE FROM kdms_ocr_image_bucket
                         WHERE
                     image_name=:id";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(":id", $requestData['image_name']);
+        if (!$stmt2->execute()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function delete_all_proceesed_images($requestData) {
+        // if image_name is empty then clear bucket with all status 1 images
+        $query2 = "DELETE FROM kdms_ocr_image_bucket
+                        WHERE
+                    status=1";
         $stmt2 = $this->conn->prepare($query2);
         $stmt2->bindParam(":id", $requestData['image_name']);
         if (!$stmt2->execute()) {
