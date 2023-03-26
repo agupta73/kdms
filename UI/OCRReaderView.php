@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $current_page_id = 'KD-DVT-SCR';
 include_once("../sessionCheck.php");
 include_once("header.php");
+$eventId = $config_data['event_id'];
 // Include new config file in each page ,where we need data from configuration
 ?>
 <html lang="en">
@@ -23,7 +24,7 @@ include_once("header.php");
                 <img id="loading-image" src="loader.gif" alt="Loading..." />
             </div>
             <!-- Navbar -->
-            <div class="card">
+            <div class="card" id="ocr_panel" data-event-id="<?php echo $eventId; ?>">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6">
@@ -137,13 +138,13 @@ include_once("header.php");
                                                             id="ocr_form_devotee_id_number">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <!-- <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Mobile</label>
                                                         <input type="text" class="form-control"
                                                             name="devotee_cell_number" id="devotee_cell_number">
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Address</label>
@@ -157,8 +158,9 @@ include_once("header.php");
                                                     </div>
                                                 </div>
                                             </div>
+                                            <button id="kdms_ocr_create_anyway" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn(true)">Create Anyway</button>
                                             <button id="kdms_ocr_clear" class="btn btn-warning pull-right" onclick="kdms_ocr_clear_btn()">Clear</button>
-                                            <button id="kdms_ocr_submit" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn()">Submit</button>
+                                            <button id="kdms_ocr_submit" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn(false)">Submit</button>
                                         <!--<div class="clearfix"></div>-->
                                     </div>
                                 </div>
@@ -177,6 +179,45 @@ include_once("header.php");
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-2" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+        <div class="modal-dialog id-upload-modal" role="document" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalTitle">Search Results</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" >
+                    <div class="col-12">
+                        <!-- uploaded image list area -->
+                        <div class="card-body">
+                            <h4>Devotee Matched Records</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#Sr.</th>
+                                            <th scope="col">Photo</th>
+                                            <th scope="col">Key</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Cell Phone</th>
+                                            <th scope="col">Station</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="devotee_matched_records_table_body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- </form> -->
             </div>
         </div>
     </div>
