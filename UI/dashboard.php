@@ -21,7 +21,7 @@ $getReport = new clsReportHandler();
 $response = $getReport->getAccommodationCounts($eventId);
 unset($getReport);
 
-if($debug){echo "eventId =: ", $config_data['event_id'], $_GET['sevaType'] ; var_dump($response);}
+if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);}
 
 $accoType = "All";
 

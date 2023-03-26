@@ -5,7 +5,7 @@ class clsReportHandler {
     private $url;
 
     private $request = array();
-    private $debug = false;
+    private $debug = true;
     //put your code here
 
     public function __construct() {
@@ -23,6 +23,7 @@ class clsReportHandler {
         else {
             $response = $this->get_acco_records_from_API($type, "");
         }
+        if($this->debug){var_dump($response); die;}
         return $response;
     }
 
@@ -70,8 +71,12 @@ class clsReportHandler {
         if($this->debug){echo "<br> url: ", $url, "<br>";}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt( $ch, CURLOPT_AUTOREFERER, TRUE );
+//curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);     
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+        //curl_setopt($ch, CURLOPT_SSLVERSION, 3);
         $response = curl_exec($ch);
-
+        if($this->debug){echo "<br> response: "; var_dump( $ch); var_dump( $response); }
         try {
             $response = json_decode($response, true);
         } catch (PDOException $e) {
