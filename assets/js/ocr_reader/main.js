@@ -184,7 +184,11 @@ function upsert_devotee_record(
         const response_data = JSON.parse(response);
         update_scan_image(response_data.info);
         update_image_status();
-        alert('Record updated successfully!');
+        if (is_update) {
+            alert('Record updated successfully!');
+            let redirect_url = `addDevoteeI.php?devotee_key=${response_data.info}`;
+            window.open(redirect_url,'_blank');
+        }
         hide_modal();
     });
 }
