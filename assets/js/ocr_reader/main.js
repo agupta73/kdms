@@ -30,6 +30,52 @@ function drop() {
     document.getElementById('uploadFile').parentNode.className = 'dragBox';
 }
 
+function get_address_object(address_lines) {
+    address_array = address_lines.split('\n');
+    address_line_1 = ""
+    address_line_2 = ""
+    station = ""
+    state = ""
+    pin = ""
+    pin_match = address_lines.match(/\d{6}/i);
+    try {
+        if (pin_match !== null) {
+            pin = pin_match[0]
+        }
+        if (address_array.length == 4) {
+            console.log('length4');
+            address_line_1 = address_array[0]
+            address_line_2 = address_array[1]
+            station = address_array[2].split(',')[1].trim()
+            state = address_array[3].split('-')[0].trim()
+        } else if (address_array.length == 3) {
+            console.log('length3');
+            address_line_1 = address_array[0]
+            address_line_2 = address_array[1]
+            station = address_array[1].split(',')[1].trim()
+            state = address_array[2].split('-')[0]
+        } else if (address_array.length == 2) {
+            address_line_1 = address_array[0]
+            address_line_2 = address_array[1]
+            station = address_array[0].split(',')[1].trim()
+            state = address_array[1].split('-')[0]
+        } else {
+            address_line_1 = address_array[0].split(',')[0]
+            station = address_array[0].split(',')[1].trim()
+            state = address_array[0].split(',')[1].trim()
+        }
+    } catch (error) {
+        
+    }
+    return {
+        "address_line_1": address_line_1,
+        "address_line_2": address_line_2,
+        "station": station,
+        "state": state,
+        "pin": pin
+    }
+}
+
 function remove_image(image_name) {
     let deletePrompt = confirm("Are you sure you want to delete "+image_name+" ?");
     if (deletePrompt) {
@@ -159,7 +205,12 @@ function upsert_devotee_record(
     const devotee_gender = gender;
     const devotee_dob = dob;
     const devotee_id_number = id_number;
-    const devotee_address_1 = address;
+    const devotee_address_obj = get_address_object(address);
+    const devotee_address_1 = devotee_address_obj['address_line_1'];
+    const devotee_address_2 = devotee_address_obj['address_line_2'];
+    const devotee_zip = devotee_address_obj['pin'];
+    const devotee_state= devotee_address_obj['state'];
+    const devotee_station= devotee_address_obj['station'];
 
     const request_data = {
         devotee_id_type: devotee_id_type,
@@ -171,7 +222,11 @@ function upsert_devotee_record(
         devotee_gender: devotee_gender,
         devotee_dob: devotee_dob,
         devotee_id_number: devotee_id_number,
-        devotee_address_1: devotee_address_1
+        devotee_address_1: devotee_address_1,
+        devotee_address_2: devotee_address_2,
+        devotee_zip: devotee_zip, 
+        devotee_state: devotee_state, 
+        devotee_station: devotee_station,
     }
     if (is_update){
         request_data['devotee_key']=devotee_key;
@@ -188,6 +243,10 @@ function upsert_devotee_record(
             alert('Record updated successfully!');
             let redirect_url = `addDevoteeI.php?devotee_key=${response_data.info}`;
             window.open(redirect_url,'_blank');
+        } else {
+            alert('Devotee Record created successfully!');
+            let redirect_url = `addDevoteeI.php?devotee_key=${response_data.info}`;
+            window.open(redirect_url, '_blank');
         }
         hide_modal();
     });
