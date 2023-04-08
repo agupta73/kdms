@@ -31,13 +31,14 @@ function drop() {
 }
 
 function get_address_object(address_lines) {
-    address_array = address_lines.split('\n');
-    address_line_1 = ""
-    address_line_2 = ""
-    station = ""
-    state = ""
-    pin = ""
-    pin_match = address_lines.match(/\d{6}/i);
+    let address_array = address_lines.split('\n');
+    let address_line_1 = "";
+    let address_line_2 = "";
+    let station = "";
+    let state = "";
+    let pin = "";
+    let country = "India";
+    let pin_match = address_lines.match(/\d{6}/i);
     try {
         if (pin_match !== null) {
             pin = pin_match[0]
@@ -65,14 +66,14 @@ function get_address_object(address_lines) {
             state = address_array[0].split(',')[1].trim()
         }
     } catch (error) {
-        
     }
     return {
         "address_line_1": address_line_1,
         "address_line_2": address_line_2,
         "station": station,
         "state": state,
-        "pin": pin
+        "pin": pin,
+        "country": country,
     }
 }
 
@@ -120,16 +121,28 @@ function remove_all_image_from_temp_bucket(image_name_list) {
 function get_form_fields() {
     const ocr_form_devotee_name = document.getElementById("ocr_form_devotee_name");
     const ocr_form_devotee_gender = document.getElementById("ocr_form_devotee_gender");
+    const ocr_form_devotee_aadhaar= document.getElementById("ocr_form_devotee_aadhaar");
     const ocr_form_devotee_dob = document.getElementById("ocr_form_devotee_dob");
     const ocr_form_devotee_id_number = document.getElementById("ocr_form_devotee_id_number");
-    const ocr_form_devotee_address = document.getElementById("ocr_form_devotee_address");
+    const ocr_form_devotee_address_1 = document.getElementById("devotee_address_1");
+    const ocr_form_devotee_address_2 = document.getElementById("devotee_address_2");
+    const ocr_form_devotee_station = document.getElementById("devotee_station");
+    const ocr_form_devotee_state = document.getElementById("devotee_state");
+    const ocr_form_devotee_zip = document.getElementById("devotee_zip");
+    const ocr_form_devotee_country = document.getElementById("devotee_country");
 
     return {
         'ocr_form_devotee_name': ocr_form_devotee_name,
         'ocr_form_devotee_gender': ocr_form_devotee_gender,
+        'ocr_form_devotee_aadhaar': ocr_form_devotee_aadhaar,
         'ocr_form_devotee_dob': ocr_form_devotee_dob,
         'ocr_form_devotee_id_number': ocr_form_devotee_id_number,
-        'ocr_form_devotee_address': ocr_form_devotee_address
+        'ocr_form_devotee_address_1': ocr_form_devotee_address_1,
+        'ocr_form_devotee_address_2': ocr_form_devotee_address_2,
+        'ocr_form_devotee_station': ocr_form_devotee_station,
+        'ocr_form_devotee_state': ocr_form_devotee_state,
+        'ocr_form_devotee_zip': ocr_form_devotee_zip,
+        'ocr_form_devotee_country': ocr_form_devotee_country
     }
 }
 
@@ -191,13 +204,19 @@ function upsert_devotee_record(
     last_name,
     gender,
     dob,
+    id_type,
     id_number,
-    address,
+    address_1,
+    address_2,
+    station,
+    state,
+    zip,
+    country,
     is_update=false,
     devotee_key=undefined,
 ) {
     const request_type = 'upsertDevotee';
-    const devotee_id_type = 'Aadhaar';
+    const devotee_id_type = id_type;
     const devotee_type = 'T';
     const eventId = get_event_id();
     const devotee_first_name = first_name;
@@ -205,12 +224,12 @@ function upsert_devotee_record(
     const devotee_gender = gender;
     const devotee_dob = dob;
     const devotee_id_number = id_number;
-    const devotee_address_obj = get_address_object(address);
-    const devotee_address_1 = devotee_address_obj['address_line_1'];
-    const devotee_address_2 = devotee_address_obj['address_line_2'];
-    const devotee_zip = devotee_address_obj['pin'];
-    const devotee_state= devotee_address_obj['state'];
-    const devotee_station= devotee_address_obj['station'];
+    const devotee_address_1 = address_1;
+    const devotee_address_2 = address_2;
+    const devotee_zip = zip;
+    const devotee_state = state;
+    const devotee_station = station;
+    const devotee_country = country;
 
     const request_data = {
         devotee_id_type: devotee_id_type,
@@ -227,6 +246,7 @@ function upsert_devotee_record(
         devotee_zip: devotee_zip, 
         devotee_state: devotee_state, 
         devotee_station: devotee_station,
+        devotee_country: devotee_country
     }
     if (is_update){
         request_data['devotee_key']=devotee_key;
@@ -270,7 +290,13 @@ function kdms_ocr_submit_btn(create_anyway=false) {
     const ocr_form_devotee_gender = form_fields['ocr_form_devotee_gender'].value;
     const ocr_form_devotee_dob = form_fields['ocr_form_devotee_dob'].value;
     const ocr_form_devotee_id_number = form_fields['ocr_form_devotee_id_number'].value;
-    const ocr_form_devotee_address = form_fields['ocr_form_devotee_address'].innerHTML;
+    const ocr_form_devotee_id_type = form_fields['ocr_form_devotee_id_type'].value;
+    const ocr_form_devotee_address_1 = form_fields['ocr_form_devotee_address_1'].value;
+    const ocr_form_devotee_address_2 = form_fields['ocr_form_devotee_address_2'].value;
+    const ocr_form_devotee_station = form_fields['ocr_form_devotee_station'].value;
+    const ocr_form_devotee_state = form_fields['ocr_form_devotee_state'].value;
+    const ocr_form_devotee_zip = form_fields['ocr_form_devotee_zip'].value;
+    const ocr_form_devotee_country = form_fields['ocr_form_devotee_country'].value;
 
     // split name in first name and last name
     if (ocr_form_devotee_name === null || ocr_form_devotee_name === "") {
@@ -313,8 +339,14 @@ please parse the ID or use the traditional way to create the record!');
                                     last_name_with_middle_name,
                                     ocr_form_devotee_gender,
                                     ocr_form_devotee_dob,
+                                    ocr_form_devotee_id_type,
                                     ocr_form_devotee_id_number,
-                                    ocr_form_devotee_address
+                                    ocr_form_devotee_address_1,
+                                    ocr_form_devotee_address_2,
+                                    ocr_form_devotee_station,
+                                    ocr_form_devotee_state,
+                                    ocr_form_devotee_zip,
+                                    ocr_form_devotee_country
                                 );
                             } else {
                                 // check if enough data is available if not then error it.
@@ -334,8 +366,14 @@ please parse the ID or use the traditional way to create the record!');
                 last_name_with_middle_name,
                 ocr_form_devotee_gender,
                 ocr_form_devotee_dob,
+                ocr_form_devotee_id_type,
                 ocr_form_devotee_id_number,
-                ocr_form_devotee_address
+                ocr_form_devotee_address_1,
+                ocr_form_devotee_address_2,
+                ocr_form_devotee_station,
+                ocr_form_devotee_state,
+                ocr_form_devotee_zip,
+                ocr_form_devotee_country
             );
         }
     }
@@ -347,7 +385,12 @@ function merge_record(devotee_key) {
     const ocr_form_devotee_gender = form_fields['ocr_form_devotee_gender'].value;
     const ocr_form_devotee_dob = form_fields['ocr_form_devotee_dob'].value;
     const ocr_form_devotee_id_number = form_fields['ocr_form_devotee_id_number'].value;
-    const ocr_form_devotee_address = form_fields['ocr_form_devotee_address'].innerHTML;
+    const ocr_form_devotee_address_1 = form_fields['ocr_form_devotee_address_1'].value;
+    const ocr_form_devotee_address_2 = form_fields['ocr_form_devotee_address_2'].value;
+    const ocr_form_devotee_station = form_fields['ocr_form_devotee_station'].value;
+    const ocr_form_devotee_state = form_fields['ocr_form_devotee_state'].value;
+    const ocr_form_devotee_zip = form_fields['ocr_form_devotee_zip'].value;
+    const ocr_form_devotee_country = form_fields['ocr_form_devotee_country'].value;
     
     let name_array = ocr_form_devotee_name.split(" ");
     const first_name = name_array[0].trim();
@@ -370,7 +413,12 @@ function merge_record(devotee_key) {
         ocr_form_devotee_gender,
         ocr_form_devotee_dob,
         ocr_form_devotee_id_number,
-        ocr_form_devotee_address,
+        ocr_form_devotee_address_1,
+        ocr_form_devotee_address_2,
+        ocr_form_devotee_station,
+        ocr_form_devotee_state,
+        ocr_form_devotee_zip,
+        ocr_form_devotee_country,
         is_update=true,
         devotee_key=devotee_key
     );
@@ -387,7 +435,18 @@ function kdms_ocr_clear_btn() {
     form_fields['ocr_form_devotee_dob'].parentNode.classList.remove('is-filled');
     form_fields['ocr_form_devotee_id_number'].value = "";
     form_fields['ocr_form_devotee_id_number'].parentNode.classList.remove('is-filled');
-    form_fields['ocr_form_devotee_address'].innerHTML = "";
+    form_fields['ocr_form_devotee_address_1'].value = "",
+    form_fields['ocr_form_devotee_address_1'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_address_2'].value = "",
+    form_fields['ocr_form_devotee_address_2'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_station'].value = "",
+    form_fields['ocr_form_devotee_station'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_state'].value = "",
+    form_fields['ocr_form_devotee_state'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_zip'].value = "",
+    form_fields['ocr_form_devotee_zip'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_country'].value = "",
+    form_fields['ocr_form_devotee_country'].parentNode.classList.remove('is-filled');
     let preview = document.getElementById('ocr_selected_image_preview');
     preview.innerHTML = "";
 }
@@ -398,6 +457,7 @@ function update_form(response_data) {
     const date_of_birth = response_data['data']['date_of_birth'];
     const uid = response_data['data']['uid'];
     const address = response_data['data']['address'];
+    const address_array = get_address_object(address);;
 
     const form_fields = get_form_fields();
     form_fields['ocr_form_devotee_name'].value = name;
@@ -414,8 +474,18 @@ function update_form(response_data) {
     form_fields['ocr_form_devotee_dob'].parentNode.classList.add('is-filled');
     form_fields['ocr_form_devotee_id_number'].value = uid;
     form_fields['ocr_form_devotee_id_number'].parentNode.classList.add('is-filled');
-    form_fields['ocr_form_devotee_address'].innerHTML = address;
-    form_fields['ocr_form_devotee_address'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_address_1'].value = address_array['address_line_1'];
+    form_fields['ocr_form_devotee_address_1'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_address_2'].value = address_array['address_line_2'];
+    form_fields['ocr_form_devotee_address_2'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_station'].value = address_array['station'];
+    form_fields['ocr_form_devotee_station'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_state'].value = address_array['state'];
+    form_fields['ocr_form_devotee_state'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_zip'].value = address_array['pin'];
+    form_fields['ocr_form_devotee_zip'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_country'].value = address_array['country'];
+    form_fields['ocr_form_devotee_country'].parentNode.classList.add('is-filled');
 }
 
 function set_image(base64_image_data, image_name) {
@@ -433,12 +503,13 @@ function parse_image(ele) {
     let image_data = ele.getAttribute('data-image');
     let image_name = ele.getAttribute('data-image-name');
     const kdms_ocr_url = "http://localhost:5001/api/v1/kdms-ocr/";
+    const card_type = document.getElementById('devotee_id_type').value;
     $('#loading').show();
     set_image(image_data, image_name);
     $.ajax({
         url: kdms_ocr_url,
         method: 'POST',
-        data: {image_data: image_data, image_data_type: 'BASE64', card_type: 'AADHAR'}
+        data: {image_data: image_data, image_data_type: 'BASE64', card_type: card_type.toUpperCase()}
     }).done(function (response) {
         update_form(response['data']);
         $('#loading').hide();

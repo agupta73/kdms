@@ -89,7 +89,25 @@ $eventId = $config_data['event_id'];
                                 <div class="col-12">
                                     <!-- data preview and edit section -->
                                     <div class="card-body">
-                                        <h4>Data Preview and Edit Section</h4>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4>Data Preview and Edit Section</h4>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="bmd-label-floating">ID Type</label>
+                                                    <select type="text" class="form-control" name="devotee_id_type" id="devotee_id_type" value="<?php print_r($devotee_id_type); ?>">
+                                                        <option value="none">--Not Selected--</option>
+                                                        <option value="Aadhaar" selected>Aadhaar</option>
+                                                        <option value="DL">DL</option>
+                                                        <option value="Other">Other Gov. ID</option>
+                                                        <option value="PAN">PAN</option>
+                                                        <option value="Passport">Passport</option>
+                                                        <option value="Voter ID">Voter ID</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
@@ -138,42 +156,72 @@ $eventId = $config_data['event_id'];
                                                             id="ocr_form_devotee_id_number">
                                                     </div>
                                                 </div>
-                                                <!-- <div class="col-md-6">
+                                                <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Mobile</label>
                                                         <input type="text" class="form-control"
                                                             name="devotee_cell_number" id="devotee_cell_number">
                                                     </div>
-                                                </div> -->
-                                                <div class="col-md-12">
+                                                </div>
+                                                <!-- <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Address</label>
-                                                        <!--<label class="bmd-label-floating"> Add additional Information</label>-->
                                                         <textarea class="form-control" rows="2" name="address"
                                                             id="ocr_form_devotee_address">
-                                                                <?php
-                                                                // print_r($comments); 
-                                                                ?>
                                                             </textarea>
+                                                    </div>
+                                                </div> -->
+                                                    <div class="col-md-4">
+                                                        <div class="form-group" >
+                                                            <label class="bmd-label-floating">Address Line 1</label>
+                                                            <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" value="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label class="bmd-label-floating">Address Line 2</label>
+
+                                                            <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" value="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label class="bmd-label-floating">City / Station</label>
+                                                            <input type="text" class="form-control" name="devotee_station" id="devotee_station" value="">
+                                                        </div>
+                                                    </div>
+                                                <!-- </div> -->
+                                                <div class="col-md-4">
+                                                    <div class="form-group" >
+                                                        <label class="bmd-label-floating">State</label>
+                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" value="">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Zip/Pin Code</label>
+                                                        <input type="text" class="form-control" name="devotee_zip" id="devotee_zip" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Country</label>
+                                                        <input type="text" class="form-control" name="devotee_country" id="devotee_country" value="">
                                                     </div>
                                                 </div>
                                             </div>
                                             <button id="kdms_ocr_create_anyway" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn(true)">Create Anyway</button>
                                             <button id="kdms_ocr_clear" class="btn btn-warning pull-right" onclick="kdms_ocr_clear_btn()">Clear</button>
                                             <button id="kdms_ocr_submit" class="btn btn-success pull-right" onclick="kdms_ocr_submit_btn(false)">Submit</button>
-                                        <!--<div class="clearfix"></div>-->
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <!-- image preview section -->
                                     <h4>Image Preview</h4>
-                                        <div class="card-body ocr-id-image-preview-section" id="ocr_selected_image_preview" >
-                                        </div>
-                                        <!-- <label class="bmd-label-floating">First Name</label>
-                                        <button type="reset" class="btn btn-success pull-right">Cancel</button>
-                                        <button class="btn btn-success pull-right">Search</button> -->
+                                    <div class="card-body ocr-id-image-preview-section" id="ocr_selected_image_preview" >
+                                    </div>
                                 </div>
                             </div>
                         </div>
