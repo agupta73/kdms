@@ -123,6 +123,7 @@ function get_form_fields() {
     const ocr_form_devotee_gender = document.getElementById("ocr_form_devotee_gender");
     const ocr_form_devotee_aadhaar= document.getElementById("ocr_form_devotee_aadhaar");
     const ocr_form_devotee_dob = document.getElementById("ocr_form_devotee_dob");
+    const ocr_form_devotee_id_type = document.getElementById("devotee_id_type");
     const ocr_form_devotee_id_number = document.getElementById("ocr_form_devotee_id_number");
     const ocr_form_devotee_address_1 = document.getElementById("devotee_address_1");
     const ocr_form_devotee_address_2 = document.getElementById("devotee_address_2");
@@ -136,6 +137,7 @@ function get_form_fields() {
         'ocr_form_devotee_gender': ocr_form_devotee_gender,
         'ocr_form_devotee_aadhaar': ocr_form_devotee_aadhaar,
         'ocr_form_devotee_dob': ocr_form_devotee_dob,
+        'ocr_form_devotee_id_type': ocr_form_devotee_id_type,
         'ocr_form_devotee_id_number': ocr_form_devotee_id_number,
         'ocr_form_devotee_address_1': ocr_form_devotee_address_1,
         'ocr_form_devotee_address_2': ocr_form_devotee_address_2,
@@ -384,6 +386,7 @@ function merge_record(devotee_key) {
     const ocr_form_devotee_name = form_fields['ocr_form_devotee_name'].value;
     const ocr_form_devotee_gender = form_fields['ocr_form_devotee_gender'].value;
     const ocr_form_devotee_dob = form_fields['ocr_form_devotee_dob'].value;
+    const ocr_form_devotee_id_type = form_fields['ocr_form_devotee_id_type'].value;
     const ocr_form_devotee_id_number = form_fields['ocr_form_devotee_id_number'].value;
     const ocr_form_devotee_address_1 = form_fields['ocr_form_devotee_address_1'].value;
     const ocr_form_devotee_address_2 = form_fields['ocr_form_devotee_address_2'].value;
@@ -412,6 +415,7 @@ function merge_record(devotee_key) {
         last_name_with_middle_name,
         ocr_form_devotee_gender,
         ocr_form_devotee_dob,
+        ocr_form_devotee_id_type,
         ocr_form_devotee_id_number,
         ocr_form_devotee_address_1,
         ocr_form_devotee_address_2,
