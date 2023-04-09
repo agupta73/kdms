@@ -131,6 +131,7 @@ function get_form_fields() {
     const ocr_form_devotee_state = document.getElementById("devotee_state");
     const ocr_form_devotee_zip = document.getElementById("devotee_zip");
     const ocr_form_devotee_country = document.getElementById("devotee_country");
+    const ocr_form_devotee_cell_number = document.getElementById("devotee_cell_number");
 
     return {
         'ocr_form_devotee_name': ocr_form_devotee_name,
@@ -144,7 +145,8 @@ function get_form_fields() {
         'ocr_form_devotee_station': ocr_form_devotee_station,
         'ocr_form_devotee_state': ocr_form_devotee_state,
         'ocr_form_devotee_zip': ocr_form_devotee_zip,
-        'ocr_form_devotee_country': ocr_form_devotee_country
+        'ocr_form_devotee_country': ocr_form_devotee_country,
+        'ocr_form_devotee_cell_number': ocr_form_devotee_cell_number,
     }
 }
 
@@ -214,6 +216,7 @@ function upsert_devotee_record(
     state,
     zip,
     country,
+    cell_number,
     is_update=false,
     devotee_key=undefined,
 ) {
@@ -232,6 +235,7 @@ function upsert_devotee_record(
     const devotee_state = state;
     const devotee_station = station;
     const devotee_country = country;
+    const devotee_cell_number = cell_number;
 
     const request_data = {
         devotee_id_type: devotee_id_type,
@@ -248,7 +252,8 @@ function upsert_devotee_record(
         devotee_zip: devotee_zip, 
         devotee_state: devotee_state, 
         devotee_station: devotee_station,
-        devotee_country: devotee_country
+        devotee_country: devotee_country,
+        devotee_cell_phone_number: devotee_cell_number
     }
     if (is_update){
         request_data['devotee_key']=devotee_key;
@@ -299,6 +304,7 @@ function kdms_ocr_submit_btn(create_anyway=false) {
     const ocr_form_devotee_state = form_fields['ocr_form_devotee_state'].value;
     const ocr_form_devotee_zip = form_fields['ocr_form_devotee_zip'].value;
     const ocr_form_devotee_country = form_fields['ocr_form_devotee_country'].value;
+    const ocr_form_devotee_cell_number = form_fields['ocr_form_devotee_cell_number'].value;
 
     // split name in first name and last name
     if (ocr_form_devotee_name === null || ocr_form_devotee_name === "") {
@@ -348,7 +354,8 @@ please parse the ID or use the traditional way to create the record!');
                                     ocr_form_devotee_station,
                                     ocr_form_devotee_state,
                                     ocr_form_devotee_zip,
-                                    ocr_form_devotee_country
+                                    ocr_form_devotee_country,
+                                    ocr_form_devotee_cell_number,
                                 );
                             } else {
                                 // check if enough data is available if not then error it.
@@ -375,7 +382,8 @@ please parse the ID or use the traditional way to create the record!');
                 ocr_form_devotee_station,
                 ocr_form_devotee_state,
                 ocr_form_devotee_zip,
-                ocr_form_devotee_country
+                ocr_form_devotee_country,
+                ocr_form_devotee_cell_number,
             );
         }
     }
@@ -394,6 +402,7 @@ function merge_record(devotee_key) {
     const ocr_form_devotee_state = form_fields['ocr_form_devotee_state'].value;
     const ocr_form_devotee_zip = form_fields['ocr_form_devotee_zip'].value;
     const ocr_form_devotee_country = form_fields['ocr_form_devotee_country'].value;
+    const ocr_form_devotee_cell_number = form_fields['ocr_form_devotee_cell_number'].value;
     
     let name_array = ocr_form_devotee_name.split(" ");
     const first_name = name_array[0].trim();
@@ -423,6 +432,7 @@ function merge_record(devotee_key) {
         ocr_form_devotee_state,
         ocr_form_devotee_zip,
         ocr_form_devotee_country,
+        ocr_form_devotee_cell_number,
         is_update=true,
         devotee_key=devotee_key
     );
@@ -451,6 +461,8 @@ function kdms_ocr_clear_btn() {
     form_fields['ocr_form_devotee_zip'].parentNode.classList.remove('is-filled');
     form_fields['ocr_form_devotee_country'].value = "",
     form_fields['ocr_form_devotee_country'].parentNode.classList.remove('is-filled');
+    form_fields['ocr_form_devotee_cell_number'].value = "",
+    form_fields['ocr_form_devotee_cell_number'].parentNode.classList.remove('is-filled');
     let preview = document.getElementById('ocr_selected_image_preview');
     preview.innerHTML = "";
 }
