@@ -343,42 +343,8 @@ $debug = false  ;
                                         <h4 class="card-title">Add Devotee Information</h4>
                                     </div>
                                     <div class="card-body">
-                                        <form  id="myForm">
-                                            <div class="row">
-                                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Devotee ID (non editable)</label>
-                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">                                                        
-                                                    </div>
-                                                    <div class="form-group">
-                                                    <?php if(!empty($devotee_status)) {
-                                                            if($devotee_status == 'B') { ?>
-                                                            <div>
-                                                                <div class="blacklist_container" id="blsign">
-                                                                    <label 
-                                                                        class="bmd-label-floating blacklist_label" 
-                                                                        name="blacklist_label" 
-                                                                        id="blacklist_label"
-                                                                        > 
-                                                                        BLACK LISTED 
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <?php } }?>
-                                                            <div id="qrcode" align="right" style="display:none;"></div>
-                                                            <script type="text/javascript">
-                                                                    new QRCode(document.getElementById("qrcode"), {
-                                                                    text: document.getElementById("devotee_key").value,
-                                                                    width: 100,
-                                                                    height: 100,
-                                                                    colorDark : "#000000",
-                                                                    colorLight : "#ffffff",
-                                                                    correctLevel : QRCode.CorrectLevel.H
-                                                                    }
-                                                                );   
-                                                            </script>
-                                                        </div>
-                                                </div>
+                                        
+                                        <div class="row" style="float: left;">
                                                 <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                                                     <div class="row">
                                                         <!-- <div class="col-4">
@@ -435,7 +401,44 @@ $debug = false  ;
                                                     </div>
                                                 </div>
                                             </div>
+                                        <form  id="myForm">
                                             <div class="row">
+                                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6" style="display: contents;">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">Devotee ID (non editable)</label>
+                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">                                                        
+                                                    </div>
+                                                    <div class="form-group">
+                                                    <?php if(!empty($devotee_status)) {
+                                                            if($devotee_status == 'B') { ?>
+                                                            <div>
+                                                                <div class="blacklist_container" id="blsign">
+                                                                    <label 
+                                                                        class="bmd-label-floating blacklist_label" 
+                                                                        name="blacklist_label" 
+                                                                        id="blacklist_label"
+                                                                        > 
+                                                                        BLACK LISTED 
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <?php } }?>
+                                                            <div id="qrcode" align="right" style="display:none;"></div>
+                                                            <script type="text/javascript">
+                                                                    new QRCode(document.getElementById("qrcode"), {
+                                                                    text: document.getElementById("devotee_key").value,
+                                                                    width: 100,
+                                                                    height: 100,
+                                                                    colorDark : "#000000",
+                                                                    colorLight : "#ffffff",
+                                                                    correctLevel : QRCode.CorrectLevel.H
+                                                                    }
+                                                                );   
+                                                            </script>
+                                                        </div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="row" style="clear:both;">
                                                 <div class="col-md-3" style="margin-top:36px;">
                                                     <div class="form-group" >
                                                         <label class="bmd-label-floating">First Name</label>
