@@ -42,6 +42,7 @@ $debug = false  ;
         $devotee_email = "";
         $devotee_cell_phone_number = "";
         $devotee_status = "";
+        $devotee_blacklisted = false;
         $joined_since  = "" ;
         $devotee_referral = "";
         $devotee_remarks = "";
@@ -147,9 +148,12 @@ $debug = false  ;
             if (!empty($response['Devotee_Cell_Phone_Number'])) {
                 $devotee_cell_phone_number = urldecode($response['Devotee_Cell_Phone_Number']); //  "4156227879" 
             }
-
+                        
             if (!empty($response['Devotee_Status'])) {
                 $devotee_status = urldecode($response['Devotee_Status']); // "A" ;
+                if($devotee_status=='B'){
+                    $devotee_blacklisted=true;
+                }
             }
             
             if (!empty($response['Joined_Since'])) {
@@ -331,6 +335,16 @@ $debug = false  ;
         <div class="wrapper ">
             <?php
             include_once("nav.php");
+            
+            if($devotee_blacklisted){
+            ?>
+                <style>
+                    .main-panel .card{
+                        background-color: #ff0000 !important;
+                    }
+                </style>
+           <?php
+            }
             ?>
 
             <div class="main-panel">
@@ -718,8 +732,12 @@ $debug = false  ;
                                             <input type="hidden" name="eventId" id="eventId" value="<?php echo $eventId; ?>">
                                             <button type="reset" class="btn btn-success pull-right">Cancel</button>                    
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
+                                            <?php
+                                            if(!$devotee_blacklisted){
+                                            ?>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);
                                                     return false;">Save and Generate Card</button>
+                                            <?php } ?>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1);
                                                     return false;" >Save</button>
                                         </form>
