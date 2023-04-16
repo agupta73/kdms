@@ -719,7 +719,7 @@ $debug = false  ;
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <label>Feedback/Coments</label>
+                                                        <label>Feedback/Comments</label>
                                                         <div class="form-group">
                                                             
                                                             <!--<label class="bmd-label-floating"> Add additional Information</label>-->
