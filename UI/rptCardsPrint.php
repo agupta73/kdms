@@ -1,5 +1,8 @@
 <?php
 $config_data = include("../site_config.php");
+if (session_status() === PHP_SESSION_NONE){
+    session_start();
+  }
 include_once("../sessionCheck.php");
 $eventId = $config_data['event_id'];
 $debug = false;
@@ -89,7 +92,7 @@ $debug = false;
             $response = $devoteeSearch->getDevoteeRecords($eventId);
             unset($devoteeSearch);
         }
-        //var_dump($response);
+        if($debug) {var_dump($response); die;}
         $recordCount = 0;
         if (!empty($response)) {
             foreach ($response as $devoteeRecord) {

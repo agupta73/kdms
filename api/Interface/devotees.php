@@ -21,7 +21,7 @@ Class Devotee {
                     break;
 
                     case "SET": //set query, like devotee without photo
-                            return $this->searchDevotee($requestData['key']);
+                            return $this->searchDevotee($requestData['key'], $requestData['eventId']);
                     break;
                 
                     case "CUS": //Custom query                            

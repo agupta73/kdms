@@ -12,7 +12,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
 // Include new config file in each page ,where we need data from configuration
 
 $eventId = $config_data['event_id'];
-$debug = false;
+
 //if($debug){var_dump( $_GET);}
 ?>
 <html lang="en">
@@ -164,7 +164,7 @@ $debug = false;
             <div class="main-panel">
                 <!-- Navbar -->
             <?php
-
+            $debug = false;
             $searchKey = "";
             $gridTitle = "";
             $showSelection = FALSE;
@@ -198,7 +198,7 @@ $debug = false;
 
                 $devoteeSearch = new clsDevoteeSearch($_GET);
                 $response = $devoteeSearch->getDevoteeRecords($eventId);
-
+                
                 if($debug){echo "reaching after API call.."; var_dump( $_GET); var_dump($response); die;}
                 unset($devoteeSearch);
 
@@ -209,6 +209,7 @@ $debug = false;
                 $accommodations = $loadAccommodation->getOptions();
                 unset($loadAccommodations);
             }
+            if($debug){echo "Probably empty values.."; var_dump( $_GET); var_dump($response); die;}
             ?>
                 <!-- End Navbar -->
                 <div class="content-search" <?php
