@@ -235,7 +235,7 @@ $debug = false  ;
                     }
                     //save and Print
                     if (flag == -1 && updateSuccess) {
-
+                        console.log("calling ajax;");   
                         $.ajax({
                             url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
                             type: 'POST',

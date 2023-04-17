@@ -224,3 +224,14 @@ CREATE TABLE `office_duty_archive` (
   `Duty_Status` varchar(10) NOT NULL,
   PRIMARY KEY (`Officer_Key`,`Duty_Event`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- Create card_print_archive table
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CREATE TABLE `card_print_archive` (
+  `Devotee_Key` varchar(10) NOT NULL,
+  `Print_Status` varchar(1) NOT NULL DEFAULT 'A',
+  `Print_Requested_Date_Time` datetime DEFAULT NULL,
+  `Print_Requested_By_User` varchar(10) DEFAULT NULL,
+  UNIQUE KEY `UniqueDevoteeStatus` (`Devotee_Key`,`Print_Status`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
