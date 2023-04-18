@@ -191,6 +191,11 @@ $eventId = $config_data['event_id'];
                         $showSelection = TRUE;
                         break;
 
+                    case "RPC":
+                        $gridTitle = "Devotee Cards Recently Printed";
+                        $showSelection = TRUE;
+                        break;
+
                     default :
                         $gridTitle = "Devotee Search Result";
                         break;

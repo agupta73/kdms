@@ -206,6 +206,13 @@ Class Devotee {
                 
                 break;
             
+                case "RPC": //Recently printed Cards
+                    $query = $query .
+                                " LEFT OUTER JOIN Card_Print_Archive cpl on d.Devotee_Key = cpl.Devotee_Key "
+                              . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                    
+                    break;
+
 //            case "PCD": //Print Cards
 //                $query = $query .
 //                            " LEFT OUTER JOIN accommodation_master acm on da.accomodation_key = acm.accomodation_key "
@@ -1346,7 +1353,7 @@ Class Devotee {
         // prepare query
         $stmt = $this->conn->prepare($query);
 
-        if($this->debug){ var_dump($stmt);}
+        if($this->debug){echo "reaching before statement execution: "; var_dump($stmt);}
 
         if ($stmt->execute()) {
             $res['status'] = true;

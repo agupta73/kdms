@@ -84,6 +84,12 @@ $config_data=include("../site_config.php");
           <i class="material-icons">print</i>
           <p>Devotee Cards for Printing</p>
         </a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=RPC">
+          <i class="material-icons">print</i>
+          <p>Recently Printed Cards</p>
+        </a>
       </li>         
       <li class="nav-item ">
         <a class="nav-link" href="./OCRReaderView.php">
