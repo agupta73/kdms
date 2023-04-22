@@ -151,7 +151,7 @@ include_once("../sessionCheck.php");
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="bmd-label-floating">Accommodation Key </label>
-                        <input type="text" name="accommodation_key" id="accommodation_key" class="form-control"
+                        <input type="text" name="accommodation_key" id="accommodation_key" class="form-control" maxlength="4" oninput="this.value = this.value.toUpperCase()"
                           value="<?php print_r($accommodation_key); ?>" <?php
                           if ($accommodation_key != "") {
                               print_r("readonly=true");

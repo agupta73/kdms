@@ -22,11 +22,13 @@
     </nav>
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
       <div class="ms-md-auto pe-md-3 d-flex align-items-center kdms-top-nav-searchbar">
-        <div class="input-group input-group-outline">
-          <input type="text" id="search-data" name="searchData" class="form-control" placeholder="Search By Name, Phone or Station" onfocus="focused(this)" onfocusout="defocused(this)">
-          <div class="scrollbar-dynamic-search" id="search-result-container" style="display:none;">
+        <span class="bmd-form-group">
+          <div class="input-group input-group-outline">
+            <input type="text" id="search-data" name="searchData" class="form-control" placeholder="Search By Name, Phone or Station" onfocus="focused(this)" onfocusout="defocused(this)">
+            <div class="scrollbar-dynamic-search" id="search-result-container" style="display:none;">
+            </div>
           </div>
-        </div>
+        </span>
       </div>
       <ul class="navbar-nav  justify-content-end kdms-navbar-items">
         <li class="nav-item d-flex align-items-center kdms-user-role">

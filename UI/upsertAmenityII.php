@@ -117,28 +117,28 @@
                                           $recordCount = $recordCount + 1;
                                       print_r("
                              <tr>
-                             <td>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityKey . "</a>
                              </td>
-                             <td>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityName . "</a>
                              </td>
-                             <td>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityStatus . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $amenityQuantity . "</a>
                              </td>
-                               <td align='right'>
+                               <td align='left'>
                                    <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $reservedCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $outOfAvailabilityCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left'>
                                  <a href='upsertAmenityI.php?amenity_key=" . $amenityKey . "'>" . $allocatedCount . "</a>
                              </td>
-                             <td align='right'>
+                             <td align='left'>
                                  <a href='addAccommodationI.php?amenity_key=" . $amenityKey . "'>" . $availableCount . "</a>
                              </td>
                              </tr>
@@ -148,6 +148,11 @@
                               }
                               }
                               ?>
+
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>                  

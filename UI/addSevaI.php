@@ -1,4 +1,4 @@
-addSevaI.php<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -34,9 +34,6 @@ addSevaI.php<!DOCTYPE html>
         $optionHandler->setOptionKey($requestData['seva_id']);
         $optionHandler->setEventId($config_data['event_id']);
         $response = $optionHandler->getOptions();
-
-        //if($debug){var_dump($response);}
-        //assign values
         if(!empty($response['Seva_ID'])){
             $seva_id = urldecode($response['Seva_ID']); //"P1810142093" 
         }
@@ -56,21 +53,14 @@ addSevaI.php<!DOCTYPE html>
 
 //javascript function for ajax call
   function saveFormData(formId, flag){
-      /*
-         document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-         document.getElementById("myForm").method = "POST";
-         document.getElementById(fmId).submit();
-  */
 
           var formData = $(formId).serialize();
-          //alert(formData);
           if(validateInput()){
                $.ajax({
                 url:'<?=$config_data['webroot']?>Logic/requestManager.php',
           type:'POST',
           data:formData,
           success:function(response){
-		//alert(response);
                 var r = JSON.parse(response);
                 
 		if(r['status'] == true){
@@ -82,22 +72,9 @@ addSevaI.php<!DOCTYPE html>
                 }   
           }
         });
-
-        //save and exit
-//        if(flag == -1)
-//          window.location.assign("/KDMS/UI/printID.php");
-//
-//        //save and print
-//        if(flag == 0)
-//          window.location.assign("/KDMS/UI/index.php");
-    }
-
-    
-//   document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-//   document.getElementById("myForm").method = "POST";
-//   document.getElementById(formId).submit();
    
   }
+}
   
 
 function validateInput(){
@@ -111,7 +88,6 @@ function validateInput(){
     <?php
         include_once("nav.php");
       ?>
-
     <div class="main-panel">
       <div class="content">
         <div class="container-fluid">
@@ -128,7 +104,8 @@ function validateInput(){
                       <div class="col-md-3">
                         <div class="form-group">
                           <label class="bmd-label-floating">Seva ID </label>
-                          <input type="text" name="seva_id" id="seva_id" class="form-control"  value="<?php print_r($seva_id); ?>" <?php if($seva_id!=""){print_r("readonly=true");} ?>>
+                          <input type="text" name="seva_id" id="seva_id" class="form-control" maxlength="4" oninput="this.value = this.value.toUpperCase()"
+                          value="<?php print_r($seva_id); ?>" <?php if($seva_id!=""){print_r("readonly=true");} ?>>
                         </div>
                       </div>
                     
@@ -159,52 +136,10 @@ function validateInput(){
 
           </div>
         </div>
-      <!--</div>-->
-      <footer class="footer">
-
-      </footer>
     </div>
   </div>
   </div>
-
-  <!-- Modal -->
-    <div class="modal fade" id="CameraModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-      <div class="modal-dialog camera-modal-content" role="document" >
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Camera</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body" >
-                  <div class="row">
-                    <div class="col-md-6">
-                      <video class="photoImage" 
- id="video" width="180" height="230" autoplay></video>
-                      <button id="click-pic" class="btn btn-secondary">Snap Photo</button>
-                    </div>
-
-                    <div class="col-md-5">
-                  <canvas id="canvas" ></canvas>
-                  <div id="photo"></div>
-                  </div>
-                </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button id="upload-pic" type="button" style="visibility:hidden;" class="btn btn-primary">Save changes</button>
-                  <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
-                </div>
-              </div>
-      </div>
-    </div>
-
-
   <!--   Core JS Files   -->
-  <?php
-  include_once("scriptJS.php") ?>
-  <script src="../assets/js/pages/capture.js"></script>
  
 </body>
 
