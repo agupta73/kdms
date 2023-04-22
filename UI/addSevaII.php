@@ -66,6 +66,10 @@
                       </th>-->
                     </thead>
                     <tbody>
+                      <tr>
+                        <td colspan="12">
+                          <div class="scrollbar-dash" id="style-6">
+                            <table class="table table-striped">
                          <?php
                               $recordCount = 0;
                               if (!empty($response) ) {
@@ -125,7 +129,11 @@
                               }
                               }
                               ?>
-                    </tbody>
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
                   </table>
                 </div>                  
               </div>  

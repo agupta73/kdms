@@ -124,27 +124,27 @@
                                     $recordCount = $recordCount + 1;
                                     print_r("
                                   <tr>
-                                  <td>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
-                                  </td>
-                                  <td>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
-                                  </td>
-                                  <td align='right'>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
-                                  </td>
+                                    <td>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationKey . "</a>
+                                    </td>
+                                    <td align='left'>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationName . "</a>
+                                    </td>
+                                    <td align='left'>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $accomodationCapacity . "</a>
+                                    </td>
+                                      <td align='left'>
+                                          <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
+                                    </td>
+                                    <td align='left'>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
+                                    </td>
                                     <td align='right'>
-                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $reservedCount . "</a>
-                                  </td>
-                                  <td align='right'>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $outOfAvailabilityCount . "</a>
-                                  </td>
-                                  <td align='right'>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
-                                  </td>
-                                  <td align='right'>
-                                      <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
-                                  </td>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $allocatedCount . "</a>
+                                    </td>
+                                    <td align='right'>
+                                        <a href='addAccommodationI.php?accommodation_key=" . $accomodationKey . "'>" . $availableCount . "</a>
+                                    </td>
                                   </tr>
                                   ");
 

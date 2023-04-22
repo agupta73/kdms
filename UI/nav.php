@@ -101,9 +101,8 @@ $config_data=include("../site_config.php");
   </div>
 </div>
 <?php include_once("topNav.php"); ?>
-
- <script src="../assets/js/jquery-3.2.1.min.js"></script>
-    <script>
+<script src="../assets/js/jquery-3.2.1.min.js"></script>
+<script>
       $(document).ready(function() {
       $('#search-data').unbind().keyup(function(e) {
           var value = $(this).val();

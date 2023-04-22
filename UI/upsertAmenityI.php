@@ -84,7 +84,6 @@
     return document.getElementById(el);
   }
 
-
 //javascript function for ajax call
   function saveFormData(formId, flag){
     
@@ -115,6 +114,7 @@
 function validateInput(){
     return true;
 }
+
   </script>
 </head>
 
@@ -141,7 +141,7 @@ function validateInput(){
                       <div class="col-md-3">
                         <div class="form-group" style="margin-top:35px;">
                           <label class="bmd-label-floating">Amenity Key </label>
-                          <input type="text" name="amenity_key" id="amenity_key" class="form-control"  value="<?php print_r($amenity_key); ?>" <?php if($amenity_key!=""){print_r("readonly=true");} ?>>
+                          <input type="text" name="amenity_key" id="amenity_key" class="form-control" maxlength="4" oninput="this.value = this.value.toUpperCase()" value="<?php print_r($amenity_key); ?>" <?php if($amenity_key!=""){print_r("readonly=true");} ?>>
                         </div>
                       </div>
                     
@@ -229,7 +229,6 @@ function validateInput(){
   </div>
   </div>
 
- 
 </body>
 
 </html>
