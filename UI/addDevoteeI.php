@@ -4,15 +4,13 @@
 $config_data = include("../site_config.php");
 if (session_status() === PHP_SESSION_NONE){
     session_start();
-  }
+}
 $current_page_id = 'KD-DVT-I';
 include_once("../sessionCheck.php");
-//$config_data=include("../site_config.php");
 $debug = false  ;
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <title>
             KDMS (Add Devotee I)
@@ -68,13 +66,7 @@ $debug = false  ;
         $loadSeva->setEventId($eventId);
         $sevas = $loadSeva->getOptions();
         unset($loadSeva);
-        
-//    $loadAmenity = new clsOptionHandler("Amenity");
-//    $amenities = $loadAmenity->getOptions();
-//    unset($loadAmenity);
-        //var_dump($amenities);
-        //die;
-        //var_dump($accommodations);die;
+
         //Pre-populate devotee record in case of edit
         if (!empty($requestData['devotee_key'])) {
             $devotee_key=$requestData['devotee_key'];
@@ -148,14 +140,12 @@ $debug = false  ;
             if (!empty($response['Devotee_Cell_Phone_Number'])) {
                 $devotee_cell_phone_number = urldecode($response['Devotee_Cell_Phone_Number']); //  "4156227879" 
             }
-                        
             if (!empty($response['Devotee_Status'])) {
                 $devotee_status = urldecode($response['Devotee_Status']); // "A" ;
                 if($devotee_status=='B'){
                     $devotee_blacklisted=true;
                 }
             }
-            
             if (!empty($response['Joined_Since'])) {
                 $joined_since = urldecode($response['Joined_Since']); //  "" 
             }
@@ -188,163 +178,14 @@ $debug = false  ;
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
         }
-        ?>
-        <script>
-
-            function _(el) {
-                return document.getElementById(el);
-            }
-
-            //javascript function for ajax call
-            function saveFormData(formId, flag) {
-
-                var r =null; // so that we can access it outside .ajax();
-                var formData = $(formId).serialize();
-                var updateSuccess = false;
-                //alert(formData);
-                /* document.getElementById(formId).action = "/KDMS/Logic/requestManager.php";
-                     document.getElementById(formId).method = "POST";
-                     document.getElementById(formId).submit(); */
-
-
-                if (validateInput()) {
-                    $.ajax({
-                        url: '<?php echo $config_data['webroot'];?>Logic/requestManager.php',
-                        type: 'POST',
-                        data: formData,
-                        async: false,
-                        success: function (response) {
-                            console.log(response);
-                                
-                            r = JSON.parse(response);
-
-                            if (r['flag'] == true) {
-                                //                    alert("Devotee record updated successfully!");
-                                //                    window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
-                                updateSuccess = true;
-                            } else {
-                                alert(r['message']);
-                                updateSuccess = false;
-                            }
-                        }
-                    });
-                    //Save and stay on the record
-                    if (flag == 1 && updateSuccess) {
-                        alert("Devotee record updated successfully!");                        
-                        window.location.assign("<?=$config_data['webroot'];?>UI/addDevoteeI.php?devotee_key=" + r['info']);
-                    }
-                    //save and Print
-                    if (flag == -1 && updateSuccess) {
-                        console.log("calling ajax;");   
-                        $.ajax({
-                            url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
-                            type: 'POST',
-                            data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
-                            async: false,
-                            success: function (response) {
-
-                                var r = JSON.parse(response);
-
-                                if (r['flag'] == true) {
-                                    alert("Devotee Record updated and card added to Print Queue!");
-                                    window.location.assign("<?=$config_data['webroot'];?>UI/devoteeSearchResult.php?mode=SET&key=CTP");
-                                } else {
-                                    alert(r['message']);
-                                    updateSuccess = false;
-                                }
-                            }
-                        });
-
-                        //          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-                        //          document.getElementById("myForm").method = "POST";
-                        //          document.getElementById("requestType").value = "addToPrintQueue";
-                        //
-                        //          document.getElementById(formId).submit();
-                        //          
-                        //          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-                    }
-                    //save and exit
-                    if (flag == 0 && updateSuccess) {
-                        alert("Devotee record updated successfully!");
-                        window.location.assign("<?=$config_data['webroot'];?>UI/index.php");
-                    }
-                    
-                    // document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-                    // document.getElementById("myForm").method = "POST";
-                    // document.getElementById(formId).submit();
-                    
-                }
-                
-            }
-            function validateInput() {
-                    var response = true;
-                    var message = "";
-                    if (document.getElementById("devotee_first_name").value == "") {
-                        message = "Devotee first name is missing.\n";
-                        response = false;
-                    }
-
-                    if (document.getElementById("devotee_last_name").value == "") {
-                        message = message + "Devotee last name is missing. \n";
-                        response = false;
-                    }
-
-                    if (document.getElementById("devotee_email").value != "") {                        
-                        if (!validateEmail(document.getElementById("devotee_email").value)) {
-                            message = message + "Email is invalid.\n";
-                            response = false;
-                        }
-                    }
-
-                    if (document.getElementById("devotee_dob").value != "") {                        
-                        if (!validateDate(document.getElementById("devotee_dob").value)) {
-                            message = message + "Date of birth is invalid.\n";
-                            response = false;
-                        }
-                    }
-
-                    if (!response) {
-                        alert(message);
-                    }
-
-                    return response;
-                }
-
-                function validateEmail(email) {
-                    var re = /\S+@\S+\.\S+/;
-                    
-                    return re.test(email);
-                }
-
-                function validateDate(isoDate) {
-                    if (isNaN(Date.parse(isoDate))) {
-                        return false;
-                    } else {
-                        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-        </script>
-    </head>
-
-    <body class="">
+    ?>
+    <script src="../assets/js/main/add_devotee.js"></script>
+</head>
+<body class="">
     <link href="../assets/demo/demo.css" rel="stylesheet" />
         <div class="wrapper ">
             <?php
             include_once("nav.php");
-            
-            if($devotee_blacklisted){
-            ?>
-                <style>
-                    .main-panel .card{
-                        background-color: #ff0000 !important;
-                    }
-                </style>
-           <?php
-            }
             ?>
 
             <div class="main-panel">
@@ -357,100 +198,63 @@ $debug = false  ;
                                         <h4 class="card-title">Add Devotee Information</h4>
                                     </div>
                                     <div class="card-body">
-                                        
-                                        <div class="row" style="float: left;">
-                                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                    <div class="row">
-                                                        <!-- <div class="col-4">
-                                                            <?php if(!empty($devotee_status)) {
-                                                            if($devotee_status != 'B') { ?>
-                                                            <div>
-                                                                <div class="blacklist_container" id="blsign">
-                                                                    <label 
-                                                                        class="bmd-label-floating blacklist_label" 
-                                                                        name="blacklist_label" 
-                                                                        id="blacklist_label"
-                                                                        > 
-                                                                        BLACK LISTED 
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <?php } }?>
-                                                            <div id="qrcode" align="right" style="display:none;"></div>
-                                                            <script type="text/javascript">
-                                                                    new QRCode(document.getElementById("qrcode"), {
-                                                                    text: document.getElementById("devotee_key").value,
-                                                                    width: 100,
-                                                                    height: 100,
-                                                                    colorDark : "#000000",
-                                                                    colorLight : "#ffffff",
-                                                                    correctLevel : QRCode.CorrectLevel.H
-                                                                    }
-                                                                );   
-                                                            </script>
-                                                        </div> -->
-                                                        <div class="col-8">
-                                                            <?php if ($devotee_key != "") { ?>
-                                                                <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#AmenityModalLong">
-                                                                    Amenities
-                                                                </div>
-                                                                <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
-                                                                    Participation
-                                                                </div>
-                                                                <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#RemarksModalLong">
-                                                                    Remarks
-                                                                </div>
-                                                                
-                                                                <!--Modal Window for Amenity Management-->
-                                                                <?php include_once("modals/amenityMgmtModal.php"); ?>
-                                                                <!--END - Modal Window for Amenity Management-->
-                                                                <!--Modal Window for Participation Records-->
-                                                                <?php include_once("modals/remarksModal.php"); ?>
-                                                                <!--END - Modal Window for Participation Records-->
-                                                                <!--Modal Window for Participation Records-->
-                                                                <?php include_once("modals/participationRecordsModal.php"); ?>
-                                                                <!--END - Modal Window for Participation Records-->
-                                                            <?php } ?>
-                                                        </div>
+                                        <?php if($devotee_status == 'B') { ?>
+                                                <div>
+                                                    <div class="blacklist_container" id="blsign">
+                                                        <label
+                                                            class="bmd-label-floating blacklist_label"
+                                                            name="blacklist_label"
+                                                            id="blacklist_label"
+                                                            >
+                                                            BLACKLISTED
+                                                        </label>
                                                     </div>
                                                 </div>
+                                        <?php } ?>
+                                        <div class="row" style="float: right;">
+                                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" >
+                                                <?php if ($devotee_key != "") { ?>
+                                                        <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#AmenityModalLong">
+                                                            Amenities
+                                                        </div>
+                                                        <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#ParticipationModalLong">
+                                                            Participation
+                                                        </div>
+                                                        <div class="btn btn-light action-btn btn-med" data-toggle="modal" data-target="#RemarksModalLong">
+                                                            Remarks
+                                                        </div>
+                                                        <!--Modal Window for Amenity Management-->
+                                                        <?php include_once("modals/amenityMgmtModal.php"); ?>
+                                                        <!--END - Modal Window for Amenity Management-->
+                                                        <!--Modal Window for Participation Records-->
+                                                        <?php include_once("modals/remarksModal.php"); ?>
+                                                        <!--END - Modal Window for Participation Records-->
+                                                        <!--Modal Window for Participation Records-->
+                                                        <?php include_once("modals/participationRecordsModal.php"); ?>
+                                                        <!--END - Modal Window for Participation Records-->
+                                                    <?php } ?>
                                             </div>
+                                        </div>
                                         <form  id="myForm">
                                             <div class="row">
-                                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6" style="display: contents;">
+                                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Devotee ID (non editable)</label>
-                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">                                                        
+                                                        <input type="text" name="devotee_key" id="devotee_key" class="form-control" readonly="true" value="<?php print_r($devotee_key); ?>">
                                                     </div>
-                                                    <div class="form-group">
-                                                    <?php if(!empty($devotee_status)) {
-                                                            if($devotee_status == 'B') { ?>
-                                                            <div>
-                                                                <div class="blacklist_container" id="blsign">
-                                                                    <label 
-                                                                        class="bmd-label-floating blacklist_label" 
-                                                                        name="blacklist_label" 
-                                                                        id="blacklist_label"
-                                                                        > 
-                                                                        BLACK LISTED 
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <?php } }?>
-                                                            <div id="qrcode" align="right" style="display:none;"></div>
-                                                            <script type="text/javascript">
-                                                                    new QRCode(document.getElementById("qrcode"), {
-                                                                    text: document.getElementById("devotee_key").value,
-                                                                    width: 100,
-                                                                    height: 100,
-                                                                    colorDark : "#000000",
-                                                                    colorLight : "#ffffff",
-                                                                    correctLevel : QRCode.CorrectLevel.H
-                                                                    }
-                                                                );   
-                                                            </script>
-                                                        </div>
-                                                </div>                                                
+                                                    <div id="qrcode" align="right" style="display:none;"></div>
+                                                        <script type="text/javascript">
+                                                                new QRCode(document.getElementById("qrcode"), {
+                                                                text: document.getElementById("devotee_key").value,
+                                                                width: 100,
+                                                                height: 100,
+                                                                colorDark : "#000000",
+                                                                colorLight : "#ffffff",
+                                                                correctLevel : QRCode.CorrectLevel.H
+                                                                }
+                                                            );
+                                                        </script>
+                                                    </div>
                                             </div>
                                             <div class="row" style="clear:both;">
                                                 <div class="col-md-3" style="margin-top:36px;">
@@ -704,25 +508,11 @@ $debug = false  ;
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Remarks</label>
-                                                        <div class="form-group">
-                                                            
-                                                            
-                                                            <textarea class="form-control" rows="2" name="devotee_remarks" id="devotee_remarks"> <?php print_r($devotee_remarks); ?></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> -->
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>Feedback/Comments</label>
                                                         <div class="form-group">
-                                                            
-                                                            <!--<label class="bmd-label-floating"> Add additional Information</label>-->
                                                             <textarea class="form-control" rows="2" name="comments" id="comments"> <?php print_r($comments); ?></textarea>
                                                         </div>
                                                     </div>
@@ -748,7 +538,6 @@ $debug = false  ;
 
                             <div class="col-md-4">
                                 <div class="card card-profile card-devotee-image-profile">
-                                    <!-- <div class="card-body photo-preview" data-toggle="modal" data-target="#CameraModalLong" data-backdrop="static"  data-keyboard="false"> -->
                                     <div class="card-body photo-preview">
                                         <?php
                                         if ($devotee_photo == "") {
@@ -795,43 +584,17 @@ $debug = false  ;
                                     <!-- end of camera image -->
                                 </div>
                                 <div class="card card-profile">
-                                    <!-- <div class="card-body" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false"> -->
-                                    <div class="card-body">
-                                        <!--<img src="../assets/img/faces/doc.png" alt="devotee image" height="200px" width="200px"></img>-->
+                                    <div class="card-body" id="photo-id-preview_div">
                                         <?php
                                         if ($devotee_id_image == "") {
                                             echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
                                         } else {
                                             echo '<img class="photo-id-preview" src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
                                         }
-                                        ?> 
-                                        <!-- <div class="row">
-                                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay">
-                                                <canvas class="photoIDCanvas" id="canvasID" ></canvas>
-                                                <div id="photoID"></div>
-                                            </div>
-                                        </div> -->
-                                        <!-- <div class="row">
-                                            <div class="col videoliveplay">
-                                                <label class="cameraIDFileInput" for="cameraIDFileInput">
-                                                    <span class="btn upload-doc">Upload</span>
-                                                    <span class="btn open-camera">Open camera</span>
-                                                     The hidden file `input` for opening the native camera
-                                                    <input
-                                                        id="cameraIDFileInput"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        capture="environment"
-                                                    />
-                                                </label>                           
-                                                <button id="upload-doc" type="button" class="btn btn-primary">Save</button>
-                                                <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
-                                            </div>
-                                        </div> -->
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="card card-profile">
-                                    <!-- <div class="card-body" data-toggle="modal" data-target="#IDModalLong" data-backdrop="static"  data-keyboard="false"> -->
                                     <div class="card-body">
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong">Manage Devotee ID</button>
                                     </div>
@@ -840,8 +603,6 @@ $debug = false  ;
                         </div>
                     </div>
                 </div>
-                <!-- <footer class="footer">
-                </footer> -->
             </div>
         </div>
     </div>
@@ -883,12 +644,12 @@ $debug = false  ;
                                                     <span class="btn open-camera">Open camera</span>
                                                     <!-- The hidden file `input` for opening the native camera -->
                                                     <input
-                                                        id="cameraIDFileInput"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        capture="environment"
+                                                    id="cameraIDFileInput"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    capture="environment"
                                                     />
-                                                </label>                           
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -906,24 +667,6 @@ $debug = false  ;
                                                 <div id="photoID"></div>
                                             </div>
                                         </div>
-                                        <!-- <div class="row">
-                                            <div class="col videoliveplay">
-                                                <label class="cameraIDFileInput" for="cameraIDFileInput">
-                                                    <span class="btn upload-doc">Upload</span>
-                                                    <span class="btn open-camera">Open camera</span>
-                                                    The hidden file `input` for opening the native camera
-                                                    <input
-                                                        id="cameraIDFileInput"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        capture="environment"
-                                                    />
-                                                </label>                           
-                                                <button id="upload-doc" type="button" class="btn btn-primary">Save</button>
-                                                <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
-                                            </div>
-                                        </div> 
-                                        -->
                                     </div>
                                 </div>
                             </div>
