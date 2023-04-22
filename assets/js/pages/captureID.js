@@ -110,7 +110,9 @@
             var image = new Image();
             image.src = base64_image_data;
             image.onload = function() {
-                context.drawImage(image, 0, 0, width/2, height);
+                // context.drawImage(image, 0, 0, width/2, height);
+                // context.drawImage(image, 0, 0, width, height);
+                context.drawImage(image, 0, 0, width/2, height/2);
             }
             IDcanvas.width = width;
             IDcanvas.height = height;
@@ -121,8 +123,10 @@
             console.log(base64_image_data);
             first_image.src = photoID.getAttribute('src');
             second_image.onload = function() {
-                context.drawImage(first_image, 0, 0, width/2, height);
-                context.drawImage(second_image, width/2, 0, width/2, height);
+                // context.drawImage(first_image, 0, 0, width/2, height);
+                // context.drawImage(second_image, width/2, 0, width/2, height);
+                context.drawImage(first_image, 0, 0, width/2, height/2);
+                context.drawImage(second_image, width/2, height/2, width/2, height/2);
             }
             IDcanvas.width = width;
             IDcanvas.height = height;
@@ -140,9 +144,11 @@
             }).done(function (resp) {
                 var url = window.location.href;
                 alert('Devotee Image updated!!');
-                $('#CameraModalLong').modal('hide');
-                window.location = url;
-                window.location.reload();
+                let phone_id_div = document.getElementById("photo-id-preview_div");
+                phone_id_div.innerHTML = `<img class="photo-id-preview" src="${dataUrl}" alt="devotee ID" height="200px" width="200px"></img>`;
+                $('#IDModalLong').modal('hide');
+                // window.location = url;
+                // window.location.reload();
             });
         } else {
             // $.ajax({
@@ -197,15 +203,5 @@
 //     this.style.display = "none";
 //     zoomOutDevoteeImage.style.display = "block";
 //     devotee_image_element.style.transform = "scale(1.5)";
-//     devotee_image_element.style.transition = "transform 0.25s ease";
-// });
-
-// $('#zoomOutDevoteeImage').on('click', function (event) {
-//     this.style.display = 'none';
-//     let zoomInDevoteeImage = document.getElementById("zoomInDevoteeImage");
-//     let devotee_image_element = document.getElementById("devoteeImage");
-//     this.style.display = "none";
-//     zoomInDevoteeImage.style.display = "block";
-//     devotee_image_element.style.transform = "scale(1)";
 //     devotee_image_element.style.transition = "transform 0.25s ease";
 // });

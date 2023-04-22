@@ -4,15 +4,13 @@
 $config_data = include("../site_config.php");
 if (session_status() === PHP_SESSION_NONE){
     session_start();
-  }
+}
 $current_page_id = 'KD-DVT-I';
 include_once("../sessionCheck.php");
-//$config_data=include("../site_config.php");
 $debug = false  ;
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <title>
             KDMS (Add Devotee I)
@@ -68,13 +66,7 @@ $debug = false  ;
         $loadSeva->setEventId($eventId);
         $sevas = $loadSeva->getOptions();
         unset($loadSeva);
-        
-//    $loadAmenity = new clsOptionHandler("Amenity");
-//    $amenities = $loadAmenity->getOptions();
-//    unset($loadAmenity);
-        //var_dump($amenities);
-        //die;
-        //var_dump($accommodations);die;
+
         //Pre-populate devotee record in case of edit
         if (!empty($requestData['devotee_key'])) {
             $devotee_key=$requestData['devotee_key'];
@@ -148,14 +140,12 @@ $debug = false  ;
             if (!empty($response['Devotee_Cell_Phone_Number'])) {
                 $devotee_cell_phone_number = urldecode($response['Devotee_Cell_Phone_Number']); //  "4156227879" 
             }
-                        
             if (!empty($response['Devotee_Status'])) {
                 $devotee_status = urldecode($response['Devotee_Status']); // "A" ;
                 if($devotee_status=='B'){
                     $devotee_blacklisted=true;
                 }
             }
-            
             if (!empty($response['Joined_Since'])) {
                 $joined_since = urldecode($response['Joined_Since']); //  "" 
             }
@@ -188,149 +178,10 @@ $debug = false  ;
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
         }
-        ?>
-        <script>
-
-            function _(el) {
-                return document.getElementById(el);
-            }
-
-            //javascript function for ajax call
-            function saveFormData(formId, flag) {
-
-                var r =null; // so that we can access it outside .ajax();
-                var formData = $(formId).serialize();
-                var updateSuccess = false;
-                //alert(formData);
-                /* document.getElementById(formId).action = "/KDMS/Logic/requestManager.php";
-                     document.getElementById(formId).method = "POST";
-                     document.getElementById(formId).submit(); */
-
-
-                if (validateInput()) {
-                    $.ajax({
-                        url: '<?php echo $config_data['webroot'];?>Logic/requestManager.php',
-                        type: 'POST',
-                        data: formData,
-                        async: false,
-                        success: function (response) {
-                            console.log(response);
-                                
-                            r = JSON.parse(response);
-
-                            if (r['flag'] == true) {
-                                //                    alert("Devotee record updated successfully!");
-                                //                    window.location.assign("/KDMS/UI/adddevoteei.php?devotee_key=" + r['info'] );
-                                updateSuccess = true;
-                            } else {
-                                alert(r['message']);
-                                updateSuccess = false;
-                            }
-                        }
-                    });
-                    //Save and stay on the record
-                    if (flag == 1 && updateSuccess) {
-                        alert("Devotee record updated successfully!");                        
-                        window.location.assign("<?=$config_data['webroot'];?>UI/addDevoteeI.php?devotee_key=" + r['info']);
-                    }
-                    //save and Print
-                    if (flag == -1 && updateSuccess) {
-                        console.log("calling ajax;");   
-                        $.ajax({
-                            url: '<?=$config_data['webroot'];?>Logic/requestManager.php',
-                            type: 'POST',
-                            data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
-                            async: false,
-                            success: function (response) {
-
-                                var r = JSON.parse(response);
-
-                                if (r['flag'] == true) {
-                                    alert("Devotee Record updated and card added to Print Queue!");
-                                    window.location.assign("<?=$config_data['webroot'];?>UI/devoteeSearchResult.php?mode=SET&key=CTP");
-                                } else {
-                                    alert(r['message']);
-                                    updateSuccess = false;
-                                }
-                            }
-                        });
-
-                        //          document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-                        //          document.getElementById("myForm").method = "POST";
-                        //          document.getElementById("requestType").value = "addToPrintQueue";
-                        //
-                        //          document.getElementById(formId).submit();
-                        //          
-                        //          window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-                    }
-                    //save and exit
-                    if (flag == 0 && updateSuccess) {
-                        alert("Devotee record updated successfully!");
-                        window.location.assign("<?=$config_data['webroot'];?>UI/index.php");
-                    }
-                    
-                    // document.getElementById("myForm").action = "/KDMS/Logic/requestManager.php";
-                    // document.getElementById("myForm").method = "POST";
-                    // document.getElementById(formId).submit();
-                    
-                }
-                
-            }
-            function validateInput() {
-                    var response = true;
-                    var message = "";
-                    if (document.getElementById("devotee_first_name").value == "") {
-                        message = "Devotee first name is missing.\n";
-                        response = false;
-                    }
-
-                    if (document.getElementById("devotee_last_name").value == "") {
-                        message = message + "Devotee last name is missing. \n";
-                        response = false;
-                    }
-
-                    if (document.getElementById("devotee_email").value != "") {                        
-                        if (!validateEmail(document.getElementById("devotee_email").value)) {
-                            message = message + "Email is invalid.\n";
-                            response = false;
-                        }
-                    }
-
-                    if (document.getElementById("devotee_dob").value != "") {                        
-                        if (!validateDate(document.getElementById("devotee_dob").value)) {
-                            message = message + "Date of birth is invalid.\n";
-                            response = false;
-                        }
-                    }
-
-                    if (!response) {
-                        alert(message);
-                    }
-
-                    return response;
-                }
-
-                function validateEmail(email) {
-                    var re = /\S+@\S+\.\S+/;
-                    
-                    return re.test(email);
-                }
-
-                function validateDate(isoDate) {
-                    if (isNaN(Date.parse(isoDate))) {
-                        return false;
-                    } else {
-                        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-        </script>
-    </head>
-
-    <body class="">
+    ?>
+    <script src="../assets/js/main/add_devotee.js"></script>
+</head>
+<body class="">
     <link href="../assets/demo/demo.css" rel="stylesheet" />
         <div class="wrapper ">
             <?php
@@ -733,7 +584,7 @@ $debug = false  ;
                                     <!-- end of camera image -->
                                 </div>
                                 <div class="card card-profile">
-                                    <div class="card-body">
+                                    <div class="card-body" id="photo-id-preview_div">
                                         <?php
                                         if ($devotee_id_image == "") {
                                             echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
@@ -793,12 +644,12 @@ $debug = false  ;
                                                     <span class="btn open-camera">Open camera</span>
                                                     <!-- The hidden file `input` for opening the native camera -->
                                                     <input
-                                                        id="cameraIDFileInput"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        capture="environment"
+                                                    id="cameraIDFileInput"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    capture="environment"
                                                     />
-                                                </label>                           
+                                                </label>
                                             </div>
                                         </div>
                                     </div>

@@ -251,8 +251,8 @@ th.assign-devotees {
 }
 
 .devoteeImageStatic {
-	height: 100%;
-	width: 100%;
+	height: 180px;
+	width: 180px;
 }
 
 /* .card-devotee-image-profile {
@@ -361,7 +361,8 @@ th.assign-devotees {
 .photoIDCanvas {
 	width: 586px !important;
     /* width: 340px !important; */
-    height: 320px !important;
+    /* height: 320px !important; */
+    height: 550px !important;
     /* object-fit: cover; */
 	/* object-fit: contain; */
 }

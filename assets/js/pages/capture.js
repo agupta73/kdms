@@ -118,7 +118,8 @@
             canvas.height = height;
             // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
             // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
-            context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
+            // context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
+            context.drawImage(video, 200, 60, 250, 770, 0, 0, 320, 480);
             // context.drawImage(video, 0, 0, width, height);
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
@@ -150,12 +151,13 @@
                 url: '../api/managePhoto.php',
                 method: 'POST',
                 data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
-            }).done(function () {
+            }).done(function (data) {
                 var url = window.location.href;
                 alert('Devotee Image updated!!');
-                $('#CameraModalLong').modal('hide');
-                window.location = url;
-                window.location.reload();
+                // window.location = url;
+                // window.location.reload();
+                let image_tag = document.getElementById('photo2');
+                image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
             });
         } else {
             $.ajax({
@@ -168,8 +170,10 @@
                 var url = window.location.href;
                 url = url + '?devotee_key=' + newId;
                 alert('Image uploaded to new Devotee record!!');
-                $('#CameraModalLong').modal('hide');
-                window.location = url;
+                window.history.pushState('devotee', 'AddDevotee', url);
+                let image_tag = document.getElementById('photo2');
+                image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
+                // window.location = url;
             });
         }
     }
