@@ -119,7 +119,7 @@
             // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
             // context.drawImage(video, 220, 50, 210, 450, 40, 0, 320, 350);
             // context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
-            context.drawImage(video, 200, 60, 250, 770, 0, 0, 320, 480);
+            context.drawImage(video, 140, 0, 360, 770, 0, 0, 300, 400);
             // context.drawImage(video, 0, 0, width, height);
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
