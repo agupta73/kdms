@@ -583,22 +583,37 @@ $debug = false  ;
                                     </div>
                                     <!-- end of camera image -->
                                 </div>
+
                                 <div class="card card-profile">
-                                    <div class="card-body" id="photo-id-preview_div">
-                                        <?php
-                                        if ($devotee_id_image == "") {
-                                            echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
-                                        } else {
-                                            echo '<img class="photo-id-preview" src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="200px" width="200px"></img>';
-                                        }
-                                        ?>
-                                    </div>
+                                    <label class="cameraFileInput" for="cameraIDFileInput">
+                                        <div class="card-body" id="photo-id-preview_div">
+                                            <?php
+                                            if ($devotee_id_image == "") {
+                                                echo '<img class="photo-id-preview" src="../assets/img/faces/doc.png" alt="devotee ID" height="350px" width="200px"></img>';
+                                            } else {
+                                                echo '<img class="photo-id-preview" src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="400px" width="200px"></img>';
+                                            }
+                                            ?>
+                                        </div>
+                                        <span class="btn open-camera">Open camera</span>
+                                        <!-- The hidden file `input` for opening the native camera -->
+                                        <input
+                                            id="cameraIDFileInput"
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                        />
+                                        Click on above section to upload document ID.
+                                    </label>
                                 </div>
-                                <div class="card card-profile">
+                                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong"> -->
+
+                                <!-- </button> -->
+                                <!-- <div class="card card-profile">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong">Manage Devotee ID</button>
                                     <div class="card-body">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong">Manage Devotee ID</button>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -608,7 +623,7 @@ $debug = false  ;
     </div>
 
     <!-- Scan id Modal -->
-    <div class="modal fade" id="IDModalLong" tabindex="-2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <!-- <div class="modal fade" id="IDModalLong" tabindex="-2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
         <div class="modal-dialog id-upload-modal" role="document" >
             <div class="modal-content">
                 <div class="modal-header">
@@ -642,7 +657,7 @@ $debug = false  ;
                                                 <label class="cameraIDFileInput" for="cameraIDFileInput">
                                                     <span class="btn upload-doc">Upload ID</span>
                                                     <span class="btn open-camera">Open camera</span>
-                                                    <!-- The hidden file `input` for opening the native camera -->
+                                                   The hidden file `input` for opening the native camera
                                                     <input
                                                     id="cameraIDFileInput"
                                                     type="file"
@@ -673,10 +688,9 @@ $debug = false  ;
                         </div>
                     </div>
                 </div>
-                <!-- </form> -->
             </div>
         </div>
-    </div>
+    </div> -->
 
 </div>
 <!--   Core JS Files   -->
