@@ -537,7 +537,7 @@ $debug = false  ;
                             </div>
 
                             <div class="col-md-4">
-                                <div class="card card-profile card-devotee-image-profile">
+                                <div class="card card-profile card-devotee-image-profile system-camera-layout">
                                     <div class="card-body photo-preview">
                                         <?php
                                         if ($devotee_photo == "") {
@@ -550,7 +550,7 @@ $debug = false  ;
                                     <i id="zoomInDevoteeImage" class="material-icons resetScaling">zoom_in</i>
                                     <i id="zoomOutDevoteeImage" class="material-icons resetScaling">zoom_out</i>
                                 </div>
-                                <div class="card card-profile card-devotee-image-profile">
+                                <div class="card card-profile card-devotee-image-profile system-camera-layout">
                                     <!-- Camera image -->
                                     <div class="row">
                                         <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 videoliveplay video-live-preview videoliveplay-left">
@@ -566,7 +566,6 @@ $debug = false  ;
                                             <label class="cameraFileInput" for="cameraFileInput">
                                                 <span class="btn upload-photo">Upload</span>
                                                 <span class="btn open-camera">Open camera</span>
-                                                <!-- The hidden file `input` for opening the native camera -->
                                                 <input
                                                     id="cameraFileInput"
                                                     type="file"
@@ -584,6 +583,27 @@ $debug = false  ;
                                     <!-- end of camera image -->
                                 </div>
 
+                                <div class="card card-profile">
+                                    <label class="cameraFileInput" for="cameraMobilePhotoFileInput">
+                                        <div class="card-body" id="photo-mobile-preview_div">
+                                            <?php
+                                            if ($devotee_photo == "") {
+                                                echo '<img class="devoteeImageStatic" src="../assets/img/faces/devotee.ico" alt="devotee image" height="200px" width="220px"></img>';
+                                            } else {
+                                                echo '<img class="devoteeImage" id="devoteeImage" src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image"></img>';
+                                            }
+                                            ?>
+                                        </div>
+                                        <!-- The hidden file `input` for opening the native camera -->
+                                        <input
+                                            id="cameraMobilePhotoFileInput"
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                        />
+                                        Click on above section to upload devotee Image.
+                                    </label>
+                                </div>
                                 <div class="card card-profile">
                                     <label class="cameraFileInput" for="cameraIDFileInput">
                                         <div class="card-body" id="photo-id-preview_div">
@@ -605,14 +625,7 @@ $debug = false  ;
                                         Click on above section to upload document ID.
                                     </label>
                                 </div>
-                                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong"> -->
-
-                                <!-- </button> -->
-                                <!-- <div class="card card-profile">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#IDModalLong">Manage Devotee ID</button>
-                                    <div class="card-body">
-                                    </div>
-                                </div> -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -620,77 +633,6 @@ $debug = false  ;
             </div>
         </div>
     </div>
-
-    <!-- Scan id Modal -->
-    <!-- <div class="modal fade" id="IDModalLong" tabindex="-2" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-        <div class="modal-dialog id-upload-modal" role="document" >
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Upload ID</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" >
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-lg-12 col-xl-4">
-                            <div class="form-group">
-                                <div class="card card-profile">
-                                    <div class="card-body">
-                                        <div class="row id-image-preview-container">
-                                            <label>Current ID Image</label>
-                                            <div class="col-md-12 col-sm-12 col-lg-12 col-xl-12">
-                                                <?php
-                                                if ($devotee_id_image == "") {
-                                                    echo '<img src="../assets/img/faces/doc.png" alt="devotee ID" height="200px" width="200px"></img>';
-                                                } else {
-                                                    echo '<img class="id-image-preview" src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID"></img>';
-                                                }
-                                                ?> 
-                                            </div>
-                                        </div>
-                                        <div class="row scan-id-action-section">
-                                            <div class="col videoliveplay">
-                                                <button id="upload-doc" type="button" class="btn btn-primary">Save</button>
-                                                <input type="hidden" id="devotee_key_modal" name="devotee_key_modal" value="<?php print_r($devotee_key); ?>">
-                                                <label class="cameraIDFileInput" for="cameraIDFileInput">
-                                                    <span class="btn upload-doc">Upload ID</span>
-                                                    <span class="btn open-camera">Open camera</span>
-                                                   The hidden file `input` for opening the native camera
-                                                    <input
-                                                    id="cameraIDFileInput"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    capture="environment"
-                                                    />
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12 col-lg-12 col-xl-8">
-                            <div class="form-group">
-                                <div class="card card-profile ">
-                                    <div class="card-body ">
-                                        <label>Preview</label>
-                                        <div class="row scan-id-container">
-                                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 scan-image-container videoliveplay">
-                                                <canvas class="photoIDCanvas" id="canvasID" ></canvas>
-                                                <div id="photoID"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
 </div>
 <!--   Core JS Files   -->
 <?php include_once("scriptJS.php") ?>
