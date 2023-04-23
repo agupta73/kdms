@@ -433,6 +433,9 @@ th.assign-devotees {
 		object-fit: contain;
 		transform: rotate(90deg);
 	}
+	.system-camera-layout {
+		display: none;
+	}
 }
 /* ipad */
 @media (min-width: 992px) {
@@ -457,6 +460,9 @@ th.assign-devotees {
 		object-fit: contain;
 		max-width: 325px;
    		width: 100%;
+	}
+	.system-camera-layout {
+		display: block;
 	}
 }
 /* desktop or laptop */

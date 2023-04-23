@@ -196,7 +196,6 @@
         }
         );
     });
-    
     $('#CameraModalLong').on('show.bs.modal', function () {
         startup();
     });
