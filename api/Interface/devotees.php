@@ -1391,6 +1391,7 @@ Class Devotee {
             $Devotee_Key = htmlspecialchars(strip_tags($requestData['devotee_key']));
         }
 
+        if($this->debug){echo $requestData['eventId']; die;}
         if ($requestData['requestType'] == "addToPrintQueue") {
             $query[0] = "REPLACE INTO `Card_Print_Log`(
                     `Devotee_Key`,
