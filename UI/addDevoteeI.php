@@ -595,7 +595,6 @@ $debug = false  ;
                                             }
                                             ?>
                                         </div>
-                                        <span class="btn open-camera">Open camera</span>
                                         <!-- The hidden file `input` for opening the native camera -->
                                         <input
                                             id="cameraIDFileInput"
