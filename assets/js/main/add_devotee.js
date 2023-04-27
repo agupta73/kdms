@@ -31,6 +31,18 @@ function saveFormData(formId, flag) {
             alert("Devotee record updated successfully!");                        
             // window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
         }
+        var check =false;
+        if(flag== -2){
+            var pcnt=parseInt($('.btn-sgc').attr('data-pcount'));
+            var timet='times';
+            if (pcnt<2){
+                timet='time';
+            }
+             check=confirm("Card already printed "+pcnt+" "+timet+" for this Devotee!. Do you still want to print");                        
+        }
+        if(check){
+              var flag = -1;
+        }
         //save and Print
         if (flag == -1 && updateSuccess) {
             console.log("calling ajax;");   

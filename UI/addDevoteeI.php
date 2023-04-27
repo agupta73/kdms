@@ -524,9 +524,18 @@ $debug = false  ;
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <?php
                                             if(!$devotee_blacklisted){
+                                                //No of cards printed for this event 
+                                                $flagp=-1;
+                                                $pcount=0;
+                                                $classBtn="btn-success";
+                                                if(!empty($response['print_count'])&& $response['print_count']>1){
+                                                    $flagp=-2;
+                                                    $pcount=$response['print_count'];
+                                                    $classBtn="btn-danger";
+                                                }
                                             ?>
-                                            <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', -1);
-                                                    return false;">Save and Generate Card</button>
+                                            <button type="button" data-pcount="<?=$pcount;?>" class="btn <?=$classBtn;?> btn-sgc pull-right" onclick="saveFormData('#myForm', <?= $flagp?>);
+                                                    return false;">Save and Generate Card (<?=$response['print_count'];?>)</button>
                                             <?php } ?>
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1);
                                                     return false;" >Save</button>

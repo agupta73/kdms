@@ -108,6 +108,7 @@ Class Devotee {
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
                    // ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_State as Devotee_station, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
+                    ", (SELECT count(*) from Print_log where Devotee_Key= '" . $devotee_key . "' AND Event_Id = '". $eventId . "') print_count ".
                  "from " .
                     "Devotee d " .
                     "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
@@ -117,7 +118,7 @@ Class Devotee {
                     "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
-
+                    
         if($this->debug) {return $query; die;}
 
         $results = $this->conn->query($query,MYSQLI_USE_RESULT);
@@ -1383,6 +1384,7 @@ Class Devotee {
         $query = array();
         $Print_Record_Updated_By = 'Anil'; //to be fixed userid
         $now = date('Y-m-d H:i:s');
+        
 
         if (empty($requestData['devotee_key'])) {
             $errormsg .= " Devotee Key is missing.";
@@ -1399,7 +1401,7 @@ Class Devotee {
                     `Print_Requested_Date_Time`,
                     `Print_Requested_By_User`
                 )
-                VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";
+                VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";           
 
         } else {
             //$query = "UPDATE `Card_Print_Log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
@@ -1410,6 +1412,16 @@ Class Devotee {
                     (select devotee_key from 
                     (select devotee_key from card_print_archive order by print_requested_date_time limit 25) tmp 
                     )";
+             if(!empty($requestData['eventId'])){ // Not for remove from queue.
+                 $query[3] = "INSERT INTO `Print_Log`(
+                    `Devotee_Key`,
+                    `Event_Id`,
+                    `Print_Requested_By_User`,
+                    `Print_Date_Time`
+                )
+                VALUES(" . $Devotee_Key . ",'".$requestData['eventId']."','Admin',NOW())";
+             }      
+             
         }
         $res['status'] = true;
         $res['message'] = "";

@@ -69,7 +69,7 @@ $eventId = $config_data['event_id'];
                     $.ajax({
                         url: '<?=$config_data['webroot']?>Logic/requestManager.php',
                         type: 'POST',
-                        data: {'devotee_key': printString.substr(0, printString.length - 1), 'requestType': "removeFromPrintQueue"},
+                        data: {'devotee_key': printString.substr(0, printString.length - 1), 'requestType': "removeFromPrintQueue",'eventId':'<?= $eventId;?>'},
                         async: false,
                         success: function (response) {
 
