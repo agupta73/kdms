@@ -502,6 +502,8 @@ function update_form(response_data) {
     form_fields['ocr_form_devotee_zip'].parentNode.classList.add('is-filled');
     form_fields['ocr_form_devotee_country'].value = address_array['country'];
     form_fields['ocr_form_devotee_country'].parentNode.classList.add('is-filled');
+    form_fields['ocr_form_devotee_cell_number'].value = "",
+    form_fields['ocr_form_devotee_cell_number'].parentNode.classList.remove('is-filled');
 }
 
 function set_image(base64_image_data, image_name) {
