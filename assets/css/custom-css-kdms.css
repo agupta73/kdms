@@ -445,6 +445,9 @@ th.assign-devotees {
 		top: 50px;
 		display: block;
 	}
+	.mobile-image-devotee-photo {
+		display: block;
+	}
 }
 /* ipad */
 @media (min-width: 992px) {
@@ -479,6 +482,9 @@ th.assign-devotees {
 	.ocr-reader-panel-message {
 		display: none;
 	}
+	.mobile-image-devotee-photo {
+		display: none;
+	}
 }
 /* desktop or laptop */
 @media (min-width: 1504px) {
@@ -509,6 +515,9 @@ th.assign-devotees {
 		display: block;
 	}
 	.ocr-reader-panel-message {
+		display: none;
+	}
+	.mobile-image-devotee-photo {
 		display: none;
 	}
 }
