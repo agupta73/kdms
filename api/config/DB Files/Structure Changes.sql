@@ -235,3 +235,12 @@ CREATE TABLE `card_print_archive` (
   `Print_Requested_By_User` varchar(10) DEFAULT NULL,
   UNIQUE KEY `UniqueDevoteeStatus` (`Devotee_Key`,`Print_Status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- Create print_log table
+-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CREATE TABLE `print_log` (
+  `Devotee_Key` varchar(10) NOT NULL,
+  `Event_Id` varchar(45) DEFAULT NULL,
+  `Print_Requested_By_User` varchar(10) DEFAULT NULL,
+  `Print_Date_Time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
