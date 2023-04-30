@@ -243,4 +243,4 @@ CREATE TABLE `print_log` (
   `Event_Id` varchar(45) DEFAULT NULL,
   `Print_Requested_By_User` varchar(10) DEFAULT NULL,
   `Print_Date_Time` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) 
