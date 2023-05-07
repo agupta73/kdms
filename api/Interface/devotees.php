@@ -171,6 +171,8 @@ Class Devotee {
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
                     ", d.devotee_station " .
+                    ", d.Devotee_ID_Type " .
+                    ", d.Devotee_ID_Number " .
                  "from " .
                     " Devotee d ".
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
