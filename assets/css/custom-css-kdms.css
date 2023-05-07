@@ -436,6 +436,18 @@ th.assign-devotees {
 	.system-camera-layout {
 		display: none;
 	}
+	.ocr-reader-panel {
+		display: none;
+	}
+	.ocr-reader-panel-message {
+		position: absolute;
+		padding: 10px;
+		top: 50px;
+		display: block;
+	}
+	.mobile-image-devotee-photo {
+		display: block;
+	}
 }
 /* ipad */
 @media (min-width: 992px) {
@@ -464,6 +476,15 @@ th.assign-devotees {
 	.system-camera-layout {
 		display: block;
 	}
+	.ocr-reader-panel {
+		display: block;
+	}
+	.ocr-reader-panel-message {
+		display: none;
+	}
+	.mobile-image-devotee-photo {
+		display: none;
+	}
 }
 /* desktop or laptop */
 @media (min-width: 1504px) {
@@ -489,6 +510,15 @@ th.assign-devotees {
 	}
 	.videoliveplay-right {
 		text-align:left;
+	}
+	.ocr-reader-panel {
+		display: block;
+	}
+	.ocr-reader-panel-message {
+		display: none;
+	}
+	.mobile-image-devotee-photo {
+		display: none;
 	}
 }
 

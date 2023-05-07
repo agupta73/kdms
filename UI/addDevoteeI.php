@@ -596,7 +596,7 @@ $debug = false  ;
                                     <!-- end of camera image -->
                                 </div>
 
-                                <div class="card card-profile">
+                                <div class="card card-profile mobile-image-devotee-photo">
                                     <label class="cameraFileInput" for="cameraMobilePhotoFileInput">
                                         <div class="card-body" id="photo-mobile-preview_div">
                                             <?php

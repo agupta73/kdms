@@ -17,9 +17,10 @@ $eventId = $config_data['event_id'];
 </head>
 
 <body class="">
-    <div class="wrapper ">
+    <div class="wrapper">
         <?php include_once("nav.php"); ?>
-        <div class="main-panel">
+        <h3 class="ocr-reader-panel-message">Unfortunately, OCR Reader View is not available on mobile devices. Please access it from a desktop or tablet view instead.</h3>
+        <div class="main-panel ocr-reader-panel">
             <div id="loading">
                 <img id="loading-image" src="loader.gif" alt="Loading..." />
             </div>
