@@ -1413,16 +1413,24 @@ Class Devotee {
                     (select devotee_key from card_print_archive order by print_requested_date_time limit 25) tmp 
                     )";
              if(!empty($requestData['eventId'])){ // Not for remove from queue.
+                 $all_devotees= explode(",",$Devotee_Key);
+                 $values_ary=[];
+                 foreach($all_devotees as $dvKey){
+                     $values_ary[]="(".$dvKey.",'".$requestData['eventId']."','Admin',NOW())";
+                 }
+                 $values_ary= implode(",",$values_ary);
                  $query[3] = "INSERT INTO `Print_Log`(
                     `Devotee_Key`,
                     `Event_Id`,
                     `Print_Requested_By_User`,
                     `Print_Date_Time`
                 )
-                VALUES(" . $Devotee_Key . ",'".$requestData['eventId']."','Admin',NOW())";
+                VALUES" .$values_ary;
              }      
              
         }
+        //echo "<pre>";
+       // print_r($query);
         $res['status'] = true;
         $res['message'] = "";
         $res['info'] = $Devotee_Key;
