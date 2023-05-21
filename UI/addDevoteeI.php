@@ -353,7 +353,7 @@ $debug = false  ;
                                                 <div class="col-md-3">
                                                     <div class="form-group" style="margin-top:62px;">
                                                         <label class="bmd-label-floating">Email</label>
-                                                        <input type="text" class="form-control" name="devotee_email" id="devotee_email" value="<?php print_r($devotee_email); ?>">
+                                                        <input type="text" class="form-control" name="devotee_email" id="devotee_email" maxlength="44" value="<?php print_r($devotee_email); ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -470,20 +470,20 @@ $debug = false  ;
                                                 <div class="col-md-4">
                                                     <div class="form-group" >
                                                         <label class="bmd-label-floating">Address Line 1</label>
-                                                        <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" value="<?php print_r($devotee_address_1); ?>">
+                                                        <input type="text" class="form-control" name="devotee_address_1" id="devotee_address_1" maxlength="99" value="<?php print_r($devotee_address_1); ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Address Line 2</label>
 
-                                                        <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" value="<?php print_r($devotee_address_2); ?>">
+                                                        <input type="text" class="form-control" name="devotee_address_2" id="devotee_address_2" maxlength="99" value="<?php print_r($devotee_address_2); ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">City / Station</label>
-                                                        <input type="text" class="form-control" name="devotee_station" id="devotee_station" value="<?php print_r($devotee_station); ?>">
+                                                        <input type="text" class="form-control" name="devotee_station" id="devotee_station" maxlength="99" value="<?php print_r($devotee_station); ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -491,7 +491,7 @@ $debug = false  ;
                                                 <div class="col-md-4">
                                                     <div class="form-group" >
                                                         <label class="bmd-label-floating">State</label>
-                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" value="<?php print_r($devotee_state); ?>">
+                                                        <input type="text" class="form-control" name="devotee_state" id="devotee_state" maxlength="24" value="<?php print_r($devotee_state); ?>">
                                                     </div>
                                                 </div>
 
