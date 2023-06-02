@@ -117,6 +117,8 @@ function render_matched_records(response_data) {
         let name = response_data[i]['Devotee_Name'];
         let cell_phone_number = response_data[i]['devotee_cell_phone_number'];
         let station = response_data[i]['devotee_station'];
+        let id_type = response_data[i]['Devotee_ID_Type'];
+        let id_number = response_data[i]['Devotee_ID_Number'];
         let status = response_data[i]['devotee_status'];
         let devotee_photo = response_data[i]['Devotee_Photo'];
 
@@ -133,6 +135,8 @@ function render_matched_records(response_data) {
                 </td>
                 <td>${key}</td>'
                 <td>${name}</td>
+                <td>${id_type}</td>
+                <td>${id_number}</td>
                 <td>${cell_phone_number}</td>
                 <td>${station}</td>
                 <td>${status}</td>
