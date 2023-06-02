@@ -54,6 +54,7 @@ class clsAdminTasks {
         //open connection
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         if ($is_post) {
             curl_setopt($ch, CURLOPT_POST, count($post_fields));
         } else {

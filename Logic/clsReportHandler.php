@@ -70,6 +70,7 @@ class clsReportHandler {
 
         if($this->debug){echo "<br> url: ", $url, "<br>";}
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $ch, CURLOPT_AUTOREFERER, TRUE );
 //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);     
