@@ -532,7 +532,7 @@ $debug = false  ;
                                                 $flagp=-1;
                                                 $pcount=0;
                                                 $classBtn="btn-success";
-                                                if(!empty($response['print_count'])&& $response['print_count']>1){
+                                                if(!empty($response['print_count'])&& $response['print_count']>=1){
                                                     $flagp=-2;
                                                     $pcount=$response['print_count'];
                                                     $classBtn="btn-danger";
