@@ -4,7 +4,8 @@ class Database
 {
 
     private $host = "KainchiDell:3306";
-    private $db_name = "kdms2023";
+    //private $host = "192.168.0.100:3306";
+    private $db_name = "kdms";
     private $inv_db_name = 'kinv2023';
     //private $db_name = "kdms_gold";
     //private $inv_db_name = 'kinv_gold';
