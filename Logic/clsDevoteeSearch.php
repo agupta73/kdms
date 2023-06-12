@@ -65,6 +65,7 @@ private $debug = false;
         $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
         if($this->debug){return  $url; die;}
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
        

@@ -212,6 +212,13 @@ function upsert_devotee_record(
         devotee_country: devotee_country,
         devotee_cell_phone_number: devotee_cell_number
     }
+
+    for (let key in request_data) {
+        if (!request_data[key]) {
+            delete request_data[key];
+        }
+    }
+
     if (is_update){
         request_data['devotee_key']=devotee_key;
     }

@@ -9,6 +9,11 @@ class Database
     private $inv_db_name = 'kinv2023';
     //private $db_name = "kdms_gold";
     //private $inv_db_name = 'kinv_gold';
+    //private $host = "localhost";
+    //private $db_name = "kdms2023";
+    //private $inv_db_name = 'kinv2023';
+    //private $db_name = "kdms_gold";
+    //private $inv_db_name = 'kinv_gold';
 
     private $username = "kdms";
     private $password = "kdms";

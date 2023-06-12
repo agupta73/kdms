@@ -240,15 +240,13 @@ $debug = false;
                             </td>
                         </tr>
                     </table>
-                    <br>
                     <label style="font-size:9px; text-align:center; width:300px;">This card is not valid after
                         <?php echo $_SESSION['eventDesc']; ?>
                     </label>
                 </table>
             </div>
         </div>
-        <br>
-        <br>
+        <div style="margin-bottom:7px;"></div>
         <?php }
             }
         } ?>

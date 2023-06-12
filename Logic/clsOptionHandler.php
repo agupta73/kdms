@@ -98,6 +98,7 @@ class clsOptionHandler {
     public function upsertOptionRecord($url, $post_fields = null) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
 
         curl_setopt($ch, CURLOPT_POST, count($post_fields));
 
@@ -120,6 +121,7 @@ class clsOptionHandler {
         $ch = curl_init();
         $this->url = $this->url . "?option_type=" . $optionType . "&key=" . $optionKey . "&eventId=" . $eventId;
         curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
         if ($optionType != "RefreshAcco" && $optionType != "RefreshSeva") {
