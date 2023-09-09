@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/default.conf
+    depends_on:
+      - php
+    networks:
+      - kdms_network
+
+  php:
+    image: php:7.4.33-apache
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    expose:
+      - 80
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html/kdms
+    networks:
+      - kdms_network
+    depends_on:
+       - mysql
+
+  mysql:
+    image: mysql:8.0.31
+    environment:
+       MYSQL_ROOT_PASSWORD: root123
+       MYSQL_DATABASE: kdms
+       MYSQL_USER: kdms_user
+       MYSQL_PASSWORD: root123
+    command: --sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./shared:/shared
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the initialization script
+    restart: always
+    networks:
+      - kdms_network
+
+networks:
+  kdms_network:
+
+volumes:
+  mysql:
+  shared:

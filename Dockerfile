@@ -9,8 +9,5 @@ RUN a2enmod rewrite
 # Set the working directory to /var/www/html/kdms
 WORKDIR /var/www/html/kdms
 
-# Copy your PHP application files into the container (if you have any)
-# COPY . /var/www/html/kdms
-
 # Start the Apache web server
 CMD ["apache2-foreground"]
