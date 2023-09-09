@@ -1,27 +1,13 @@
-FROM  ubuntu
+FROM php:7.4.33-apache
 
-WORKDIR /var/www/html
+# Install the MySQL extension
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-RUN  apt-get update 
-RUN  apt-get install -y apache2 
-RUN  apt-get install nano 
-RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \  
-DEBIAN_FRONTEND=noninteractive apt-get install -y php libapache2-mod-php 
-RUN  apt install -y php-cli 
-RUN  apt install -y php-cgi 
-RUN  apt install -y php-mysql
-RUN  apt-get install -y systemctl
-#RUN  systemctl restart apache2.service
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# Enable Apache modules
+RUN a2enmod rewrite
 
-COPY . /var/www/html/kdms
-COPY entrypoint.sh /sbin/entrypoint.sh
+# Set the working directory to /var/www/html/kdms
+WORKDIR /var/www/html/kdms
 
-RUN  systemctl restart apache2.service
-
-EXPOSE 80/tcp 
-EXPOSE 443/tcp
-
-
-# By default, simply start apache.
-CMD ["/sbin/entrypoint.sh"]
+# Start the Apache web server
+CMD ["apache2-foreground"]

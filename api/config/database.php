@@ -3,7 +3,7 @@
 class Database
 {
 
-    private $host = "KainchiDell:3306";
+    private $host = "mysql";
     //private $host = "192.168.0.100:3306";
     private $db_name = "kdms";
     private $inv_db_name = 'kinv2023';
@@ -15,8 +15,8 @@ class Database
     //private $db_name = "kdms_gold";
     //private $inv_db_name = 'kinv_gold';
 
-    private $username = "kdms";
-    private $password = "kdms";
+    private $username = "kdms_user";
+    private $password = "root123";
     public $conn;
 
     // get the database connection
