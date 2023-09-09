@@ -23,32 +23,32 @@ services:
       - .:/var/www/html/kdms
     networks:
       - kdms_network
-    depends_on:
-       - mysql
+    # depends_on:
+    #    - mysql
 
-  mysql:
-    image: mysql:8.0.31
-    environment:
-       MYSQL_ROOT_PASSWORD: root123
-       MYSQL_DATABASE: kdms
-       MYSQL_USER: kdms_user
-       MYSQL_PASSWORD: root123
-    command: --sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
-    expose:
-      - 3306
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./shared:/shared
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the initialization script
-    restart: always
-    networks:
-      - kdms_network
+  # mysql:
+  #   image: mysql:8.0.31
+  #   environment:
+  #      MYSQL_ROOT_PASSWORD: root123
+  #      MYSQL_DATABASE: kdms
+  #      MYSQL_USER: kdms_user
+  #      MYSQL_PASSWORD: root123
+  #   command: --sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+  #   expose:
+  #     - 3306
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - ./mysql/data:/var/lib/mysql
+  #     - ./shared:/shared
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the initialization script
+  #   restart: always
+  #   networks:
+  #     - kdms_network
 
 networks:
   kdms_network:
 
 volumes:
-  mysql:
+  # mysql:
   shared:
