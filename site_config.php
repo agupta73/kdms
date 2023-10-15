@@ -4,7 +4,7 @@
 $directoryName = "kdms"; //name of main folder
 $directory_seprator = '/';
 $protocol = 'http://';
-//---------------------------------------
+//---------------------------------------//---------------------------------------
 // Don't change here
 
 $host = $_SERVER['HTTP_HOST'] . $directory_seprator;
