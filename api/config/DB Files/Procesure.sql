@@ -265,7 +265,7 @@ BEGIN
     WHERE  aa.amenity_key is null;
     
     -- Call refresh seva counts procedure to true up the counts
-	CALL `PROC_REFRESH_AMENITY_COUNT`(p_Event_ID);
+	CALL `PROC_REFRESH_AMENITIES_COUNT`(p_Event_ID);
 
     -- >>> DEBUG block
        IF DEBUG THEN

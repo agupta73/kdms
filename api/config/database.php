@@ -5,7 +5,7 @@ class Database
 
     //private $host = "mysql";
     private $host = "anil_dell:3306";
-    private $db_name = "kdms_2023";
+    private $db_name = "kdms_2024_test";
     private $inv_db_name = 'kinv2023';
     //private $db_name = "kdms_gold";
     //private $inv_db_name = 'kinv_gold';
