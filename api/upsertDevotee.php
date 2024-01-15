@@ -14,7 +14,8 @@ $res = array();
 $response = array('flag' => false, 'message' => "Request failed", 'info' => $requestData);
 
 if ($debug) {
-    var_dump($requestData);
+    var_dump($_POST);
+    var_dump($requestData); die;
 }
 
 if (!empty($requestData['requestType'])) {
@@ -45,6 +46,17 @@ if (!empty($requestData['requestType'])) {
             }
             break;
 
+        case "deleteDevotee":
+            if ($debug) {
+                var_dump($requestData);
+            }
+            $res = $devotee->deleteDevoteeRecord($requestData);
+            if ($debug) {
+                echo "from delete devotee record, after calling deleteDevoteeRecord ";
+                var_dump($res);
+            }
+            break;
+            
         case "upsertRemark":
             if ($debug) {
                 echo "from upsert devotee remark php, BEFORE calling upsertDevoteeRemark ";
