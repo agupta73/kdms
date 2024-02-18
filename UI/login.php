@@ -178,6 +178,5 @@ if (!empty($requestData['loginID'])) {
       <?php
       include_once("scriptJS.php") ?>
 </body>
-
-
 </html>
+
