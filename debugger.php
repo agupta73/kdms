@@ -11,7 +11,8 @@ try {
 }
 //---------------------------------------------------------
 /*
-For Linux only
+ * 
+Enable this function For Linux only, Use only if you want to change camelcase of table name 
  *  */
 //convertTablesToCamelcase($con);
 //die;
@@ -28,9 +29,12 @@ if ((strpos($browser, 'Ubuntu') >= 0)) {
         echo "If yes , Please check if it is in Camelcase.Table refrences in All Store procedures, are in Camel case";
         die;
     } else {
-        echo "------------------------------------------------------------Table Name OKAY---------------------------------";
+        echo "------------------------------------------------------------Table Name OKAY---------------------------------<br />";
     }
 }
+echo "------------------------------------------------------------Event Setting--------------------------------<br />";
+include_once 'site_config.php';
+echo "Current event ID is ".$event_id." Please check Event_Master table. Make single event as \"current\" and change same in site_config.php ";
 /*
  *  Convert table name to camelcase
  */
