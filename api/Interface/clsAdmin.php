@@ -95,8 +95,8 @@ class clsAdmin
                     , um.User_Email
                     , um.User_Phone
                     , IFNULL(GROUP_CONCAT(ua.asset_key SEPARATOR ',' ), '') as Access
-                FROM user_master um 
-                LEFT OUTER JOIN user_access ua ON (um.user_key = ua.user_role_key OR um.user_role = ua.user_role_key) AND ua.access_value <> 'NONE' AND ua.access_value IS NOT NULL
+                FROM User_Master um 
+                LEFT OUTER JOIN User_Access ua ON (um.user_key = ua.user_role_key OR um.user_role = ua.user_role_key) AND ua.access_value <> 'NONE' AND ua.access_value IS NOT NULL
                 WHERE  um.User_Key = '" . $userID . "' AND um.User_Password = '" . $password . "'
                 GROUP BY um.user_role, um.user_key ";
 
