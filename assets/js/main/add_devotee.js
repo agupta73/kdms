@@ -9,7 +9,7 @@ function saveFormData(formId, flag) {
     var updateSuccess = false;
     if (validateInput()) {
         jQuery.ajax({
-            url: '/KDMS/Logic/requestManager.php',
+            url: '/'+directoryName+'/Logic/requestManager.php',
             type: 'POST',
             data: formData,
             async: false,

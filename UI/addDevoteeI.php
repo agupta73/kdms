@@ -180,6 +180,7 @@ $debug = false  ;
         }
     ?>
     <script src="../assets/js/main/add_devotee.js"></script>
+    <script> var directoryName = '<?=$directoryName;?>'</script>
 </head>
 <body class="">
     <link href="../assets/demo/demo.css" rel="stylesheet" />
