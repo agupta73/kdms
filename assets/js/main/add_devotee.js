@@ -1,10 +1,19 @@
 function _(el) {
     return document.getElementById(el);
 }
+var newDevotee ={};
 
 //javascript function for ajax call
 function saveFormData(formId, flag) {
     var r =null; // so that we can access it outside .ajax();
+    // Check if current devotee's data already saved.
+    if (dataSaved) {
+        if (!duplicateEntryBlocker(2)) {
+            alert("Devotee record already added!"); 
+            return false;
+        }
+        
+    } 
     var formData = jQuery(formId).serialize();
     var updateSuccess = false;
     if (validateInput()) {
@@ -20,6 +29,8 @@ function saveFormData(formId, flag) {
 
                 if (r['flag'] == true) {
                     updateSuccess = true;
+                    dataSaved = true;
+                    duplicateEntryBlocker(1);
                 } else {
                     alert(r['message']);
                     updateSuccess = false;
@@ -71,6 +82,30 @@ function saveFormData(formId, flag) {
             window.location.assign("/KDMS/UI/index.php");
         }
     }
+}
+
+function duplicateEntryBlocker(step) {
+        var first_name = jQuery('#devotee_first_name').val();
+        var last_name = jQuery('#devotee_last_name').val();
+        var dob = jQuery('#devotee_dob').val();
+        var id_number = jQuery('#devotee_id_number').val();
+        var phone_number = jQuery('#devotee_cell_phone_number').val();
+        var station = jQuery('#devotee_station').val();
+        
+    if (step == 1) {
+        newDevotee.first_name = first_name;
+        newDevotee.last_name = last_name;
+        newDevotee.dob = dob;
+        newDevotee.id_number = id_number;
+        newDevotee.phone_number = phone_number;
+        newDevotee.station = station;
+    } else if (step == 2) {
+        if (newDevotee.first_name == first_name && newDevotee.last_name == last_name && newDevotee.dob == dob
+              && newDevotee.id_number == id_number && newDevotee.phone_number == phone_number && newDevotee.station == station) {
+              return false; 
+        }
+    }
+    return true;
 }
 function validateInput() {
     var response = true;

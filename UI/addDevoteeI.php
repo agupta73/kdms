@@ -180,7 +180,10 @@ $debug = false  ;
         }
     ?>
     <script src="../assets/js/main/add_devotee.js"></script>
-    <script> var directoryName = '<?=$directoryName;?>'</script>
+    <script>
+        var directoryName = '<?=$directoryName;?>';
+        var dataSaved = false;
+    </script>
 </head>
 <body class="">
     <link href="../assets/demo/demo.css" rel="stylesheet" />
@@ -291,7 +294,7 @@ $debug = false  ;
                                                 <div class="col-md-3"style="margin-top:36px;">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Date of Birth</label>
-                                                        <input type="text" class="form-control" name="devotee_dob" id="devotee_dob" value="<?php print_r($devotee_dob); ?>">
+                                                        <input type="text" class="form-control" name="devotee_dob" title="yyyy-mm-dd" id="devotee_dob" value="<?php print_r($devotee_dob); ?>">
                                                         
                                                     </div>
                                                 </div>
