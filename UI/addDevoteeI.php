@@ -542,11 +542,9 @@ $debug = false  ;
                                                     $classBtn="btn-danger";
                                                 }
                                             ?>
-                                            <button type="button" data-pcount="<?=$pcount;?>" class="btn <?=$classBtn;?> btn-sgc pull-right" onclick="saveFormData('#myForm', <?= $flagp?>);
-                                                    return false;">Save and Generate Card <?=$print_count_txt;?></button>
+                                            <button type="button" data-pcount="<?=$pcount;?>" class="btn <?=$classBtn;?> btn-sgc pull-right" onclick="saveFormData('#myForm', <?= $flagp?>); return false;">Save and Generate Card <?=$print_count_txt;?></button>
                                             <?php } ?>
-                                            <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1);
-                                                    return false;" >Save</button>
+                                            <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 1); return false;" >Save</button>
                                         </form>
                                         <div class="clearfix"></div>
                                     </div>
