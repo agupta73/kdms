@@ -166,14 +166,19 @@
                 data: {image: dataUrl, api_type: 3}
             }).done(function (data) {
                 data = $.parseJSON(data);
-                var newId = data.message;
-                var url = window.location.href;
-                url = url + '?devotee_key=' + newId;
-                alert('Image uploaded to new Devotee record!!');
-                window.history.pushState('devotee', 'AddDevotee', url);
-                let image_tag = document.getElementById('photo2');
-                image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
-                // window.location = url;
+                if (data.status==true) {
+                    var newId = data.message;
+                    var url = window.location.href;
+                    url = url + '?devotee_key=' + newId;
+                    $('#devotee_key').val(newId);
+                    alert('Image uploaded to new Devotee record!!');
+                    window.history.pushState('devotee', 'AddDevotee', url);
+                    let image_tag = document.getElementById('photo2');
+                    image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
+                    // window.location = url;                 
+                } else {
+                    alert('Error while image uploade !!');                    
+                }
             });
         }
     }
