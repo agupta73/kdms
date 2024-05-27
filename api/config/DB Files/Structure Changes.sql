@@ -244,3 +244,25 @@ CREATE TABLE `print_log` (
   `Print_Requested_By_User` varchar(10) DEFAULT NULL,
   `Print_Date_Time` datetime DEFAULT NULL
 ) 
+
+-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- Create Indexes
+-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ALTER TABLE `devotee_seva` 
+ADD INDEX `idx_devotee_seva_Devotee_Key` (`Devotee_Key` ASC, `Seva_Event` ASC,  `Seva_Status` ASC) VISIBLE;
+
+ALTER TABLE `devotee_attendance` 
+ADD INDEX `idx_devotee_attendance` (`seva_id` ASC, `attendance_date` ASC) VISIBLE;
+
+ALTER TABLE `devotee_accomodation` 
+ADD INDEX `idx_devotee_accommodation_rpt` (`Accommodation_Event` ASC, `Devotee_Key` ASC, `Accomodation_Status` ASC) VISIBLE;
+ALTER TABLE .`devotee_accomodation` ALTER INDEX `IndexUniqueDevoteeAccomodation` VISIBLE;
+
+ALTER TABLE `devotee_remarks` 
+ADD INDEX `idx_devotee_remark_rpt` (`remark_event` ASC, `devotee_key` ASC) VISIBLE;
+;
+ALTER TABLE .`devotee_amenities_allocation` 
+ADD INDEX `idx_devotee_amenities_allocation_rpt` (`Allocation_Event` ASC, `Devotee_Key` ASC) VISIBLE;
+
+
+
