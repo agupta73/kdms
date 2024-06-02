@@ -248,6 +248,7 @@ CREATE TABLE `print_log` (
 -- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- Create Indexes
 -- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 ALTER TABLE `devotee_seva` 
 ADD INDEX `idx_devotee_seva_Devotee_Key` (`Devotee_Key` ASC, `Seva_Event` ASC,  `Seva_Status` ASC) VISIBLE;
 
@@ -256,13 +257,28 @@ ADD INDEX `idx_devotee_attendance` (`seva_id` ASC, `attendance_date` ASC) VISIBL
 
 ALTER TABLE `devotee_accomodation` 
 ADD INDEX `idx_devotee_accommodation_rpt` (`Accommodation_Event` ASC, `Devotee_Key` ASC, `Accomodation_Status` ASC) VISIBLE;
-ALTER TABLE .`devotee_accomodation` ALTER INDEX `IndexUniqueDevoteeAccomodation` VISIBLE;
+ALTER TABLE `devotee_accomodation` ALTER INDEX `IndexUniqueDevoteeAccomodation` VISIBLE;
 
 ALTER TABLE `devotee_remarks` 
 ADD INDEX `idx_devotee_remark_rpt` (`remark_event` ASC, `devotee_key` ASC) VISIBLE;
 ;
-ALTER TABLE .`devotee_amenities_allocation` 
+ALTER TABLE `devotee_amenities_allocation` 
 ADD INDEX `idx_devotee_amenities_allocation_rpt` (`Allocation_Event` ASC, `Devotee_Key` ASC) VISIBLE;
+
+ALTER TABLE Devotee_Photo ADD INDEX (Devotee_Key);
+
+ALTER TABLE Devotee_Seva ADD INDEX (Devotee_Key, Seva_Event, Seva_Status, Seva_id);
+
+ALTER TABLE Devotee_Attendance ADD INDEX (devotee_key, seva_id, attendance_date);
+
+-- Index on duty_location_master.duty_location_key (assuming this is used in the WHERE clause)
+ALTER TABLE duty_location_master ADD INDEX (duty_location_key);
+
+-- Index on office_duty.duty_event (assuming you frequently filter by event)
+ALTER TABLE office_duty ADD INDEX (duty_event);
+
+-- Index on office_duty.Duty_Location_Key (used for JOIN with duty_location_master)
+ALTER TABLE office_duty ADD INDEX (Duty_Location_Key);
 
 
 
