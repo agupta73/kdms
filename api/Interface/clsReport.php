@@ -173,17 +173,17 @@ class clsReport {
         $query[4] = "SELECT sum(acco.allocated_Count) as DevoteesWithOwnArrangements FROM `Accommodation_Availability` acco WHERE acco.available_count > 1000";
 
         //6. Total mature devotees (12 years or older))
-        $query[5] = "SELECT count(dm.devotee_key) as MatureDevotee FROM `Devotee_Accomodation` acco
+        $query[5] = "SELECT count(distinct dm.devotee_key) as MatureDevotee FROM `Devotee_Accomodation` acco
                         LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),devotee_dob)), '%Y') + 0) < 60 
                     WHERE  acco.accomodation_status = 'Allocated' ";
 
         //7. Total Senior devotees (60 Years or Older)
-        $query[6] = "SELECT count(dm.devotee_key) as SeniorDevotee FROM `Devotee_Accomodation` acco
+        $query[6] = "SELECT count(distinct dm.devotee_key) as SeniorDevotee FROM `Devotee_Accomodation` acco
                         LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),devotee_dob)), '%Y') + 0) >= 60 
                     WHERE  acco.accomodation_status = 'Allocated' AND dm.devotee_key IS NOT NULL ";
 
         //8. Total Male and female devotees
-        $query[7] = "SELECT count(dm.devotee_key) as MaleDevotee, count(df.devotee_key) as FemaleDevotee, count(du.devotee_key) as UnknownGender FROM `Devotee_Accomodation` acco
+        $query[7] = "SELECT count(distinct dm.devotee_key) as MaleDevotee, count(df.devotee_key) as FemaleDevotee, count(du.devotee_key) as UnknownGender FROM `Devotee_Accomodation` acco
                         LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND dm.devotee_gender = 'M'
                         LEFT OUTER JOIN `Devotee` df ON acco.devotee_key = df.devotee_key AND df.devotee_gender = 'F'
                         LEFT OUTER JOIN `Devotee` du ON acco.devotee_key = du.devotee_key AND (du.devotee_gender = '' OR du.devotee_gender is null)
