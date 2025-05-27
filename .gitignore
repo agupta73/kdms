@@ -1,4 +1,5 @@
 /nbproject/*
+/Lib/*
 nbproject/private/private.xml
 api/config/database.php
 
@@ -6,3 +7,4 @@ Kainchi_Workspace.code-workspace
 api/config/database.php
 api/config/database.php
 api/config/database.php
+Lib/phpexcel/*
