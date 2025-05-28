@@ -40,7 +40,7 @@ function saveFormData(formId, flag) {
         //Save and stay on the record
         if (flag == 1 && updateSuccess) {
             alert("Devotee record updated successfully!");                        
-            // window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
+            window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
         }
         var check =false;
         if(flag== -2){
@@ -68,7 +68,9 @@ function saveFormData(formId, flag) {
 
                     if (r['flag'] == true) {
                         alert("Devotee Record updated and card added to Print Queue!");
-                        // window.location.assign("/KDMS/UI/devoteeSearchResult.php?mode=SET&key=CTP");
+                        //window.location.assign("/KDMS/UI/devoteeSearchResult.php?mode=SET&key=CTP");
+                        //window.location.assign("/KDMS/UI/addDevoteeI.php");
+                        window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
                     } else {
                         alert(r['message']);
                         updateSuccess = false;
