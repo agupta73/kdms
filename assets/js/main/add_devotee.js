@@ -30,6 +30,7 @@ function saveFormData(formId, flag) {
                 if (r['flag'] == true) {
                     updateSuccess = true;
                     dataSaved = true;
+                    document.getElementById("devotee_key").value = r['info'];
                     duplicateEntryBlocker(1);
                 } else {
                     alert(r['message']);
@@ -56,11 +57,13 @@ function saveFormData(formId, flag) {
         }
         //save and Print
         if (flag == -1 && updateSuccess) {
-            console.log("calling ajax;");   
+            console.log("calling ajax to add devotee card. ;");   
+            console.log('devotee_key' + r['info'] + 'requestType'+ "addToPrintQueue");
             $.ajax({
                 url: '/KDMS/Logic/requestManager.php',
                 type: 'POST',
-                data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
+                //data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
+                data: {'devotee_key': r['info'], 'requestType': "addToPrintQueue"},
                 async: false,
                 success: function (response) {
 
