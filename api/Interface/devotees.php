@@ -1460,6 +1460,7 @@ Class Devotee {
         $query = array();   
         $Devotee_Key = '';
         $eventId = ''; 
+        $registrationOnly = false;
 
         if (empty($requestData['devotee_key'])) {
             $errormsg .= " Devotee Key is missing.";
@@ -1477,6 +1478,96 @@ Class Devotee {
             $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
         }
    
+        // Only delete registration, not the full devotee record?
+        if (!empty($requestData['registrationOnly'])) { 
+            $registrationOnly = htmlspecialchars(strip_tags($requestData['registrationOnly']));
+        }
+
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        if($this->debug){echo $requestData['eventId']; die;}
+        // If complete devotee information has to be deleted
+        if(!$registrationOnly){
+            $query[0] = "delete from devotee_accomodation where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[1] = "delete from devotee where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[2] = "delete from devotee_attendance where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[3] = "delete from devotee_amenities_allocation where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[4] = "delete from devotee_demographics where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[5] = "delete from devotee_id where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[6] = "delete from devotee_photo where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[7] = "delete from devotee_remarks where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[8] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[9] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[10] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "'";
+            $query[11] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "'";
+            //refresh the accommodation, amenities and seva counts in both cases
+            $query[12] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
+            $query[13] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
+            $query[14] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
+        }
+        // Otherwise, delete omly selected records, that too from the current event 
+        else {
+            $query[0] = "delete from devotee_accomodation where Devotee_Key = '" . $Devotee_Key . "' and accommodation_event = '" . $eventId . "'" ; 
+            $query[1] = "delete from devotee_attendance where Devotee_Key = '" . $Devotee_Key . "' and seva_event = '" . $eventId . "'";
+            $query[2] = "delete from devotee_amenities_allocation where Devotee_Key = '" . $Devotee_Key . "'' and allocation_event = '" . $eventId . "'";
+            $query[3] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "'' and seva_event = '" . $eventId . "'";
+            $query[4] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "'' and duty_event = '" . $eventId . "'";
+            $query[5] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "'' and duty_event = '" . $eventId . "'";
+            $query[6] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "'' and event_id = '" . $eventId . "'";
+            //refresh the accommodation, amenities and seva counts in both cases
+            $query[7] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
+            $query[8] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
+            $query[9] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
+        }
+
+        
+        $res['status'] = true;
+        $res['message'] = "";
+        $res['info'] = $Devotee_Key;
+        for ($i = 0; $i < sizeof($query); $i++) {
+            $stmt = $this->conn->prepare($query[$i]);
+            if($this->debug){var_dump($stmt);}
+            if (!$stmt->execute()) {
+                $res['status'] = false;
+                $res['message'] = "Unable to delete devotee record. Query: " . $query[$i];
+                $res['info'] = $stmt;
+            }
+        }
+        return $res;
+    }
+
+        public function old_deleteDevoteeRecord($requestData)
+    {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info'] = '';
+        $errormsg = "Error occured";
+        $status = true;
+        $query = array();   
+        $Devotee_Key = '';
+        $eventId = ''; 
+
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= " Devotee Key is missing.";
+            $status = false;
+        } else {
+            $Devotee_Key = htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+
+        // Event ID
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else {
+            $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
+
         if ($status == false) {
             $res['status'] = $status;
             $res['message'] = $errormsg;
