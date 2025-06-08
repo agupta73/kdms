@@ -1489,7 +1489,7 @@ Class Devotee {
             return $res;
         }
 
-        if($this->debug){echo $requestData['eventId']; die;}
+        if($this->debug){var_dump( $requestData);}
         // If complete devotee information has to be deleted
         if(!$registrationOnly){
             $query[0] = "delete from devotee_accomodation where Devotee_Key = '" . $Devotee_Key . "'";
@@ -1513,11 +1513,11 @@ Class Devotee {
         else {
             $query[0] = "delete from devotee_accomodation where Devotee_Key = '" . $Devotee_Key . "' and accommodation_event = '" . $eventId . "'" ; 
             $query[1] = "delete from devotee_attendance where Devotee_Key = '" . $Devotee_Key . "' and seva_event = '" . $eventId . "'";
-            $query[2] = "delete from devotee_amenities_allocation where Devotee_Key = '" . $Devotee_Key . "'' and allocation_event = '" . $eventId . "'";
-            $query[3] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "'' and seva_event = '" . $eventId . "'";
-            $query[4] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "'' and duty_event = '" . $eventId . "'";
-            $query[5] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "'' and duty_event = '" . $eventId . "'";
-            $query[6] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "'' and event_id = '" . $eventId . "'";
+            $query[2] = "delete from devotee_amenities_allocation where Devotee_Key = '" . $Devotee_Key . "' and allocation_event = '" . $eventId . "'";
+            $query[3] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "' and seva_event = '" . $eventId . "'";
+            $query[4] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "' and duty_event = '" . $eventId . "'";
+            $query[5] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "' and duty_event = '" . $eventId . "'";
+            $query[6] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "' and event_id = '" . $eventId . "'";
             //refresh the accommodation, amenities and seva counts in both cases
             $query[7] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
             $query[8] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
@@ -1540,7 +1540,96 @@ Class Devotee {
         return $res;
     }
 
-        public function old_deleteDevoteeRecord($requestData)
+    public function registerExistingDevotee($requestData) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+        $res['info']='';
+        $errormsg = "";
+        $status = true;
+
+
+        //Devotee Key
+        if (empty($requestData['devotee_key'])) {
+            $errormsg .= "Devotee Key is missing.";
+            $status = false;
+        }
+        else{
+            $Devotee_Key=htmlspecialchars(strip_tags($requestData['devotee_key']));
+        }
+
+        //Devotee Seva ID
+        if (empty($requestData['devotee_seva_id'])){
+            $Devotee_Seva_ID="UN";
+        }
+        else {
+            $Devotee_Seva_ID=htmlspecialchars(strip_tags($requestData['devotee_seva_id']));
+        }
+        
+        //Devotee Seva Status
+        $Devotee_Seva_Status = "Assigned";
+
+        //Devotee Accommodation ID
+        if (empty($requestData['devotee_accommodation_id'])){
+            $Devotee_Accommodation_ID="0";
+        }
+        else {
+            $Devotee_Accommodation_ID=htmlspecialchars(strip_tags($requestData['devotee_accommodation_id']));
+        }
+
+        //Devotee Accommodation Status
+        $Devotee_Accomodation_Status = "Allocated";
+        
+        // Event ID
+        if (empty($requestData['eventId'])) {
+            $errormsg .= " Event ID is missing.";
+            $status = false;
+        }
+        else {
+            $eventId = htmlspecialchars(strip_tags($requestData['eventId']));
+        }
+   
+        if ($status == false) {
+            $res['status'] = $status;
+            $res['message'] = $errormsg;
+            return $res;
+        }
+
+        $devotee_record_updated_by = 'Anil'; //to be fixed userid
+        //Use replace function for insert as well as update thru stored procedure
+        $query = "CALL PROC_REGISTER_EXISTING_DEVOTEE_FOR_EVENT(";
+        $query = $query . "'" .
+            $Devotee_Key . "', '" . // `p_Devotee_Key` 
+            $Devotee_Seva_ID . "', '" . // `p_Devotee_Seva_Id` VARCHAR(6),
+            $Devotee_Seva_Status . "', '" . // `p_Devotee_Seva_Status` VARCHAR(10),
+            $Devotee_Accommodation_ID . "', '" . // `p_Devotee_Accommodation_ID` VARCHAR(10),
+            $Devotee_Accomodation_Status . "', '" . // `p_Devotee_Accomodation_Status` VARCHAR(10),
+            $devotee_record_updated_by . "', '" . // `p_devotee_record_updated_by` VARCHAR(10),
+            $eventId . "')" ; // `p_Event_ID` VARCHAR(10)
+       
+        // prepare query
+        $stmt = $this->conn->prepare($query);
+
+        if($this->debug){echo "reaching before statement execution: "; var_dump($stmt);}
+
+        if ($stmt->execute()) {
+            $res['status'] = true;
+            $res['message'] = $stmt;
+            $res['info'] = $Devotee_Key;
+        } else {
+            $res['status'] = false;
+            $res['message'] = "[Devotees] Registering Devotee Record Failed at API!!";
+            if ($this->debug) {
+                $res['info'] = $query;
+            } else {
+                $res['info'] = $stmt;
+            }
+        }
+        return $res;
+         
+    }
+
+    public function old_deleteDevoteeRecord($requestData)
     {
         $res = array();
         $res['status'] = false;

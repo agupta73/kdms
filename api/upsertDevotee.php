@@ -56,6 +56,17 @@ if (!empty($requestData['requestType'])) {
                 var_dump($res);
             }
             break;
+        
+        case "registerDevotee":
+            if ($debug) {
+                var_dump($requestData);
+            }
+            $res = $devotee->registerExistingDevotee($requestData);
+            if ($debug) {
+                echo "from register devotee record, after calling registerExistingDevotee ";
+                var_dump($res);
+            }
+            break;
             
         case "upsertRemark":
             if ($debug) {
