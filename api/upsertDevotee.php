@@ -15,7 +15,7 @@ $response = array('flag' => false, 'message' => "Request failed", 'info' => $req
 
 if ($debug) {
     var_dump($_POST);
-    var_dump($requestData); die;
+    var_dump($requestData);
 }
 
 if (!empty($requestData['requestType'])) {

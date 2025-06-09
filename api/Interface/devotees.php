@@ -13,7 +13,7 @@ Class Devotee {
     }
 
     public function search($requestData){
-
+        if($this->debug){var_dump($requestData); }
         if(!empty($requestData['mode'])){
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
@@ -146,7 +146,7 @@ Class Devotee {
         $res['message'] = '';
         $errormsg = "";
         $status = true;
-        
+        if($this->debug){ echo "request data from search devotee: ", $requestData, " event Id: ", $eventId; }
         if (empty($requestData)) {
             $errormsg .= "Set key is missing.";
             $status = false;
@@ -1516,12 +1516,11 @@ Class Devotee {
             $query[2] = "delete from devotee_amenities_allocation where Devotee_Key = '" . $Devotee_Key . "' and allocation_event = '" . $eventId . "'";
             $query[3] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "' and seva_event = '" . $eventId . "'";
             $query[4] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "' and duty_event = '" . $eventId . "'";
-            $query[5] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "' and duty_event = '" . $eventId . "'";
-            $query[6] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "' and event_id = '" . $eventId . "'";
+            $query[5] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "' and duty_event = '" . $eventId . "'";  
             //refresh the accommodation, amenities and seva counts in both cases
-            $query[7] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
-            $query[8] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
-            $query[9] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
+            $query[6] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
+            $query[7] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
+            $query[8] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
         }
 
         
