@@ -10,7 +10,7 @@ def get_headers():
 
 def resource_locator_handler(url, request_type="GET", data={}, headers={}, timeout=DEFAULT_TIMEOUT, form_data={}):
     # Send an HTTP GET request to retrieve the HTML content of the webpage
-    pdb.set_trace()
+    #pdb.set_trace()
     try:
         if request_type == "GET":
             response = requests.get(url, headers=headers, timeout=timeout)
