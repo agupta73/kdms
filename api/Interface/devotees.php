@@ -508,6 +508,7 @@ Class Devotee {
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name " .
                     ", d.devotee_station, d.devotee_status, d.devotee_cell_phone_number " .
+                    ", d.Devotee_Referral, d.Devotee_Type " .
                     ", acm.accomodation_name " .
                     ", dp.Devotee_Photo ".
                  "from " .

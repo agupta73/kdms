@@ -1,264 +1,268 @@
 <?php
 $config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE){
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
-  }
+}
 include_once("../sessionCheck.php");
-$eventId = $config_data['event_id'];
+$eventId = $config_data['event_id']; // This variable is set but not used in the provided snippet.
 $debug = false;
+
+$devotees_to_print = [];
+
+if (!empty($_GET['key'])) {
+    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+    // Assuming clsDevoteeSearch handles sanitization of $_GET['key'] internally
+    $devoteeSearch = new clsDevoteeSearch($_GET);
+    $response = $devoteeSearch->getDevoteeRecords($eventId);
+    unset($devoteeSearch);
+
+    if (!empty($response)) {
+        foreach ($response as $devoteeRecord) {
+            $get_val = function ($key, $default = "N/A") use ($devoteeRecord) {
+                return !empty($devoteeRecord[$key]) ? urldecode($devoteeRecord[$key]) : $default;
+            };
+
+            $devotee_key = $get_val('devotee_key');
+
+            // Only process if a devotee key exists
+            if ($devotee_key !== "N/A") {
+                $devotees_to_print[] = [
+                    'key'                   => $devotee_key,
+                    'first_name'            => $get_val('devotee_first_name'),
+                    'last_name'             => $get_val('devotee_last_name'),
+                    'station'               => $get_val('devotee_station'),
+                    'status'                => $get_val('devotee_status'),
+                    'devotee_type'          => $get_val('Devotee_Type'),
+                    'cell_phone_number'     => $get_val('devotee_cell_phone_number'),
+                    'devotee_referral'      => $get_val('Devotee_Referral'),
+                    'accommodation_name'    => $get_val('accomodation_name'), // Check spelling: accomodation vs accommodation
+                    'photo'                 => !empty($devoteeRecord['Devotee_Photo']) ? $devoteeRecord['Devotee_Photo'] : "",
+                ];
+            }
+        }
+    }
+}
+
+if ($debug && isset($response)) { // Check if $response is set before var_dump
+    var_dump($response);
+    // To debug processed data: var_dump($devotees_to_print);
+    die;
+}
 ?>
 <html>
-
 <head>
     <title> Card Print </title>
     <style>
-        #card {
+        body {
+            font-family: sans-serif;
+        }
+        .card-item {
             background-color: aliceblue;
             border-radius: 3px;
             border-style: double;
-            height: 190px;
+            height: 190px; /* Consider using min-height if content can vary */
             width: 315px;
+            margin-bottom: 7px;
+            page-break-inside: avoid;
         }
-
-        * {
-            font-family: sans-serif;
+        .card-item img.banner {
+            display: block; /* Prevents small gap under image */
         }
-
-        label {
+        .card-label {
             text-align: left;
             width: 70px;
-            /*display: block;*/
             float: left;
             clear: left;
-            margin-right: 0px;
-            font-weight: regular;
-            font-size: 12px
+            margin-right: 5px; /* Added some space */
+            font-weight: bold; /* Made labels bold for clarity */
+            font-size: 13px;
+            padding-top: 2px;
+        }
+        .card-data {
+            font-size: 13px;
+            vertical-align: middle;
+            padding-top: 2px; /* Align with label */
+            display: block; /* Make it take up rest of the space */
+            margin-left: 75px; /* Space for the floated label */
+            word-wrap: break-word; /* Prevent overflow */
+        }
+        .devotee-name {
+            display: block;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        .devotee-status {
+            display: block;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            font-size: 26px;
+            margin-bottom: 3px;
+        }
+        .devotee-status.blocked { color: red; }
+        .card-footer {
+            font-size: 9px;
+            text-align: center;
+            width: 100%;
+            display: block;
+            margin-top: 5px;
+        }
+        .details-row > div {
+            padding: 2px 0; /* Consistent padding for detail items */
+        }
+        /* Print-specific styles */
+        @media print {
+            body {
+                margin: 0;
+                font-family: sans-serif; /* Ensure font consistency */
+            }
+            .card-item {
+                margin-bottom: 7mm; /* Space between cards on a printed page */
+                page-break-after: auto; /* Let browser decide, or 'always' if one card per page */
+            }
+            .no-print {
+                display: none;
+            }
         }
     </style>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            printdiv();
+            // Automatically trigger print dialog if there's content to print
+            if (document.getElementById("printpage").children.length > 0 &&
+                !document.getElementById("printpage").textContent.includes("No devotee records found")) {
+                printDivContent();
+            }
         }, false);
 
-        function printdiv() {
-            //alert(document.getElementById("requestType").value());
-            //            document.getElementById("printForm").submit();
+        function printDivContent() {
+            var printContent = document.getElementById("printpage").innerHTML;
+            var pageStyles = "";
+            // Collect all style rules
+            for (let i = 0; i < document.styleSheets.length; i++) {
+                try {
+                    var rules = document.styleSheets[i].cssRules || document.styleSheets[i].rules;
+                    for (let j = 0; j < rules.length; j++) {
+                        pageStyles += rules[j].cssText + "\n";
+                    }
+                } catch (e) {
+                    // Catch potential cross-origin stylesheet errors
+                    console.warn("Could not read styles from stylesheet: " + document.styleSheets[i].href, e);
+                }
+            }
 
-            //            $.ajax({
-            //                    url:'/KDMS/Logic/requestManager.php',
-            //                    type:'POST',
-            //                    data:{'devotee_key': "<?php echo $_GET['key']; ?>", 'requestType': "removeFromPrintQueue"},
-            //                    async: false,
-            //                    success:function(response){
-            //                        alert("getting here..");
-            //                          var r = JSON.parse(response);
-            //                          
-            //                          if(r['flag'] == true){
-            //                              alert("Card removed from the printing queue!");
-            //                              window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
-            //                          }
-            //                          else{
-            //                              alert(r['message']);
-            //                              updateSuccess=false;
-            //                          }   
-            //                      }
-            //                  });   
-
-            var newstr = document.getElementById("printpage").innerHTML;
-            var header = '<header><div align="center"><h3 style="color:#EB5005"> Card Print </h3></div><br></header><hr><br>'
-
-            var popupWin = window.open('', 'blank', 'width=800px,height=700px');
+            var popupWin = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
             popupWin.document.open();
-            //popupWin.document.write('<html><body onload="window.print()">' + newstr + '</html></br>');
-            popupWin.document.write('<html><body>' + newstr + '</html></br>');
+            popupWin.document.write('<html><head><title>Print Card</title>');
+            popupWin.document.write('<style type="text/css">' + pageStyles + '</style>');
+            popupWin.document.write('</head><body onload="window.print(); window.close();">');
+            popupWin.document.write(printContent);
+            popupWin.document.write('</body></html>');
             popupWin.document.close();
-            window.close();
 
+            // Optional: Close the original window if this page is only a launcher
+            // window.close();
             return false;
-
         }
-
     </script>
 </head>
-
 <body>
 
-    <div id="printpage">
-        <?php
-        include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-        if (!empty($_GET['key'])) {
-            $devoteeSearch = new clsDevoteeSearch($_GET);
-            $response = $devoteeSearch->getDevoteeRecords($eventId);
-            unset($devoteeSearch);
-        }
-        if($debug) {var_dump($response); die;}
-        $recordCount = 0;
-        if (!empty($response)) {
-            foreach ($response as $devoteeRecord) {
-                $devotee_key = "--Unavailable--";
-                $devotee_first_name = "--Unavailable--";
-                $devotee_last_name = "--Unavailable--";
-                $devotee_station = "--Unavailable--";
-                $devotee_status = "";
-                $devotee_cell_phone_number = "--Unavailable--";
-                $accommodation_name = "--Unavailable--";
-                $devotee_photo = "";
+<div id="printpage">
+    <?php if (!empty($devotees_to_print)): ?>
+        <?php foreach ($devotees_to_print as $index => $devotee): ?>
+        <div class="card-item" id="card-<?php echo $index; ?>">
+            <img src="/kdms/assets/img/banner.png" height="35px" width="314px" alt="Banner" class="banner">
+            <div style="padding: 5px;">
+                <span class="devotee-name">
+                    <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
+                </span>
 
-                if (!empty($devoteeRecord['devotee_key'])) {
-                    $devotee_key = urldecode($devoteeRecord['devotee_key']);
-                }
+                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
+                    <span class="devotee-status" style="margin: 20px 0; margin: 20px 0;">Temporary</span>
+                    <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
+                    <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
+                    <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
+                        <div class="details-row" style="text-align: center;">
+                            <span class="card-data"
+                                  style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
+                                <?php echo htmlspecialchars($devotee['devotee_referral']); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <?php // Photo and other details are intentionally omitted for Day Visitor ?>
 
-                if (!empty($devoteeRecord['devotee_first_name'])) {
-                    $devotee_first_name = urldecode($devoteeRecord['devotee_first_name']);
-                }
-
-                if (!empty($devoteeRecord['devotee_last_name'])) {
-                    $devotee_last_name = urldecode($devoteeRecord['devotee_last_name']);
-                }
-
-                if (!empty($devoteeRecord['devotee_station'])) {
-                    $devotee_station = urldecode($devoteeRecord['devotee_station']);
-                }
-
-                if (!empty($devoteeRecord['devotee_status'])) {
-                    $devotee_status = urldecode($devoteeRecord['devotee_status']);
-                }
-
-                if (!empty($devoteeRecord['devotee_cell_phone_number'])) {
-                    $devotee_cell_phone_number = urldecode($devoteeRecord['devotee_cell_phone_number']);
-                }
-
-                if (!empty($devoteeRecord['accomodation_name'])) {
-                    $accommodation_name = urldecode($devoteeRecord['accomodation_name']);
-                }
-
-                if (!empty($devoteeRecord['Devotee_Photo'])) {
-                    $devotee_photo = $devoteeRecord['Devotee_Photo'];
-                }
-
-                if ($debug) {
-                    var_dump($devoteeRecord);
-                }
-                if ($devotee_key != "--Unavailable--") {
-                    $recordCount = $recordCount + 1;
-        ?>
-        <div id="card">
-            <span> <img src="/kdms/assets/img/banner.png" height="35px" width="314px"></span>
-            <div>
-                <table width="309px">
-                    <tr>
-                        <td>
-                            <label style="text-align:center; width:120px; font-weight:bold; font-size:20px;">
-                                <?php echo $devotee_first_name . ' ' . $devotee_last_name, ' '; ?>
-                            </label>
-                            <?php if ($devotee_status == "B") { ?>
-                            <label style="text-align:center; width:100px; font-weight:bold; font-size:25px;">
-                                <?php echo "BLOCKED"; ?>
-                            </label>
-                            <?php } ?>
-                            <?php if ($devotee_status == "D") { ?>
-                            <label style="text-align:center; width:100px; font-weight:bold; font-size:25px;">
-                                <?php echo "[Day Visit]"; ?>
-                            </label>
-                            <?php } ?>
-                        </td>
-                    </tr>
-                    <table>
+                <?php else: // Standard Card (including Blocked, etc.) ?>
+                    <table style="width:100%;">
                         <tr>
-                            <td>
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <span>
-                                                <label style="font-weight:bold; padding-top: 2px">Reg No.:</label>
-                                                <input type="text"
-                                                    style="border:none; background-color: transparent; width: 130px; vertical-align: middle"
-                                                    id="devotee_key" value=" <?php echo $devotee_key; ?> ">
-                                            </span>
-                                        </td>
-
-
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span>
-                                                <label style="font-weight:bold; padding-top: 2px">Station:</label>
-                                                <input type="text"
-                                                    style="border:none; background-color: transparent; width: 130px; vertical-align: middle"
-                                                    name="devotee_name" id="devotee_name"
-                                                    value=" <?php echo $devotee_station; ?> ">
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span>
-                                                <label style="font-weight:bold; padding-top: 2px">Staying At:</label>
-                                                <input type="text"
-                                                    style="border:none; width: 130px; background-color: transparent;   vertical-align: middle"
-                                                    id="accommodation_name"
-                                                    value=" <?php echo $accommodation_name; ?> ">
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span>
-                                                <label style="font-weight:bold; padding-top: 2px"> Mobile No:</label>
-                                                <input type="text"
-                                                    style="border:none; background-color: transparent; width: 130px; vertical-align: middle"
-                                                    id="devotee_cell_phone_number"
-                                                    value=" <?php echo $devotee_cell_phone_number; ?> ">
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span>
-                                                <label style="font-weight:bold; padding-top: 2px"> Date:</label>
-                                                <input type="text"
-                                                    style="border:none; background-color: transparent; width: 130px; vertical-align: middle"
-                                                    id="devotee_cell_phone_number"
-                                                    value=" <?php echo date('jS F Y'); ?> ">
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td>
-                                <div>
-                                    <!--<img src="../assets/img/faces/doc.png" alt="devotee ID" height="80px" width="80px">-->
-                                    <?php
-                    if ($devotee_photo == "") {
-                        print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80px" width="80px"></img>');
-                    } else {
-                        print_r('<img src="data:image/jpeg;base64,' . $devotee_photo . '" alt="devotee image" height="80px" width="80px"></img>');
-                    }
-                            ?>
+                            <td style="width:70%; vertical-align:top;">
+                                <div class="details-row">
+                                    <span class="card-label">Reg No.:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['key']); ?></span>
                                 </div>
+                                <div class="details-row">
+                                    <span class="card-label">Station:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['station']); ?></span>
+                                </div>
+                                <div class="details-row">
+                                    <span class="card-label">Staying at:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['accommodation_name']); ?></span>
+                                </div>
+                                <?php if (!empty($devotee['devotee_referral']) && $devotee['devotee_referral'] !== "N/A"): ?>
+                                <div class="details-row">
+                                    <span class="card-label">Reference:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['devotee_referral']); ?></span>
+                                </div>
+                                <?php else: ?>
+                                <div class="details-row">
+                                    <span class="card-label">Mobile No:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['cell_phone_number']); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <div class="details-row">
+                                    <span class="card-label">Date:</span>
+                                    <span class="card-data"><?php echo date('jS F Y'); ?></span>
+                                </div>
+                            </td>
+                            <td style="width:30%; text-align:center; vertical-align:top;">
+                                <?php if (empty($devotee['photo'])): ?>
+                                    <img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80px" width="80px">
+                                <?php else: ?>
+                                    <img src="data:image/jpeg;base64,<?php echo htmlspecialchars($devotee['photo']); ?>" alt="Devotee Image" height="80px" width="80px">
+                                <?php endif; ?>
                             </td>
                         </tr>
                     </table>
-                    <label style="font-size:9px; text-align:center; width:300px;">This card is not valid after
-                        <?php echo $_SESSION['eventDesc']; ?>
-                    </label>
-                </table>
+                    <?php if ($devotee['status'] == "B"): ?>
+                    <span class="devotee-status blocked">BLOCKED</span>
+                    <?php endif; ?>
+                    <span class="card-footer">
+                        This card is not valid after <?php echo isset($_SESSION['eventDesc']) ? htmlspecialchars($_SESSION['eventDesc']) : 'EVENT_END_DATE'; ?>
+                    </span>
+                <?php endif; // End of conditional card content ?>
+
             </div>
         </div>
-        <div style="margin-bottom:7px;"></div>
-        <?php }
-            }
-        } ?>
-    </div>
-    <br>
-    <a href="#" onclick="printdiv()"><button>Print </button> </a>
-    <form id="printForm" action="<?= $config_data['webroot']; ?>Logic/requestManager.php" method="POST">
-        <!--            <input type="hidden" id="requestType" value="removeFromPrintQueue"> -->
-        <!--            <input type="hidden" id="devotee_key" value=" <?php print_r($_GET); ?>">-->
-        <input type="hidden" id="devotee_key" value="Devotee_Key">
+        <?php if (count($devotees_to_print) > 1 && ($index < count($devotees_to_print) - 1)): ?>
+            <div style="page-break-after: always;" class="no-print"></div> <!-- Ensures page break for printing multiple cards -->
+        <?php endif; ?>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No devotee records found to print.</p>
+    <?php endif; ?>
+</div>
+
+<div class="no-print" style="text-align:left; margin-top:20px;">
+    <button type="button" onclick="printDivContent();">Print Cards</button>
+    <!-- The form below was part of the original code. Its purpose is unclear without the AJAX context. -->
+    <!-- If it's related to 'removeFromPrintQueue', that logic needs to be implemented, possibly via AJAX after printing. -->
+    <form id="printForm" action="<?php echo htmlspecialchars($config_data['webroot']); ?>Logic/requestManager.php" method="POST" style="display:none;">
+        <input type="hidden" name="requestType" value="removeFromPrintQueue_placeholder">
+        <input type="hidden" name="devotee_key_data" value="<?php echo htmlspecialchars($_GET['key'] ?? ''); ?>">
     </form>
+</div>
 
 </body>
-
 </html>
