@@ -174,12 +174,14 @@ Class Devotee {
                     ", d.devotee_station " .
                     ", d.Devotee_ID_Type " .
                     ", d.Devotee_ID_Number " .
+                    ", am.accomodation_name " .
                  "from " .
                     " Devotee d ".
                     " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " ;
+                        " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
+                    " left outer join Accommodation_master am on da.accomodation_key=am.accomodation_key  " ;
                     // " left outer join Devotee_Demographics dd on d.devotee_key = dd.devotee_key";
                 
         switch ($requestData){

@@ -345,6 +345,9 @@ $eventId = $config_data['event_id'];
                                                         Station
                                                     </th>
                                                     <th>
+                                                        Accommodation
+                                                    </th>
+                                                    <th>
                                                         Cell Number
                                                     </th>
                                                     <th>
@@ -367,6 +370,7 @@ if (!empty($response)) {
         $devoteeStation = "--Unavailable--";
         $devoteeStatus = "--Unavailable--";
         $devoteeCellNumber = "--Unavailable--";
+        $devoteeAccommodation = "--Unavailable--";
         $devoteePhoto = "";
         $devoteeIdImage = "";
         $devoteeID = "";
@@ -382,6 +386,10 @@ if (!empty($response)) {
 
         if (!empty($devoteeRecord['devotee_station'])) {
             $devoteeStation = urldecode($devoteeRecord['devotee_station']);
+        }
+
+        if (!empty($devoteeRecord['accomodation_name'])) {
+            $devoteeAccommodation = urldecode($devoteeRecord['accomodation_name']);
         }
 
         if (!empty($devoteeRecord['devotee_status'])) {
@@ -440,6 +448,9 @@ if (!empty($response)) {
                         </td>
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStation . "</a>
+                        </td>
+                        <td>
+                            <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeAccommodation . "</a>
                         </td>
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
