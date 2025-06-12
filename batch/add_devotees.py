@@ -78,24 +78,35 @@ def update_data(option=1):
         update_counter = 0
 
         for row_index, row in enumerate(devotee_recs):                                                         
-            #print(updates)
-            response = call_api(url, row, payload_structure )
-       
+            try:
+                if(option == '5'):
+                    devotee_key = call_api_w_response(url, row, payload_structure )
+                    print(devotee_key)
+                else:
+                    call_api(url, row, payload_structure )
+            except Exception as e:
+                print(f'Error from call API: {str(e)}, url = {url}')
+                continue
 
 def call_api(url, row, payload_structure):
     get_json(url=url, header="", data=row, payload_structure=payload_structure)
 
+def call_api_w_response(url, row, payload_structure):
+    json_data = get_json(url=url, header="", data=row, payload_structure=payload_structure)
+    return json_data["info"]
+
 def get_json(url, header, data, payload_structure):   
-    data = utilities.prepare_post_message(record=data, payload_structure=payload_structure)
+    
     
     try:
-        pdb.set_trace()
+        data = utilities.prepare_post_message(record=data, payload_structure=payload_structure)    
         response = resource_locator_handler(url=url, request_type="POST", headers=header, timeout=100, form_data=data)
         content = response['content']
         json_data = json.loads(content)
         return json_data
     except Exception as e:
         print(f'Error from get detail json: {str(e)}, url = {url}')
+        
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

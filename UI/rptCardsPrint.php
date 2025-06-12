@@ -181,17 +181,33 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                 </span>
 
                 <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
-                    <span class="devotee-status" style="margin: 20px 0; margin: 20px 0;">Temporary</span>
+                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement" && $devotee['accommodation_name'] !== "Local"): ?>
+                    <span class="devotee-status" style="margin: 20px 0; margin: 5px 0; font-size: 24px;">Temporary Accommodation for 2025</span>
+                    <?php else: ?>
+                    <span class="devotee-status" style="margin: 20px 0; margin: 5px 0;">Temporary</span>
+                    <?php endif; ?>
                     <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
-                    <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
-                    <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
-                        <div class="details-row" style="text-align: center;">
-                            <span class="card-data"
-                                  style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
-                                <?php echo htmlspecialchars($devotee['devotee_referral']); ?>
-                            </span>
+                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement" && $devotee['accommodation_name'] !== "Local"): ?>
+                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Staying at: </span>
+                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
+                            <div class="details-row" style="text-align: center;">
+                                <span class="card-data"
+                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
+                                    <?php echo htmlspecialchars($devotee['accommodation_name']); ?>
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    <?php elseif (!empty($devotee['devotee_referral']) && $devotee['devotee_referral'] !== "N/A"): ?>
+                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
+                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
+                            <div class="details-row" style="text-align: center;">
+                                <span class="card-data"
+                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
+                                    <?php echo htmlspecialchars($devotee['devotee_referral']); ?>
+                                </span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <?php // Photo and other details are intentionally omitted for Day Visitor ?>
 
                 <?php else: // Standard Card (including Blocked, etc.) ?>
