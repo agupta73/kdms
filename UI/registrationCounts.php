@@ -153,12 +153,17 @@ $totalCount = $registeredDevoteesCount;
         .total-box {
             background-color: #9c27b0;
             color: white;
-            border-radius: 8px;
-            padding: clamp(15px, 3vh, 40px) clamp(15px, 2vw, 30px);
+            border-radius: 10px;
+            padding: clamp(20px, 4vh, 50px) clamp(20px, 3vw, 40px);
             text-align: center;
-            box-shadow: 0 6px 25px rgba(156, 39, 176, 0.4);
-            margin-bottom: min(20px, 3vh);
+            box-shadow: 0 8px 30px rgba(156, 39, 176, 0.5);
+            margin-bottom: min(25px, 3.5vh);
             width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .total-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(156, 39, 176, 0.6);
         }
         .count-title {
             font-size: clamp(14px, 1.8vh, 20px);
@@ -167,10 +172,11 @@ $totalCount = $registeredDevoteesCount;
             color: #666;
         }
         .total-title {
-            font-size: clamp(18px, 2.5vh, 26px);
-            font-weight: 500;
-            margin-bottom: min(10px, 1vh);
+            font-size: clamp(20px, 3vh, 30px);
+            font-weight: 600;
+            margin-bottom: min(15px, 1.5vh);
             color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .count-value {
             font-size: clamp(20px, 3vh, 36px);
@@ -182,10 +188,11 @@ $totalCount = $registeredDevoteesCount;
             line-height: 1.1;
         }
         .total-value {
-            font-size: clamp(36px, 6vh, 62px);
+            font-size: clamp(48px, 8vh, 80px);
             font-weight: 700;
             color: #fff;
-            line-height: 1;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .percentage {
             font-size: clamp(12px, 1.5vh, 18px);
@@ -266,8 +273,8 @@ $totalCount = $registeredDevoteesCount;
                 padding: min(12px, 1.2vh) min(10px, 1vw);
             }
             .total-box {
-                margin-bottom: min(15px, 1.5vh);
-                padding: min(15px, 1.5vh) min(10px, 1vw);
+                margin-bottom: min(18px, 2vh);
+                padding: min(18px, 2vh) min(12px, 1.5vw);
             }
             .refresh-info {
                 margin-top: min(10px, 1vh);
@@ -291,7 +298,7 @@ $totalCount = $registeredDevoteesCount;
                 font-size: clamp(11px, 1.3vh, 14px);
             }
             .total-box {
-                padding: min(12px, 1.2vh) min(10px, 1vw);
+                padding: min(15px, 1.5vh) min(12px, 1.2vw);
             }
             .refresh-info p {
                 margin: min(4px, 0.4vh) 0;
@@ -309,8 +316,8 @@ $totalCount = $registeredDevoteesCount;
                 gap: min(8px, 0.8vw);
             }
             .total-box {
-                padding: min(10px, 1vh);
-                margin-bottom: min(10px, 1vh);
+                padding: min(12px, 1.2vh);
+                margin-bottom: min(12px, 1.2vh);
             }
             .count-box {
                 padding: min(8px, 0.8vh) min(10px, 1vw);
@@ -458,8 +465,8 @@ $totalCount = $registeredDevoteesCount;
             margin: 0;
         }
         .ultra-compact-view .total-box {
-            padding: min(8px, 0.8vh);
-            margin-bottom: min(8px, 0.8vh);
+            padding: min(10px, 1vh);
+            margin-bottom: min(10px, 1vh);
         }
         .ultra-compact-view .count-box {
             padding: min(6px, 0.6vh);
