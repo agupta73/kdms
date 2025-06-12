@@ -57,7 +57,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
             font-family: sans-serif;
         }
         .card-item {
-            background-color: aliceblue;
+            background-color: #fff;
             border-radius: 3px;
             border-style: double;
             height: 190px; /* Consider using min-height if content can vary */
