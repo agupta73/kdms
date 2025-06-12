@@ -86,7 +86,7 @@ class clsDashboard {
             JOIN accommodation_master am ON da.Accomodation_Key = am.Accomodation_Key
         WHERE
             da.Accommodation_Event = '$eventId'
-            AND am.Accomodation_Name NOT IN ('Own arrangement', 'Local')
+            AND am.Accomodation_Name NOT IN ('Own+Arrangement+%28Outside%29', 'Local')
             AND da.Accomodation_Status = 'Allocated'
         ) AS Ashram_Residents_Count,
         (
@@ -121,7 +121,7 @@ class clsDashboard {
             JOIN accommodation_master am ON da.Accomodation_Key = am.Accomodation_Key
         WHERE
             da.Accommodation_Event = '$eventId'
-            AND am.Accomodation_Name IN ('Own arrangement', 'Local')
+            AND am.Accomodation_Name IN ('Own+Arrangement+%28Outside%29', 'Local')
             AND da.Accomodation_Status = 'Allocated'
         ) AS OwnArrangement_Local_Count";
         return $query;
