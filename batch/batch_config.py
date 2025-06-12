@@ -1,8 +1,12 @@
+
 PRINT_CARD_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
 REMOVE_CARD_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
+
 UPSERT_DEVOTEE_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
 
-DEVOTEE_REC_FILE_NAME = r'Prasad Vitran List - Runner3.csv'
+
+#UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+DEVOTEE_REC_FILE_NAME = r'Devesh_Records - v2.csv'
 
 # PC Variables
 # DESC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\Anekay\Apparel Site\description_wkg_folder'
@@ -50,20 +54,18 @@ UNREGISTER_DEVOTEE_API_DATA = [
 ]
 
 ADD_DEVOTEE_API_DATA = [
-    {"csv_field": "devotee_first_name", "api_field": "devotee_first_name", "type": str, "required": True},
-    {"csv_field": "devotee_last_name", "api_field": "devotee_last_name", "type": str, "required": True},
-    {"csv_field": "devotee_gender", "api_field": "devotee_gender", "type": str, "required": True},
-    {"csv_field": "devotee_dob", "api_field": "devotee_dob", "type": str, "required": True},
-    {"csv_field": "devotee_id_type", "api_field": "devotee_id_type", "type": str, "required": True},
-    {"csv_field": "devotee_id_number", "api_field": "devotee_id_number", "type": str, "required": True},
-    {"csv_field": "devotee_cell_phone_number", "api_field": "devotee_cell_phone_number", "type": str},
-    {"csv_field": "devotee_type", "api_field": "devotee_type", "type": str},
-    {"csv_field": "devotee_status", "api_field": "devotee_status", "type": str},
-    {"csv_field": "devotee_referral", "api_field": "devotee_referral", "type": str},
-    {"csv_field": "devotee_seva_id", "api_field": "devotee_seva_id", "type": str},
-    {"csv_field": "devotee_accommodation_id", "api_field": "devotee_accommodation_id", "type": str},
-    {"csv_field": "devotee_station", "api_field": "devotee_station", "type": str},
-    {"csv_field": "devotee_country", "api_field": "devotee_country", "type": str},
+    {"csv_field": "First_name", "api_field": "devotee_first_name", "type": str, "required": True},
+    {"csv_field": "Last_name", "api_field": "devotee_last_name", "type": str, "required": True},
+    {"api_field": "devotee_id_type", "type": str, "value": "Adhar"},
+    {"csv_field": "Adhar_Number", "api_field": "devotee_id_number", "type": str, "required": True},
+    {"csv_field": "Mobile_number", "api_field": "devotee_cell_phone_number", "type": str},
+    {"api_field": "devotee_type", "type": str, "value": "T"},
+    {"api_field": "devotee_status", "type": str, "value": "D"},
+    {"api_field": "devotee_referral", "type": str, "value": "Devesh - Haldwani"},
+    {"api_field": "devotee_seva_id", "type": str, "value": "PVT"},
+    {"api_field": "devotee_accommodation_id", "type": str, "value": "ownar"},
+    {"api_field": "devotee_station", "type": str, "value": "Haldwani"},
+    {"api_field": "devotee_country", "type": str, "value": "India"},
     
     # --- New: Hardcoded field example ---
     # This field 'source_system' will always be 'CSV_Uploader' regardless of CSV content

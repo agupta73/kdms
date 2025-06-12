@@ -89,6 +89,7 @@ def get_json(url, header, data, payload_structure):
     data = utilities.prepare_post_message(record=data, payload_structure=payload_structure)
     
     try:
+        pdb.set_trace()
         response = resource_locator_handler(url=url, request_type="POST", headers=header, timeout=100, form_data=data)
         content = response['content']
         json_data = json.loads(content)
