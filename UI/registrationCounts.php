@@ -129,47 +129,48 @@ $totalCount = $registeredDevoteesCount;
         }
         .count-box {
             background-color: #fff;
-            border-radius: 8px;
-            padding: clamp(10px, 2vh, 25px) clamp(15px, 2vw, 30px);
+            border-radius: 10px;
+            padding: clamp(12px, 2.5vh, 30px) clamp(18px, 2.5vw, 35px);
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
             width: 100%;
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
         .count-box-left {
-            margin-right: min(5px, 0.5vw);
+            margin-right: min(7px, 0.7vw);
         }
         .count-box-right {
-            margin-left: min(5px, 0.5vw);
+            margin-left: min(7px, 0.7vw);
         }
         .count-box:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
         }
         .total-box {
             background-color: #9c27b0;
             color: white;
-            border-radius: 10px;
-            padding: clamp(20px, 4vh, 50px) clamp(20px, 3vw, 40px);
+            border-radius: 15px;
+            padding: clamp(25px, 5vh, 60px) clamp(25px, 4vw, 50px);
             text-align: center;
-            box-shadow: 0 8px 30px rgba(156, 39, 176, 0.5);
-            margin-bottom: min(25px, 3.5vh);
+            box-shadow: 0 12px 40px rgba(156, 39, 176, 0.5);
+            margin-bottom: min(30px, 4vh);
             width: 100%;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .total-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 35px rgba(156, 39, 176, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(156, 39, 176, 0.7);
         }
         .count-title {
-            font-size: clamp(14px, 1.8vh, 20px);
-            font-weight: 500;
-            margin-bottom: min(10px, 1vh);
-            color: #666;
+            font-size: clamp(16px, 2.2vh, 24px);
+            font-weight: 600;
+            margin-bottom: min(12px, 1.2vh);
+            color: #555;
         }
         .total-title {
             font-size: clamp(20px, 3vh, 30px);
@@ -179,7 +180,7 @@ $totalCount = $registeredDevoteesCount;
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .count-value {
-            font-size: clamp(20px, 3vh, 36px);
+            font-size: clamp(24px, 3.5vh, 42px);
             font-weight: 700;
             color: #333;
             display: flex;
@@ -206,26 +207,30 @@ $totalCount = $registeredDevoteesCount;
             margin-top: 5px;
         }
         .progress-bar {
-            height: min(6px, 0.6vh);
+            height: min(8px, 0.8vh);
             width: 100%;
             background-color: #f0f0f0;
-            border-radius: 3px;
-            margin-top: min(10px, 1vh);
+            border-radius: 4px;
+            margin-top: min(12px, 1.2vh);
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
         .progress-fill {
             height: 100%;
-            border-radius: 3px;
+            border-radius: 4px;
             transition: width 0.8s ease;
         }
         .progress-fill.ashram {
             background-color: #4CAF50;
+            background-image: linear-gradient(to right, #43A047, #4CAF50);
         }
         .progress-fill.temp {
             background-color: #FFA000;
+            background-image: linear-gradient(to right, #FF8F00, #FFA000);
         }
         .progress-fill.own {
             background-color: #2196F3;
+            background-image: linear-gradient(to right, #1E88E5, #2196F3);
         }
         /* Button styles removed as they are no longer needed */
         /* Responsive styles for different screen sizes */
