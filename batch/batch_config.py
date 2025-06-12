@@ -1,11 +1,11 @@
 
-PRINT_CARD_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
-REMOVE_CARD_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
+PRINT_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
+REMOVE_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-UPSERT_DEVOTEE_API_URL = 'http://192.168.31.162/kdms/api/upsertdevotee.php'
+#UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
 
-#UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
 DEVOTEE_REC_FILE_NAME = r'Devesh_Records - v2.csv'
 
 # PC Variables
