@@ -179,15 +179,34 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                 <span class="devotee-name">
                     <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
                 </span>
+                <!-- This is for prasad vitran -->
+                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos($devotee['devotee_referral'], 'devesh') === 0) : // Day Visitor Card ?>
+                    <span class="devotee-status" style="font-size: 14px;">
+                        <?php echo '( ' . $devotee['key'] . ' )'; ?>
+                    </span>
+                    <span class="devotee-status" style="margin:0;">Prasad Vitran</span>
+                    <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
 
-                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
-                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement" && $devotee['accommodation_name'] !== "Local"): ?>
+                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
+                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
+                            <div class="details-row" style="text-align: center;">
+                                <span class="card-data"
+                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
+                                    <?php echo 'Devesh Agarwal Ji'; ?>
+                                </span>
+                            </div>
+                        </div>
+                        <span class="card-footer">
+                            This card is not valid after 15th June <strong>2025</strong>
+                        </span>
+                <?php elseif ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
+                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
                     <span class="devotee-status" style="margin: 20px 0; margin: 5px 0; font-size: 24px;">Temporary Accommodation for 2025</span>
                     <?php else: ?>
                     <span class="devotee-status" style="margin: 20px 0; margin: 5px 0;">Temporary</span>
                     <?php endif; ?>
                     <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
-                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement" && $devotee['accommodation_name'] !== "Local"): ?>
+                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
                         <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Staying at: </span>
                         <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
                             <div class="details-row" style="text-align: center;">
