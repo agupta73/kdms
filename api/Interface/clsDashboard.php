@@ -63,6 +63,7 @@ class clsDashboard {
             FROM
             devotee d
             JOIN devotee_accomodation da ON d.Devotee_Key = da.Devotee_Key
+            JOIN accommodation_master am ON da.Accomodation_Key = am.Accomodation_Key
             WHERE
             da.Accommodation_Event = '$eventId'
         ) + IFNULL(
@@ -113,7 +114,7 @@ class clsDashboard {
         )
         ) AS Temporary_Day_Visitors_Count,
         (
-        SELECT
+       ( SELECT
             COUNT(DISTINCT d.Devotee_Key)
         FROM
             devotee d
@@ -122,7 +123,17 @@ class clsDashboard {
         WHERE
             da.Accommodation_Event = '$eventId'
             AND am.Accomodation_Name IN ('Own+Arrangement+%28Outside%29', 'Local')
-            AND da.Accomodation_Status = 'Allocated'
+            AND da.Accomodation_Status = 'Allocated')+ IFNULL(
+            (
+            SELECT
+                COUNT(*)
+            FROM
+                temporary_registration
+            WHERE
+                event_id = '$eventId'
+            ),
+            0
+        )
         ) AS OwnArrangement_Local_Count";
         return $query;
     }
