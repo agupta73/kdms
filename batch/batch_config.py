@@ -2,15 +2,15 @@
 PRINT_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 REMOVE_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-#UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
+UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
 
-UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
-DEVOTEE_REC_FILE_NAME = r'Devesh_Records - v2.csv'
+#UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+DEVOTEE_REC_FILE_NAME = r'Devt_id.csv'
 
 # PC Variables
 # DESC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\Anekay\Apparel Site\description_wkg_folder'
-DEVOTEE_REC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\kdms\api_working_folder'
+DEVOTEE_REC_FILE_PATH = r'C:\Users\kainchi_user\kdms\api_working_folder'
 
 #Mac variables
 DEVOTEE_REC_FILE_PATH_MAC = '/Users/anil/Documents/kdms/api_working_folder'

@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 import json
 
 chatty = True
-mac = True
+mac = False
 updated_handles = []
 updated_rows = []
 header = 'Content-Type:application/x-www-form-urlencoded'
@@ -72,6 +72,10 @@ def update_data(option=1):
         elif(option == '5'):
             url = UPSERT_DEVOTEE_API_URL
             payload_structure = ADD_DEVOTEE_API_DATA
+        #Add new devotee record ,CSV from google sheet
+        elif(option == '6'):
+            url = UPSERT_DEVOTEE_API_URL
+            payload_structure = ADD_DEVOTEE_API_DATA_GOOGLE    
 
         
         response = ""
@@ -103,6 +107,7 @@ def get_json(url, header, data, payload_structure):
         response = resource_locator_handler(url=url, request_type="POST", headers=header, timeout=100, form_data=data)
         content = response['content']
         json_data = json.loads(content)
+        print('Processed',data)
         return json_data
     except Exception as e:
         print(f'Error from get detail json: {str(e)}, url = {url}')
