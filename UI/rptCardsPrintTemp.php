@@ -75,7 +75,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
             height: 190px; /* Consider using min-height if content can vary */
             width: 315px;
             margin-right: 10px;
-            margin-left: 0;
+            margin-left: 10px;
             margin-bottom: 10px;
             page-break-inside: avoid;
             display: inline-block;
