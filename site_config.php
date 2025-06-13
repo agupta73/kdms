@@ -14,7 +14,7 @@ $api_dir = $webroot . 'api' . $directory_seprator;
 
 //Change the timezone setting for PHP
 //date_default_timezone_set("Asia/Kolkata");
-date_default_timezone_set("America/Los_Angeles");
+date_default_timezone_set("Asia/Kolkata");
 
 //Set the event ID of the current event
 //Please see event_master table for available events or
