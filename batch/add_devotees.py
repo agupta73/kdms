@@ -1,7 +1,7 @@
 
 
 from helpers import utilities
-from batch_config import DEVOTEE_REC_FILE_NAME, DEVOTEE_REC_FILE_PATH, DEVOTEE_REC_FILE_PATH_MAC, PRINT_CARD_API_URL,PRINT_CARD_API_DATA, REMOVE_FROM_PRINT_API_DATA, REMOVE_CARD_API_URL, UPSERT_DEVOTEE_API_URL, REGISTER_DEVOTEE_API_DATA, UNREGISTER_DEVOTEE_API_DATA, ADD_DEVOTEE_API_DATA
+from batch_config import DEVOTEE_REC_FILE_NAME, DEVOTEE_REC_FILE_PATH, DEVOTEE_REC_FILE_PATH_MAC, PRINT_CARD_API_URL,PRINT_CARD_API_DATA, REMOVE_FROM_PRINT_API_DATA, REMOVE_CARD_API_URL, UPSERT_DEVOTEE_API_URL, REGISTER_DEVOTEE_API_DATA, UNREGISTER_DEVOTEE_API_DATA, ADD_DEVOTEE_API_DATA, G_ADD_DEVOTEE_API_DATA
 from helpers.parser.json_parser import get_data_from_content
 from helpers.request_handler import resource_locator_handler
 import pdb
@@ -73,7 +73,11 @@ def update_data(option=1):
             url = UPSERT_DEVOTEE_API_URL
             payload_structure = ADD_DEVOTEE_API_DATA
 
-        
+        #From Google Form, add new devotee record and add to print queue
+        elif(option == '6'):
+            url = UPSERT_DEVOTEE_API_URL
+            payload_structure = G_ADD_DEVOTEE_API_DATA
+            payload_structure_print = PRINT_CARD_API_DATA
         response = ""
         update_counter = 0
 
@@ -82,6 +86,13 @@ def update_data(option=1):
                 if(option == '5'):
                     devotee_key = call_api_w_response(url, row, payload_structure )
                     print(devotee_key)
+                elif(option == '6'):
+                    devotee_key = call_api_w_response(url, row, payload_structure)
+                    print_structure = {
+                        "devotee_key": devotee_key
+                    }
+                    call_api(url,print_structure,payload_structure_print)
+                    
                 else:
                     call_api(url, row, payload_structure )
             except Exception as e:
@@ -96,8 +107,7 @@ def call_api_w_response(url, row, payload_structure):
     return json_data["info"]
 
 def get_json(url, header, data, payload_structure):   
-    
-    
+    print(data)
     try:
         data = utilities.prepare_post_message(record=data, payload_structure=payload_structure)    
         response = resource_locator_handler(url=url, request_type="POST", headers=header, timeout=100, form_data=data)
@@ -105,6 +115,7 @@ def get_json(url, header, data, payload_structure):
         json_data = json.loads(content)
         return json_data
     except Exception as e:
+        pdb.set_trace()
         print(f'Error from get detail json: {str(e)}, url = {url}')
         
 

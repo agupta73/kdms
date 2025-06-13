@@ -2,11 +2,11 @@
 PRINT_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 REMOVE_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-#UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
+UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
 
-UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
-DEVOTEE_REC_FILE_NAME = r'Devesh_Records - v2.csv'
+#UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+DEVOTEE_REC_FILE_NAME = r'new_devotees_613_I.csv'
 
 # PC Variables
 # DESC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\Anekay\Apparel Site\description_wkg_folder'
@@ -67,6 +67,26 @@ ADD_DEVOTEE_API_DATA = [
     {"api_field": "devotee_station", "type": str, "value": "Haldwani"},
     {"api_field": "devotee_country", "type": str, "value": "India"},
     
+    # --- New: Hardcoded field example ---
+    # This field 'source_system' will always be 'CSV_Uploader' regardless of CSV content
+    {"api_field": "eventId", "type": str, "value": "2025JB"},
+    # Another example: A fixed status for new users
+    {"api_field": "requestType", "type": str, "value": "upsertDevotee"}
+]
+
+G_ADD_DEVOTEE_API_DATA = [
+    {"csv_field": "First Name", "api_field": "devotee_first_name", "type": str, "required": True},
+    {"csv_field": "Last Name", "api_field": "devotee_last_name", "type": str, "required": True},
+    {"api_field": "devotee_id_type", "type": str, "value": "Adhar"},
+    #{"csv_field": "Adhar_Number", "api_field": "devotee_id_number", "type": str, "required": True},
+    {"csv_field": "Mobile number", "api_field": "devotee_cell_phone_number", "type": str},
+    {"api_field": "devotee_type", "type": str, "value": "T"},
+    {"api_field": "devotee_status", "type": str, "value": "D"},
+    {"api_field": "devotee_seva_id", "type": str, "value": "UN"},
+    {"api_field": "devotee_accommodation_id", "type": str, "value": "ownar"},
+    {"csv_field": "City", "api_field": "devotee_station", "type": str},
+    {"csv_field": "Email", "api_field": "devotee_email", "type": str},
+    {"api_field": "devotee_country", "type": str, "value": "India"},
     # --- New: Hardcoded field example ---
     # This field 'source_system' will always be 'CSV_Uploader' regardless of CSV content
     {"api_field": "eventId", "type": str, "value": "2025JB"},
