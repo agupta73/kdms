@@ -62,7 +62,18 @@ $eventId = $config_data['event_id'];
 
                 if (printString.length > 1) {
 
-                    window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
+                    // if query string url has key="TMP" then open rptCardsPrintTemp.php file #
+
+                    const queryParams = new URLSearchParams(window.location.search);
+
+                    if (queryParams.get('key') === 'TMP') {
+                        window.open("./rptCardsPrintTemp.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
+                    } else {
+                        // If not, open rptCardsPrint.php file
+                        window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
+                    }
+
+                    // window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
                     //window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
 
                     //if(confirm("Card printed successfully?")){
@@ -187,6 +198,11 @@ $eventId = $config_data['event_id'];
                         break;
 
                     case "CTP":
+                        $gridTitle = "Devotee Cards to be Printed";
+                        $showSelection = TRUE;
+                        break;
+
+                    case "TMP":
                         $gridTitle = "Devotee Cards to be Printed";
                         $showSelection = TRUE;
                         break;

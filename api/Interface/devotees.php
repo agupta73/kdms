@@ -207,10 +207,19 @@ Class Devotee {
             case "CTP": //Card print queue
                 $query = $query .
                             " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
-                          . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                          . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status != 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 
                 break;
             
+            case "TMP": // temporary Card print queue
+                $query = $query .
+                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status = 'D' and d.Devotee_Type = 'T' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+
+                break;
+
+
+
                 case "RPC": //Recently printed Cards
                     $query = $query .
                                 " LEFT OUTER JOIN Card_Print_Archive cpl on d.Devotee_Key = cpl.Devotee_Key "
@@ -313,8 +322,13 @@ Class Devotee {
             case "CTP": //Card print queue
                 $query = $query .
                             " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
-                          . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
-                
+                          . " WHERE cpl.Print_Status = 'A'  and d.Devotee_Status != 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                break;
+
+            case "TMP": //Card print queue
+                $query = $query .
+                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status = 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 break;
             
 //            case "PCD": //Print Cards
