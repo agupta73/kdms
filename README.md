@@ -16,3 +16,6 @@ To Containerize. Following are the steps:
     mysql -u <DB_USER> -p <DB_NAME> < shared/<DB_DUMP_FILE_NAME_WITH_EXTENSION>
 
 5. open browser and use url http://localhost:909/kdms/UI/login.php to access KDMS running on the container.
+ 
+
+ 
