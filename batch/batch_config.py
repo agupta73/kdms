@@ -4,9 +4,9 @@ REMOVE_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
 UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-
+#PRINT_CARD_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
 #UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
-DEVOTEE_REC_FILE_NAME = r'Devt_id.csv'
+DEVOTEE_REC_FILE_NAME = r'devotee_0613.csv'
 
 # PC Variables
 # DESC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\Anekay\Apparel Site\description_wkg_folder'
