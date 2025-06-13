@@ -8,3 +8,7 @@ api/config/database.php
 api/config/database.php
 api/config/database.php
 Lib/phpexcel/*
+batch/config/__pycache__/
+batch/helpers/__pycache__/
+batch/helpers/parser/__pycache__/
+batch/__pycache__/

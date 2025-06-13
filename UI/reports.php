@@ -4,7 +4,6 @@ require_once '../Lib/PhpExcelComponent.php';
 include_once("../Logic/clsOptionHandler.php");
 /* Uncomment these lines for initial setup testing
  * 
-
   $PhpExcel=New PhpExcelComponent();
   $PhpExcel->createExcel();
   $PhpExcel->downloadFile();

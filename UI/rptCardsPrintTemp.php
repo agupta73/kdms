@@ -1,4 +1,7 @@
 <?php
+// Set timezone to IST for all date functions
+date_default_timezone_set('Asia/Kolkata');
+
 $config_data = include("../site_config.php");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -56,14 +59,27 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
         body {
             font-family: sans-serif;
         }
+        .card-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            width: 100%;
+            page-break-inside: avoid;
+            margin-bottom: 7px;
+        }
         .card-item {
             background-color: #fff;
             border-radius: 3px;
             border-style: double;
             height: 190px; /* Consider using min-height if content can vary */
             width: 315px;
-            margin-bottom: 7px;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-bottom: 10px;
             page-break-inside: avoid;
+            display: inline-block;
+            position: relative; /* For absolute positioning of footer */
         }
         .card-item img.banner {
             display: block; /* Prevents small gap under image */
@@ -108,10 +124,27 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
             text-align: center;
             width: 100%;
             display: block;
-            margin-top: 5px;
+            margin-top: 30px;
         }
         .details-row > div {
             padding: 2px 0; /* Consistent padding for detail items */
+        }
+        .card-year {
+            position: absolute;
+            top: 38px;
+            right: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+        .year-display {
+            position: relative;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-top: -5px;
+            margin-right: 10px;
         }
         /* Print-specific styles */
         @media print {
@@ -119,9 +152,26 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                 margin: 0;
                 font-family: sans-serif; /* Ensure font consistency */
             }
+            .card-row {
+                margin-bottom: 7mm; /* Space between rows on a printed page */
+                page-break-after: auto; /* Let browser decide when to break pages */
+                page-break-inside: avoid;
+                display: flex;
+                justify-content: flex-start;
+            }
             .card-item {
-                margin-bottom: 7mm; /* Space between cards on a printed page */
-                page-break-after: auto; /* Let browser decide, or 'always' if one card per page */
+                margin-bottom: 0; /* No bottom margin for cards within rows */
+                margin-left: 0;
+                margin-right: 10px;
+                position: relative; /* Ensure proper positioning of absolute elements */
+            }
+            .year-display {
+                position: relative;
+                text-align: right;
+                font-size: 16px;
+                font-weight: bold;
+                margin-top: -5px;
+                margin-right: 10px;
             }
             .no-print {
                 display: none;
@@ -172,63 +222,33 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
 
 <div id="printpage">
     <?php if (!empty($devotees_to_print)): ?>
-        <?php foreach ($devotees_to_print as $index => $devotee): ?>
-        <div class="card-item" id="card-<?php echo $index; ?>">
-            <img src="/kdms/assets/img/banner.png" height="35px" width="314px" alt="Banner" class="banner">
-            <div style="padding: 5px;">
-                <span class="devotee-name">
-                    <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
-                </span>
-                <!-- This is for prasad vitran -->
-                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos($devotee['devotee_referral'], 'devesh') === 0) : // Day Visitor Card ?>
-                    <span class="devotee-status" style="font-size: 14px;">
-                        <?php echo '( ' . $devotee['key'] . ' )'; ?>
+        <?php 
+        $totalCards = count($devotees_to_print);
+        for ($i = 0; $i < $totalCards; $i += 2): 
+            // Start a new row for every pair of cards
+        ?>
+        <div class="card-row">
+            <?php for ($j = $i; $j < min($i + 2, $totalCards); $j++): 
+                  $devotee = $devotees_to_print[$j]; 
+            ?>
+            <div class="card-item" id="card-<?php echo $j; ?>">
+                <img src="/kdms/assets/img/banner.png" height="35px" width="314px" alt="Banner" class="banner">
+                <div class="year-display">
+                    <?php echo date('Y'); ?>
+                </div>
+                <div style="padding: 5px;">
+                    <span class="devotee-status">
+                        <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
                     </span>
-                    <span class="devotee-status" style="margin:0;">Prasad Vitran</span>
-                    <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
+                <!-- This is for prasad vitran -->
+                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T") : // Day Visitor Card ?>
 
-                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
-                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
-                            <div class="details-row" style="text-align: center;">
-                                <span class="card-data"
-                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
-                                    <?php echo 'Devesh Agarwal Ji'; ?>
-                                </span>
-                            </div>
-                        </div>
+                    <hr style="width: 80%; margin: 10 auto;">
+                    <span class="devotee-name" style="margin:0;">Only for Prasad</span>
+
                         <span class="card-footer">
                             This card is not valid after 15th June <strong>2025</strong>
                         </span>
-                <?php elseif ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
-                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
-                    <span class="devotee-status" style="margin: 20px 0; margin: 5px 0; font-size: 24px;">Temporary Accommodation for 2025</span>
-                    <?php else: ?>
-                    <span class="devotee-status" style="margin: 20px 0; margin: 5px 0;">Temporary</span>
-                    <?php endif; ?>
-                    <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
-                    <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
-                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Staying at: </span>
-                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
-                            <div class="details-row" style="text-align: center;">
-                                <span class="card-data"
-                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
-                                    <?php echo htmlspecialchars($devotee['accommodation_name']); ?>
-                                </span>
-                            </div>
-                        </div>
-                    <?php elseif (!empty($devotee['devotee_referral']) && $devotee['devotee_referral'] !== "N/A"): ?>
-                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
-                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
-                            <div class="details-row" style="text-align: center;">
-                                <span class="card-data"
-                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
-                                    <?php echo htmlspecialchars($devotee['devotee_referral']); ?>
-                                </span>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php // Photo and other details are intentionally omitted for Day Visitor ?>
-
                 <?php else: // Standard Card (including Blocked, etc.) ?>
                     <table style="width:100%;">
                         <tr>
@@ -258,7 +278,11 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                                 <?php endif; ?>
                                 <div class="details-row">
                                     <span class="card-label">Date:</span>
-                                    <span class="card-data"><?php echo date('jS F Y'); ?></span>
+                                    <span class="card-data"><?php 
+                                    // Set timezone to IST
+                                    date_default_timezone_set('Asia/Kolkata');
+                                    echo date('jS F Y'); 
+                                    ?></span>
                                 </div>
                             </td>
                             <td style="width:30%; text-align:center; vertical-align:top;">
@@ -278,12 +302,14 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                     </span>
                 <?php endif; // End of conditional card content ?>
 
+                </div>
             </div>
+            <?php endfor; // End of inner loop for cards in a row ?>
         </div>
-        <?php if (count($devotees_to_print) > 1 && ($index < count($devotees_to_print) - 1)): ?>
-            <div style="page-break-after: always;" class="no-print"></div> <!-- Ensures page break for printing multiple cards -->
+        <?php if ($i + 2 < $totalCards): ?>
+            <div style="page-break-after: always;" class="no-print"></div> <!-- Page break after each row -->
         <?php endif; ?>
-        <?php endforeach; ?>
+        <?php endfor; // End of outer loop for rows ?>
     <?php else: ?>
         <p>No devotee records found to print.</p>
     <?php endif; ?>

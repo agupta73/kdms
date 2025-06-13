@@ -2,11 +2,11 @@
 #PRINT_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 REMOVE_CARD_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-#UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
+UPSERT_DEVOTEE_API_URL = 'http://192.168.31.247/kdms/api/upsertdevotee.php'
 
-PRINT_CARD_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
-UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
-DEVOTEE_REC_FILE_NAME = r'devotee_0613.csv'
+#PRINT_CARD_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+#UPSERT_DEVOTEE_API_URL = 'http://anilMac.local/kdms/api/upsertdevotee.php'
+DEVOTEE_REC_FILE_NAME = r'devotee_0613_4.csv'
 
 # PC Variables
 # DESC_FILE_PATH = r'C:\Users\gupta\OneDrive\Documents\Anekay\Apparel Site\description_wkg_folder'
@@ -82,6 +82,8 @@ G_ADD_DEVOTEE_API_DATA = [
     {"csv_field": "Mobile number", "api_field": "devotee_cell_phone_number", "type": str},
     {"api_field": "devotee_type", "type": str, "value": "T"},
     {"api_field": "devotee_status", "type": str, "value": "D"},
+    {"api_field": "devotee_id_type", "type": str, "value": "Aadhaar"},
+    {"csv_field": "Aadhar", "api_field": "devotee_id_number", "type": str},
     {"api_field": "devotee_seva_id", "type": str, "value": "UN"},
     {"api_field": "devotee_accommodation_id", "type": str, "value": "ownar"},
     {"csv_field": "City", "api_field": "devotee_station", "type": str},
