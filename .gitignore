@@ -12,3 +12,5 @@ batch/config/__pycache__/
 batch/helpers/__pycache__/
 batch/helpers/parser/__pycache__/
 batch/__pycache__/
+api/config/database.php
+api/test.php

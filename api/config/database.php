@@ -5,11 +5,8 @@ class Database
 
     //private $host = "mysql";
     //private $host = "anil_dell:3306";
-    // private $host = "anilMac.local:3306";
-    // //private $db_name = "kdms_2025";
-    // private $db_name = "kdms_2025_test";
-     private $host = "kainchiDell:3306";
-    private $db_name = "kdms";
+    private $host = "anilMac.local:3306";
+    private $db_name = "kdms_2025_prod";
     private $inv_db_name = 'kinv2023';
     //private $db_name = "kdms_gold";
     //private $inv_db_name = 'kinv_gold';

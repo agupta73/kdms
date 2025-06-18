@@ -1,9 +1,9 @@
 <?php
 
-$servername = "mysql";
-$username = "kdms_user";
-$password = "root123";
-$database = "kdms";
+$servername = "anilMac.local";
+$username = "kdms";
+$password = "kdms";
+$database = "kdms_2025_prod";
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
