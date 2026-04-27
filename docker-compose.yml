@@ -1,54 +1,31 @@
-version: '3.8'
-
+# Local stack: http://localhost:108/  (maps host 108 → container 8080)
+# Copy .env.example to .env and set MySQL (host.docker.internal:3306 if DB runs on the host Mac).
+version: "3.9"
 services:
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/default.conf
-    depends_on:
-      - php
-    networks:
-      - kdms_network
-
-  php:
-    image: php:7.4.33-apache
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    expose:
-      - 80
+  web:
+    build: .
+    image: kdms:local
     ports:
-      - "80:80"
-    volumes:
-      - .:/var/www/html/kdms
-    networks:
-      - kdms_network
+      - "108:8080"
+    # Optional: copy .env.example to .env, then: env_file: [.env] for DB credentials.
+    environment:
+      PORT: 8080
+      WEBROOT_URL: http://localhost:108/
+      API_BASE_URL: http://localhost:108/api/
+      # Optional: leave unset to use /kdms/ in legacy URL construction from HTTP_HOST
+      # KDMS_PATH_SEGMENT: "kdms"
+      KDMS_EVENT_ID: "2025JB"
+      # Example when MySQL is on the host: KDMS_DB_HOST: host.docker.internal:3306
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Uncomment to pin DB in compose instead of a host:
     # depends_on:
-    #    - mysql
-
-  # mysql:
-  #   image: mysql:8.0.31
-  #   environment:
-  #      MYSQL_ROOT_PASSWORD: root123
-  #      MYSQL_DATABASE: kdms
-  #      MYSQL_USER: kdms_user
-  #      MYSQL_PASSWORD: root123
-  #   command: --sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
-  #   expose:
-  #     - 3306
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - ./mysql/data:/var/lib/mysql
-  #     - ./shared:/shared
-  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the initialization script
-  #   restart: always
-  #   networks:
-  #     - kdms_network
-
-networks:
-  kdms_network:
-
-volumes:
-  # mysql:
-  shared:
+    #   - db
+    # db:
+    #   image: mysql:8.0
+    #   environment:
+    #     MYSQL_ROOT_PASSWORD: dev
+    #     MYSQL_DATABASE: kdms
+    #     MYSQL_USER: kdms
+    #     MYSQL_PASSWORD: kdms
+    #   ports: ["3306:3306"]

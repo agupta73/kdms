@@ -1,0 +1,64 @@
+# Build and push the kdms image to Artifact Registry. Deploy to Cloud Run is out of scope
+# (manual in Terraform / kdms-gcp-infra repo or `gcloud run services update`).
+
+name: Build and push to Artifact Registry
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  # Kainchi Cloud (K1)
+  PROJECT_ID: project-12f4b54b-d692-4583-83b
+  GAR_REGION: asia-south1
+  GAR_REPOSITORY: apps
+  IMAGE_NAME: kdms
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Image URI base
+        id: meta
+        run: |
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          URI="${GAR_REGION}-docker.pkg.dev/${PROJECT_ID}/${GAR_REPOSITORY}/${IMAGE_NAME}"
+          echo "short=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "uri=${URI}" >> "$GITHUB_OUTPUT"
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account: ci-builder-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Docker login (Artifact Registry)
+        run: gcloud auth configure-docker "${GAR_REGION}-docker.pkg.dev" --quiet
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.uri }}:${{ steps.meta.outputs.short }}
+            ${{ steps.meta.outputs.uri }}:branch-main

@@ -1,0 +1,10 @@
+{
+  "name": "kainchi/kdms",
+  "version": "0.0.0",
+  "description": "KDMS — Devotee management (PHP)",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.1",
+    "phpoffice/phpspreadsheet": "^2.0"
+  }
+}
