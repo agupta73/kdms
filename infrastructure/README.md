@@ -16,11 +16,10 @@ The reusable module is at [`terraform/modules/kdms-cloudrun`](terraform/modules/
 
 2. Grant **`ci-builder-kdms`** the Artifact Registry **writer** (and **Service Account User** if needed) role on the `apps` repository in **asia-south1**.
 
-3. In the GitHub repo, add a **repository secret** (or variable) `WIF_PROVIDER` with the full resource name, for example:  
-   `projects/684080887473/locations/global/workloadIdentityPools/github-pool/providers/github-provider`  
-   (confirm the project number, pool id, and provider id in the [GCP console](https://console.cloud.google.com/iam-admin/workload-identity-pools).)
+3. In the GitHub repo, add a **repository variable** **`GCP_WIF_PROVIDER`** (Settings → Secrets and variables → Actions → Variables) with the full provider resource name, for example:  
+   `projects/684080887473/locations/global/workloadIdentityPools/github-pool/providers/github-provider`
 
-4. Pushes to **`main`** run `Build and push to Artifact Registry` and tag the image with the **short commit SHA** and the rolling alias **`branch-main`**.
+4. Pushes to **`main`** run **Build and push to Artifact Registry** and tag the image with the **short commit SHA** and the rolling alias **`branch-main`**. You can also run that workflow manually: **Actions** → **Build and push to Artifact Registry** → **Run workflow**.
 
 CI does **not** deploy Cloud Run; apply Terraform in **`kdms-gcp-infra`** (or `gcloud run services update` with the new image digest) to roll out a new version.
 

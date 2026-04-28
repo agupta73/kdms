@@ -1,0 +1,17 @@
+# .github/workflows/wif-smoke-test.yml
+name: WIF Smoke Test
+on: workflow_dispatch
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_WIF_SA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud artifacts repositories list --project=${{ vars.GCP_PROJECT_ID }} --location=${{ vars.GCP_REGION }}
+      - run: gcloud artifacts docker images list asia-south1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_AR_REPO }} --include-tags --limit=5

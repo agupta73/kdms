@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -40,7 +41,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account: ci-builder-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com
-          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
