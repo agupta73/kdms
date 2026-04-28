@@ -8,7 +8,7 @@ node_modules
 nbproject
 .env
 !/.env.example
-infrastructure
+terraform
 *.iml
 .idea
 vendor

@@ -1,0 +1,34 @@
+# Copy to terraform.tfvars and set image_tag to the immutable tag running in prod.
+# Current Artifact Registry tag (short SHA): use the GitHub Actions run output for the
+# last deploy, or: gcloud artifacts docker images list asia-south1-docker.pkg.dev/PROJECT/apps/kdms --include-tags --limit=5
+
+project_id            = "project-12f4b54b-d692-4583-83b"
+project_number        = "684080887473"
+region                = "asia-south1"
+service_name          = "kdms-prod"
+ar_repo               = "apps"
+image_name            = "kdms"
+image_tag             = "REPLACE_WITH_GIT_SHA_FROM_CI"
+runtime_sa_email      = "run-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com"
+cloudsql_instance     = "mysql-skm-prod"
+db_name               = "kdms"
+db_username           = "kdms"
+min_instances         = 0
+max_instances         = 5
+cpu                   = "1"
+memory                = "2Gi"
+container_port        = 8080
+container_concurrency = 80
+ingress               = "INGRESS_TRAFFIC_ALL"
+allow_unauthenticated = true
+labels = {
+  app = "kdms"
+  env = "prod"
+}
+kdms_event_id = "2026"
+app_url       = "https://kdms-prod-zeqw3ha4ya-el.a.run.app"
+secret_app_key     = "kdms-app-key"
+secret_db_password = "kdms-db-password"
+
+# Optional: only if the connection name must differ from project_id:region:cloudsql_instance
+# cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"

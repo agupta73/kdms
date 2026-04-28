@@ -12,4 +12,4 @@ Kainchi_Workspace.code-workspace
 .env
 !.env.example
 .idea
-infrastructure/terraform/**/.terraform/
+**/.terraform/

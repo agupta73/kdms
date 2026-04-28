@@ -1,5 +1,5 @@
 # Build and push the kdms image to Artifact Registry. Deploy to Cloud Run is out of scope
-# (manual in Terraform / kdms-gcp-infra repo or `gcloud run services update`).
+# (manual apply from this repo’s `terraform/` folder or `gcloud run services update`).
 
 name: Build and push to Artifact Registry
 

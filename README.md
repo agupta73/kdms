@@ -18,8 +18,8 @@
 
 - **Build & push (GitHub Actions, branch `main`):** pushes to  
   `asia-south1-docker.pkg.dev/project-12f4b54b-d692-4583-83b/apps/kdms:<short-sha>` and `...:branch-main`.
-- **WIF:** set repository secret `WIF_PROVIDER` to the full Workload Identity provider name (see `infrastructure/README.md`).
-- **Cloud Run + Terraform** — deploy the image from the immutable SHA tag using the module in `infrastructure/terraform/modules/kdms-cloudrun` (typically from the `kdms-gcp-infra` repo with state in `gs://kdms-tf-state`).
+- **WIF:** set repository variable **`GCP_WIF_PROVIDER`** to the full Workload Identity provider name (see [terraform/README.md](terraform/README.md#bootstrap-ci-and-artifact-registry)).
+- **Cloud Run + Terraform** — deploy the image from the immutable SHA tag using the stack in [`terraform/`](terraform/) (state bucket `gs://kdms-tf-state`; see that folder’s `README.md`).
 
 ## Database import (optional)
 
