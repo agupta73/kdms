@@ -6,7 +6,7 @@
  */
 $directoryName = getenv('KDMS_PATH_SEGMENT') ?: 'kdms';
 $directory_seprator = '/';
-$event_id = getenv('KDMS_EVENT_ID') ?: '2025JB';
+$event_id = getenv('KDMS_EVENT_ID') ?: '2026JB';
 $checkAccess = true;
 $rawCheck = getenv('KDMS_CHECK_ACCESS');
 if ($rawCheck !== false) {
