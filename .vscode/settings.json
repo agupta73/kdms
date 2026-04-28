@@ -1,0 +1,7 @@
+{
+  "git.enabled": true,
+  "git.autorefresh": true,
+  "git.autoRepositoryDetection": true,
+  "git.openRepositoryInParentFolders": "always",
+  "scm.defaultViewMode": "tree"
+}
