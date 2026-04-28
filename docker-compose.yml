@@ -7,15 +7,18 @@ services:
     image: kdms:local
     ports:
       - "108:8080"
-    # Optional: copy .env.example to .env, then: env_file: [.env] for DB credentials.
+    env_file:
+      - .env
+    
     environment:
       PORT: 8080
       WEBROOT_URL: http://localhost:108/
       API_BASE_URL: http://localhost:108/api/
+      # Override .env for Docker → host MySQL (127.0.0.1 inside the container is wrong).
+      KDMS_DB_HOST: host.docker.internal:3306
       # Optional: leave unset to use /kdms/ in legacy URL construction from HTTP_HOST
       # KDMS_PATH_SEGMENT: "kdms"
       KDMS_EVENT_ID: "2025JB"
-      # Example when MySQL is on the host: KDMS_DB_HOST: host.docker.internal:3306
     extra_hosts:
       - "host.docker.internal:host-gateway"
     # Uncomment to pin DB in compose instead of a host:

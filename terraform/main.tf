@@ -4,9 +4,9 @@ resource "google_cloud_run_v2_service" "kdms" {
   project  = var.project_id
   ingress  = var.ingress
 
-  labels = merge(var.labels, {
-    "cloud.googleapis.com/location" = var.region
-  })
+  # Only user labels — never set cloud.googleapis.com/* or run.googleapis.com/* here; the API rejects
+  # system labels on update (they appear in effective_labels from GCP automatically).
+  labels = var.labels
 
   template {
     labels = var.labels
@@ -40,7 +40,8 @@ resource "google_cloud_run_v2_service" "kdms" {
           cpu    = var.cpu
           memory = var.memory
         }
-        startup_cpu_boost = true
+        cpu_idle            = true
+        startup_cpu_boost   = true
       }
 
       startup_probe {
@@ -98,6 +99,7 @@ resource "google_cloud_run_v2_service" "kdms" {
       client_version,
       template[0].annotations["run.googleapis.com/operation-id"],
       labels["run.googleapis.com/satisfiesPzs"],
+      labels["cloud.googleapis.com/location"],
       template[0].labels["client.knative.dev/nonce"],
     ]
   }

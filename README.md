@@ -3,9 +3,9 @@
 ## Local (Docker)
 
 1. **Composer (optional on host, for local PHP):** `composer install`
-2. **Environment:** `cp .env.example .env` and set `KDMS_DB_HOST`, `KDMS_DB_NAME`, `KDMS_DB_USER`, `KDMS_DB_PASSWORD` to reach MySQL. For DB on the Mac host from Docker, use `KDMS_DB_HOST=host.docker.internal:3306`.
+2. **Environment:** `cp .env.example .env` and set **`KDMS_DB_PASSWORD`** (and user/name/db) to match your MySQL. **`docker-compose.yml`** sets **`KDMS_DB_HOST=host.docker.internal:3306`** so the container reaches MySQL on the host (do not use `127.0.0.1` for DB inside Docker—it points at the container itself).
 3. **Run:** `docker compose up --build`
-4. **URL:** [http://localhost:108/](http://localhost:108/) (main UI, e.g. [http://localhost:108/UI/login.php](http://localhost:108/UI/login.php)) — the compose file sets `WEBROOT_URL` and `API_BASE_URL` for the container.
+4. **URL:** [http://localhost:108/](http://localhost:108/) redirects to the login page; you can open [http://localhost:108/UI/login.php](http://localhost:108/UI/login.php) directly. The compose file sets `WEBROOT_URL` and `API_BASE_URL` for the container.
 
 `docker-compose` maps host port **108** to container **8080** (Cloud Run / Apache listen port).
 
