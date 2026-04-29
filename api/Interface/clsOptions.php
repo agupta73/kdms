@@ -515,17 +515,23 @@ class clsOptions {
 //        $res['message'] = '';
 //        $errormsg = "";
 //        $status = true;
-        
-        
-        $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, IFNULL(am.Accomodation_Capacity, 0) AS Accomodation_Capacity , " .
-            " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count,0) AS Out_Of_Availability_Count " .
-            " FROM `accommodation_master` am " .
-            " LEFT OUTER JOIN accommodation_availability aa " .
-            " ON am.accomodation_key = aa.accomodation_key ";
-
-        if($eventId != "") {
-            $query = $query . " AND aa.accommodation_event = '" . $eventId . "'";
+        // Align join keys/casing with PROC_INITIALIZE_EVENT / SP (see DB Files/). Using
+        // lowercase-only identifiers broke on Linux case-sensitive MySQL (invalid column / empty set).
+        $joinOn = 'am.`Accomodation_Key` = aa.`Accomodation_Key`';
+        if ($eventId !== '') {
+            $joinOn .= ' AND aa.`accommodation_event` = ' . $this->conn->quote($eventId);
         }
+
+        $query = 'SELECT am.`Accomodation_Key` AS accomodation_key, am.`Accomodation_Name`, '
+            . 'IFNULL(aa.Available_Count, am.`Accomodation_Capacity`) AS Available_Count, '
+            . 'IFNULL(am.`Accomodation_Capacity`, 0) AS Accomodation_Capacity, '
+            . 'IFNULL(aa.`Allocated_Count`, 0) AS Allocated_Count, '
+            . 'IFNULL(aa.`Reserved_Count`, 0) AS Reserved_Count, '
+            . 'IFNULL(aa.`Out_Of_Availability_Count`, 0) AS Out_Of_Availability_Count '
+            . 'FROM `accommodation_master` am '
+            . 'LEFT OUTER JOIN `accommodation_availability` aa '
+            . 'ON (' . $joinOn . ')';
+
         if($this->debug){ return $query; die;}
         $results = $this->conn->query($query);
 
@@ -699,12 +705,15 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, " .
-            " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count, 0) AS Out_Of_Availability_Count " . //, aa.Available_Count " .
+        $qEv = $this->conn->quote((string) $eventId);
+        $qKey = $this->conn->quote((string) $accommodationKey);
+
+        $query = "SELECT am.`Accomodation_Key`, am.`Accomodation_Name`, am.`Accomodation_Capacity`, IFNULL(aa.`Available_Count`, am.`Accomodation_Capacity`) AS Available_Count, " .
+            " IFNULL(aa.`Allocated_Count`, 0) AS Allocated_Count, IFNULL(aa.`Reserved_Count`, 0) AS Reserved_Count, IFNULL(aa.`Out_Of_Availability_Count`, 0) AS Out_Of_Availability_Count " .
             " FROM `accommodation_master` am " .
-            " LEFT OUTER JOIN accommodation_availability aa " .
-            " ON am.accomodation_key = aa.accomodation_key AND aa.accommodation_event = '" . $eventId . "'" .
-            " WHERE am.accomodation_key = '" . $accommodationKey . "'";
+            " LEFT OUTER JOIN `accommodation_availability` aa " .
+            " ON am.`Accomodation_Key` = aa.`Accomodation_Key` AND aa.`accommodation_event` = $qEv" .
+            " WHERE am.`Accomodation_Key` = $qKey";
         
         
         $results = $this->conn->query($query);
