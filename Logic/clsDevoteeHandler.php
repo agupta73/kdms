@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__) . '/includes/kdms_internal_http.php';
+
 /**
  * Description of clsDevoteeHandler
  *
@@ -20,7 +22,7 @@ class clsDevoteeHandler {
         $this->requestData = $requestObject;
         // Include new config file in each page ,where we need data from configuration
         $config_data = include("../site_config.php");
-        $this->url=$config_data['api_dir']."upsertDevotee.php";
+        $this->url = $config_data['api_dir_server'] . 'upsertDevotee.php';
     }
 
     public function setAPIType($apiType) {
@@ -86,6 +88,7 @@ class clsDevoteeHandler {
     }
     private function curl_rest($url, $is_post = true, $post_fields = null, $request_type = null) {
 
+        kdms_begin_internal_apache_curl();
         //open connection
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -96,6 +99,7 @@ class clsDevoteeHandler {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request_type);
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+        kdms_curl_setopt_internal_cookie($ch);
         // curl_setopt($ch, CURLOPT_USERPWD, "kdms_admin:oxwkV-3]S&{t");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -103,9 +107,9 @@ class clsDevoteeHandler {
         //$response = json_decode($response, true);
 
         curl_close($ch);
+        kdms_end_internal_apache_curl();
         return $response;
     }
 
 }
 
-?>

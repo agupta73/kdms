@@ -20,9 +20,14 @@ RUN a2enmod rewrite \
 WORKDIR /var/www/kdms
 COPY . .
 COPY --from=vendor /app/vendor ./vendor
+COPY docker/kdms-vhost.conf /etc/apache2/sites-available/kdms-vhost.conf
+COPY docker/kdms-vhost-prefix.conf /etc/apache2/sites-available/kdms-vhost-prefix.conf
 COPY docker/kdms-vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
-RUN chown -R www-data:www-data /var/www/kdms
+COPY docker/php/kdms-php.ini /usr/local/etc/php/conf.d/99-kdms.ini
+
+RUN mkdir -p /var/www/html \
+	&& chown -R www-data:www-data /var/www/kdms
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

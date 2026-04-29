@@ -1,4 +1,9 @@
 <?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
 $is_photo_available = false;
 $is_doc_available = false;
 $is_key_available = false;

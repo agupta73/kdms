@@ -1,119 +1,102 @@
-<!DOCTYPE html>
 <?php
-$debug = false;
-//trying session start by default
-session_start();
-?>
 
+declare(strict_types=1);
+
+$debug = false;
+
+require_once dirname(__DIR__) . '/includes/kdms_log.php';
+kdms_log_bootstrap();
+
+session_start();
+
+$config_data = include_once '../site_config.php';
+include_once '../Logic/clsAdminTasks.php';
+
+$loginID = '';
+$password = '';
+$role = '';
+$name = '';
+$email = '';
+$phone = '';
+$access = '';
+$message = '';
+
+// Fresh login page (GET or no credentials posted): clear prior session — same behavior as old body block.
+if (empty($_POST['loginID'])) {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_unset();
+        session_destroy();
+    }
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
+
+$requestData = $_POST;
+unset($_POST);
+
+// POST login attempt: must finish (redirect or error) before any HTML — otherwise header() fails.
+if (!empty($requestData['loginID'])) {
+    $response = array();
+    $adminTasks = new clsAdminTasks($requestData);
+    $response = $adminTasks->processAdminTasks();
+
+    if ($debug) {
+        echo 'fetched the login data <br>';
+        var_dump($response);
+        exit;
+    }
+
+    if (!empty($response['User_Key'])) {
+        $loginID = urldecode($response['User_Key']);
+    }
+    if (!empty($response['User_Name'])) {
+        $name = urldecode($response['User_Name']);
+    }
+    if (!empty($response['User_Role'])) {
+        $role = urldecode($response['User_Role']);
+    }
+    if (!empty($response['User_Email'])) {
+        $email = urldecode($response['User_Email']);
+    }
+    if (!empty($response['User_Phone'])) {
+        $phone = urldecode($response['User_Phone']);
+    }
+    if (!empty($response['Access']) && $response['Access'] !== '') {
+        $access = urldecode($response['Access']);
+    }
+
+    if (!empty($loginID)) {
+        $_SESSION['LoginID'] = $loginID;
+        $_SESSION['UserName'] = $name;
+        $_SESSION['UserEmail'] = $email;
+        $_SESSION['Role'] = $role;
+        $_SESSION['Access'] = $access;
+        include_once '../initialize.php';
+        $url = $config_data['webroot'] . 'UI/index.php';
+        header('Location: ' . $url);
+        exit;
+    }
+
+    $failMsg = isset($response['message']) ? trim((string) $response['message']) : '';
+    if ($failMsg !== '') {
+        $message = $failMsg;
+    } else {
+        $message = 'Incorrect credentials!';
+    }
+    $loginID = $requestData['loginID'];
+    $password = $requestData['password'];
+}
+?>
+<!DOCTYPE html>
 <html>
 <head>
   <title>
     SignIn(KDMS)
   </title>
-  <?php
-    include_once("header.php");
-  ?>
+  <?php include_once 'header.php'; ?>
 </head>
 <body>
-<?php
-
-
-if ($debug) {echo "current session ID: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
-//Distroy session, if active
-if(session_status() == PHP_SESSION_ACTIVE ){
-    session_unset();
-    session_destroy();
-    if ($debug) {echo "current session ID from inside reset code: ", session_id(), "<br>", "session_status: ", session_status(), "<br>";}
-}
-
-$config_data=include_once("../site_config.php");
-include_once("../Logic/clsAdminTasks.php");
-
-
-$requestData = $_POST;
-$loginID = "";
-$password = "";
-$role="";
-$name = "";
-$email = "";
-$phone ="";
-$access = "";
-$message = "";
-//Setting login ID and password to display on the login screen
-//if(isset($_POST['loginID'])){$loginID = $_POST['loginID']; }
-//if(isset($_POST['password'])){ $password = $_POST['password'];}
-
-unset($_POST);
-//Pre-populate devotee record in case of edit
-if (!empty($requestData['loginID'])) {
-    $response = array();
-    $adminTasks = new clsAdminTasks($requestData);
-    $response=  $adminTasks->processAdminTasks();
-
-    if($debug){
-        echo "fetched the login data <br>";
-        var_dump($response);
-    }
-
-    //assign values
-    if(!empty($response['User_Key'])){
-
-        $loginID = urldecode($response['User_Key']); //"P1810142093"
-    }
-
-    if(!empty($response['User_Name'])){
-        $name=urldecode($response['User_Name']); // "p" "P";
-    }
-
-    if(!empty($response['User_Role'])){
-        $role=urldecode($response['User_Role']); // "p" "P";
-    }
-
-    if(!empty($response['User_Email'])){
-        $email= urldecode($response['User_Email']); // "Anil+6" ;
-    }
-
-    if(!empty($response['User_Phone'])){
-        $phone=  urldecode($response['User_Phone']); // "Gupta"
-    }
-    
-    if(!empty($response['Access'])){
-      if($response['Access'] != ""){
-        $access =  urldecode($response['Access']); 
-      }
-    }
-    
-    if($debug){
-        echo "<br>","login: ", $loginID, "<br>";
-        var_dump($password);
-        var_dump($role);
-        var_dump($name);
-        var_dump($email);
-        var_dump($phone);
-        var_dump($access);
-    }
-    if(!empty($loginID)){
-        if($debug){echo "reaching non-empty login ID..";}
-        include_once("../initialize.php");
-        $_SESSION["LoginID"] = $loginID;
-        $_SESSION["UserName"] = $name;
-        $_SESSION["UserEmail"] = $email;
-        $_SESSION["Role"] = $role;
-        $_SESSION["Access"] = $access;
-        $url = $config_data['webroot']."UI/Index.php";
-        header("Location: ".$url);
-        exit();
-    }
-    else{
-        //echo "<script> alert('Incorrect credential... please try again!') </script>";
-        $message = "Incorrect credentials!";
-        $loginID = $requestData['loginID'];
-        $password = $requestData['password'];
-        if($debug){echo "LoginID: ", $loginID, " password: " , $password, " Message: " , $message, " Access: " , $access; }
-    }
-
-}
-?>
   <div class="content">
       <div class="container-fluid">
             <div class="row">
@@ -133,7 +116,7 @@ if (!empty($requestData['loginID'])) {
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="bmd-label-floating">Username</label>
-                            <input type="text" class="form-control" name="loginID" id="loginID" value="<?= $loginID;?>">
+                            <input type="text" class="form-control" name="loginID" id="loginID" value="<?= $loginID; ?>">
                           </div>
                         </div>
                       </div>
@@ -175,8 +158,6 @@ if (!empty($requestData['loginID'])) {
           </div>
         </div>
       </div>
-      <?php
-      include_once("scriptJS.php") ?>
+      <?php include_once 'scriptJS.php'; ?>
 </body>
 </html>
-

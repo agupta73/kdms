@@ -1,80 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
 
-<head>
-  <title>
-    KDMS (Add Accommodation I)
-  </title>
-  <?php
+declare(strict_types=1);
 
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE){
-    session_start();
-  }
-$current_page_id = 'KD-ACCO-I';
-include_once("../sessionCheck.php");
-  include_once("header.php");
-  include_once("../Logic/clsOptionHandler.php");
+require_once dirname(__DIR__) . '/includes/web_session.php';
 
-  $requestData = $_GET;
+$config_data = include dirname(__DIR__) . '/site_config.php';
 
-  $accommodation_key = "";
-  $accommodation_name = "";
-  $available_count = 0;
-  $allocated_count = 0;
-  $accomodation_capacity = 0;
-  $reserved_count = 0;
-  $out_of_availability_count = 0;
-  $accomodation_updated_by = "";
-  $eventId = $config_data['event_id'];
+require_once dirname(__DIR__) . '/Logic/clsOptionHandler.php';
 
-  //Pre-populate devotee record in case of edit
-  if (!empty($requestData['accommodation_key'])) {
+$requestData = $_GET;
+$eventId = $config_data['event_id'];
 
-    $optionHandler = new clsOptionHandler("AccommodationDetail");
+$accommodation_key = '';
+$accommodation_name = '';
+$available_count = 0;
+$allocated_count = 0;
+$accomodation_capacity = 0;
+$reserved_count = 0;
+$out_of_availability_count = 0;
+$accomodation_updated_by = '';
+$devotee_key = '';
+
+function kdms_pick_accommodation_field(array $row, string ...$keys): mixed {
+    foreach ($keys as $k) {
+        if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
+            return $row[$k];
+        }
+    }
+
+    return null;
+}
+
+if (! empty($requestData['accommodation_key'])) {
+    $optionHandler = new clsOptionHandler('AccommodationDetail');
     $optionHandler->setOptionKey($requestData['accommodation_key']);
     $optionHandler->setEventId($eventId);
     $response = $optionHandler->getOptions();
 
-    //assign values
-    if (!empty($response['Accomodation_Key'])) {
-      $accommodation_key = urldecode($response['Accomodation_Key']); //"P1810142093" 
+    unset($optionHandler);
+
+    if (! is_array($response)) {
+        $response = [];
     }
 
-    if (!empty($response['Accomodation_Name'])) {
-      $accommodation_name = urldecode($response['Accomodation_Name']); // "p" "P";
-    }
+    if (! (isset($response['status']) && $response['status'] === false)) {
+        if (kdms_pick_accommodation_field($response, 'Accomodation_Key', 'accomodation_key') !== null) {
+            $accommodation_key = urldecode((string) kdms_pick_accommodation_field($response, 'Accomodation_Key', 'accomodation_key'));
+        }
 
-    if (!empty($response['Accomodation_Capacity'])) {
-      $accomodation_capacity = urldecode($response['Accomodation_Capacity']); // "p" "P";
-    }
+        if (kdms_pick_accommodation_field($response, 'Accomodation_Name', 'accomodation_name') !== null) {
+            $accommodation_name = urldecode((string) kdms_pick_accommodation_field($response, 'Accomodation_Name', 'accomodation_name'));
+        }
 
-    if (!empty($response['Available_Count'])) {
-      $available_count = urldecode($response['Available_Count']); // "Anil+6" ;
-    }
+        if (kdms_pick_accommodation_field($response, 'Accomodation_Capacity', 'accomodation_capacity') !== null) {
+            $accomodation_capacity = (int) kdms_pick_accommodation_field($response, 'Accomodation_Capacity', 'accomodation_capacity');
+        }
 
-    if (!empty($response['Allocated_Count'])) {
-      $allocated_count = urldecode($response['Allocated_Count']); // "Gupta" 
-    }
+        $av = kdms_pick_accommodation_field($response, 'Available_Count', 'available_count');
+        if ($av !== null) {
+            $available_count = (int) $av;
+        }
 
-    if (!empty($response['Reserved_Count'])) {
-      $reserved_count = urldecode($response['Reserved_Count']); // NULL     
-    }
+        $al = kdms_pick_accommodation_field($response, 'Allocated_Count', 'allocated_count');
+        if ($al !== null) {
+            $allocated_count = (int) $al;
+        }
 
-    if (!empty($response['Out_Of_Availability_Count'])) {
-      $out_of_availability_count = urldecode($response['Out_Of_Availability_Count']); // "" 
+        $rs = kdms_pick_accommodation_field($response, 'Reserved_Count', 'reserved_count');
+        if ($rs !== null) {
+            $reserved_count = (int) $rs;
+        }
+
+        $oa = kdms_pick_accommodation_field($response, 'Out_Of_Availability_Count', 'out_of_availability_count');
+        if ($oa !== null) {
+            $out_of_availability_count = (int) $oa;
+        }
     }
-  }
-  //        var_dump($accommodation_key);
-//      var_dump($accommodation_name);
-//      var_dump($available_count);
-//      var_dump($allocated_count);
-//      var_dump($accomodation_capacity);
-//      var_dump($reserved_count);
-//      var_dump($out_of_availability_count);
-//      var_dump($accomodation_updated_by);
-  //die;
-  ?>
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>KDMS (Add Accommodation I)</title>
+  <?php include_once 'header.php'; ?>
   <script>
 
     function _(el) {
@@ -226,17 +236,12 @@ include_once("../sessionCheck.php");
 
           </div>
         </div>
-
-
-
       </div>
     </div>
-    <!--</div>-->
+
     <footer class="footer">
 
     </footer>
-  </div>
-  </div>
   </div>
 
   <!-- Modal -->
@@ -320,7 +325,6 @@ include_once("../sessionCheck.php");
         </div>
       </div>
     </div>
-  </div>
   </div>
   <!--   Core JS Files   -->
   <?php

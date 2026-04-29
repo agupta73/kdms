@@ -24,14 +24,23 @@ class clsAdmin
 
     public function processAdminTask($requestData)
     {
+        if ($this->conn === null) {
+            return [
+                'status'  => false,
+                'message' => 'Database connection failed.',
+            ];
+        }
+
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
        
-        if(isset($requestData['type'])){
+        if (isset($requestData['type'])) {
             $type = $requestData['type'];
-        } else {
+        } elseif (isset($requestData['requestType'])) {
             $type = $requestData['requestType'];
+        } else {
+            $type = '';
         }
         
 
@@ -103,22 +112,26 @@ class clsAdmin
         if ($this->debug) {
             echo "from clsAdmin->checkLogin ", $query, "<br>";
         }
-        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
+        if ($results === false) {
+            $err = $this->conn->errorInfo();
 
+            return [
+                'status'  => false,
+                'message' => 'Login query failed.',
+                'info'    => $err[2] ?? '',
+            ];
+        }
 
-        $loginResult = array();
-        if (!empty($row = $results->fetchObject())) {
-            $loginResult = $row;
-        } else {
-            $loginResult['status'] = false;
-            $loginResult['message'] = "Devotee details not found!";
-            $loginResult['info'] = $results;
+        $row = $results->fetch(PDO::FETCH_ASSOC);
+        if ($row !== false) {
+            return $row;
         }
-        if ($this->debug) {
-            echo "Result from clsAdmin->checkLogin ", "<br>";
-            var_dump($loginResult);
-        }
-        return $loginResult;
+
+        return [
+            'status'  => false,
+            'message' => 'Devotee details not found!',
+        ];
     }
     public function Get_user_name_from_id($requestData) { 
         $res = array();
@@ -150,18 +163,23 @@ class clsAdmin
 		            WHERE user_key = '". $user_key ."'" ;
 
 
-        if($this->debug) {var_dump($query);}
-                
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
-        
-        $i=0;
-		foreach($results as $row)
-		{
-            $i++;		
-			$user_name = $row["user_name"];
-		}
+        if ($this->debug) {
+            var_dump($query);
+        }
 
-        if($i==0){
+        $results = $this->conn->query($query);
+        if ($results === false) {
+            return '# Database error #';
+        }
+
+        $i = 0;
+        $user_name = '';
+        foreach ($results as $row) {
+            $i++;
+            $user_name = $row['user_name'];
+        }
+
+        if ($i == 0) {
             return "# User Not Found #";
         }
         else{
@@ -181,12 +199,12 @@ class clsAdmin
         $query = $query . " ORDER BY fav_public, fav_url";
 
         if ($this->debug) {
-            echo "from clsAdmin->checkLogin ", $query, "<br>";
+            echo "from clsAdmin->checkFavorites ", $query, "<br>";
         }
-        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
-
-
-        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
+        if ($results === false) {
+            return [];
+        }
 
         $favResult = array();
         $i = 0;

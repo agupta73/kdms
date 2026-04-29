@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
 require_once '../Lib/PhpExcelComponent.php';
 include_once("../Logic/clsOptionHandler.php");
 /* Uncomment these lines for initial setup testing

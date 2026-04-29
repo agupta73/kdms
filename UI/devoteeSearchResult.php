@@ -1,20 +1,20 @@
-<!DOCTYPE html>
 <?php
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE){
-    session_start();
-  }
-$current_page_id = 'KD-DVT-SCR';
-include_once("../sessionCheck.php");
-include_once("header.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
-include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsOptionHandler.php");
-// Include new config file in each page ,where we need data from configuration
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
+$config_data = include dirname(__DIR__) . '/site_config.php';
+
+include_once 'header.php';
+include_once dirname(__DIR__) . '/Logic/clsDevoteeSearch.php';
+include_once dirname(__DIR__) . '/Logic/clsOptionHandler.php';
 
 $eventId = $config_data['event_id'];
 
 //if($debug){var_dump( $_GET);}
 ?>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title> KDMS (Available Devotee Records) </title>
@@ -176,11 +176,13 @@ $eventId = $config_data['event_id'];
                 <!-- Navbar -->
             <?php
             $debug = false;
-            $searchKey = "";
-            $gridTitle = "";
-            $showSelection = FALSE;
-            $hideSearchArea = FALSE;
-            
+            $searchKey = '';
+            $gridTitle = '';
+            $showSelection = false;
+            $hideSearchArea = false;
+            $response = [];
+            $accommodations = [];
+
             if (!empty($_GET['key'])) {
                 $searchKey = $_GET['key'];
 
@@ -228,7 +230,7 @@ $eventId = $config_data['event_id'];
                 $loadAccommodation = new clsOptionHandler("Accommodation");
                 $loadAccommodation->setEventId($eventId);
                 $accommodations = $loadAccommodation->getOptions();
-                unset($loadAccommodations);
+                unset($loadAccommodation);
             }
             if($debug){echo "Probably empty values.."; var_dump( $_GET); var_dump($response); die;}
             ?>

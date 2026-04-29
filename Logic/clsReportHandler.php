@@ -1,8 +1,12 @@
 <?php
 
+require_once dirname(__DIR__) . '/includes/kdms_internal_http.php';
+
 class clsReportHandler {
 
     private $url;
+
+    private $dashboard_url;
 
     private $request = array();
     private $debug = false;
@@ -12,8 +16,8 @@ class clsReportHandler {
         //$this->request = $requestObject;
         // Include new config file in each page ,where we need data from configuration
         $config_data = include("../site_config.php");
-        $this->url = $config_data['api_dir'] . 'getReport.php';
-        $this->dashboard_url = $config_data['api_dir'] . 'getDashboardData.php';
+        $this->url = $config_data['api_dir_server'] . 'getReport.php';
+        $this->dashboard_url = $config_data['api_dir_server'] . 'getDashboardData.php';
     }
 
     public function getAccommodationCounts($eventId) {
@@ -22,7 +26,7 @@ class clsReportHandler {
             $response = $this->get_acco_records_from_API($type, "", $eventId);
         }
         else {
-            $response = $this->get_acco_records_from_API($type, "");
+            $response = $this->get_acco_records_from_API($type, "", "");
         }
         if($this->debug){var_dump($response); die;}
         return $response;
@@ -30,9 +34,11 @@ class clsReportHandler {
 
     public function getAccomodationCountsForEventDashbaord($eventId) {
         $type = "DevoteeCount";
-        if(!empty($eventId)){
-            $response = $this->get_acco_count_for_dashboard($type, "", $eventId);
+        $response = null;
+        if (!empty($eventId)) {
+            $response = $this->get_acco_count_for_dashboard($type, $eventId);
         }
+
         return $response;
     }
 
@@ -66,6 +72,7 @@ class clsReportHandler {
 
     private function get_acco_records_from_API($type, $accoType, $eventId) {
 
+        kdms_begin_internal_apache_curl();
         $ch = curl_init();
         $url = $this->url . "?type=" . $type;
 
@@ -82,6 +89,7 @@ class clsReportHandler {
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $ch, CURLOPT_AUTOREFERER, TRUE );
+        kdms_curl_setopt_internal_cookie($ch);
 //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);     
         //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
         //curl_setopt($ch, CURLOPT_SSLVERSION, 3);
@@ -94,10 +102,12 @@ class clsReportHandler {
             die;
         }
         curl_close($ch);
+        kdms_end_internal_apache_curl();
         return $response;
     }
     private function get_acco_count_for_dashboard($type, $eventId) {
 
+        kdms_begin_internal_apache_curl();
         $ch = curl_init();
         $url = $this->dashboard_url . "?type=" . $type;
 
@@ -110,6 +120,7 @@ class clsReportHandler {
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $ch, CURLOPT_AUTOREFERER, TRUE );
+        kdms_curl_setopt_internal_cookie($ch);
         $response = curl_exec($ch);
         if($this->debug){echo "<br> response: "; var_dump( $ch); var_dump( $response); }
         try {
@@ -119,6 +130,7 @@ class clsReportHandler {
             die;
         }
         curl_close($ch);
+        kdms_end_internal_apache_curl();
         return $response;
     }
 

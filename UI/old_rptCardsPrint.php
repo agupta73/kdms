@@ -1,9 +1,9 @@
 <?php
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE){
-    session_start();
-  }
-include_once("../sessionCheck.php");
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
 $eventId = $config_data['event_id'];
 $debug = false;
 ?>

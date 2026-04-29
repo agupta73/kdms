@@ -135,7 +135,7 @@ class clsReport {
 
         if($this->debug){echo $query; }
 
-        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
         $accommodationResult = array();
         $i = 0;
@@ -198,7 +198,7 @@ class clsReport {
                 if($this->debug){echo "<br>", $query[$i], "<br>";}
             }
 
-            $result = $this->conn->query($query[$i], MYSQLI_USE_RESULT);
+            $result = $this->conn->query($query[$i]);
             if (!empty($row = $result->fetchObject())) {
                 $devoteeResults[$i] = $row;
                 if($this->debug){var_dump($row);}
@@ -251,7 +251,7 @@ class clsReport {
 
         if($this->debug){echo $query; }
 
-        $results = $this->conn->query($query, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
         $dutyReportResult = array();
         $i = 0;

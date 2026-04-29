@@ -5,9 +5,11 @@
 1. **Composer (optional on host, for local PHP):** `composer install`
 2. **Environment:** `cp .env.example .env` and set **`KDMS_DB_PASSWORD`** (and user/name/db) to match your MySQL. **`docker-compose.yml`** sets **`KDMS_DB_HOST=host.docker.internal:3306`** so the container reaches MySQL on the host (do not use `127.0.0.1` for DB inside Docker—it points at the container itself).
 3. **Run:** `docker compose up --build`
-4. **URL:** [http://localhost:108/](http://localhost:108/) redirects to the login page; you can open [http://localhost:108/UI/login.php](http://localhost:108/UI/login.php) directly. The compose file sets `WEBROOT_URL` and `API_BASE_URL` for the container.
+4. **URL:** **`http://localhost/kdms/`** (compose maps host **80** → container **8080**). Login: **`http://localhost/kdms/UI/login.php`**. If binding to port **80** fails (permission or conflict), change **`ports`** to **`8080:8080`** and set **`WEBROOT_URL`** / **`API_BASE_URL`** in **`docker-compose.yml`** to use **`http://localhost:8080/kdms/`**.
 
-`docker-compose` maps host port **108** to container **8080** (Cloud Run / Apache listen port).
+`docker-compose` enables **`KDMS_APACHE_USE_PREFIX=1`** so the app is mounted under **`/kdms`**. Production (Cloud Run) does **not** set this—the image serves the app at the site root.
+
+`docker-compose` sets `WEBROOT_URL`, `API_BASE_URL`, and `KDMS_INTERNAL_ORIGIN` for the container.
 
 ## Configuration
 

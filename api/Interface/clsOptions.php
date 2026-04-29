@@ -527,7 +527,7 @@ class clsOptions {
             $query = $query . " AND aa.accommodation_event = '" . $eventId . "'";
         }
         if($this->debug){ return $query; die;}
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $AccomodationDetail = array();
         $i = 0;
@@ -554,20 +554,26 @@ class clsOptions {
 //        $status = true;
         
         
-        $query = "SELECT sm.Seva_Id, sm.Seva_Description, sa.assigned_count  
-                    FROM `Seva_Master` sm 
-                    left outer join Seva_Availability sa on sm.seva_id = sa.Seva_Id  where 1=1 ";
-
-        if($eventId != "") {
-            $query = $query . " AND sa.seva_event = '" . $eventId . "'";
+        // Event must filter the JOIN (not WHERE): WHERE sa.seva_event = … drops LEFT JOIN rows
+        // without a matching availability row — so the seva list looked “empty”.
+        $joinOn = 'sm.seva_id = sa.Seva_Id';
+        if ($eventId !== '') {
+            $joinOn .= ' AND sa.seva_event = ' . $this->conn->quote($eventId);
         }
 
-        if($key == "Assigned") {
-            $query = $query . " AND sa.assigned_count > 0 ";
+        $query = 'SELECT sm.Seva_Id, sm.Seva_Description, COALESCE(sa.assigned_count, 0) AS assigned_count '
+            . 'FROM `Seva_Master` sm '
+            . 'LEFT OUTER JOIN `Seva_Availability` sa ON (' . $joinOn . ') '
+            . 'WHERE 1=1 ';
+
+        if ($key === 'Assigned') {
+            $query .= ' AND COALESCE(sa.assigned_count, 0) > 0 ';
         }
 
-        if($this->debug){echo $query;}
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        if ($this->debug) {
+            echo $query;
+        }
+        $results = $this->conn->query($query);
         
         $Sevas = array();
         $i = 0;
@@ -608,7 +614,7 @@ class clsOptions {
                 */
         
                 if($this->debug){echo $query;}
-                $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+                $results = $this->conn->query($query);
                 
                 $Locations = array();
                 $i = 0;
@@ -639,7 +645,7 @@ class clsOptions {
             " FROM `Event_Master` em " ;
 
 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
         $Events = array();
         $i = 0;
@@ -673,7 +679,7 @@ class clsOptions {
             ON am.amenity_key = aa.amenity_key";
         
         
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $AmenityDetail = array();
         $i = 0;
@@ -708,7 +714,7 @@ class clsOptions {
             " WHERE am.accomodation_key = '" . $accommodationKey . "'";
         
         
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $AccomodationDetail = array();
         
@@ -739,7 +745,7 @@ class clsOptions {
             WHERE sm.seva_id = '" . $sevaKey . "'";
         
         
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $SevaDetail = array();
         
@@ -770,7 +776,7 @@ class clsOptions {
             WHERE em.event_ID = '" . $eventID . "'";
 
 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
         $EventDetail = array();
 
@@ -816,7 +822,7 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
             WHERE am.amenity_key = '" . $amenityKey . "'";
         */
         //var_dump($query);
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $AmenityDetail = array();
         

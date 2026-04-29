@@ -1,5 +1,9 @@
-
 <?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../includes/api_session.php';
+
 include_once("../Logic/clsDevoteeSearch.php");
 include_once("../Logic/clsDevoteeHandler.php");
 include_once("../Logic/clsOptionHandler.php");

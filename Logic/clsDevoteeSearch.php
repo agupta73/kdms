@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__) . '/includes/kdms_internal_http.php';
+
 class clsDevoteeSearch {
 
     private $url;
@@ -13,7 +15,7 @@ private $debug = false;
         
         // Include new config file in each page ,where we need data from configuration
         $config_data = include("../site_config.php");
-        $this->url = $config_data['api_dir'] . 'searchDevotee.php';
+        $this->url = $config_data['api_dir_server'] . 'searchDevotee.php';
     }
 
     public function getDevoteeDetails($eventId) {
@@ -61,12 +63,14 @@ private $debug = false;
 
     private function get_records_from_API($requestData, $mode, $eventId = "") {
 
+        kdms_begin_internal_apache_curl();
         $ch = curl_init();
         $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
         if($this->debug){return  $url; die;}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        kdms_curl_setopt_internal_cookie($ch);
         $response = curl_exec($ch);
        
 //        return $response;
@@ -81,6 +85,7 @@ private $debug = false;
                         die;
                     }
         curl_close($ch);
+        kdms_end_internal_apache_curl();
         return $response;
     }
 

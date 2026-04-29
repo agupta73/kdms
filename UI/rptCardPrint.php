@@ -1,4 +1,9 @@
 <?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
 $devotee_key = "P12312312";
 $devotee_first_name = "Anil";
 $devotee_last_name = "Gupta";

@@ -1,8 +1,16 @@
 <?php
 
 /**
- * Document root has no landing page at `/`; UI lives under `/UI/`.
- * Redirect avoids Apache 403 on `/` when DirectoryIndex is missing.
+ * Landing redirect when DirectoryIndex hits. Honors WEBROOT_URL path (e.g. /kdms for Docker prefix).
  */
-header('Location: /UI/login.php', true, 302);
+$prefix = '';
+$wu = getenv('WEBROOT_URL');
+if (is_string($wu) && $wu !== '') {
+    $path = parse_url($wu, PHP_URL_PATH);
+    if (is_string($path) && $path !== '' && $path !== '/') {
+        $prefix = rtrim($path, '/');
+    }
+}
+
+header('Location: ' . $prefix . '/UI/login.php', true, 302);
 exit;

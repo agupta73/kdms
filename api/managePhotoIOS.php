@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+require_once __DIR__ . '/../includes/api_session.php';
+
 // Setting
 $Interface_path = "Interface/";
 $requestData = $_POST;

@@ -1,50 +1,66 @@
-<head>
-        <title> KDMS Dashboard </title></head>
 <?php
+/**
+ * Loaded from index.php inside <div class="main-panel"> — do not output HTML until server-side CURL
+ * to getReport/loadOptions completes (kdms_* session handshake).
+ */
+declare(strict_types=1);
 
-//TODO: refresh seva and accommodation counts is not working
+$debug = false;
 
-$debug= false;
-include_once("header.php");
-$current_page_id = "KD-DSBRD";
-include_once("../sessionCheck.php");
-include_once("../Logic/clsDevoteeSearch.php");
-include_once("../Logic/clsReportHandler.php");
-include_once("../Logic/clsOptionHandler.php");
-// Include new config file in each page ,where we need data from configuration
-$config_data = include("../site_config.php");
+include_once __DIR__ . '/../Logic/clsDevoteeSearch.php';
+include_once __DIR__ . '/../Logic/clsReportHandler.php';
+include_once __DIR__ . '/../Logic/clsOptionHandler.php';
+$config_data = include __DIR__ . '/../site_config.php';
 
 $eventId = $config_data['event_id'];
-
 
 $getReport = new clsReportHandler();
 $response = $getReport->getAccommodationCounts($eventId);
 unset($getReport);
 
-if($debug){echo "eventId =: ", $config_data['event_id'] ; var_dump($response);}
+if ($debug) {
+    echo 'eventId =: ', htmlspecialchars((string) $config_data['event_id'], ENT_QUOTES, 'UTF-8'),
+    htmlspecialchars(var_export($response, true), ENT_QUOTES, 'UTF-8');
+}
 
-$accoType = "All";
+$dashboardStat = static function (?array $rows, int $idx, string $key): string {
+    if ($rows === null || ! isset($rows[$idx]) || ! is_array($rows[$idx]) || ! array_key_exists($key, $rows[$idx])) {
+        return '';
+    }
 
-if (!empty($_GET['accoType'])) {
+    return htmlspecialchars((string) $rows[$idx][$key], ENT_QUOTES, 'UTF-8');
+};
+
+$accoType = 'All';
+
+if (! empty($_GET['accoType'])) {
     $accoType = $_GET['accoType'];
 }
-$sevaType = "All";
+$sevaType = 'All';
 
-if (!empty($_GET['sevaType'])) {
+if (! empty($_GET['sevaType'])) {
     $sevaType = $_GET['sevaType'];
 }
 
 $getReport = new clsReportHandler();
 $AccoResponse = $getReport->getAccommodationRecords($accoType, $eventId);
 unset($getReport);
-if($debug){echo "Accociation response =: " ; var_dump($AccoResponse);}
-$sevaSearch = new clsOptionHandler("Seva"); //Constructor =>request=>optionType=>Seva
+if ($debug) {
+    echo 'Accociation response =: ', htmlspecialchars(var_export($AccoResponse, true), ENT_QUOTES, 'UTF-8');
+}
+if (! is_array($AccoResponse)) {
+    $AccoResponse = [];
+}
+
+$sevaSearch = new clsOptionHandler('Seva'); // Constructor =>request=>optionType=>Seva
 $sevaSearch->setEventId($eventId);
 $sevaSearch->setOptionKey($sevaType); // Option Key for the API => either all or specific seva count (like assigned)
 $sevaRes = $sevaSearch->getOptions();
-//var_dump($response); die;
-//array(5) { [0]=> array(3) { ["Seva_Id"]=> string(2) "AT" ["Seva_Description"]=> string(11) "A test Seva" ["assigned_count"]=> string(1) "0" } [1]=> array(3) { ["Seva_Id"]=> string(2) "KU" ["Seva_Description"]=> string(14) "Kitchen+Upper+" ["assigned_count"]=> string(1) "0" } [2]=> array(3) { ["Seva_Id"]=> string(2) "MP" ["Seva_Description"]=> string(12) "Mal+Pua+Seva" ["assigned_count"]=> string(1) "1" } [3]=> array(3) { ["Seva_Id"]=> string(2) "PV" ["Seva_Description"]=> string(19) "Prasaad+Vitran+Seva" ["assigned_count"]=> string(1) "0" } [4]=> array(3) { ["Seva_Id"]=> string(2) "UN" ["Seva_Description"]=> string(14) "-- Un Known --" ["assigned_count"]=> string(1) "4" } }
 unset($sevaSearch);
+
+if (! is_array($sevaRes)) {
+    $sevaRes = [];
+}
 ?> 
 <script>
     //Debug only function.. do not use
@@ -278,21 +294,21 @@ unset($sevaSearch);
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <a href="../UI/index.php?accoType=Occupied" class="dash-link">Total Spaces Allocated:  
-                                <b>  <?php echo $response[0]['SpaceOccupiedOrDevoteesPresent']; ?> </b> </a>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 0, 'SpaceOccupiedOrDevoteesPresent'); ?> </b> </a>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <a href="../UI/index.php?accoType=Available" class="dash-link">Total Spaces Available:  
-                                <b>  <?php echo $response[2]['AvailableSpaces']; ?> </b> </a>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 2, 'AvailableSpaces'); ?> </b> </a>
                         </div> 
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <a href="../UI/index.php?accoType=Reserved" class="dash-link">Total Spaces Reserved:
-                                <b>  <?php echo $response[3]['ReservedSpaces']; ?> </b> </a></div> 
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 3, 'ReservedSpaces'); ?> </b> </a></div> 
                     </div>
                 </div>
             </div>
@@ -309,21 +325,21 @@ unset($sevaSearch);
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Residing in Ashram:  
-                                <b>  <?php echo $response[0]['SpaceOccupiedOrDevoteesPresent']; ?> </b> </a>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 0, 'SpaceOccupiedOrDevoteesPresent'); ?> </b> </a>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWNAR" class="dash-link">Devotees with Own Arrangement:
-                                <b>  <?php echo $response[4]['DevoteesWithOwnArrangements']; ?> </b> </a></div>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 4, 'DevoteesWithOwnArrangements'); ?> </b> </a></div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
                             <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
                             <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
-                                <b>  <?php echo $response[1]['RegisteredDevoteesIncludingLocals']; ?> </b> </a>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 1, 'RegisteredDevoteesIncludingLocals'); ?> </b> </a>
                         </div> 
                     </div>
                 </div>
@@ -542,7 +558,7 @@ unset($sevaSearch);
                                                 print_r("
                                                     <tr >
                                                     <td align='left'>
-                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . " &eventId=". $eventId . "'>" . $sevaDesc . "</a>
+                                                        <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "&eventId=" . $eventId . "'>" . $sevaDesc . "</a>
                                                     </td>
                                                     <td align='left' class='table-data'>
                                                         <a href='./devoteeSearchResult.php?mode=ADS&key=" . $sevaID . "&eventId=" . $eventId . "'>" . $assignCount . "</a>

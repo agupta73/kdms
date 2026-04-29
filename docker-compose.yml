@@ -1,4 +1,4 @@
-# Local stack: http://localhost:108/  (maps host 108 → container 8080)
+# Local stack: http://localhost/kdms/  (maps host 80 → container 8080; change to 8080:8080 if port 80 is busy)
 # Copy .env.example to .env and set MySQL (host.docker.internal:3306 if DB runs on the host Mac).
 version: "3.9"
 services:
@@ -6,14 +6,18 @@ services:
     build: .
     image: kdms:local
     ports:
-      - "108:8080"
+      - "80:8080"
     env_file:
       - .env
     
     environment:
       PORT: 8080
-      WEBROOT_URL: http://localhost:108/
-      API_BASE_URL: http://localhost:108/api/
+      # Serve app at /kdms (see docker/kdms-vhost-prefix.conf). Production images omit KDMS_APACHE_USE_PREFIX.
+      KDMS_APACHE_USE_PREFIX: "1"
+      WEBROOT_URL: http://localhost/kdms/
+      API_BASE_URL: http://localhost/kdms/api/
+      # Loopback + in-container path (must match KDMS_APACHE_USE_PREFIX URL).
+      KDMS_INTERNAL_ORIGIN: http://127.0.0.1:8080/kdms
       # Override .env for Docker → host MySQL (127.0.0.1 inside the container is wrong).
       KDMS_DB_HOST: host.docker.internal:3306
       # Optional: leave unset to use /kdms/ in legacy URL construction from HTTP_HOST

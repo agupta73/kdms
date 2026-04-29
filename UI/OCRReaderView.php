@@ -1,15 +1,14 @@
-<!DOCTYPE html>
 <?php
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$current_page_id = 'KD-DVT-SCR';
-include_once("../sessionCheck.php");
-include_once("header.php");
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
+include_once('header.php');
 $eventId = $config_data['event_id'];
-// Include new config file in each page ,where we need data from configuration
+
 ?>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>

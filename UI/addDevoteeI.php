@@ -1,28 +1,24 @@
 <?php
 
-//TODO: Amenity management needs event segregation
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE){
-    session_start();
-}
-$current_page_id = 'KD-DVT-I';
-include_once("../sessionCheck.php");
-$debug = false  ;
-?>
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>
-            KDMS (Add Devotee I)
-        </title>
-        <?php
-        include_once("header.php");
-        include_once("../Logic/clsDevoteeSearch.php");
-        include_once("../Logic/clsOptionHandler.php");
+declare(strict_types=1);
 
-        if($debug){var_dump($config_data); }
-        $requestData = $_GET;
-        $is_key_available=false;
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
+$config_data = include dirname(__DIR__) . '/site_config.php';
+$directoryName = getenv('KDMS_PATH_SEGMENT') ?: 'kdms';
+
+$debug = false;
+
+require_once __DIR__ . '/../Logic/clsDevoteeSearch.php';
+require_once __DIR__ . '/../Logic/clsOptionHandler.php';
+
+if ($debug) {
+    var_dump($config_data);
+}
+
+$requestData = $_GET;
+$response = null;
+$is_key_available = false;
         $devotee_key = "";
         $devotee_type = "T";
         $devotee_first_name = "";
@@ -59,13 +55,15 @@ $debug = false  ;
         $loadAccommodation = new clsOptionHandler("Accommodation");
         $loadAccommodation->setEventId($eventId);
         $accommodations = $loadAccommodation->getOptions();
-        unset($loadAccommodations);
+        unset($loadAccommodation);
         
         //load seva options and assigned devotee counts
         $loadSeva = new clsOptionHandler("Seva");
         $loadSeva->setEventId($eventId);
         $sevas = $loadSeva->getOptions();
         unset($loadSeva);
+        $accommodations = is_array($accommodations) ? $accommodations : [];
+        $sevas = is_array($sevas) ? $sevas : [];
 
         //Pre-populate devotee record in case of edit
         if (!empty($requestData['devotee_key'])) {
@@ -73,13 +71,17 @@ $debug = false  ;
             $is_key_available=true;
             $devoteeSearch = new clsDevoteeSearch($requestData);
             $response = $devoteeSearch->getDevoteeDetails($eventId);
+            if (! is_array($response)) {
+                $response = null;
+            }
 
             if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
 
             //assign values
-            if (!empty($response['Devotee_Key'])) {
-                $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093" 
-            }
+            if ($response !== null && is_array($response)) {
+                if (! empty($response['Devotee_Key'])) {
+                    $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093"
+                }
 
             if (!empty($response['Devotee_Type'])) {
                 $devotee_type = urldecode($response['Devotee_Type']); // "p" "P";
@@ -177,13 +179,24 @@ $debug = false  ;
            if (!empty($response['Accomodation_Key'])) {
                 $devotee_accommodation_id = urldecode($response['Accomodation_Key']); //  "" 
             }
+            }
         }
-    ?>
-    <script src="../assets/js/main/add_devotee.js"></script>
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            KDMS (Add Devotee I)
+        </title>
+        <?php include_once __DIR__ . '/header.php'; ?>
+
     <script>
-        var directoryName = '<?=$directoryName;?>';
+        window.kdmsRequestManagerUrl = <?= json_encode($config_data['webroot'] . 'Logic/requestManager.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
+        window.kdmsWebRoot = <?= json_encode($config_data['webroot'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
+        var directoryName = <?= json_encode($directoryName, JSON_HEX_TAG | JSON_HEX_APOS) ?>;
         var dataSaved = false;
     </script>
+    <script src="../assets/js/main/add_devotee.js"></script>
 </head>
 <body class="">
     <link href="../assets/demo/demo.css" rel="stylesheet" />
@@ -528,7 +541,7 @@ $debug = false  ;
                                             <button type="button" class="btn btn-success pull-right" onclick="saveFormData('#myForm', 0); return false;">Save and Exit</button>
                                             <?php
                                             $print_count_txt="";
-                                            if(!empty($response['print_count'])){
+                                            if(is_array($response) && !empty($response['print_count'])){
                                                 $print_count_txt="(".$response['print_count'].")";
                                             }
                                             if(!$devotee_blacklisted){
@@ -536,7 +549,7 @@ $debug = false  ;
                                                 $flagp=-1;
                                                 $pcount=0;
                                                 $classBtn="btn-success";
-                                                if(!empty($response['print_count'])&& $response['print_count']>=1){
+                                                if(is_array($response) && !empty($response['print_count'])&& $response['print_count']>=1){
                                                     $flagp=-2;
                                                     $pcount=$response['print_count'];
                                                     $classBtn="btn-danger";

@@ -1,15 +1,12 @@
 <?php
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-// Header removed for authentication-free access
-// Session check removed for authentication-free access
-include_once("../Logic/clsDevoteeSearch.php");
-include_once("../Logic/clsReportHandler.php");
-include_once("../Logic/clsOptionHandler.php");
-// Include new config file in each page
-$config_data = include("../site_config.php");
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
+include_once dirname(__DIR__) . '/Logic/clsDevoteeSearch.php';
+include_once dirname(__DIR__) . '/Logic/clsReportHandler.php';
+include_once dirname(__DIR__) . '/Logic/clsOptionHandler.php';
 
 $eventId = $config_data['event_id'];
 $debug = false;

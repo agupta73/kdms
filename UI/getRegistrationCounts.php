@@ -1,12 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/api_session.php';
+
 // getRegistrationCounts.php - Provides JSON data for AJAX refresh of registration counts
 header('Content-Type: application/json');
 
 // Include necessary files
-$config_data = include("../site_config.php");
-include_once("../Logic/clsDevoteeSearch.php");
-include_once("../Logic/clsReportHandler.php");
-include_once("../Logic/clsOptionHandler.php");
+include_once(dirname(__DIR__) . '/Logic/clsDevoteeSearch.php');
+include_once dirname(__DIR__) . '/Logic/clsReportHandler.php';
+include_once dirname(__DIR__) . '/Logic/clsOptionHandler.php';
 
 $eventId = $config_data['event_id'];
 $debug = false; // Set to true for debugging

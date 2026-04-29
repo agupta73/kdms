@@ -1,13 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+
 // Set timezone to IST for all date functions
 date_default_timezone_set('Asia/Kolkata');
 
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-include_once("../sessionCheck.php");
-$eventId = $config_data['event_id']; // This variable is set but not used in the provided snippet.
+$eventId = $config_data['event_id']; // Some paths may not consume this directly.
 $debug = false;
 
 $devotees_to_print = [];

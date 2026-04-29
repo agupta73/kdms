@@ -6,6 +6,14 @@ var newDevotee ={};
 //javascript function for ajax call
 function saveFormData(formId, flag) {
     var r =null; // so that we can access it outside .ajax();
+    var requestManagerUrl =
+        (typeof window.kdmsRequestManagerUrl === 'string' && window.kdmsRequestManagerUrl !== '')
+            ? window.kdmsRequestManagerUrl
+            : ('/' + directoryName + '/Logic/requestManager.php');
+    var webRoot =
+        (typeof window.kdmsWebRoot === 'string' && window.kdmsWebRoot !== '')
+            ? window.kdmsWebRoot
+            : ('/' + directoryName + '/');
     // Check if current devotee's data already saved.
     if (dataSaved) {
         if (!duplicateEntryBlocker(2)) {
@@ -18,7 +26,7 @@ function saveFormData(formId, flag) {
     var updateSuccess = false;
     if (validateInput()) {
         jQuery.ajax({
-            url: '/'+directoryName+'/Logic/requestManager.php',
+            url: requestManagerUrl,
             type: 'POST',
             data: formData,
             async: false,
@@ -41,7 +49,7 @@ function saveFormData(formId, flag) {
         //Save and stay on the record
         if (flag == 1 && updateSuccess) {
             alert("Devotee record updated successfully!");                        
-            window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
+            window.location.assign(webRoot + 'UI/addDevoteeI.php?devotee_key=' + encodeURIComponent(r['info']));
         }
         var check =false;
         if(flag== -2){
@@ -60,7 +68,7 @@ function saveFormData(formId, flag) {
             console.log("calling ajax to add devotee card. ;");   
             console.log('devotee_key' + r['info'] + 'requestType'+ "addToPrintQueue");
             $.ajax({
-                url: '/KDMS/Logic/requestManager.php',
+                url: requestManagerUrl,
                 type: 'POST',
                 //data: {'devotee_key': document.getElementById("devotee_key").value, 'requestType': "addToPrintQueue"},
                 data: {'devotee_key': r['info'], 'requestType': "addToPrintQueue"},
@@ -73,7 +81,7 @@ function saveFormData(formId, flag) {
                         alert("Devotee Record updated and card added to Print Queue!");
                         //window.location.assign("/KDMS/UI/devoteeSearchResult.php?mode=SET&key=CTP");
                         //window.location.assign("/KDMS/UI/addDevoteeI.php");
-                        window.location.assign("/KDMS/UI/addDevoteeI.php?devotee_key=" + r['info']);
+                        window.location.assign(webRoot + 'UI/addDevoteeI.php?devotee_key=' + encodeURIComponent(r['info']));
                     } else {
                         alert(r['message']);
                         updateSuccess = false;
@@ -84,7 +92,7 @@ function saveFormData(formId, flag) {
         //save and exit
         if (flag == 0 && updateSuccess) {
             alert("Devotee record updated successfully!");
-            window.location.assign("/KDMS/UI/index.php");
+            window.location.assign(webRoot + 'UI/index.php');
         }
     }
 }

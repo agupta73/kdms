@@ -605,6 +605,8 @@ Class Devotee {
                     , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
                     , acm.accomodation_name   
                     , da.accomodation_key
+                    , did.Devotee_ID_Image AS Devotee_ID_Image
+                    , dp.Devotee_Photo AS Devotee_Photo
                     , DATE_FORMAT(da.arrival_date_time,'%d/%m/%Y') AS arrival_date_time 
                     , IF (d.devotee_gender = 'M', 'Male', IF (d.devotee_gender = 'F', 'Female', d.devotee_gender)) AS devotee_gender
                     , d.devotee_id_type
@@ -613,8 +615,8 @@ Class Devotee {
                     , IFNULL(dr1.remarks, '--') AS remarks
                  FROM 
                     Devotee d 
-                    -- left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key
-                    -- left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key
+                    LEFT OUTER JOIN Devotee_ID did ON d.Devotee_Key = did.Devotee_Key
+                    LEFT OUTER JOIN Devotee_Photo dp ON d.Devotee_Key = dp.Devotee_Key
                     left outer join (SELECT daa.devotee_key, daa.allocation_event, GROUP_CONCAT(daa.amenity_key, ' - ', daa.amenity_quantity ORDER BY daa.amenity_key ASC SEPARATOR '; ' ) AS Allocations FROM devotee_amenities_allocation daa WHERE daa.allocation_event = '" . $eventId. "' GROUP BY daa.allocation_event, daa.devotee_key) d2a ON d.Devotee_Key=d2a.devotee_key 
                     left outer join (SELECT dr.remark_event, dr.devotee_key, replace(group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' <br> '), '||', '<br>') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
@@ -643,8 +645,10 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            //$row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            //$row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            $rawPhoto = $row->{'Devotee_Photo'} ?? null;
+            $rawId = $row->{'Devotee_ID_Image'} ?? null;
+            $row->{'Devotee_Photo'} = ($rawPhoto !== null && $rawPhoto !== '') ? base64_encode((string) $rawPhoto) : '';
+            $row->{'Devotee_ID_Image'} = ($rawId !== null && $rawId !== '') ? base64_encode((string) $rawId) : '';
             $devoteeSearchResult[]=$row;
             $i = $i+1;
         }

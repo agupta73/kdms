@@ -1,14 +1,6 @@
 <?php
 $debug = false;
-//include_once("../initialize.php");
-if (session_status() === PHP_SESSION_NONE){
-  session_start();
-}
-
-
-$current_page_id = "KD-DSBRD";
-include_once("../sessionCheck.php");
-$config_data=include("../site_config.php");
+$config_data = include dirname(__DIR__) . '/site_config.php';
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
