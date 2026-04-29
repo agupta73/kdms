@@ -1,6 +1,12 @@
-# Copy to terraform.tfvars and set image_tag to the immutable tag running in prod.
-# Current Artifact Registry tag (short SHA): use the GitHub Actions run output for the
-# last deploy, or: gcloud artifacts docker images list asia-south1-docker.pkg.dev/PROJECT/apps/kdms --include-tags --limit=5
+# Copy to terraform.tfvars. Deploy by digest (recommended) or by tag — set exactly one.
+#
+# Digest (pins the exact bytes in Artifact Registry; copy from "gcloud artifacts docker describe" or UI):
+#   image_digest = "sha256:ed35e404d46758de087fcd76bbcbe64663a931f91f1f84fadadd06bbd57f7523"
+#   image_tag    = ""
+#
+# Or tag only (short SHA from CI; must not be reused for different builds):
+#   image_digest = ""
+#   image_tag    = "f92d440"
 
 project_id            = "project-12f4b54b-d692-4583-83b"
 project_number        = "684080887473"
@@ -8,6 +14,7 @@ region                = "asia-south1"
 service_name          = "kdms-prod"
 ar_repo               = "apps"
 image_name            = "kdms"
+image_digest          = ""
 image_tag             = "f92d440"
 runtime_sa_email      = "run-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com"
 cloudsql_instance     = "mysql-skm-prod"

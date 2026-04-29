@@ -4,7 +4,10 @@ locals {
     "${var.project_id}:${var.region}:${var.cloudsql_instance}"
   )
 
-  image_uri = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.image_name}:${var.image_tag}"
+  # Pin by digest (preferred) or by tag — see variables image_digest / image_tag.
+  image_digest_hex = trimspace(var.image_digest) == "" ? "" : replace(trimspace(lower(var.image_digest)), "sha256:", "")
+  image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.image_name}"
+  image_uri        = local.image_digest_hex != "" ? "${local.image_base}@sha256:${local.image_digest_hex}" : "${local.image_base}:${trimspace(var.image_tag)}"
 
   # Public HTTPS URL without trailing slash (site_config derives WEBROOT / API URLs from these).
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.

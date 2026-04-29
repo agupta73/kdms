@@ -28,7 +28,7 @@ The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on 
 
 4. Pushes to **`main`** run **Build and push to Artifact Registry** and tag the image with the **short commit SHA** and **`branch-main`**. You can also run that workflow manually: **Actions** → **Build and push to Artifact Registry** → **Run workflow**.
 
-CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (after setting **`image_tag`** in **`terraform.tfvars`**) or with **`gcloud run services update`**.
+CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (after setting **`image_digest`** or **`image_tag`** in **`terraform.tfvars`**) or with **`gcloud run services update`**.
 
 ### Artifact Registry
 
@@ -37,11 +37,12 @@ Repository: **`apps`** in **`asia-south1`**, image **`kdms`**:
 
 Create the **`apps`** repository in GCP if it does not exist yet (once per project/region), or codify it in a separate bootstrap stack if you choose.
 
-### Production image tag
+### Production image: digest or tag
 
-Do **not** set **`image_tag`** to **`branch-main`** for production; use the **immutable short SHA** that CI published (see the Actions run output).
+- **Digest (recommended):** set **`image_digest`** to the **`sha256:…`** value from Artifact Registry for the image you intend to run, and set **`image_tag`** to **`""`**. Terraform deploys `…/kdms@sha256:…`, so the revision always matches that manifest — no ambiguity if a tag is reused elsewhere (e.g. GitHub vs GCP).
+- **Tag only:** set **`image_digest`** to **`""`** and **`image_tag`** to the **short git SHA** tag CI pushed to Artifact Registry. Do **not** use floating tags like **`branch-main`** for production; treat the short SHA as **immutable** (never move that tag to another image).
 
-Terraform inputs such as **`image_tag`**, **`app_url`**, and DB-related settings are documented in **`variables.tf`** and **`terraform.tfvars.example`**.
+See **`variables.tf`** and **`terraform.tfvars.example`** for **`app_url`** and other inputs.
 
 ## One-time setup
 
@@ -50,7 +51,7 @@ From the repository root:
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# edit image_tag to the SHA tag currently running in production
+# set image_digest (and image_tag = "") or image_tag (and image_digest = "")
 
 terraform init
 terraform workspace select prod || terraform workspace new prod
@@ -60,9 +61,9 @@ terraform plan
 
 ## Day-to-day deploys (new image)
 
-After CI builds and pushes `asia-south1-docker.pkg.dev/.../apps/kdms:<sha>`:
+After CI builds and pushes to `asia-south1-docker.pkg.dev/.../apps/kdms`:
 
-1. Update **`terraform.tfvars`**: `image_tag = "<new-sha>"`
+1. Update **`terraform.tfvars`**: either **`image_digest = "sha256:…"`** ( **`image_tag = ""`** ) or **`image_tag = "<short-sha>"`** ( **`image_digest = ""`** ).
 2. Plan and apply (from **`terraform/`**):
 
 ```bash
@@ -73,7 +74,7 @@ terraform apply plan.tfplan
 
 ## Rollback
 
-Set **`image_tag`** back to the previous immutable tag, then **`terraform plan`** and **`terraform apply`** as above.
+Set **`image_digest`** or **`image_tag`** back to the previous known-good value, then **`terraform plan`** and **`terraform apply`** as above.
 
 ## Teardown
 

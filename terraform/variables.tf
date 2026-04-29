@@ -34,9 +34,41 @@ variable "image_name" {
   default     = "kdms"
 }
 
-variable "image_tag" {
-  description = "Immutable container image tag (short git SHA from CI)."
+variable "image_digest" {
+  description = <<-EOT
+    Optional sha256 digest of the pushed image — pins the exact artifact; avoids tag reuse/mismatch between registries.
+    Accept 64 hex chars or "sha256:hex". When non-empty, it overrides image_tag in local.image_uri.
+    After push: gcloud artifacts docker images describe REGION-docker.pkg.dev/PROJECT/apps/kdms:TAG \
+      --format="value(image_summary.digest)"
+  EOT
   type        = string
+  default     = ""
+
+  validation {
+    condition = (
+      trimspace(var.image_digest) == ""
+      || can(regex("^sha256:[a-f0-9]{64}$", trimspace(lower(var.image_digest))))
+      || can(regex("^[a-f0-9]{64}$", trimspace(lower(var.image_digest))))
+    )
+    error_message = "image_digest must be empty, 64 hex chars, or sha256: plus 64 hex chars."
+  }
+}
+
+variable "image_tag" {
+  description = <<-EOT
+    Container tag (e.g. short git SHA) when image_digest is unset.
+    Set to empty string when deploying by digest only.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition = (
+      (trimspace(var.image_digest) != "" && trimspace(var.image_tag) == "") ||
+      (trimspace(var.image_digest) == "" && trimspace(var.image_tag) != "")
+    )
+    error_message = "Set exactly one of image_digest (recommended) or image_tag."
+  }
 }
 
 variable "runtime_sa_email" {

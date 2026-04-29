@@ -55,6 +55,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push
+        id: buildpush
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -63,3 +64,20 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.uri }}:${{ steps.meta.outputs.short }}
             ${{ steps.meta.outputs.uri }}:branch-main
+
+      # Ensures the manifest exists where Terraform expects. Digests from GHCR, another GCP
+      # project, or a local-only build will not validate here.
+      - name: Verify image in Artifact Registry
+        env:
+          URI: ${{ steps.meta.outputs.uri }}
+          DIGEST: ${{ steps.buildpush.outputs.digest }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DIGEST" ]; then echo "::error::Build did not emit a digest."; exit 1; fi
+          DIGEST_NORM="$DIGEST"
+          case "$DIGEST_NORM" in sha256:*);; *) DIGEST_NORM="sha256:${DIGEST_NORM}";; esac
+          REF="${URI}@${DIGEST_NORM}"
+          echo "::notice::terraform: image_digest = \"${DIGEST_NORM}\""
+          echo "Full ref: ${REF}"
+          gcloud artifacts docker images describe "${REF}" --format='value(name)' >/dev/null
+          echo "OK — manifest present in ${PROJECT_ID} Artifact Registry."
