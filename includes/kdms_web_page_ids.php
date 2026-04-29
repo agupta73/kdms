@@ -26,6 +26,7 @@ return [
     'addDevoteeI.php'          => 'KD-DVT-I',
     'addSevaI.php'             => 'KD-SEVA-I',
     'addSevaII.php'            => 'KD-SEVA-II',
+    'AddSevaII.php'             => 'KD-SEVA-II',
     'devoteeSearchResult.php'  => 'KD-DVT-SCR',
     'upsertAmenityI.php'       => 'KD-AMT-I',
     'upsertAmenityII.php'      => 'KD-AMT-II',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/web_session.php';
 
+$config_data = include dirname(__DIR__) . '/site_config.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,8 +84,11 @@ require_once dirname(__DIR__) . '/includes/web_session.php';
                             <table class="table table-striped">
                               <?php
                               $recordCount = 0;
-                              if (!empty($response)) {
-                                foreach ($response as $accommodationRecord) {
+                              $accoRows = (is_array($response) && array_key_exists(0, $response))
+                                  ? $response
+                                  : [];
+                              if ($accoRows !== []) {
+                                foreach ($accoRows as $accommodationRecord) {
                                   $accomodationKey = "--Unavailable--";
                                   $accomodationName = "--Unavailable--";
                                   $accomodationCapacity = "--";

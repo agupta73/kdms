@@ -3,6 +3,35 @@ function _(el) {
 }
 var newDevotee ={};
 
+/** Parse KDMS JSON from Logic/requestManager.php or APIs; handle session 401 JSON. */
+function kdmsParseAjaxJson(response) {
+    try {
+        var raw = typeof response === 'string' ? response.trim() : '';
+        if (raw === '') {
+            alert('Empty response from server.');
+            return null;
+        }
+        var o = JSON.parse(raw);
+        if (o && o.ok === false) {
+            var msg =
+                o.error === 'unauthenticated'
+                    ? 'Your session expired or you are not signed in. Please sign in again and retry.'
+                    : o.error === 'forbidden'
+                    ? 'You do not have permission for this action.'
+                    : (o.message || JSON.stringify(o));
+            alert(msg);
+            return null;
+        }
+        return o;
+    } catch (e) {
+        console.error('KDMS: non-JSON response', e, response);
+        alert(
+            'Unexpected server response (not valid JSON). If you are logged in, check the browser Network tab.'
+        );
+        return null;
+    }
+}
+
 //javascript function for ajax call
 function saveFormData(formId, flag) {
     var r =null; // so that we can access it outside .ajax();
@@ -32,8 +61,10 @@ function saveFormData(formId, flag) {
             async: false,
             success: function (response) {
                 console.log(response);
-                    
-                r = JSON.parse(response);
+                r = kdmsParseAjaxJson(response);
+                if (r === null) {
+                    return;
+                }
 
                 if (r['flag'] == true) {
                     updateSuccess = true;
@@ -41,10 +72,13 @@ function saveFormData(formId, flag) {
                     document.getElementById("devotee_key").value = r['info'];
                     duplicateEntryBlocker(1);
                 } else {
-                    alert(r['message']);
+                    alert(typeof r.message !== 'undefined' ? r.message : 'Save failed.');
                     updateSuccess = false;
                 }
-            }
+            },
+            error: function (xhr) {
+                alert('Save request failed (HTTP ' + xhr.status + ').');
+            },
         });
         //Save and stay on the record
         if (flag == 1 && updateSuccess) {
@@ -74,19 +108,25 @@ function saveFormData(formId, flag) {
                 data: {'devotee_key': r['info'], 'requestType': "addToPrintQueue"},
                 async: false,
                 success: function (response) {
-
-                    var r = JSON.parse(response);
-
-                    if (r['flag'] == true) {
+                    var r2 = kdmsParseAjaxJson(response);
+                    if (r2 === null) {
+                        updateSuccess = false;
+                        return;
+                    }
+                    if (r2['flag'] == true) {
                         alert("Devotee Record updated and card added to Print Queue!");
-                        //window.location.assign("/KDMS/UI/devoteeSearchResult.php?mode=SET&key=CTP");
-                        //window.location.assign("/KDMS/UI/addDevoteeI.php");
-                        window.location.assign(webRoot + 'UI/addDevoteeI.php?devotee_key=' + encodeURIComponent(r['info']));
+                        window.location.assign(
+                            webRoot + 'UI/addDevoteeI.php?devotee_key=' + encodeURIComponent(r2['info'])
+                        );
                     } else {
-                        alert(r['message']);
+                        alert(typeof r2.message !== 'undefined' ? r2.message : 'Print queue update failed.');
                         updateSuccess = false;
                     }
-                }
+                },
+                error: function (xhr) {
+                    alert('Print queue request failed (HTTP ' + xhr.status + ').');
+                    updateSuccess = false;
+                },
             });
         }
         //save and exit

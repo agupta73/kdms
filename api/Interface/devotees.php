@@ -251,8 +251,8 @@ Class Devotee {
         while($row = $results->fetchObject()){
             $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
             $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
-            $devoteeSearchResult[]=$row;
-            $i = $i+1;
+            $devoteeSearchResult[] = $row;
+            $i = $i + 1;
         }
         //var_dump($devoteeSearchResult);
         if($i==0){
@@ -353,8 +353,8 @@ Class Devotee {
         while($row = $results->fetchObject()){
             $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
             $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
-            $devoteeSearchResult[]=$row;
-            $i = $i+1;
+            $devoteeSearchResult[] = $row;
+            $i = $i + 1;
         }
         //var_dump($devoteeSearchResult);
         if($i==0){

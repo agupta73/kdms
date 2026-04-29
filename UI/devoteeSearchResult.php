@@ -440,10 +440,11 @@ if (!empty($response)) {
             $devoteeCellNumber = urldecode($devoteeRecord['devotee_cell_phone_number']);
         }
 
+        $devoteePhoto = '';
+        $devoteeIdImage = '';
         if (!empty($devoteeRecord['Devotee_Photo'])) {
             $devoteePhoto = $devoteeRecord['Devotee_Photo'];
         }
-
         if (!empty($devoteeRecord['Devotee_ID_Image'])) {
             $devoteeIdImage = $devoteeRecord['Devotee_ID_Image'];
         }
@@ -473,20 +474,18 @@ if (!empty($response)) {
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
                         </td><td>");
-            //<img src='../assets/img/faces/devotee.ico' height='70px' width='70px' alt='Devotee Image' />
-            if ($devoteePhoto == "") {
+            if ($devoteePhoto === "") {
                 print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70px" width="75px"></img>');
             } else {
                 print_r('<img src="data:image/jpeg;base64,' . $devoteePhoto . '" alt="devotee image" height="70px" width="70px"></img>');
             }
 
             print_r("</td> <td>");
-            //"<img src='../assets/img/faces/doc.png' height='70px' width='70px' alt='Devotee Scan ID' /> " ;
 
-            if ($devoteeIdImage == "") {
+            if ($devoteeIdImage === "") {
                 print_r('<img src="../assets/img/faces/doc.png" alt="Devotee ID Image" height="65px" width="65px"></img>');
             } else {
-                print_r('<img src="data:image/jpeg;base64,' . $devoteeIdImage . '" alt="devotee image" height="70px" width="70px"></img>');
+                print_r('<img src="data:image/jpeg;base64,' . $devoteeIdImage . '" alt="devotee ID image" height="70px" width="70px"></img>');
             }
 
             print_r("</td> </td> </tr>");

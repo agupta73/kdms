@@ -538,13 +538,7 @@ class clsOptions {
             $i = $i+1;
         }
         }
-        //var_dump($AccomodationDetail);
-        if($i==0){
-            $AccomodationDetail['status'] = false;
-            $AccomodationDetail['message'] = "Accommodation details not found!";
-            $AccomodationDetail['info'] = $results !== false ? $results : null;
-        }
-        
+
         return $AccomodationDetail;
     }
   
@@ -587,13 +581,7 @@ class clsOptions {
             $i = $i+1;
         }
         }
-        //var_dump($AccomodationDetail);
-        if($i==0){
-            $Sevas['status'] = false;
-            $Sevas['message'] = "Seva records not found!";
-            $Sevas['info'] = $results !== false ? $results : null;
-        }
-        
+
         return $Sevas;
     }
 

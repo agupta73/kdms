@@ -261,7 +261,7 @@ if (! is_array($sevaRes)) {
                         <div class="card-footer">
                             <div class="stats">
                                 <i class="material-icons text-danger">refresh</i>
-                                <a href="AddSevaII.php" class="dash-link">Manage Seva Types</a>
+                                <a href="addSevaII.php" class="dash-link">Manage Seva Types</a>
                             </div>
                         </div>
                         <div class="card-footer" >
