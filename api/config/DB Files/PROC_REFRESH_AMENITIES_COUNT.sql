@@ -1,4 +1,4 @@
-DROP PROCEDURE PROC_REFRESH_AMENITIES_COUNT;
+DROP PROCEDURE IF EXISTS `PROC_REFRESH_AMENITIES_COUNT`;
 
 DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REFRESH_AMENITIES_COUNT`(
@@ -15,15 +15,15 @@ BEGIN
 
 	DECLARE csr_amenity CURSOR FOR
       SELECT
-    am.amenity_key,
-    COUNT(daa.amenity_key),
-    am.amenity_quantity
+    am.`Amenity_Key`,
+    COUNT(daa.`Amenity_Key`),
+    am.`Amenity_Quantity`
 FROM
-    Amenity_Master am
-LEFT OUTER JOIN devotee_amenities_allocation daa ON
-    am.amenity_key = daa.amenity_key AND daa.Allocation_Event = p_Event_Id AND daa.Amenity_Allocation_Status = 'Allocated'
+    `amenity_master` am
+LEFT OUTER JOIN `devotee_amenities_allocation` daa ON
+    am.`Amenity_Key` = daa.`Amenity_Key` AND daa.`Allocation_Event` = p_Event_Id AND daa.`Amenity_Allocation_Status` = 'Allocated'
 GROUP BY
-    am.amenity_key;
+    am.`Amenity_Key`;
 
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = 1 ;
     
@@ -36,13 +36,13 @@ GROUP BY
             
             IF v_finished = 0 THEN
             	UPDATE
-                    amenities_availability
+                    `amenities_availability`
                 SET
-                    allocated_count = v_amenity_count,
-                    available_count = v_amenity_quantity - (reserved_count + out_of_availability_count + v_amenity_count)
+                    `Allocated_Count` = v_amenity_count,
+                    `Available_Count` = v_amenity_quantity - (`Reserved_Count` + `Out_of_Availability_Count` + v_amenity_count)
                 WHERE
-                    amenity_key = v_amenity_key AND
-                    allocation_event = p_Event_Id;
+                    `Amenity_Key` = v_amenity_key AND
+                    `Allocation_event` = p_Event_Id;
                     
                     IF DEBUG = true THEN
 						CALL logIt(concat('PROC_REFRESH_AMENITY_COUNT: AMENITY_KEY is: ', v_amenity_key, ' and allocation_event is: ', p_Event_Id, ' and assigned count is : ', v_amenity_count));

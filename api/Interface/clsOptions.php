@@ -156,7 +156,7 @@ class clsOptions {
         else{
             $res['status'] = false;
             $res['message'] = "[Accommodation] Upserting Accommodation Record Failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
   
@@ -228,7 +228,7 @@ class clsOptions {
         else{
             $res['status'] = false;
             $res['message'] = "[Seva] Upserting Seva Record Failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
   
@@ -295,8 +295,8 @@ class clsOptions {
         }
         else{
             $res['status'] = false;
-            $res['message'] = "[Seva] Upserting Event Record Failed at API!!";
-            $res['info'] = $stmt;
+            $res['message'] = "[Event] Upserting Event Record Failed at API!!";
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
 
@@ -401,7 +401,7 @@ class clsOptions {
         else{
             $res['status'] = false;
             $res['message'] = "[Amenity] Upserting Amenity Record Failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
   
@@ -836,7 +836,7 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
         else{
             $AmenityDetail['status'] = false;
             $AmenityDetail['message'] = "Amenity details not found!";
-            $AmenityDetail['info'] = $results;
+            $AmenityDetail['info'] = '';
         }
         
         return $AmenityDetail;
@@ -860,7 +860,7 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
         else{
             $res['status'] = false;
             $res['message'] = "[Accommodation] Refreshing accomodation count failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
     }
@@ -882,7 +882,7 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
         else{
             $res['status'] = false;
             $res['message'] = "[Amenity] Refreshing amenity count failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
     }
@@ -904,7 +904,7 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
         else{
             $res['status'] = false;
             $res['message'] = "[Seva] Refreshing seva count failed at API!!";
-            $res['info'] = $stmt;
+            $res['info'] = $stmt->errorInfo();
         }
         return $res;
     }

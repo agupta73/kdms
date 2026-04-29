@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/web_session.php';
 
-$eventId = $config_data['event_id']; // This variable is set but is not always used elsewhere.
+/** @var array<string,mixed> $config_data Set by initialize.php via web_session; fallback ensures tooling/runtime always have site config */
+$config_data ??= include dirname(__DIR__) . '/site_config.php';
+
+$eventId = isset($config_data['event_id']) ? (string) $config_data['event_id'] : '';
 $debug = false;
 
 $devotees_to_print = [];
@@ -58,6 +61,9 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
     // To debug processed data: var_dump($devotees_to_print);
     die;
 }
+
+$webroot = isset($config_data['webroot']) ? rtrim((string) $config_data['webroot'], '/') . '/' : '';
+$bannerImgSrc = $webroot . 'assets/img/banner.png';
 ?>
 <html>
 <head>
@@ -147,33 +153,13 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
             }
         }, false);
 
+        /**
+         * Print the current page. We no longer use a popup: browsers block window.open() when it runs
+         * from DOMContentLoaded (no user gesture), which left popupWin null and caused
+         * "Cannot read properties of null (reading 'document')". @media print + .no-print hide chrome.
+         */
         function printDivContent() {
-            var printContent = document.getElementById("printpage").innerHTML;
-            var pageStyles = "";
-            // Collect all style rules
-            for (let i = 0; i < document.styleSheets.length; i++) {
-                try {
-                    var rules = document.styleSheets[i].cssRules || document.styleSheets[i].rules;
-                    for (let j = 0; j < rules.length; j++) {
-                        pageStyles += rules[j].cssText + "\n";
-                    }
-                } catch (e) {
-                    // Catch potential cross-origin stylesheet errors
-                    console.warn("Could not read styles from stylesheet: " + document.styleSheets[i].href, e);
-                }
-            }
-
-            var popupWin = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-            popupWin.document.open();
-            popupWin.document.write('<html><head><title>Print Card</title>');
-            popupWin.document.write('<style type="text/css">' + pageStyles + '</style>');
-            popupWin.document.write('</head><body onload="window.print(); window.close();">');
-            popupWin.document.write(printContent);
-            popupWin.document.write('</body></html>');
-            popupWin.document.close();
-
-            // Optional: Close the original window if this page is only a launcher
-            // window.close();
+            window.print();
             return false;
         }
     </script>
@@ -184,7 +170,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
     <?php if (!empty($devotees_to_print)): ?>
         <?php foreach ($devotees_to_print as $index => $devotee): ?>
         <div class="card-item" id="card-<?php echo $index; ?>">
-            <img src="/kdms/assets/img/banner.png" height="35px" width="314px" alt="Banner" class="banner">
+            <img src="<?php echo htmlspecialchars($bannerImgSrc, ENT_QUOTES, 'UTF-8'); ?>" height="35" width="314" alt="Banner" class="banner">
             <div style="padding: 5px;">
                 <span class="devotee-name">
                     <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>

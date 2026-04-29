@@ -47,10 +47,10 @@ BEGIN
 	CREATE TEMPORARY TABLE t_aa_result
     SELECT aa.* 
 	FROM   accommodation_availability aa
-	LEFT OUTER JOIN Event_Master em on aa.Accommodation_Event = em.event_ID  
+	LEFT OUTER JOIN event_master em on aa.Accommodation_Event = em.`Event_ID`  
     LEFT OUTER JOIN accommodation_availability_archive aaa ON (aa.accomodation_Key = aaa.accomodation_key 
 		AND aa.accommodation_event = aaa.accommodation_event)
-	WHERE em.event_Status = 'Closed' AND aa.Accommodation_Event <> p_Event_ID AND aaa.accomodation_key IS NULL ;
+	WHERE em.`Event_Status` = 'Closed' AND aa.Accommodation_Event <> p_Event_ID AND aaa.accomodation_key IS NULL ;
     
      -- >>> DEBUG block
     IF DEBUG THEN
@@ -87,10 +87,10 @@ BEGIN
 	CREATE TEMPORARY TABLE t_sa_result
     SELECT sa.* 
 	FROM   seva_availability sa
-	LEFT OUTER JOIN Event_Master em on sa.Seva_Event = em.event_ID  
+	LEFT OUTER JOIN event_master em on sa.Seva_Event = em.`Event_ID`  
     LEFT OUTER JOIN seva_availability_archive saa ON (sa.seva_id = saa.seva_id 
 		AND sa.seva_event = saa.seva_event)
-	WHERE em.event_Status = 'Closed' AND sa.Seva_Event <> p_Event_ID AND saa.seva_id IS NULL ;
+	WHERE em.`Event_Status` = 'Closed' AND sa.Seva_Event <> p_Event_ID AND saa.seva_id IS NULL ;
     
      -- >>> DEBUG block
     IF DEBUG THEN

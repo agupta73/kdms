@@ -26,10 +26,10 @@ echo "------------------------------------------------------------OS and Store P
 $browser = $_SERVER['HTTP_USER_AGENT'];
 if ((strpos($browser, 'Ubuntu') >= 0)) {
     // Check table
-    $sql = "SELECT * from Event_Master";
+    $sql = "SELECT * from event_master";
     $result = $con->query($sql);
     if (!$result) {
-        echo "Check if Event_Master table exists! <br>";
+        echo "Check if event_master table exists! <br>";
         echo "If yes , Please check if it is in Camelcase.Table refrences in All Store procedures, are in Camel case";
         die;
     } else {
@@ -38,7 +38,7 @@ if ((strpos($browser, 'Ubuntu') >= 0)) {
 }
 echo "------------------------------------------------------------Event Setting--------------------------------<br />";
 include_once 'site_config.php';
-echo "Current event ID is ".$event_id." Please check Event_Master table. Make single event as \"current\" and change same in site_config.php ";
+echo "Current event ID is ".$event_id." Please check event_master table. Make single event as \"current\" and change same in site_config.php ";
 /*
  *  Convert table name to camelcase
  */

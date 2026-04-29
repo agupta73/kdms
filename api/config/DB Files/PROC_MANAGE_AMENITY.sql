@@ -12,10 +12,10 @@ BEGIN
 
 
 SELECT  IFNULL(SUM(Amenity_Quantity),0) INTO v_past_amenity_quantity
-	FROM    Devotee_Amenities_Allocation
+	FROM    devotee_amenities_allocation
 	WHERE   Devotee_Key = p_Devotee_Key AND Amenity_Key = p_Amenity_Key AND Amenity_Allocation_Status = 'Allocated' AND Allocation_Event = p_Allocation_Event ;
 
-REPLACE INTO `Devotee_Amenities_Allocation`
+REPLACE INTO `devotee_amenities_allocation`
 (
     `Amenity_Key`,
     `Devotee_Key`,
@@ -37,13 +37,13 @@ VALUES
 );
 
 UPDATE
-    Amenities_Availability
+    amenities_availability
 SET
     Allocated_Count = Allocated_Count + p_Amenity_Quantity,
     Available_Count = Available_Count - p_Amenity_Quantity
 WHERE
     Amenity_Key = p_Amenity_Key
-    AND Allocation_Event = p_Allocation_Event ;
+    AND Allocation_event = p_Allocation_Event ;
 
 
 IF p_Amenity_Quantity > 0 THEN
@@ -52,7 +52,7 @@ ELSE
 	SET    v_amenity_action = 'Returned' ;
 END IF ;
     
-INSERT INTO `Amenities_Allocation_Log`(
+INSERT INTO `amenities_allocation_log`(
 	`Amenity_Key`,
 	`Devotee_Key`,
     `Amenity_Quantity`,

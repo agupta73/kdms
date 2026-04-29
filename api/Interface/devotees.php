@@ -501,26 +501,55 @@ Class Devotee {
                         echo 'Connection failed: ' . $e->getMessage();
                 }
     }
+
+    /**
+     * Parse comma-separated devotee keys from UI or legacy prints (may include extra quotes / HTML entities).
+     *
+     * @return list<string>
+     */
+    private function normalizeDevoteeKeysFromRequest(string $raw): array
+    {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return [];
+        }
+        if (strpos($raw, '&#') !== false || strpos($raw, '&quot;') !== false) {
+            $raw = html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+        $parts = preg_split('/\s*,\s*/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $out = [];
+        foreach ($parts as $p) {
+            $p = trim($p);
+            $p = trim($p, "'\"`\s");
+            $p = strip_tags($p);
+            if ($p !== '' && preg_match('/^[A-Za-z0-9_-]{3,64}$/', $p)) {
+                $out[] = $p;
+            }
+        }
+
+        return array_values(array_unique($out));
+    }
     
     private function getDevoteeDetailsForPrint($requestData, $eventId = ""){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
         $errormsg = "";
-        $status = true;
-        
-        if (empty($requestData)) {
+
+        $keysNormalized = $this->normalizeDevoteeKeysFromRequest((string) $requestData);
+
+        if (empty($keysNormalized)) {
             $errormsg .= "Devotee keys for printing not supplied.";
-            $status = false;
-        }
-        
-        if ($status == false) {
-            $res['status'] = $status;
+            $res['status'] = false;
             $res['message'] = $errormsg;
             return $res;
-            die;
         }
-       
+
+        $inClause = implode(',', array_map(function ($k) {
+            return $this->conn->quote($k);
+        }, $keysNormalized));
+        $qEvent = $this->conn->quote((string) $eventId);
+
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name " .
                     ", d.devotee_station, d.devotee_status, d.devotee_cell_phone_number " .
@@ -532,10 +561,10 @@ Class Devotee {
                     " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
                     " left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                    " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
+                    " AND da.Accommodation_Event = " . $qEvent . " AND da.Accomodation_Status = 'Allocated' " .
                     " left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
-                    "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
+                    "d.devotee_key in (" . $inClause . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
                 
         
            
@@ -559,7 +588,7 @@ Class Devotee {
         if($i==0){
             $devoteeSearchResult['status'] = false;
             $devoteeSearchResult['message'] = "No record found!";
-            $devoteeSearchResult['info'] = $results !== false ? $results : null;
+            $devoteeSearchResult['info'] = '';
         }
 
         return $devoteeSearchResult;
@@ -1400,72 +1429,96 @@ Class Devotee {
 
     public function manageCardPrinting($requestData)
     {
-        $res = array();
-        $res['status'] = false;
-        $res['message'] = '';
-        $res['info'] = '';
-        $errormsg = "Error occured";
-        $status = true;
-        $query = array();
-        $Print_Record_Updated_By = 'Anil'; //to be fixed userid
-        $now = date('Y-m-d H:i:s');
-        
+        $res = array(
+            'status' => false,
+            'message' => '',
+            'info' => '',
+        );
+        $Print_Record_Updated_By = 'Anil';
 
         if (empty($requestData['devotee_key'])) {
-            $errormsg .= " Devotee Key is missing.";
-            $status = false;
-        } else {
-            $Devotee_Key = htmlspecialchars(strip_tags($requestData['devotee_key']));
+            $res['message'] = ' Devotee Key is missing.';
+            return $res;
         }
 
-        if($this->debug){echo $requestData['eventId'];  var_dump($requestData); }
-        if ($requestData['requestType'] == "addToPrintQueue") {
-            $query[0] = "REPLACE INTO `card_print_log`(
+        $normalizedKeys = $this->normalizeDevoteeKeysFromRequest((string) $requestData['devotee_key']);
+        if (empty($normalizedKeys)) {
+            $res['message'] = ' Invalid or empty devotee key(s).';
+            return $res;
+        }
+
+        $byUserQuoted = $this->conn->quote($Print_Record_Updated_By);
+        $inClause = implode(',', array_map(function ($k) {
+            return $this->conn->quote($k);
+        }, $normalizedKeys));
+
+        $query = [];
+        $rq = $requestData['requestType'] ?? '';
+
+        if ($rq === 'addToPrintQueue') {
+            foreach ($normalizedKeys as $k) {
+                $qk = $this->conn->quote($k);
+                $query[] = 'REPLACE INTO `card_print_log`(
                     `Devotee_Key`,
                     `Print_Status`,
                     `Print_Requested_Date_Time`,
                     `Print_Requested_By_User`
-                )
-                VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";           
+                ) VALUES(' . $qk . ", 'A', NOW(), {$byUserQuoted})";
+            }
+        } elseif ($rq === 'removeFromPrintQueue') {
+            $query[] = 'REPLACE INTO `card_print_archive` SELECT * FROM `card_print_log` WHERE `Devotee_Key` IN (' . $inClause . ')';
+            $query[] = 'DELETE FROM `card_print_log` WHERE `Devotee_Key` IN (' . $inClause . ')';
+            $query[] = 'DELETE FROM `card_print_archive`
+                WHERE `Devotee_Key` NOT IN (
+                    SELECT `Devotee_Key` FROM (
+                        SELECT `Devotee_Key` FROM `card_print_archive` ORDER BY `Print_Requested_Date_Time` LIMIT 25
+                    ) AS tmp
+                )';
 
+            if (!empty($requestData['eventId'])) {
+                $eventId = trim(strip_tags((string) $requestData['eventId']));
+                $eventId = preg_replace('/[^\w.-]/', '', $eventId);
+                if ($eventId !== '') {
+                    $qEvent = $this->conn->quote($eventId);
+                    $printedBy = $this->conn->quote('Admin');
+                    $chunks = [];
+                    foreach ($normalizedKeys as $k) {
+                        $qk = $this->conn->quote($k);
+                        $chunks[] = '(' . $qk . ',' . $qEvent . ',' . $printedBy . ', NOW())';
+                    }
+                    $query[] = 'INSERT INTO `print_log`(
+                        `Devotee_Key`,
+                        `Event_Id`,
+                        `Print_Requested_By_User`,
+                        `Print_Date_Time`
+                    ) VALUES ' . implode(',', $chunks);
+                }
+            }
         } else {
-            //$query = "UPDATE `card_print_log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
-            $query[0] = "REPLACE INTO `card_print_archive` SELECT * FROM card_print_log WHERE devotee_key in (" . $Devotee_Key . ")";
-            $query[1] = "DELETE from `card_print_log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
-            $query[2] = "DELETE from `card_print_archive` 
-                    WHERE `Devotee_Key` not in 
-                    (select devotee_key from 
-                    (select devotee_key from card_print_archive order by print_requested_date_time limit 25) tmp 
-                    )";
-             if(!empty($requestData['eventId'])){ // Not for remove from queue.
-                 $all_devotees= explode(",",$Devotee_Key);
-                 $values_ary=[];
-                 foreach($all_devotees as $dvKey){
-                     $values_ary[]="(".$dvKey.",'".$requestData['eventId']."','Admin',NOW())";
-                 }
-                 $values_ary= implode(",",$values_ary);
-                 $query[3] = "INSERT INTO `print_log`(
-                    `Devotee_Key`,
-                    `Event_Id`,
-                    `Print_Requested_By_User`,
-                    `Print_Date_Time`
-                )
-                VALUES" .$values_ary;
-             }      
-             
+            $res['message'] = ' Invalid request type for card printing.';
+            return $res;
         }
-        //echo "<pre>";
-       if($this->debug){echo "here.. >"; var_dump($query);}
+
+        if ($this->debug) {
+            echo isset($requestData['eventId']) ? (string) $requestData['eventId'] : '';
+            var_dump($requestData);
+            var_dump($query);
+        }
+
         $res['status'] = true;
-        $res['message'] = "";
-        $res['info'] = $Devotee_Key;
-        for ($i = 0; $i < sizeof($query); $i++) {
-            $stmt = $this->conn->prepare($query[$i]);
-            if($this->debug){var_dump($stmt);}
+        $res['message'] = '';
+        $res['info'] = implode(',', $normalizedKeys);
+
+        foreach ($query as $sql) {
+            $stmt = $this->conn->prepare($sql);
+            if ($this->debug) {
+                var_dump($stmt);
+            }
             if (!$stmt->execute()) {
                 $res['status'] = false;
-                $res['message'] = "[Card Print] Adding/Removing Devotee Card to/from print queue failed at API!! Error INfo: " . $query[$i];
-                $res['info'] = $stmt;
+                $res['message'] = '[Card Print] Adding/Removing Devotee Card to/from print queue failed.';
+                $res['info'] = $stmt->errorInfo();
+                break;
             }
         }
 

@@ -55,7 +55,7 @@ $eventId = $config_data['event_id'];
                     if (printForm[I].value != "") {
                         //alert(searchForm[I].id + ": " + searchForm[I].value);
                         if (printForm[I].type == 'checkbox' && printForm[I].checked) {
-                            printString = printString + "'" + encodeURI(printForm[I].value) + "',";
+                            printString = printString + printForm[I].value + ",";
                         }
                     }
                 }
@@ -110,7 +110,7 @@ $eventId = $config_data['event_id'];
                     if (printForm[I].value != "") {
                         //alert(searchForm[I].id + ": " + searchForm[I].value);
                         if (printForm[I].type == 'checkbox' && printForm[I].checked) {
-                            printString = printString + "'" + encodeURI(printForm[I].value) + "',";
+                            printString = printString + printForm[I].value + ",";
                         }
                     }
                 }
