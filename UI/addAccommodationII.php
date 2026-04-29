@@ -99,31 +99,32 @@ $config_data = include dirname(__DIR__) . '/site_config.php';
 
 
                                   if (!empty($accommodationRecord['accomodation_key'])) {
-                                    $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
+                                    $accomodationKey = urldecode((string) $accommodationRecord['accomodation_key']);
                                   }
 
                                   if (!empty($accommodationRecord['Accomodation_Name'])) {
-                                    $accomodationName = urldecode($accommodationRecord['Accomodation_Name']);
+                                    $accomodationName = urldecode((string) $accommodationRecord['Accomodation_Name']);
                                   }
 
-                                  if (!empty($accommodationRecord['Accomodation_Capacity'])) {
-                                    $accomodationCapacity = urldecode($accommodationRecord['Accomodation_Capacity']);
+                                  // JSON / PDO may return ints for numeric columns; PHP 8+ urldecode() requires string.
+                                  if (isset($accommodationRecord['Accomodation_Capacity']) && $accommodationRecord['Accomodation_Capacity'] !== '') {
+                                    $accomodationCapacity = (string) $accommodationRecord['Accomodation_Capacity'];
                                   }
 
-                                  if (!empty($accommodationRecord['Reserved_Count'])) {
-                                    $reservedCount = urldecode($accommodationRecord['Reserved_Count']);
+                                  if (isset($accommodationRecord['Reserved_Count']) && $accommodationRecord['Reserved_Count'] !== '') {
+                                    $reservedCount = (string) $accommodationRecord['Reserved_Count'];
                                   }
 
-                                  if (!empty($accommodationRecord['Out_Of_Availability_Count'])) {
-                                    $outOfAvailabilityCount = $accommodationRecord['Out_Of_Availability_Count'];
+                                  if (isset($accommodationRecord['Out_Of_Availability_Count']) && $accommodationRecord['Out_Of_Availability_Count'] !== '') {
+                                    $outOfAvailabilityCount = (string) $accommodationRecord['Out_Of_Availability_Count'];
                                   }
 
-                                  if (!empty($accommodationRecord['Allocated_Count'])) {
-                                    $allocatedCount = $accommodationRecord['Allocated_Count'];
+                                  if (isset($accommodationRecord['Allocated_Count']) && $accommodationRecord['Allocated_Count'] !== '') {
+                                    $allocatedCount = (string) $accommodationRecord['Allocated_Count'];
                                   }
 
-                                  if (!empty($accommodationRecord['Available_Count'])) {
-                                    $availableCount = $accommodationRecord['Available_Count'];
+                                  if (isset($accommodationRecord['Available_Count']) && $accommodationRecord['Available_Count'] !== '') {
+                                    $availableCount = (string) $accommodationRecord['Available_Count'];
                                   }
 
                                   if ($accomodationKey != "--Unavailable--") {
