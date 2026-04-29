@@ -422,6 +422,9 @@ if (! is_array($sevaRes)) {
                                             $recordCount = 0;
                                             if (!empty($AccoResponse)) {
                                                 foreach ($AccoResponse as $accommodationRecord) {
+                                                    if (! is_array($accommodationRecord)) {
+                                                        continue;
+                                                    }
                                                     $accomodationKey = "--Unavailable--";
                                                     $accomodationName = "--Unavailable--";
                                                     $accomodationCapacity = "--";
@@ -431,33 +434,47 @@ if (! is_array($sevaRes)) {
                                                     $availableCount = "--";
                                                     $occupiedCount = "--";
 
+                                                    $k = $accommodationRecord['accomodation_key']
+                                                        ?? $accommodationRecord['Accomodation_Key'] ?? null;
+                                                    $nm = $accommodationRecord['accomodation_name']
+                                                        ?? $accommodationRecord['Accomodation_Name'] ?? null;
+                                                    $cap = $accommodationRecord['accomodation_capacity']
+                                                        ?? $accommodationRecord['Accomodation_Capacity'] ?? null;
+                                                    $allo = $accommodationRecord['allocated_count']
+                                                        ?? $accommodationRecord['Allocated_Count'] ?? null;
+                                                    $resa = $accommodationRecord['reserved_count']
+                                                        ?? $accommodationRecord['Reserved_Count'] ?? null;
+                                                    $ooo = $accommodationRecord['Out_of_Availability_Count']
+                                                        ?? $accommodationRecord['out_of_availability_count'] ?? null;
+                                                    $avail = $accommodationRecord['available_count']
+                                                        ?? $accommodationRecord['Available_Count'] ?? null;
 
-                                                    if (!empty($accommodationRecord['accomodation_key'])) {
-                                                        $accomodationKey = urldecode($accommodationRecord['accomodation_key']);
+                                                    if (!empty($k)) {
+                                                        $accomodationKey = urldecode((string) $k);
                                                     }
 
-                                                    if (!empty($accommodationRecord['accomodation_name'])) {
-                                                        $accomodationName = urldecode($accommodationRecord['accomodation_name']);
+                                                    if (!empty($nm)) {
+                                                        $accomodationName = urldecode((string) $nm);
                                                     }
 
-                                                    if (!empty($accommodationRecord['accomodation_capacity'])) {
-                                                        $accomodationCapacity = urldecode($accommodationRecord['accomodation_capacity']);
+                                                    if (!empty($cap) || $cap === '0' || $cap === 0) {
+                                                        $accomodationCapacity = is_scalar($cap) ? (string) $cap : urldecode((string) $cap);
                                                     }
-                                                    
-                                                    if (!empty($accommodationRecord['allocated_count'])) {
-                                                        $allocatedCount = $accommodationRecord['allocated_count'];
-                                                    }
-                                                    
-                                                    if (!empty($accommodationRecord['reserved_count'])) {
-                                                        $reservedCount = urldecode($accommodationRecord['reserved_count']);
-                                                    }                                                    
 
-                                                    if (!empty($accommodationRecord['Out_of_Availability_Count'])) {
-                                                        $outOfAvailabilityCount = $accommodationRecord['Out_of_Availability_Count'];
+                                                    if (!empty($allo) || $allo === '0' || $allo === 0) {
+                                                        $allocatedCount = $allo;
                                                     }
-                                                    
-                                                    if (!empty($accommodationRecord['available_count'])) {
-                                                        $availableCount = $accommodationRecord['available_count'];
+
+                                                    if (!empty($resa) || $resa === '0' || $resa === 0) {
+                                                        $reservedCount = urldecode((string) $resa);
+                                                    }
+
+                                                    if (!empty($ooo) || $ooo === '0' || $ooo === 0) {
+                                                        $outOfAvailabilityCount = $ooo;
+                                                    }
+
+                                                    if (!empty($avail) || $avail === '0' || $avail === 0) {
+                                                        $availableCount = $avail;
                                                     }
                                                     
                                                     if ($accomodationKey != "--Unavailable--") {
@@ -538,20 +555,27 @@ if (! is_array($sevaRes)) {
                                     $sevaRecordCount = 0;
                                     if (!empty($sevaRes)) {
                                         foreach ($sevaRes as $sevaRecord) {
+                                            if (! is_array($sevaRecord)) {
+                                                continue;
+                                            }
                                             $sevaID = "--Unavailable--";
                                             $sevaDesc = "--Unavailable--";
                                             $assignCount = "--";
 
-                                            if (!empty($sevaRecord['Seva_Id'])) {
-                                                $sevaID = urldecode($sevaRecord['Seva_Id']);
+                                            $sid = $sevaRecord['Seva_Id'] ?? $sevaRecord['seva_id'] ?? null;
+                                            $sd = $sevaRecord['Seva_Description'] ?? $sevaRecord['seva_description'] ?? null;
+                                            $ac = $sevaRecord['assigned_count'] ?? null;
+
+                                            if ($sid !== null && $sid !== '') {
+                                                $sevaID = urldecode((string) $sid);
                                             }
 
-                                            if (!empty($sevaRecord['Seva_Description'])) {
-                                                $sevaDesc = urldecode($sevaRecord['Seva_Description']);
+                                            if ($sd !== null && $sd !== '') {
+                                                $sevaDesc = urldecode((string) $sd);
                                             }
 
-                                            if (!empty($sevaRecord['assigned_count'])) {
-                                                $assignCount = $sevaRecord['assigned_count'];
+                                            if ($ac !== null && $ac !== '') {
+                                                $assignCount = $ac;
                                             }
                                             if ($sevaDesc != "--Unavailable--") {
                                                 $sevaRecordCount = $sevaRecordCount + 1;                         

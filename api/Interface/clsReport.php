@@ -85,8 +85,8 @@ class clsReport {
                 " aa.allocated_count," .
                 " aa.Out_of_Availability_Count" .
                 " FROM" .
-                " Accommodation_Availability aa" .
-                " LEFT OUTER JOIN Accommodation_Master am ON" .
+                " accommodation_availability aa" .
+                " LEFT OUTER JOIN accommodation_master am ON" .
                 " aa.accomodation_key = am.Accomodation_Key" .
                 " WHERE";
 
@@ -138,6 +138,9 @@ class clsReport {
         $results = $this->conn->query($query);
 
         $accommodationResult = array();
+        if ($results === false) {
+            return $accommodationResult;
+        }
         $i = 0;
         while ($row = $results->fetchObject()) {
             $accommodationResult[] = $row;
@@ -158,35 +161,35 @@ class clsReport {
 
 
         //1. Total devotees present in the ashram
-        $query[0] = "SELECT sum(acco.allocated_Count) as SpaceOccupiedOrDevoteesPresent FROM `Accommodation_Availability` acco WHERE acco.available_count < 1000 ";
+        $query[0] = "SELECT sum(acco.allocated_Count) as SpaceOccupiedOrDevoteesPresent FROM `accommodation_availability` acco WHERE acco.available_count < 1000 ";
 
         //2. Total devotees registered this year
-        $query[1] = "select sum(acco.Allocated_Count) as RegisteredDevoteesIncludingLocals from Accommodation_Availability acco WHERE 1=1 ";
+        $query[1] = "select sum(acco.Allocated_Count) as RegisteredDevoteesIncludingLocals from accommodation_availability acco WHERE 1=1 ";
         //" where Availability_Update_Date_Time >= DATE_SUB(NOW(), INTERVAL 3 MONTH)" ;
         //3. Total spaces available for allocation
-        $query[2] = "SELECT sum(acco.Available_Count) as AvailableSpaces FROM `Accommodation_Availability` acco where acco.Available_Count < 1000";
+        $query[2] = "SELECT sum(acco.Available_Count) as AvailableSpaces FROM `accommodation_availability` acco where acco.Available_Count < 1000";
 
         //4. Total spaces reserved
-        $query[3] = "SELECT sum(acco.Reserved_Count) as ReservedSpaces FROM `Accommodation_Availability` acco where acco.Available_Count < 1000";
+        $query[3] = "SELECT sum(acco.Reserved_Count) as ReservedSpaces FROM `accommodation_availability` acco where acco.Available_Count < 1000";
 
         //5. Total devotees with own arrangement
-        $query[4] = "SELECT sum(acco.allocated_Count) as DevoteesWithOwnArrangements FROM `Accommodation_Availability` acco WHERE acco.available_count > 1000";
+        $query[4] = "SELECT sum(acco.allocated_Count) as DevoteesWithOwnArrangements FROM `accommodation_availability` acco WHERE acco.available_count > 1000";
 
         //6. Total mature devotees (12 years or older))
-        $query[5] = "SELECT count(distinct dm.devotee_key) as MatureDevotee FROM `Devotee_Accomodation` acco
-                        LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),devotee_dob)), '%Y') + 0) < 60 
+        $query[5] = "SELECT count(distinct dm.devotee_key) as MatureDevotee FROM devotee_accomodation acco
+                        LEFT OUTER JOIN devotee dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), dm.Devotee_DOB)), '%Y') + 0) < 60 
                     WHERE  acco.accomodation_status = 'Allocated' ";
 
         //7. Total Senior devotees (60 Years or Older)
-        $query[6] = "SELECT count(distinct dm.devotee_key) as SeniorDevotee FROM `Devotee_Accomodation` acco
-                        LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),devotee_dob)), '%Y') + 0) >= 60 
+        $query[6] = "SELECT count(distinct dm.devotee_key) as SeniorDevotee FROM devotee_accomodation acco
+                        LEFT OUTER JOIN devotee dm ON acco.devotee_key = dm.devotee_key AND (DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), dm.Devotee_DOB)), '%Y') + 0) >= 60 
                     WHERE  acco.accomodation_status = 'Allocated' AND dm.devotee_key IS NOT NULL ";
 
         //8. Total Male and female devotees
-        $query[7] = "SELECT count(distinct dm.devotee_key) as MaleDevotee, count(df.devotee_key) as FemaleDevotee, count(du.devotee_key) as UnknownGender FROM `Devotee_Accomodation` acco
-                        LEFT OUTER JOIN `Devotee` dm ON acco.devotee_key = dm.devotee_key AND dm.devotee_gender = 'M'
-                        LEFT OUTER JOIN `Devotee` df ON acco.devotee_key = df.devotee_key AND df.devotee_gender = 'F'
-                        LEFT OUTER JOIN `Devotee` du ON acco.devotee_key = du.devotee_key AND (du.devotee_gender = '' OR du.devotee_gender is null)
+        $query[7] = "SELECT count(distinct dm.devotee_key) as MaleDevotee, count(df.devotee_key) as FemaleDevotee, count(du.devotee_key) as UnknownGender FROM devotee_accomodation acco
+                        LEFT OUTER JOIN devotee dm ON acco.devotee_key = dm.devotee_key AND dm.devotee_gender = 'M'
+                        LEFT OUTER JOIN devotee df ON acco.devotee_key = df.devotee_key AND df.devotee_gender = 'F'
+                        LEFT OUTER JOIN devotee du ON acco.devotee_key = du.devotee_key AND (du.devotee_gender = '' OR du.devotee_gender is null)
                      WHERE acco.accomodation_status = 'Allocated' ";
         
         

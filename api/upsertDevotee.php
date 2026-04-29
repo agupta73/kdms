@@ -104,14 +104,12 @@ if (!empty($requestData['requestType'])) {
     $response = array('flag' => false, 'message' => "Request data empty", 'info' => $requestData);
 }
 
-if (!empty($res['status'])) {
-
-    if ($res['status']) {
-        $response = array('flag' => true, 'message' => $res['message'], 'info' => $res['info']);
-    } else {
-        $response = array('flag' => false, 'message' => $res['message'], 'info' => $res['info']);
-    }
-
+if (isset($res['status'])) {
+    $response = array(
+        'flag' => (bool) $res['status'],
+        'message' => (string) ($res['message'] ?? ''),
+        'info' => $res['info'] ?? null,
+    );
 }
 echo json_encode($response);
 die;

@@ -63,7 +63,7 @@ Class Image {
 //            }
 //        } else {
 //            // In devotee table
-//            $query02 = "INSERT INTO Devotee
+//            $query02 = "INSERT INTO devotee
 //                   SET
 //                Devotee_Key=:id";
 //            $stmt02 = $this->conn->prepare($query02);
@@ -73,7 +73,7 @@ Class Image {
 //            }
 //
 //            // In photo table
-//            $query2 = "INSERT INTO Devotee_Photo
+//            $query2 = "INSERT INTO devotee_photo
 //                   SET
 //                Devotee_Key=:id,
 //                Devotee_Photo=:photo;";
@@ -104,7 +104,7 @@ Class Image {
         // To devotee table 
 
         if ($is_update) {
-            $query0 = "REPLACE INTO Devotee_Photo
+            $query0 = "REPLACE INTO devotee_photo
                         SET
                         Devotee_Key=:id,
                         Devotee_Photo=:photo,
@@ -123,7 +123,7 @@ Class Image {
             }
         } else {
             // In devotee table
-            $query02 = "INSERT INTO Devotee
+            $query02 = "INSERT INTO devotee
                    SET
                 Devotee_Key=:id";
             $stmt02 = $this->conn->prepare($query02);
@@ -133,7 +133,7 @@ Class Image {
             }
         
             // In photo table
-            $query2 = "INSERT INTO Devotee_Photo
+            $query2 = "INSERT INTO devotee_photo
                    SET
                 Devotee_Key=:id,
                 Devotee_Photo=:photo,
@@ -168,7 +168,7 @@ Class Image {
         // To devotee table 
 
         if ($is_update) {
-            $query0 = "REPLACE INTO Devotee_ID
+            $query0 = "REPLACE INTO devotee_id
                         SET
                         Devotee_ID_Image=:photo,
                         Devotee_Key=:id,
@@ -189,7 +189,7 @@ Class Image {
             }
         } else {
             // In devotee table
-            $query02 = "INSERT INTO Devotee
+            $query02 = "INSERT INTO devotee
                    SET
                 Devotee_Key=:id";
             $stmt02 = $this->conn->prepare($query02);
@@ -199,7 +199,7 @@ Class Image {
             }
         
             // In photo table
-            $query2 = "INSERT INTO Devotee_ID
+            $query2 = "INSERT INTO devotee_id
                         SET
                         Devotee_Key=:id,
                         Devotee_ID_Image=:photo,
@@ -210,13 +210,12 @@ Class Image {
             $stmt2->bindParam(":type", $type);
             
             try {
-                $stmt->execute();
-                $error_info = $stmt->errorInfo();
-                if (!empty($error_info[0] != '00000')) {
+                $stmt2->execute();
+                $error_info = $stmt2->errorInfo();
+                if ($error_info[0] !== '00000') {
                     print_r($error_info);
                     die;
                 }
-                //print_r($stmt->errorInfo());
             } catch (Exception $e) {
                 echo 'Error : ' . $e->getMessage();
                 die;
@@ -247,7 +246,7 @@ Class Image {
          */
         // To devotee table 
         if ($is_update) {  //
-            $query0 = "REPLACE INTO Devotee_ID
+            $query0 = "REPLACE INTO devotee_id
                         SET
                         Devotee_ID_Image=:photo,
                         Devotee_Key=:id,
@@ -271,7 +270,7 @@ Class Image {
             return true;
         } else {
             // In devotee table
-            $query02 = "INSERT INTO Devotee
+            $query02 = "INSERT INTO devotee
                    SET
                 Devotee_Key=:id";
             $stmt02 = $this->conn->prepare($query02);
@@ -282,7 +281,7 @@ Class Image {
 
             // In ID table
             $type = "self";
-            $query2 = "INSERT INTO Devotee_ID
+            $query2 = "INSERT INTO devotee_id
                    SET
                 Devotee_Key=:id,
                 Devotee_ID_Image=:photo,

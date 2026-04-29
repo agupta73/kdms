@@ -239,8 +239,10 @@ md = {
   },
 
   initSidebarsCheck: function() {
+    // Do not use global $sidebar: window resize may fire before document.ready assigns it.
+    var $sb = $('.sidebar');
     if ($(window).width() <= 991) {
-      if ($sidebar.length != 0) {
+      if ($sb.length !== 0) {
         md.initRightMenu();
       }
     }

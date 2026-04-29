@@ -37,7 +37,7 @@ class clsDashboard {
         
         // Execute the query
         $devoteeResults = array();
-        $result = $this->conn->query($query, MYSQLI_USE_RESULT);
+        $result = $this->conn->query($query);
         if (!empty($row = $result->fetchObject())) {
             $devoteeResults[0] = $row;
             if($this->debug){var_dump($row);}

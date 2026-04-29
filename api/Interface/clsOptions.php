@@ -519,8 +519,8 @@ class clsOptions {
         
         $query = "SELECT am.accomodation_key, am.`Accomodation_Name`, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, IFNULL(am.Accomodation_Capacity, 0) AS Accomodation_Capacity , " .
             " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count,0) AS Out_Of_Availability_Count " .
-            " FROM `Accommodation_Master` am " .
-            " LEFT OUTER JOIN Accommodation_Availability aa " .
+            " FROM `accommodation_master` am " .
+            " LEFT OUTER JOIN accommodation_availability aa " .
             " ON am.accomodation_key = aa.accomodation_key ";
 
         if($eventId != "") {
@@ -528,19 +528,21 @@ class clsOptions {
         }
         if($this->debug){ return $query; die;}
         $results = $this->conn->query($query);
-        
+
         $AccomodationDetail = array();
         $i = 0;
+        if ($results !== false) {
         while($row = $results->fetchObject()){
             //var_dump($row);
             $AccomodationDetail[]=$row;
             $i = $i+1;
         }
+        }
         //var_dump($AccomodationDetail);
         if($i==0){
             $AccomodationDetail['status'] = false;
             $AccomodationDetail['message'] = "Accommodation details not found!";
-            $AccomodationDetail['info'] = $results;
+            $AccomodationDetail['info'] = $results !== false ? $results : null;
         }
         
         return $AccomodationDetail;
@@ -556,14 +558,15 @@ class clsOptions {
         
         // Event must filter the JOIN (not WHERE): WHERE sa.seva_event = … drops LEFT JOIN rows
         // without a matching availability row — so the seva list looked “empty”.
-        $joinOn = 'sm.seva_id = sa.Seva_Id';
+        // DB column is seva_id (lowercase); sa.Seva_Id fails on case-sensitive MySQL → query false → 500.
+        $joinOn = 'sm.seva_id = sa.seva_id';
         if ($eventId !== '') {
             $joinOn .= ' AND sa.seva_event = ' . $this->conn->quote($eventId);
         }
 
-        $query = 'SELECT sm.Seva_Id, sm.Seva_Description, COALESCE(sa.assigned_count, 0) AS assigned_count '
-            . 'FROM `Seva_Master` sm '
-            . 'LEFT OUTER JOIN `Seva_Availability` sa ON (' . $joinOn . ') '
+        $query = 'SELECT sm.seva_id AS Seva_Id, sm.seva_description AS Seva_Description, COALESCE(sa.assigned_count, 0) AS assigned_count '
+            . 'FROM `seva_master` sm '
+            . 'LEFT OUTER JOIN `seva_availability` sa ON (' . $joinOn . ') '
             . 'WHERE 1=1 ';
 
         if ($key === 'Assigned') {
@@ -574,19 +577,21 @@ class clsOptions {
             echo $query;
         }
         $results = $this->conn->query($query);
-        
+
         $Sevas = array();
         $i = 0;
+        if ($results !== false) {
         while($row = $results->fetchObject()){
             //var_dump($row);
             $Sevas[]=$row;
             $i = $i+1;
         }
+        }
         //var_dump($AccomodationDetail);
         if($i==0){
             $Sevas['status'] = false;
             $Sevas['message'] = "Seva records not found!";
-            $Sevas['info'] = $results;
+            $Sevas['info'] = $results !== false ? $results : null;
         }
         
         return $Sevas;
@@ -642,7 +647,7 @@ class clsOptions {
 
 
         $query = "SELECT em.Event_Id, em.Event_Description, em.Event_Status " .
-            " FROM `Event_Master` em " ;
+            " FROM `event_master` em " ;
 
 
         $results = $this->conn->query($query);
@@ -674,8 +679,8 @@ class clsOptions {
         
         $query = "SELECT am.amenity_key, am.`Amenity_Name`, am.Amenity_Status, aa.Available_Count, am.Amenity_Quantity,
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count
-            FROM `Amenity_Master` am 
-            LEFT OUTER JOIN Amenities_Availability aa 
+            FROM `amenity_master` am 
+            LEFT OUTER JOIN amenities_availability aa 
             ON am.amenity_key = aa.amenity_key";
         
         
@@ -708,8 +713,8 @@ class clsOptions {
         
         $query = "SELECT am.Accomodation_Key, am.`Accomodation_Name`, am.Accomodation_Capacity, IFNULL(aa.Available_Count, am.Accomodation_Capacity) AS Available_Count, " .
             " IFNULL(aa.Allocated_Count, 0) AS Allocated_Count, IFNULL(aa.Reserved_Count, 0) AS Reserved_Count, IFNULL(aa.Out_Of_Availability_Count, 0) AS Out_Of_Availability_Count " . //, aa.Available_Count " .
-            " FROM `Accommodation_Master` am " .
-            " LEFT OUTER JOIN Accommodation_Availability aa " .
+            " FROM `accommodation_master` am " .
+            " LEFT OUTER JOIN accommodation_availability aa " .
             " ON am.accomodation_key = aa.accomodation_key AND aa.accommodation_event = '" . $eventId . "'" .
             " WHERE am.accomodation_key = '" . $accommodationKey . "'";
         
@@ -741,7 +746,7 @@ class clsOptions {
         
         
         $query = "SELECT sm.Seva_ID, sm.`Seva_Description`
-            FROM `Seva_Master` sm             
+            FROM `seva_master` sm             
             WHERE sm.seva_id = '" . $sevaKey . "'";
         
         
@@ -772,7 +777,7 @@ class clsOptions {
 
 
         $query = "SELECT em.Event_ID, em.`Event_Description`, em.Event_Status
-            FROM `Event_Master` em             
+            FROM `event_master` em             
             WHERE em.event_ID = '" . $eventID . "'";
 
 
@@ -804,8 +809,8 @@ class clsOptions {
 $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, IFNULL(aa.Available_Count, 0) as Available_Count, 
             IFNULL(aa.Allocated_Count, 0) as Allocated_Count, IFNULL(aa.Reserved_Count, 0) as Reserved_Count, 
             IFNULL(aa.Out_Of_Availability_Count,0) as Out_Of_Availability_Count, IFNULL(aa.Available_Count, 0) as Available_Count
-        FROM `Amenity_Master` am 
-            LEFT OUTER JOIN Amenities_Availability aa ON am.amenity_key = aa.amenity_key ";
+        FROM `amenity_master` am 
+            LEFT OUTER JOIN amenities_availability aa ON am.amenity_key = aa.amenity_key ";
             
          if($eventId != ""){
             $query = $query . "AND allocation_event = '" . $eventId . "'";
@@ -816,8 +821,8 @@ $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Ameni
 
 /* $query = "SELECT am.Amenity_Key, am.`Amenity_Name`,  am.Amenity_Status, am.Amenity_Quantity, aa.Available_Count, 
             aa.Allocated_Count, aa.Reserved_Count, aa.Out_Of_Availability_Count, aa.Available_Count
-            FROM `Amenity_Master` am 
-            LEFT OUTER JOIN Amenities_Availability aa 
+            FROM `amenity_master` am 
+            LEFT OUTER JOIN amenities_availability aa 
             ON am.amenity_key = aa.amenity_key 
             WHERE am.amenity_key = '" . $amenityKey . "'";
         */

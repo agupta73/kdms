@@ -133,7 +133,7 @@ variable "kdms_event_id" {
 }
 
 variable "app_url" {
-  description = "APP_URL — public HTTPS URL of the Cloud Run service."
+  description = "Canonical public HTTPS URL of this Cloud Run service (no trailing slash), e.g. https://myservice-xxxx.asia-south1.run.app — must NOT include a /kdms path; production DocRoot maps to /. Used for WEBROOT_URL/API_BASE_URL derivation."
   type        = string
   default     = "https://kdms-prod-zeqw3ha4ya-el.a.run.app"
 }

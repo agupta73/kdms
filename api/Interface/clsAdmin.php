@@ -104,15 +104,23 @@ class clsAdmin
                     , um.User_Email
                     , um.User_Phone
                     , IFNULL(GROUP_CONCAT(ua.asset_key SEPARATOR ',' ), '') as Access
-                FROM User_Master um 
-                LEFT OUTER JOIN User_Access ua ON (um.user_key = ua.user_role_key OR um.user_role = ua.user_role_key) AND ua.access_value <> 'NONE' AND ua.access_value IS NOT NULL
+                FROM user_master um 
+                LEFT OUTER JOIN user_access ua ON (um.User_Key = ua.user_role_key OR um.User_Role = ua.user_role_key) AND ua.access_value <> 'NONE' AND ua.access_value IS NOT NULL
                 WHERE  um.User_Key = '" . $userID . "' AND um.User_Password = '" . $password . "'
-                GROUP BY um.user_role, um.user_key ";
+                GROUP BY um.User_Role, um.User_Key ";
 
         if ($this->debug) {
             echo "from clsAdmin->checkLogin ", $query, "<br>";
         }
-        $results = $this->conn->query($query);
+        try {
+            $results = $this->conn->query($query);
+        } catch (PDOException $e) {
+            return [
+                'status'  => false,
+                'message' => 'Login query failed.',
+                'info'    => $e->getMessage(),
+            ];
+        }
         if ($results === false) {
             $err = $this->conn->errorInfo();
 

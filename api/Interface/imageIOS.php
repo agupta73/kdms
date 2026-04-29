@@ -39,7 +39,7 @@ Class ImageIOS {
 //                        WHERE 
 //                        Devotee_Key=:id";
                  
-            $query0 = "REPLACE INTO Devotee_Photo
+            $query0 = "REPLACE INTO devotee_photo
                         SET
                         Devotee_Photo=:photo,
                         Devotee_Key=:id,
@@ -90,7 +90,7 @@ Class ImageIOS {
 //                        WHERE 
 //                        Devotee_Key=:id";
                  
-            $query0 = "REPLACE INTO Devotee_ID
+            $query0 = "REPLACE INTO devotee_id
                         SET
                         Devotee_ID_Image=:photo,
                         Devotee_Key=:id,

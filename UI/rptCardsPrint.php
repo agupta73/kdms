@@ -10,16 +10,26 @@ $debug = false;
 $devotees_to_print = [];
 
 if (!empty($_GET['key'])) {
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+    include_once dirname(__DIR__) . '/Logic/clsDevoteeSearch.php';
     // Assuming clsDevoteeSearch handles sanitization of $_GET['key'] internally
     $devoteeSearch = new clsDevoteeSearch($_GET);
     $response = $devoteeSearch->getDevoteeRecords($eventId);
     unset($devoteeSearch);
 
-    if (!empty($response)) {
-        foreach ($response as $devoteeRecord) {
+    if (is_array($response) || is_object($response)) {
+        foreach ((array) $response as $key => $devoteeRecord) {
+            // API may mix list rows with {status, message} when empty / error — skip metadata keys only
+            if (in_array((string) $key, ['status', 'message', 'info'], true)) {
+                continue;
+            }
+            if (is_object($devoteeRecord)) {
+                $devoteeRecord = (array) $devoteeRecord;
+            }
+            if (! is_array($devoteeRecord)) {
+                continue;
+            }
             $get_val = function ($key, $default = "N/A") use ($devoteeRecord) {
-                return !empty($devoteeRecord[$key]) ? urldecode($devoteeRecord[$key]) : $default;
+                return !empty($devoteeRecord[$key]) ? urldecode((string) $devoteeRecord[$key]) : $default;
             };
 
             $devotee_key = $get_val('devotee_key');
@@ -180,7 +190,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                     <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
                 </span>
                 <!-- This is for prasad vitran -->
-                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos($devotee['devotee_referral'], 'devesh') === 0) : // Day Visitor Card ?>
+                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos((string) ($devotee['devotee_referral'] ?? ''), 'devesh') === 0) : // Day Visitor Card ?>
                     <span class="devotee-status" style="font-size: 14px;">
                         <?php echo '( ' . $devotee['key'] . ' )'; ?>
                     </span>

@@ -4,7 +4,7 @@ Class Devotee {
 
     //TODO: modify PROC_REPLACE_DEVOTEE_W_SEVA_I - it doesn't have Seva availability handled yet
     private $conn;
-    private $table_name = "Devotee";
+    private $table_name = "devotee";
     private $debug = false;
     //private $eventId = "";
 // constructor with $db as database connection
@@ -108,20 +108,20 @@ Class Devotee {
                     ", did.Devotee_ID_Type as DID_Devotee_ID_Type " .
                     ", dp.Photo_type, dp.Devotee_Photo, da.Accomodation_Key " .
                    // ", dd.Devotee_Address_1, dd.Devotee_Address_2, dd.Devotee_State, dd.Devotee_State as Devotee_station, dd.Devotee_Zip, dd.Devotee_Country, dd.Devotee_email " .
-                    ", (SELECT count(*) from Print_log where Devotee_Key= '" . $devotee_key . "' AND Event_Id = '". $eventId . "') print_count ".
+                    ", (SELECT count(*) from print_log where Devotee_Key= '" . $devotee_key . "' AND Event_Id = '". $eventId . "') print_count ".
                  "from " .
-                    "Devotee d " .
-                    "left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    "left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    "left outer join Devotee_Accomodation da on d.Devotee_key=da.Devotee_Key AND da.accommodation_event = '". $eventId . "' AND Accomodation_Status = 'Allocated'  " .
+                    "devotee d " .
+                    "left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
+                    "left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    "left outer join devotee_accomodation da on d.Devotee_key=da.Devotee_Key AND da.accommodation_event = '". $eventId . "' AND Accomodation_Status = 'Allocated'  " .
                     // "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
-                    "left outer join Devotee_Seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
+                    "left outer join devotee_seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
                     " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
                     
         if($this->debug) {return $query; die;}
 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
 
         $DevoteeDetails = array();
@@ -176,12 +176,12 @@ Class Devotee {
                     ", d.Devotee_ID_Number " .
                     ", am.accomodation_name " .
                  "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                    " devotee d ".
+                    " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key  " .
                         " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Accommodation_master am on da.accomodation_key=am.accomodation_key  " ;
+                    " left outer join accommodation_master am on da.accomodation_key=am.accomodation_key  " ;
                     // " left outer join Devotee_Demographics dd on d.devotee_key = dd.devotee_key";
                 
         switch ($requestData){
@@ -206,14 +206,14 @@ Class Devotee {
             
             case "CTP": //Card print queue
                 $query = $query .
-                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
                           . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status != 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 
                 break;
             
             case "TMP": // temporary Card print queue
                 $query = $query .
-                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
                           . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status = 'D' and d.Devotee_Type = 'T' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
 
                 break;
@@ -222,7 +222,7 @@ Class Devotee {
 
                 case "RPC": //Recently printed Cards
                     $query = $query .
-                                " LEFT OUTER JOIN Card_Print_Archive cpl on d.Devotee_Key = cpl.Devotee_Key "
+                                " LEFT OUTER JOIN card_print_archive cpl on d.Devotee_Key = cpl.Devotee_Key "
                               . " WHERE cpl.Print_Status = 'A'  ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                     
                     break;
@@ -244,7 +244,7 @@ Class Devotee {
         }
 
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeSearchResult = array();
         $i = 0;
@@ -291,12 +291,12 @@ Class Devotee {
                     ", did.Devotee_ID_Image " .
                     ", dp.Devotee_Photo ".
                  "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                    " devotee d ".
+                    " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key  " .
                         " AND da.Accomodation_year = YEAR(NOW()) AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Accommodation_master am on da.accomodation_key=am.accomodation_key ";
+                    " left outer join accommodation_master am on da.accomodation_key=am.accomodation_key ";
                 
                 
         switch ($requestData){
@@ -321,13 +321,13 @@ Class Devotee {
             
             case "CTP": //Card print queue
                 $query = $query .
-                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
                           . " WHERE cpl.Print_Status = 'A'  and d.Devotee_Status != 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 break;
 
             case "TMP": //Card print queue
                 $query = $query .
-                            " LEFT OUTER JOIN Card_Print_Log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
                           . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status = 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 break;
             
@@ -346,7 +346,7 @@ Class Devotee {
         
         //var_dump($query);die;
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeSearchResult = array();
         $i = 0;
@@ -474,7 +474,7 @@ Class Devotee {
     private function dynamicSearchDevotee($requestData) {
     
         try {
-                $query = "SELECT * FROM `Devotee` WHERE "
+                $query = "SELECT * FROM devotee WHERE "
                         . "`Devotee_First_Name` like :requestData OR "
                         . "`Devotee_Last_Name` like :requestData OR "
                         . "`Devotee_Station` like :requestData OR "
@@ -528,12 +528,12 @@ Class Devotee {
                     ", acm.accomodation_name " .
                     ", dp.Devotee_Photo ".
                  "from " .
-                    " Devotee d ".
-                    " left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key " .
-                    " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key  " .
+                    " devotee d ".
+                    " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
+                    " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
+                    " left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key  " .
                     " AND da.Accommodation_Event = '" . $eventId . "' AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key " .
+                    " left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key " .
                  "where " .
                     "d.devotee_key in (" . $requestData . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
                 
@@ -543,23 +543,25 @@ Class Devotee {
            echo $query; die;
        }
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
-        
+        $results = $this->conn->query($query);
+
         $devoteeSearchResult = array();
         $i = 0;
-        while($row = $results->fetchObject()){
-            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            
-            $devoteeSearchResult[]=$row;
-            $i = $i+1;
+        if ($results !== false) {
+            while ($row = $results->fetchObject()) {
+                $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'} ?? '');
+
+                $devoteeSearchResult[]=$row;
+                $i = $i+1;
+            }
         }
         //var_dump($devoteeSearchResult);die;
         if($i==0){
             $devoteeSearchResult['status'] = false;
             $devoteeSearchResult['message'] = "No record found!";
-            $devoteeSearchResult['info'] = $results;
+            $devoteeSearchResult['info'] = $results !== false ? $results : null;
         }
-        
+
         return $devoteeSearchResult;
     }
     
@@ -590,10 +592,10 @@ Class Devotee {
                     , did.Devotee_ID_Image 
                     , dp.Devotee_Photo
                  from 
-                    Devotee d 
-                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
-                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
+                    devotee d 
+                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' ";
 
 */
 
@@ -614,13 +616,13 @@ Class Devotee {
                     , IFNULL(d2a.allocations, '--') AS allocations
                     , IFNULL(dr1.remarks, '--') AS remarks
                  FROM 
-                    Devotee d 
-                    LEFT OUTER JOIN Devotee_ID did ON d.Devotee_Key = did.Devotee_Key
-                    LEFT OUTER JOIN Devotee_Photo dp ON d.Devotee_Key = dp.Devotee_Key
+                    devotee d 
+                    LEFT OUTER JOIN devotee_id did ON d.Devotee_Key = did.Devotee_Key
+                    LEFT OUTER JOIN devotee_photo dp ON d.Devotee_Key = dp.Devotee_Key
                     left outer join (SELECT daa.devotee_key, daa.allocation_event, GROUP_CONCAT(daa.amenity_key, ' - ', daa.amenity_quantity ORDER BY daa.amenity_key ASC SEPARATOR '; ' ) AS Allocations FROM devotee_amenities_allocation daa WHERE daa.allocation_event = '" . $eventId. "' GROUP BY daa.allocation_event, daa.devotee_key) d2a ON d.Devotee_Key=d2a.devotee_key 
                     left outer join (SELECT dr.remark_event, dr.devotee_key, replace(group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' <br> '), '||', '<br>') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
-                    left outer join Devotee_Accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
-                    left outer join Accommodation_Master acm on da.accomodation_key = acm.accomodation_key AND da.Accommodation_event = '" . $eventId . "'";
+                    left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
+                    left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key AND da.Accommodation_event = '" . $eventId . "'";
 
                     
         if($requestData != ""){
@@ -640,7 +642,7 @@ Class Devotee {
         }
 
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeSearchResult = array();
         $i = 0;
@@ -691,10 +693,10 @@ Class Devotee {
                     , dp.Devotee_Photo 
                     , sm.Seva_description
                  from 
-                     Devotee d 
-                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
-                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+                     devotee d 
+                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         */
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
@@ -704,15 +706,15 @@ Class Devotee {
                     , dp.Devotee_Photo 
                     , sm.Seva_description
                  from 
-                     Devotee d 
-                     left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
-                     left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+                     devotee d 
+                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
+                     left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         if($eventId <> ""){
             $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
         }
 
-        $query = $query . " left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
+        $query = $query . " left outer join seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
         if(($requestData != "") and ($requestData != "All")){            
@@ -729,7 +731,7 @@ Class Devotee {
 
         if($this->debug) {var_dump($query);}
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeSearchResult = array();
         $i = 0;
@@ -780,16 +782,16 @@ Class Devotee {
                     , sm.seva_id
                     , IF(ISNULL(da.rating), '--', IF(da.rating=5, 'Present','Absent')) AS attendance
                  from 
-                     Devotee d ";
-                     //left outer join Devotee_ID did on d.Devotee_Key=did.Devotee_Key 
-        $query = $query . " left outer join Devotee_Photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join Devotee_Seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+                     devotee d ";
+                     //left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
+        $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
                         if($eventId <> ""){
                             $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
                         }
 
-        $query = $query . " left outer join Devotee_Attendance da ON d.devotee_key=da.devotee_key AND ds.seva_id=da.seva_id AND da.attendance_date = CURDATE() 
-                            left outer join Seva_master sm on ds.seva_id = sm.seva_id ";
+        $query = $query . " left outer join devotee_attendance da ON d.devotee_key=da.devotee_key AND ds.seva_id=da.seva_id AND da.attendance_date = CURDATE() 
+                            left outer join seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
         if(($requestData != "") and ($requestData != "All")){            
@@ -809,7 +811,7 @@ Class Devotee {
 
         if($this->debug) {var_dump($query);}
                 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeSearchResult = array();
         $i = 0;
@@ -860,11 +862,11 @@ Class Devotee {
         }
        
         $query = "SELECT  AM.Amenity_Key, AM.Amenity_Name, IFNULL(DAA.Amenity_Quantity,0) AS Amenity_Quantity, IFNULL(AA.Available_Count, 0) AS Available_Count 
-                    FROM Amenity_Master AM 
-                    LEFT OUTER JOIN Devotee_Amenities_Allocation DAA ON DAA.Amenity_key = AM.Amenity_key                         
+                    FROM amenity_master AM
+                    LEFT OUTER JOIN devotee_amenities_allocation DAA ON DAA.Amenity_key = AM.Amenity_key                         
                         AND DAA.Amenity_Quantity <> 0 AND DAA.Devotee_Key = '" . $devoteeKey . "'  
                         AND DAA.allocation_event = '" . $eventId . "' 
-                    LEFT OUTER JOIN Amenities_Availability AA ON AM.Amenity_Key = AA.Amenity_Key" ;
+                    LEFT OUTER JOIN amenities_availability AA ON AM.Amenity_Key = AA.Amenity_Key" ;
                     // ORDER BY Amenity_Allocation_Date_Time DESC" ;
         /*
         $query = "SELECT " .
@@ -873,20 +875,20 @@ Class Devotee {
                     "IFNULL(DAA.`Amenity_Quantity`,0) AS Amenity_Quantity, " .
                     "IFNULL(AA.Available_Count, 0) AS Available_Count " .
                 "FROM " . 
-                    "`Amenity_Master` AM " .
-                "LEFT OUTER JOIN `Devotee_Amenities_Allocation` DAA ON " .
+                    "`amenity_master` AM " .
+                "LEFT OUTER JOIN `devotee_amenities_allocation` DAA ON " .
                     "DAA.Amenity_key = AM.Amenity_key " .
                 "AND " .
                     "DAA.Devotee_Key = '" . $requestData . "' AND " .
                     "DAA.`Amenity_Quantity` <> 0 AND " .
                     "DAA.`Amenity_Allocation_Year` = YEAR(NOW()) " .
-                "LEFT OUTER JOIN Amenities_Availability AA ON " .
+                "LEFT OUTER JOIN amenities_availability AA ON " .
                     "AM.Amenity_Key = AA.Amenity_Key " .
                 "ORDER BY " .
                     "`Amenity_Allocation_Date_Time` DESC" ;
         */
            // var_dump($query);
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
         
         $devoteeAmenityResult = array();
         $i = 0;
@@ -988,7 +990,7 @@ Class Devotee {
         if ($this->debug) {            var_dump($query);        }
         for ($i = 0; $i < sizeof($query); $i++) {
 
-            $results = $this->conn->query($query[$i], MYSQLI_USE_RESULT);
+            $results = $this->conn->query($query[$i]);
             $devoteeParticipationResult = array();
             $j = 0;
             while($row = $results->fetchObject()){
@@ -1045,7 +1047,7 @@ Class Devotee {
 
         if($this->debug){     var_dump($query); }
 
-        $results = $this->conn->query($query,MYSQLI_USE_RESULT);
+        $results = $this->conn->query($query);
 
         if($this->debug){     var_dump($results);         }
         $devoteeParticipationResult = array();
@@ -1418,7 +1420,7 @@ Class Devotee {
 
         if($this->debug){echo $requestData['eventId'];  var_dump($requestData); }
         if ($requestData['requestType'] == "addToPrintQueue") {
-            $query[0] = "REPLACE INTO `Card_Print_Log`(
+            $query[0] = "REPLACE INTO `card_print_log`(
                     `Devotee_Key`,
                     `Print_Status`,
                     `Print_Requested_Date_Time`,
@@ -1427,10 +1429,10 @@ Class Devotee {
                 VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";           
 
         } else {
-            //$query = "UPDATE `Card_Print_Log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
-            $query[0] = "REPLACE INTO `Card_Print_archive` SELECT * FROM card_print_log WHERE devotee_key in (" . $Devotee_Key . ")";
-            $query[1] = "DELETE from `Card_Print_Log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
-            $query[2] = "DELETE from `Card_Print_archive` 
+            //$query = "UPDATE `card_print_log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+            $query[0] = "REPLACE INTO `card_print_archive` SELECT * FROM card_print_log WHERE devotee_key in (" . $Devotee_Key . ")";
+            $query[1] = "DELETE from `card_print_log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+            $query[2] = "DELETE from `card_print_archive` 
                     WHERE `Devotee_Key` not in 
                     (select devotee_key from 
                     (select devotee_key from card_print_archive order by print_requested_date_time limit 25) tmp 
@@ -1442,7 +1444,7 @@ Class Devotee {
                      $values_ary[]="(".$dvKey.",'".$requestData['eventId']."','Admin',NOW())";
                  }
                  $values_ary= implode(",",$values_ary);
-                 $query[3] = "INSERT INTO `Print_Log`(
+                 $query[3] = "INSERT INTO `print_log`(
                     `Devotee_Key`,
                     `Event_Id`,
                     `Print_Requested_By_User`,
@@ -1840,7 +1842,7 @@ Class Devotee {
             }
     
             if ($requestData['requestType'] == "addToPrintQueue") {
-                $query = "REPLACE INTO `Card_Print_Log`(
+                $query = "REPLACE INTO `card_print_log`(
                         `Devotee_Key`,
                         `Print_Status`,
                         `Print_Requested_Date_Time`,
@@ -1849,8 +1851,8 @@ Class Devotee {
                     VALUES('" . $Devotee_Key . "','A', NOW(), '" . $Print_Record_Updated_By . "')";
     
             } else {
-                //$query = "UPDATE `Card_Print_Log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
-                $query = "REPLACE INTO `Card_Print_archive`(
+                //$query = "UPDATE `card_print_log` SET Print_Status = 'C', Print_Completion_Date_Time = NOW() WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+                $query = "REPLACE INTO `card_print_archive`(
                     `Devotee_Key`,
                     `Print_Status`,
                     `Print_Requested_Date_Time`,
@@ -1867,7 +1869,7 @@ Class Devotee {
                 $res['message'] = "";
                 $res['info'] = $Devotee_Key;
                 if ($requestData['requestType'] == "removeFromPrintQueue") {
-                    $query1 = "DELETE from `Card_Print_Log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
+                    $query1 = "DELETE from `card_print_log` WHERE `Devotee_Key` in (" . $Devotee_Key . ")";
                     $stmt1 = $this->conn->prepare($query1);
                     if($this->debug){echo "reaching in the remove card print function"; var_dump($requestData); var_dump($stmt1);}
                     if (!$stmt1->execute()) {
@@ -2051,7 +2053,7 @@ Class Devotee {
             var_dump($queryCheck); 
         }
 
-        $results = $this->conn->query($queryCheck, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($queryCheck);
 
         if (!empty($row = $results->fetchObject())) {
             if($row->{'rating'} <> $rating) {
@@ -2181,7 +2183,7 @@ Class Devotee {
             var_dump($queryCheck); 
         }
 
-        $results = $this->conn->query($queryCheck, MYSQLI_USE_RESULT);
+        $results = $this->conn->query($queryCheck);
 
         if (!empty($row = $results->fetchObject())) {
             if($row->{'rating'} <> $rating) {
