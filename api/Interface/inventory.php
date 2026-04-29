@@ -4,12 +4,36 @@ Class inventory {
 
     
     private $conn;
+    private $table_name = 'devotee';
     
     
     private $debug = false;
 // constructor with $db as database connection
     public function __construct($db) {
         $this->conn = $db;
+    }
+
+    /** Same logic as Devotee::validateDate — used by delete_upsert DOB handling */
+    private function validateDate($date, $format = 'Y-m-d') {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) === $date;
+    }
+
+    /** Mirrors Devotee::generateId for shared PROC_REPLACE_DEVOTEE_W_SEVA_I flow */
+    public function generateId() {
+        $result = ['1'];
+        while (!empty($result)) {
+            $id = 'P' . date('y') . date('m') . date('d') . rand(0, 999);
+            $sql = 'SELECT * FROM `' . $this->table_name . '` WHERE devotee_key = ' . $this->conn->quote($id);
+            $result = [];
+            foreach ($this->conn->query($sql) as $row) {
+                if (!empty($row)) {
+                    $result[] = $row;
+                }
+            }
+        }
+
+        return strtoupper($id);
     }
 
     public function search($requestData){
@@ -342,7 +366,7 @@ Class inventory {
 
         if ($stmt->execute()) {
             $res['status'] = true;
-            $res['message'] = $stmt;
+            $res['message'] = '';
             $res['info'] = $unique_id;
         } else {
             $res['status'] = false;
@@ -350,7 +374,7 @@ Class inventory {
             if ($this->debug) {
                 $res['info'] = $query;
             } else {
-                $res['info'] = $stmt;
+                $res['info'] = $stmt->errorInfo();
             }
         }
         return $res;

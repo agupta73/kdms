@@ -117,7 +117,7 @@ Class Devotee {
                     // "left outer join Devotee_Demographics dd on d.Devotee_Key = dd.Devotee_Key AND dd.Devotee_Address_Status = 'Current' " .
                     "left outer join devotee_seva ds on d.Devotee_key=ds.Devotee_Key AND ds.seva_event = '" . $eventId . "' AND Seva_Status = 'Assigned'  " .
                  "where " .
-                    " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_update_Date_Time Desc LIMIT 1";
+                    " d.Devotee_Key = '" . $devotee_key . "' ORDER BY da.Devotee_Accomodation_Update_Date_Time DESC LIMIT 1";
                     
         if($this->debug) {return $query; die;}
 
@@ -1383,7 +1383,7 @@ Class Devotee {
 
         if ($stmt->execute()) {
             $res['status'] = true;
-            $res['message'] = $stmt;
+            $res['message'] = '';
             $res['info'] = $unique_id;
         } else {
             $res['status'] = false;
@@ -1391,7 +1391,7 @@ Class Devotee {
             if ($this->debug) {
                 $res['info'] = $query;
             } else {
-                $res['info'] = $stmt;
+                $res['info'] = $stmt->errorInfo();
             }
         }
         return $res;
@@ -1740,7 +1740,7 @@ Class Devotee {
 
         if ($stmt->execute()) {
             $res['status'] = true;
-            $res['message'] = $stmt;
+            $res['message'] = '';
             $res['info'] = $Devotee_Key;
         } else {
             $res['status'] = false;
@@ -1748,7 +1748,7 @@ Class Devotee {
             if ($this->debug) {
                 $res['info'] = $query;
             } else {
-                $res['info'] = $stmt;
+                $res['info'] = $stmt->errorInfo();
             }
         }
         return $res;

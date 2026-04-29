@@ -105,9 +105,13 @@ if (!empty($requestData['requestType'])) {
 }
 
 if (isset($res['status'])) {
+    $msg = $res['message'] ?? '';
+    if (! is_string($msg)) {
+        $msg = '';
+    }
     $response = array(
         'flag' => (bool) $res['status'],
-        'message' => (string) ($res['message'] ?? ''),
+        'message' => $msg,
         'info' => $res['info'] ?? null,
     );
 }
