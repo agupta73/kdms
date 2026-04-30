@@ -12,10 +12,14 @@ project_id            = "project-12f4b54b-d692-4583-83b"
 project_number        = "684080887473"
 region                = "asia-south1"
 service_name          = "kdms-prod"
+api_service_name      = "kdms-api-prod"
 ar_repo               = "apps"
 image_name            = "kdms"
 image_digest          = ""
 image_tag             = "f92d440"
+api_image_name        = "kdms"
+api_image_digest      = ""
+api_image_tag         = ""
 runtime_sa_email      = "run-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com"
 cloudsql_instance     = "mysql-skm-prod"
 db_name               = "kdms"
@@ -34,8 +38,40 @@ labels = {
 }
 kdms_event_id = "2026"
 app_url       = "https://kdms-prod-zeqw3ha4ya-el.a.run.app"
+api_url       = "https://kdms-api-prod-zeqw3ha4ya-el.a.run.app"
 secret_app_key     = "kdms-app-key"
 secret_db_password = "kdms-db-password"
+secret_service_key = "kdms-service-key"
+
+api_min_instances         = 0
+api_max_instances         = 10
+api_cpu                   = "1"
+api_memory                = "2Gi"
+api_container_concurrency = 120
+api_allow_unauthenticated = true
+
+enable_reports_service         = false
+reports_service_name           = "kdms-reports-prod"
+reports_image_uri              = ""
+reports_url                    = ""
+reports_min_instances          = 0
+reports_max_instances          = 4
+reports_cpu                    = "1"
+reports_memory                 = "2Gi"
+reports_container_concurrency  = 40
+reports_allow_unauthenticated  = true
+
+enable_ocr_service         = false
+ocr_service_name           = "kdms-ocr-prod"
+ocr_image_uri              = ""
+ocr_url                    = ""
+ocr_min_instances          = 0
+ocr_max_instances          = 6
+ocr_cpu                    = "1"
+ocr_memory                 = "2Gi"
+ocr_container_port         = 5001
+ocr_container_concurrency  = 20
+ocr_allow_unauthenticated  = true
 
 # Optional: only if the connection name must differ from project_id:region:cloudsql_instance
 # cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"

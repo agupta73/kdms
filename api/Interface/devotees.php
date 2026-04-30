@@ -628,6 +628,8 @@ Class Devotee {
 
 */
 
+        $includeImages = ($requestData != "");
+
         $query = "SELECT 
                     d.devotee_key
                     , CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) AS Devotee_Name 
@@ -636,8 +638,8 @@ Class Devotee {
                     , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
                     , acm.accomodation_name   
                     , da.accomodation_key
-                    , did.Devotee_ID_Image AS Devotee_ID_Image
-                    , dp.Devotee_Photo AS Devotee_Photo
+                    , " . ($includeImages ? "did.Devotee_ID_Image" : "''") . " AS Devotee_ID_Image
+                    , " . ($includeImages ? "dp.Devotee_Photo" : "''") . " AS Devotee_Photo
                     , DATE_FORMAT(da.arrival_date_time,'%d/%m/%Y') AS arrival_date_time 
                     , IF (d.devotee_gender = 'M', 'Male', IF (d.devotee_gender = 'F', 'Female', d.devotee_gender)) AS devotee_gender
                     , d.devotee_id_type
@@ -646,8 +648,8 @@ Class Devotee {
                     , IFNULL(dr1.remarks, '--') AS remarks
                  FROM 
                     devotee d 
-                    LEFT OUTER JOIN devotee_id did ON d.Devotee_Key = did.Devotee_Key
-                    LEFT OUTER JOIN devotee_photo dp ON d.Devotee_Key = dp.Devotee_Key
+                    " . ($includeImages ? "LEFT OUTER JOIN devotee_id did ON d.Devotee_Key = did.Devotee_Key" : "") . "
+                    " . ($includeImages ? "LEFT OUTER JOIN devotee_photo dp ON d.Devotee_Key = dp.Devotee_Key" : "") . "
                     left outer join (SELECT daa.devotee_key, daa.allocation_event, GROUP_CONCAT(daa.amenity_key, ' - ', daa.amenity_quantity ORDER BY daa.amenity_key ASC SEPARATOR '; ' ) AS Allocations FROM devotee_amenities_allocation daa WHERE daa.allocation_event = '" . $eventId. "' GROUP BY daa.allocation_event, daa.devotee_key) d2a ON d.Devotee_Key=d2a.devotee_key 
                     left outer join (SELECT dr.remark_event, dr.devotee_key, replace(group_concat(dr.remark_type, ': ', dr.rating, ' - ', dr.remark SEPARATOR ' <br> '), '||', '<br>') AS Remarks FROM devotee_remarks dr WHERE dr.remark_event = '" . $eventId. "' GROUP BY dr.remark_event, dr.devotee_key) dr1 ON d.devotee_key = dr1.devotee_key
                     left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key AND da.Accomodation_Status = 'Allocated' AND da.Accommodation_event = '" . $eventId. "' 
@@ -727,17 +729,25 @@ Class Devotee {
                      left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
                      left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         */
+        $includePhotos = (($requestData != "") and ($requestData != "All"));
+
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
                     , d.devotee_station 
-                    , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
-                    , did.Devotee_ID_Image 
-                    , dp.Devotee_Photo 
+                    , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number";
+        if ($includePhotos) {
+            $query = $query . ", dp.Devotee_Photo ";
+        } else {
+            $query = $query . ", '' AS Devotee_Photo ";
+        }
+        $query = $query . "
                     , sm.Seva_description
                  from 
-                     devotee d 
-                     left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
-                     left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
+                     devotee d ";
+        if ($includePhotos) {
+            $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key ";
+        }
+        $query = $query . "
                      left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         if($eventId <> ""){
             $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
@@ -746,7 +756,7 @@ Class Devotee {
         $query = $query . " left outer join seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
-        if(($requestData != "") and ($requestData != "All")){            
+        if($includePhotos){            
                 $requestData = trim(urldecode($requestData));
                 if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
                     $key = trim($requestData, ",");
@@ -765,8 +775,11 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            if (!empty($row->{'Devotee_Photo'})) {
+                $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            } else {
+                $row->{'Devotee_Photo'} = '';
+            }
             $devoteeSearchResult[]=$row;
             $i = $i+1;
         }
@@ -801,20 +814,29 @@ Class Devotee {
         }
         */
        
+        $includePhotos = (($requestData != "") and ($requestData != "All"));
+
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
                     , d.devotee_station
                     , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number ";
                     //, did.Devotee_ID_Image 
-        $query = $query . ", dp.Devotee_Photo  
+        if ($includePhotos) {
+            $query = $query . ", dp.Devotee_Photo ";
+        } else {
+            $query = $query . ", '' AS Devotee_Photo ";
+        }
+        $query = $query . " 
                     , sm.Seva_description
                     , sm.seva_id
                     , IF(ISNULL(da.rating), '--', IF(da.rating=5, 'Present','Absent')) AS attendance
                  from 
                      devotee d ";
                      //left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key 
-        $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
-                     left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
+        if ($includePhotos) {
+            $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key ";
+        }
+        $query = $query . " left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
                         if($eventId <> ""){
                             $query = $query .  "AND ds.Seva_Event = '" . $eventId . "' ";
                         }
@@ -823,7 +845,7 @@ Class Devotee {
                             left outer join seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
-        if(($requestData != "") and ($requestData != "All")){            
+        if($includePhotos){            
                 $requestData = trim(urldecode($requestData));
                 if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
                     $key = trim($requestData, ",");
@@ -845,7 +867,11 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            if (!empty($row->{'Devotee_Photo'})) {
+                $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            } else {
+                $row->{'Devotee_Photo'} = '';
+            }
             //$row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
             $devoteeSearchResult[]=$row;
             $i = $i+1;

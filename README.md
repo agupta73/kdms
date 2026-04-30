@@ -11,6 +11,25 @@
 
 `docker-compose` sets `WEBROOT_URL`, `API_BASE_URL`, and `KDMS_INTERNAL_ORIGIN` for the container.
 
+### Local split services (Option B)
+
+Use `docker-compose.split.yml` to run split services locally with separate URLs:
+
+- `kdms-main` UI: `http://localhost:8080/`
+- `kdms-api` API: `http://localhost:8081/api/`
+- `kdms-reports` UI: `http://localhost:8082/`
+- `kdms-ocr` API: `http://localhost:5001/api/v1/kdms-ocr/`
+
+Run:
+
+```bash
+cp .env.example .env
+# set KDMS_DB_* and (optionally) KDMS_SERVICE_KEY
+docker compose -f docker-compose.split.yml up --build
+```
+
+`KDMS_SERVICE_KEY` is sent by UI requests as `X-KDMS-SERVICE-KEY`; API endpoints accept that key and bypass session checks for trusted service calls during the split migration.
+
 ## Configuration
 
 - `site_config.php` — public URLs: prefer `WEBROOT_URL` + `API_BASE_URL`, or legacy behavior from `HTTP_HOST` and `KDMS_PATH_SEGMENT` (default `kdms`).

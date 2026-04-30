@@ -11,6 +11,9 @@ crash.*.log
 
 *.tfvars
 *.tfvars.json
+*.local.tfvars
+# Tracked production inputs (non-secret). Use/terraform.tfvars only; personal overrides: *.local.tfvars.
+!terraform.tfvars
 
 # Override files
 override.tf

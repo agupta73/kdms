@@ -484,7 +484,9 @@ function set_image(base64_image_data, image_name) {
 function parse_image(ele) {
     let image_data = ele.getAttribute('data-image');
     let image_name = ele.getAttribute('data-image-name');
-    const kdms_ocr_url = "http://localhost:5001/api/v1/kdms-ocr/";
+    const default_ocr_url = "http://localhost:5001/api/v1/kdms-ocr/";
+    const configured_ocr_url = (window.KDMS_OCR_BASE_URL || "").replace(/\/+$/, "");
+    const kdms_ocr_url = configured_ocr_url !== "" ? `${configured_ocr_url}/api/v1/kdms-ocr/` : default_ocr_url;
     const card_type = document.getElementById('devotee_id_type').value;
     $('#loading').show();
     set_image(image_data, image_name);

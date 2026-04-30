@@ -1,0 +1,96 @@
+name: kdms
+
+networks:
+  kdms-public:
+  kdms-private:
+    internal: true
+
+services:
+  kdms-main:
+    build:
+      context: .
+    image: kdms-main:local
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      KDMS_APACHE_USE_PREFIX: "0"
+      WEBROOT_URL: "http://localhost:8080/"
+      API_BASE_URL: "http://localhost:8081/api/"
+      KDMS_OCR_BASE_URL: "http://localhost:5002"
+      KDMS_INTERNAL_ORIGIN: "http://kdms-api:8080"
+      KDMS_DB_HOST: "host.docker.internal:3306"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - kdms-api
+      - kdms-ocr
+    networks:
+      - kdms-public
+      - kdms-private
+
+  kdms-api:
+    build:
+      context: .
+    image: kdms-api:local
+    ports:
+      - "8081:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      KDMS_APACHE_USE_PREFIX: "0"
+      WEBROOT_URL: "http://localhost:8081/"
+      API_BASE_URL: "http://localhost:8081/api/"
+      KDMS_INTERNAL_ORIGIN: "http://127.0.0.1:8080"
+      KDMS_DB_HOST: "host.docker.internal:3306"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - kdms-public
+      - kdms-private
+
+  kdms-ocr:
+    image: python:3.11-slim
+    working_dir: /app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    volumes:
+      - ../kdms-ocr:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      FLASK_ENV: development
+    ports:
+      - "5002:5001"
+    networks:
+      - kdms-public
+      - kdms-private
+
+  kdms-reports:
+    image: php:8.3-apache
+    working_dir: /var/www/html
+    command:
+      - sh
+      - -c
+      - |
+        cat > /var/www/html/index.php <<'PHP'
+        <?php
+        header('Location: /UI/login.php');
+        exit;
+        PHP
+        apache2-foreground
+    volumes:
+      - ../kmreports:/var/www/html
+    environment:
+      KMREPORTS_LOCAL_ROOT: "http://localhost:8082/"
+      KMREPORTS_WEBROOT_URL: "http://kdms-main:8080/"
+      KMREPORTS_API_BASE_URL: "http://kdms-api:8080/api/"
+      KMREPORTS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+    ports:
+      - "8082:80"
+    networks:
+      - kdms-public
+      - kdms-private

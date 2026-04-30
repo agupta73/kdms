@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/web_session.php';
+if (!isset($config_data) || !is_array($config_data)) {
+    $config_data = include(dirname(__DIR__) . '/site_config.php');
+}
 
 $is_photo_available = false;
 $is_doc_available = false;
@@ -10,18 +13,17 @@ $is_key_available = false;
 if (!empty($_GET['devotee_key'])) { // If this page is called after clicking picture or ID scan, and devotee id is passed
     $devotee_key = $_GET['devotee_key'];
     $is_key_available = true;
-    include_once '../api/config/database.php';
-    include_once '../api/Interface/devotees.php';
+    include_once '../Logic/clsDevoteeSearch.php';
 
-    $database = new Database();
-    $db = $database->getConnection();
-
+    $requestData = [];
     $requestData['mode'] = "KEY";
-    $requestData['key'] = $devotee_key; // Todo here, sql enjection preventation.
-    //
-    $devotee = new Devotee($db);
+    $requestData['key'] = $devotee_key;
+    $devotee = new clsDevoteeSearch($requestData);
     try {
-        $new_devotee = $devotee->search($requestData);
+        $new_devotee = $devotee->getDevoteeRecords($config_data['event_id']);
+        if (is_array($new_devotee)) {
+            $new_devotee = (object) $new_devotee;
+        }
     } catch (Exception $e) {
         echo $e->getMessage();
         die;
@@ -241,7 +243,7 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form method="post" enctype="multipart/form-data" action="../api/managePhoto.php">
+                        <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($config_data['api_dir'] . 'managePhoto.php'); ?>">
                             <div class="modal-body" >
                                 <div class="row">
                                     <div class="col-md-12">
@@ -256,6 +258,9 @@ if (!empty($_GET['devotee_key'])) { // If this page is called after clicking pic
                                             }
                                             // Add api type 
                                             echo '<input type="hidden" name="api_type" value="4">'; // type=document 
+                                            if (!empty($config_data['service_key'])) {
+                                                echo '<input type="hidden" name="service_key" value="' . htmlspecialchars((string) $config_data['service_key']) . '">';
+                                            }
                                             ?>
                                             <label for="devotee-id-scan">Please select the scanned document.</label>
                                             <input type="file" style="opacity:1;position:static;" class="form-control-file" id="devotee-id-scan" name="devotee-id-scan">

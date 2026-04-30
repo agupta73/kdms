@@ -24,6 +24,8 @@ date_default_timezone_set($phpTz);
 
 $webrootOverride = getenv('WEBROOT_URL');
 $apiOverride = getenv('API_BASE_URL');
+$ocrOverride = getenv('KDMS_OCR_BASE_URL');
+$serviceKey = getenv('KDMS_SERVICE_KEY');
 $publicUrlOverride = getenv('KDMS_PUBLIC_BASE_URL');
 
 if (!empty($webrootOverride) && !empty($apiOverride)) {
@@ -84,6 +86,8 @@ return [
     'webroot_server'   => $webroot_server,
     'api_dir'          => $api_dir,
     'api_dir_server'   => $api_dir_server,
+    'ocr_base_url'     => is_string($ocrOverride) ? rtrim($ocrOverride, '/') . '/' : '',
+    'service_key'      => is_string($serviceKey) ? $serviceKey : '',
     'event_id'         => $event_id,
     'check_access'     => $checkAccess,
 ];

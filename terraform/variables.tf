@@ -181,3 +181,201 @@ variable "secret_db_password" {
   type        = string
   default     = "kdms-db-password"
 }
+
+variable "secret_service_key" {
+  description = "Secret Manager secret id holding KDMS_SERVICE_KEY for trusted service calls."
+  type        = string
+  default     = "kdms-service-key"
+}
+
+variable "api_service_name" {
+  description = "Cloud Run service name for split KDMS API."
+  type        = string
+  default     = "kdms-api-prod"
+}
+
+variable "api_image_name" {
+  description = "Artifact Registry image name for split KDMS API."
+  type        = string
+  default     = "kdms"
+}
+
+variable "api_image_digest" {
+  description = "Optional digest for API image; if empty, falls back to main image_digest/tag settings."
+  type        = string
+  default     = ""
+}
+
+variable "api_image_tag" {
+  description = "Optional tag for API image when api_image_digest is empty."
+  type        = string
+  default     = ""
+}
+
+variable "api_url" {
+  description = "Canonical public HTTPS URL for kdms-api service (no trailing slash)."
+  type        = string
+  default     = ""
+}
+
+variable "api_min_instances" {
+  description = "Minimum Cloud Run instances for kdms-api."
+  type        = number
+  default     = 0
+}
+
+variable "api_max_instances" {
+  description = "Maximum Cloud Run instances for kdms-api."
+  type        = number
+  default     = 10
+}
+
+variable "api_cpu" {
+  description = "CPU limit for kdms-api container."
+  type        = string
+  default     = "1"
+}
+
+variable "api_memory" {
+  description = "Memory limit for kdms-api container."
+  type        = string
+  default     = "2Gi"
+}
+
+variable "api_container_concurrency" {
+  description = "Maximum concurrent requests per instance for kdms-api."
+  type        = number
+  default     = 120
+}
+
+variable "api_allow_unauthenticated" {
+  description = "If true, bind roles/run.invoker to allUsers for kdms-api."
+  type        = bool
+  default     = true
+}
+
+variable "enable_reports_service" {
+  description = "Create split Cloud Run service for kdms-reports."
+  type        = bool
+  default     = false
+}
+
+variable "reports_service_name" {
+  description = "Cloud Run service name for kdms-reports."
+  type        = string
+  default     = "kdms-reports-prod"
+}
+
+variable "reports_image_uri" {
+  description = "Fully qualified container image URI for kdms-reports."
+  type        = string
+  default     = ""
+}
+
+variable "reports_url" {
+  description = "Canonical public HTTPS URL for kdms-reports service (no trailing slash)."
+  type        = string
+  default     = ""
+}
+
+variable "reports_min_instances" {
+  description = "Minimum Cloud Run instances for kdms-reports."
+  type        = number
+  default     = 0
+}
+
+variable "reports_max_instances" {
+  description = "Maximum Cloud Run instances for kdms-reports."
+  type        = number
+  default     = 4
+}
+
+variable "reports_cpu" {
+  description = "CPU limit for kdms-reports container."
+  type        = string
+  default     = "1"
+}
+
+variable "reports_memory" {
+  description = "Memory limit for kdms-reports container."
+  type        = string
+  default     = "2Gi"
+}
+
+variable "reports_container_concurrency" {
+  description = "Maximum concurrent requests per instance for kdms-reports."
+  type        = number
+  default     = 40
+}
+
+variable "reports_allow_unauthenticated" {
+  description = "If true, bind roles/run.invoker to allUsers for kdms-reports."
+  type        = bool
+  default     = true
+}
+
+variable "enable_ocr_service" {
+  description = "Create split Cloud Run service for kdms-ocr."
+  type        = bool
+  default     = false
+}
+
+variable "ocr_service_name" {
+  description = "Cloud Run service name for kdms-ocr."
+  type        = string
+  default     = "kdms-ocr-prod"
+}
+
+variable "ocr_image_uri" {
+  description = "Fully qualified container image URI for kdms-ocr."
+  type        = string
+  default     = ""
+}
+
+variable "ocr_url" {
+  description = "Canonical public HTTPS URL for kdms-ocr service (no trailing slash)."
+  type        = string
+  default     = ""
+}
+
+variable "ocr_min_instances" {
+  description = "Minimum Cloud Run instances for kdms-ocr."
+  type        = number
+  default     = 0
+}
+
+variable "ocr_max_instances" {
+  description = "Maximum Cloud Run instances for kdms-ocr."
+  type        = number
+  default     = 6
+}
+
+variable "ocr_cpu" {
+  description = "CPU limit for kdms-ocr container."
+  type        = string
+  default     = "1"
+}
+
+variable "ocr_memory" {
+  description = "Memory limit for kdms-ocr container."
+  type        = string
+  default     = "2Gi"
+}
+
+variable "ocr_container_port" {
+  description = "Container HTTP port for kdms-ocr service."
+  type        = number
+  default     = 5001
+}
+
+variable "ocr_container_concurrency" {
+  description = "Maximum concurrent requests per instance for kdms-ocr."
+  type        = number
+  default     = 20
+}
+
+variable "ocr_allow_unauthenticated" {
+  description = "If true, bind roles/run.invoker to allUsers for kdms-ocr."
+  type        = bool
+  default     = true
+}
