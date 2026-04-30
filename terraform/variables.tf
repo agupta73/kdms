@@ -182,6 +182,12 @@ variable "secret_db_password" {
   default     = "kdms-db-password"
 }
 
+variable "secret_service_key" {
+  description = "Secret Manager secret id holding KDMS_SERVICE_KEY for trusted service calls."
+  type        = string
+  default     = "kdms-service-key"
+}
+
 variable "api_service_name" {
   description = "Cloud Run service name for split KDMS API."
   type        = string

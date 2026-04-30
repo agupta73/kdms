@@ -18,7 +18,7 @@ State bucket **`gs://kdms-tf-state`**, Artifact Registry repo **`apps`**, runtim
 
 ### Runtime access (production)
 
-The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on the Cloud SQL instance and Secret Manager access to **`kdms-app-key`** and **`kdms-db-password`** (usually granted when the SA and secrets were bootstrapped).
+The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on the Cloud SQL instance and Secret Manager access to **`kdms-app-key`**, **`kdms-db-password`**, and **`kdms-service-key`** (usually granted when the SA and secrets were bootstrapped).
 
 ### GitHub Actions — build and push
 

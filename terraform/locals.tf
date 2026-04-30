@@ -84,7 +84,11 @@ locals {
       secret  = var.secret_db_password
       version = "latest"
     }
+    KDMS_SERVICE_KEY = {
+      secret  = var.secret_service_key
+      version = "latest"
+    }
   }
 
-  ordered_secret_env_keys = ["APP_KEY", "DB_PASSWORD", "KDMS_DB_PASSWORD"]
+  ordered_secret_env_keys = ["APP_KEY", "DB_PASSWORD", "KDMS_DB_PASSWORD", "KDMS_SERVICE_KEY"]
 }

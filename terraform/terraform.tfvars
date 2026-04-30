@@ -74,6 +74,7 @@ api_url = "https://kdms-api-prod-684080887473.asia-south1.run.app"
 # Secret Manager secret *names* (values are not stored in this file).
 secret_app_key     = "kdms-app-key"
 secret_db_password = "kdms-db-password"
+secret_service_key = "kdms-service-key"
 
 # -----------------------------------------------------------------------------
 # Optional: kdms-reports (enable after image exists in Artifact Registry)
@@ -84,7 +85,9 @@ secret_db_password = "kdms-db-password"
 enable_reports_service = false
 
 reports_service_name = "kdms-reports-prod"
-reports_image_uri    = ""
+# Set to the pushed kdms-reports image digest before enabling reports service.
+# Example: asia-south1-docker.pkg.dev/project-12f4b54b-d692-4583-83b/apps/kdms-reports@sha256:REPLACE_ME
+reports_image_uri    = "asia-south1-docker.pkg.dev/project-12f4b54b-d692-4583-83b/apps/kdms-reports@sha256:REPLACE_ME"
 # Placeholder — replace with actual URL after first deploy or from `gcloud run services describe`.
 reports_url = "https://kdms-reports-prod-684080887473.asia-south1.run.app"
 
@@ -101,7 +104,9 @@ reports_allow_unauthenticated = true
 enable_ocr_service = false
 
 ocr_service_name = "kdms-ocr-prod"
-ocr_image_uri    = ""
+# Set to the pushed kdms-ocr image digest before enabling OCR service.
+# Example: asia-south1-docker.pkg.dev/project-12f4b54b-d692-4583-83b/apps/kdms-ocr@sha256:REPLACE_ME
+ocr_image_uri    = "asia-south1-docker.pkg.dev/project-12f4b54b-d692-4583-83b/apps/kdms-ocr@sha256:REPLACE_ME"
 ocr_url          = "https://kdms-ocr-prod-684080887473.asia-south1.run.app"
 
 ocr_min_instances        = 0

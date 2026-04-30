@@ -265,6 +265,8 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
 
     containers {
       image = var.reports_image_uri
+      command = ["sh", "-c"]
+      args    = ["printf '%s\\n' '<?php header(\"Location: /UI/login.php\"); exit; ?>' > /var/www/html/index.php && apache2-foreground"]
 
       ports {
         name           = "http1"
@@ -295,13 +297,33 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
       }
 
       env {
+        name  = "KMREPORTS_WEBROOT_URL"
+        value = "${local.app_public_base}/"
+      }
+
+      env {
+        name  = "KMREPORTS_LOCAL_ROOT"
+        value = "${trimsuffix(var.reports_url, "/")}/"
+      }
+
+      env {
         name  = "API_BASE_URL"
+        value = "${local.api_public_base}/"
+      }
+
+      env {
+        name  = "KMREPORTS_API_BASE_URL"
         value = "${local.api_public_base}/"
       }
 
       env {
         name  = "KDMS_EVENT_ID"
         value = var.kdms_event_id
+      }
+
+      env {
+        name  = "KMREPORTS_PROTOCOL"
+        value = "https://"
       }
     }
   }

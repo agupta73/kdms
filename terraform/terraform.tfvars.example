@@ -41,6 +41,7 @@ app_url       = "https://kdms-prod-zeqw3ha4ya-el.a.run.app"
 api_url       = "https://kdms-api-prod-zeqw3ha4ya-el.a.run.app"
 secret_app_key     = "kdms-app-key"
 secret_db_password = "kdms-db-password"
+secret_service_key = "kdms-service-key"
 
 api_min_instances         = 0
 api_max_instances         = 10

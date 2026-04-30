@@ -43,11 +43,20 @@ class clsReport {
             $key = "";
         }
 
+        $photoRequired = "N";
+        if (!empty($requestData['photo_required'])) {
+            $photoRequired = strtoupper((string) $requestData['photo_required']);
+        }
+
         $status = true;
         if (!empty($requestData['type'])) {
             switch ($requestData['type']) {
                 case "AccoCount": //Accommodation Counts
                     return $this->getAccommodationCounts($AccoSpecific, $eventId);
+                    break;
+                
+                case "AccoAvailability":
+                    return $this->getAccommodationAvailability($eventId);
                     break;
 
                 case "DevoteeCount": //Accommodation Counts
@@ -56,7 +65,7 @@ class clsReport {
                 
                 case "DutyReport": //Accommodation Counts
 
-                    return $this->getDutyReport($key, $eventId);
+                    return $this->getDutyReport($key, $eventId, $photoRequired);
                     
                     break;
 
@@ -149,6 +158,44 @@ class clsReport {
         return $accommodationResult;
     }
 
+    private function getAccommodationAvailability($eventId) {
+        $res = array();
+        $res['status'] = false;
+        $res['message'] = '';
+
+        if (empty($eventId)) {
+            $res['message'] = "Event ID is missing.";
+            return $res;
+        }
+
+        $query = "SELECT
+                    aa.Accomodation_Key AS accomodation_key,
+                    IFNULL(am.Accomodation_Name, aa.Accomodation_Key) AS accomodation_name,
+                    IFNULL(am.Accomodation_Capacity, 0) AS accomodation_capacity,
+                    aa.Accommodation_Event AS event_id,
+                    aa.Allocated_Count AS allocated_count,
+                    aa.Available_Count AS available_count
+                  FROM accommodation_availability aa
+                  LEFT OUTER JOIN accommodation_master am
+                    ON aa.Accomodation_Key = am.Accomodation_Key
+                  WHERE aa.Accommodation_Event = '" . $eventId . "'
+                  ORDER BY am.Accomodation_Name";
+
+        if($this->debug){echo $query; }
+
+        $results = $this->conn->query($query);
+        $availabilityResult = array();
+        if ($results === false) {
+            return $availabilityResult;
+        }
+
+        while ($row = $results->fetchObject()) {
+            $availabilityResult[] = $row;
+        }
+
+        return $availabilityResult;
+    }
+
     //Returns 
     //1. Total devotees present in the ashram
     //2. Total devotees registered this year
@@ -211,7 +258,7 @@ class clsReport {
         return $devoteeResults;
     }
 
-    private function getDutyReport($key="",$eventId) {
+    private function getDutyReport($key="",$eventId, $photoRequired = "N") {
         
         $res = array();
         $res['status'] = false;
@@ -233,36 +280,61 @@ class clsReport {
 
         if($this->debug){echo "key passed is: ", $key; }
         //concat('(',substr(num_cleansed,1,3),') ',substr(num_cleansed,4,3),'-',substr(num_cleansed,7)) AS num_formatted
-        $query = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, dp.devotee_photo,
+        $includePhotos = ($photoRequired === "Y" && trim((string)$key) !== "");
+        $photoSelect = $includePhotos ? "dp.devotee_photo" : "'' AS devotee_photo";
+        $photoJoin = $includePhotos ? "LEFT OUTER JOIN devotee_photo dp ON d.devotee_key = dp.devotee_key" : "";
+
+        $baseQuery = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, " . $photoSelect . ",
                         IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
                   FROM duty_location_master dlm 
                     LEFT OUTER JOIN office_duty od ON dlm.duty_location_key = od.Duty_Location_Key
                     LEFT OUTER JOIN devotee d ON od.devotee_key = d.devotee_key
-                    LEFT OUTER JOIN devotee_photo dp ON d.devotee_key = dp.devotee_key
-                  WHERE d.devotee_key IS NOT NULL AND od.duty_event =  '" . $eventId . "' ";
+                    " . $photoJoin . "
+                  WHERE d.devotee_key IS NOT NULL";
 
+        $sanitizedKey = "";
         if($key != ""){
-            $key = trim(urldecode($key));
-            if(substr($key, 0) == "," or substr($key, -1) == ",") {
-                $key = trim($key, ",");
+            $sanitizedKey = trim(urldecode($key));
+            if(substr($sanitizedKey, 0) == "," or substr($sanitizedKey, -1) == ",") {
+                $sanitizedKey = trim($sanitizedKey, ",");
             }
-            $key = str_replace(",", "','", $key);
-
-            $query = $query . " AND dlm.duty_location_key IN ('" . $key . "')";
+            $sanitizedKey = str_replace(",", "','", $sanitizedKey);
         }
 
+        $buildQuery = function ($applyEventFilter) use ($baseQuery, $eventId, $sanitizedKey) {
+            $query = $baseQuery;
+            if ($applyEventFilter) {
+                $query = $query . " AND od.duty_event =  '" . $eventId . "'";
+            }
+            if ($sanitizedKey !== "") {
+                $query = $query . " AND dlm.duty_location_key IN ('" . $sanitizedKey . "')";
+            }
+            return $query;
+        };
 
+        $runDutyQuery = function ($query) {
+            $results = $this->conn->query($query);
+            $dutyReportResult = array();
+            while ($row = $results->fetchObject()) {
+                $row->{'devotee_photo'} = !empty($row->{'devotee_photo'}) ? base64_encode($row->{'devotee_photo'}) : '';
+                $dutyReportResult[] = $row;
+            }
+            return $dutyReportResult;
+        };
+
+        $query = $buildQuery(true);
         if($this->debug){echo $query; }
+        $dutyReportResult = $runDutyQuery($query);
 
-        $results = $this->conn->query($query);
-
-        $dutyReportResult = array();
-        $i = 0;
-        while ($row = $results->fetchObject()) {
-            $row->{'devotee_photo'} = base64_encode($row->{'devotee_photo'});           
-            $dutyReportResult[] = $row;
-            $i = $i + 1;
+        // Compatibility fallback:
+        // If no duty rows exist for the selected event, return across all events
+        // so Office Duty report does not render as empty.
+        if (empty($dutyReportResult)) {
+            $fallbackQuery = $buildQuery(false);
+            if($this->debug){echo $fallbackQuery; }
+            $dutyReportResult = $runDutyQuery($fallbackQuery);
         }
+
         if($this->debug){echo "from API, after calling function: "; var_dump($dutyReportResult);}
         return $dutyReportResult;
     }
