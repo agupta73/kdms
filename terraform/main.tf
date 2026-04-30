@@ -264,7 +264,7 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
     }
 
     containers {
-      image = var.reports_image_uri
+      image = local.reports_image_uri
       command = ["sh", "-c"]
       args    = ["printf '%s\\n' '<?php header(\"Location: /UI/login.php\"); exit; ?>' > /var/www/html/index.php && apache2-foreground"]
 
@@ -367,7 +367,7 @@ resource "google_cloud_run_v2_service" "kdms_ocr" {
     }
 
     containers {
-      image = var.ocr_image_uri
+      image = local.ocr_image_uri
 
       ports {
         name           = "http1"

@@ -1,7 +1,4 @@
-# Build and push the kdms image to Artifact Registry. Deploy to Cloud Run is out of scope
-# (manual apply from this repo’s `terraform/` folder or `gcloud run services update`).
-
-name: Build and push to Artifact Registry
+name: Build and push service images to Artifact Registry
 
 on:
   push:
@@ -14,29 +11,82 @@ permissions:
   id-token: write
 
 env:
-  # Kainchi Cloud (K1)
   PROJECT_ID: project-12f4b54b-d692-4583-83b
   GAR_REGION: asia-south1
   GAR_REPOSITORY: apps
-  IMAGE_NAME: kdms
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - kdms-main
+          - kdms-api
+          - kdms-reports
+          - kdms-ocr
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Image URI base
+      - name: Resolve build context
+        id: cfg
+        run: |
+          set -euo pipefail
+          case "${{ matrix.service }}" in
+            kdms-main|kdms-api)
+              echo "context=." >> "$GITHUB_OUTPUT"
+              echo "dockerfile=./Dockerfile" >> "$GITHUB_OUTPUT"
+              ;;
+            kdms-reports)
+              test -n "${{ vars.KMREPORTS_REPO_URL }}" || { echo "::error::Set repository variable KMREPORTS_REPO_URL"; exit 1; }
+              git clone --depth 1 "${{ vars.KMREPORTS_REPO_URL }}" /tmp/kdms-reports
+              if [ ! -f /tmp/kdms-reports/Dockerfile ]; then
+                cat > /tmp/kdms-reports/Dockerfile <<'EOF'
+FROM php:8.3-apache
+WORKDIR /var/www/html
+COPY . .
+RUN printf "<?php\nheader('Location: /UI/login.php');\nexit;\n" > /var/www/html/index.php
+EXPOSE 80
+EOF
+              fi
+              echo "context=/tmp/kdms-reports" >> "$GITHUB_OUTPUT"
+              echo "dockerfile=/tmp/kdms-reports/Dockerfile" >> "$GITHUB_OUTPUT"
+              ;;
+            kdms-ocr)
+              test -n "${{ vars.KDMS_OCR_REPO_URL }}" || { echo "::error::Set repository variable KDMS_OCR_REPO_URL"; exit 1; }
+              git clone --depth 1 "${{ vars.KDMS_OCR_REPO_URL }}" /tmp/kdms-ocr
+              if [ ! -f /tmp/kdms-ocr/Dockerfile ]; then
+                cat > /tmp/kdms-ocr/Dockerfile <<'EOF'
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY . /app
+ENV PYTHONUNBUFFERED=1
+EXPOSE 5001
+CMD ["python", "app.py"]
+EOF
+              fi
+              echo "context=/tmp/kdms-ocr" >> "$GITHUB_OUTPUT"
+              echo "dockerfile=/tmp/kdms-ocr/Dockerfile" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unsupported service: ${{ matrix.service }}"
+              exit 1
+              ;;
+          esac
+
+      - name: Image URI
         id: meta
         run: |
           SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
-          URI="${GAR_REGION}-docker.pkg.dev/${PROJECT_ID}/${GAR_REPOSITORY}/${IMAGE_NAME}"
+          URI="${GAR_REGION}-docker.pkg.dev/${PROJECT_ID}/${GAR_REPOSITORY}/${{ matrix.service }}"
           echo "short=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           echo "uri=${URI}" >> "$GITHUB_OUTPUT"
 
       - name: Authenticate to Google Cloud
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
@@ -58,15 +108,13 @@ jobs:
         id: buildpush
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ${{ steps.cfg.outputs.context }}
+          file: ${{ steps.cfg.outputs.dockerfile }}
           push: true
           tags: |
             ${{ steps.meta.outputs.uri }}:${{ steps.meta.outputs.short }}
             ${{ steps.meta.outputs.uri }}:branch-main
 
-      # Ensures the manifest exists where Terraform expects. Digests from GHCR, another GCP
-      # project, or a local-only build will not validate here.
       - name: Verify image in Artifact Registry
         env:
           URI: ${{ steps.meta.outputs.uri }}
@@ -77,7 +125,7 @@ jobs:
           DIGEST_NORM="$DIGEST"
           case "$DIGEST_NORM" in sha256:*);; *) DIGEST_NORM="sha256:${DIGEST_NORM}";; esac
           REF="${URI}@${DIGEST_NORM}"
-          echo "::notice::terraform: image_digest = \"${DIGEST_NORM}\""
+          echo "::notice::${{ matrix.service }} digest: ${DIGEST_NORM}"
           echo "Full ref: ${REF}"
           gcloud artifacts docker images describe "${REF}" --format='value(name)' >/dev/null
           echo "OK — manifest present in ${PROJECT_ID} Artifact Registry."

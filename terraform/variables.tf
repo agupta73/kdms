@@ -267,7 +267,25 @@ variable "reports_service_name" {
 }
 
 variable "reports_image_uri" {
-  description = "Fully qualified container image URI for kdms-reports."
+  description = "Optional fully qualified container image URI for kdms-reports. If empty, built from reports_image_name + reports_image_digest/tag."
+  type        = string
+  default     = ""
+}
+
+variable "reports_image_name" {
+  description = "Artifact Registry image name for kdms-reports."
+  type        = string
+  default     = "kdms-reports"
+}
+
+variable "reports_image_digest" {
+  description = "Optional digest for reports image. If set, preferred over tag."
+  type        = string
+  default     = ""
+}
+
+variable "reports_image_tag" {
+  description = "Optional tag for reports image when reports_image_digest is empty."
   type        = string
   default     = ""
 }
@@ -327,7 +345,25 @@ variable "ocr_service_name" {
 }
 
 variable "ocr_image_uri" {
-  description = "Fully qualified container image URI for kdms-ocr."
+  description = "Optional fully qualified container image URI for kdms-ocr. If empty, built from ocr_image_name + ocr_image_digest/tag."
+  type        = string
+  default     = ""
+}
+
+variable "ocr_image_name" {
+  description = "Artifact Registry image name for kdms-ocr."
+  type        = string
+  default     = "kdms-ocr"
+}
+
+variable "ocr_image_digest" {
+  description = "Optional digest for OCR image. If set, preferred over tag."
+  type        = string
+  default     = ""
+}
+
+variable "ocr_image_tag" {
+  description = "Optional tag for OCR image when ocr_image_digest is empty."
   type        = string
   default     = ""
 }

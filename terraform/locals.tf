@@ -15,6 +15,22 @@ locals {
     trimspace(var.api_image_tag) != "" ? "${local.api_image_base}:${trimspace(var.api_image_tag)}" : local.image_uri
   )
 
+  reports_image_digest_hex = trimspace(var.reports_image_digest) == "" ? "" : replace(trimspace(lower(var.reports_image_digest)), "sha256:", "")
+  reports_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.reports_image_name}"
+  reports_image_uri = trimspace(var.reports_image_uri) != "" ? trimspace(var.reports_image_uri) : (
+    local.reports_image_digest_hex != "" ? "${local.reports_image_base}@sha256:${local.reports_image_digest_hex}" : (
+      trimspace(var.reports_image_tag) != "" ? "${local.reports_image_base}:${trimspace(var.reports_image_tag)}" : ""
+    )
+  )
+
+  ocr_image_digest_hex = trimspace(var.ocr_image_digest) == "" ? "" : replace(trimspace(lower(var.ocr_image_digest)), "sha256:", "")
+  ocr_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.ocr_image_name}"
+  ocr_image_uri = trimspace(var.ocr_image_uri) != "" ? trimspace(var.ocr_image_uri) : (
+    local.ocr_image_digest_hex != "" ? "${local.ocr_image_base}@sha256:${local.ocr_image_digest_hex}" : (
+      trimspace(var.ocr_image_tag) != "" ? "${local.ocr_image_base}:${trimspace(var.ocr_image_tag)}" : ""
+    )
+  )
+
   # Public HTTPS URL without trailing slash (site_config derives WEBROOT / API URLs from these).
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.
   app_public_base = trimsuffix(trimspace(var.app_url), "/")
