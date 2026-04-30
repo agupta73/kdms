@@ -1,11 +1,14 @@
 # Terraform — KDMS on GCP
 
-Terraform root stack for the **`kdms-prod`** Cloud Run (v2) service in GCP. It manages the service definition (image, scaling, env vars, Cloud SQL volume, ingress, labels) and optional **public invoker** IAM (`allUsers` → `roles/run.invoker`).
+Terraform root stack for split Cloud Run (v2) services in GCP. It manages service definitions (image, scaling, env vars, Cloud SQL volume where needed, ingress, labels) and optional **public invoker** IAM (`allUsers` → `roles/run.invoker`).
 
 ## What this stack manages
 
-- `google_cloud_run_v2_service.kdms` — Cloud Run service **`kdms-prod`** in **`asia-south1`**
-- `google_cloud_run_v2_service_iam_binding.kdms_invoker` — only when **`allow_unauthenticated`** is true
+- `google_cloud_run_v2_service.kdms` — Cloud Run service **`kdms-prod`** (UI/web)
+- `google_cloud_run_v2_service.kdms_api` — Cloud Run service **`kdms-api-prod`** (API)
+- `google_cloud_run_v2_service.kdms_reports` — optional **`kdms-reports-prod`** when `enable_reports_service = true`
+- `google_cloud_run_v2_service.kdms_ocr` — optional **`kdms-ocr-prod`** when `enable_ocr_service = true`
+- matching IAM invoker bindings per service when `*_allow_unauthenticated = true`
 
 ## What it does **not** manage
 
@@ -61,9 +64,13 @@ terraform plan
 
 ## Day-to-day deploys (new image)
 
-After CI builds and pushes to `asia-south1-docker.pkg.dev/.../apps/kdms`:
+After CI builds and pushes images:
 
-1. Update **`terraform.tfvars`**: either **`image_digest = "sha256:…"`** ( **`image_tag = ""`** ) or **`image_tag = "<short-sha>"`** ( **`image_digest = ""`** ).
+1. Update **`terraform.tfvars`**:
+   - `image_digest`/`image_tag` for `kdms`
+   - `api_image_digest`/`api_image_tag` for `kdms-api` (or leave both empty to reuse `kdms` image)
+   - set `api_url` so UI points API calls at `kdms-api`
+   - set `enable_reports_service`/`enable_ocr_service` and corresponding `*_image_uri` + `*_url` when enabling those services
 2. Plan and apply (from **`terraform/`**):
 
 ```bash

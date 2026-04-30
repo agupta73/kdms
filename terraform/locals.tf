@@ -9,9 +9,17 @@ locals {
   image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.image_name}"
   image_uri        = local.image_digest_hex != "" ? "${local.image_base}@sha256:${local.image_digest_hex}" : "${local.image_base}:${trimspace(var.image_tag)}"
 
+  api_image_digest_hex = trimspace(var.api_image_digest) == "" ? "" : replace(trimspace(lower(var.api_image_digest)), "sha256:", "")
+  api_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.api_image_name}"
+  api_image_uri = local.api_image_digest_hex != "" ? "${local.api_image_base}@sha256:${local.api_image_digest_hex}" : (
+    trimspace(var.api_image_tag) != "" ? "${local.api_image_base}:${trimspace(var.api_image_tag)}" : local.image_uri
+  )
+
   # Public HTTPS URL without trailing slash (site_config derives WEBROOT / API URLs from these).
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.
   app_public_base = trimsuffix(trimspace(var.app_url), "/")
+  api_public_base = trimspace(var.api_url) != "" ? trimsuffix(trimspace(var.api_url), "/") : "${local.app_public_base}/api"
+  ocr_public_base = trimspace(var.ocr_url) != "" ? trimsuffix(trimspace(var.ocr_url), "/") : ""
 
   # Plain env vars before APP_URL (secrets follow; APP_URL applied last in main.tf).
   env_vars_plain_prefix = {
@@ -23,7 +31,8 @@ locals {
     TRUSTED_PROXIES = "*"
     KDMS_EVENT_ID   = var.kdms_event_id
     WEBROOT_URL     = "${local.app_public_base}/"
-    API_BASE_URL    = "${local.app_public_base}/api/"
+    API_BASE_URL    = "${local.api_public_base}/"
+    KDMS_OCR_BASE_URL = local.ocr_public_base
     # Server-side curl (login/API) hits Apache on loopback — no /kdms prefix (production vhost is root DocRoot).
     KDMS_INTERNAL_ORIGIN = "http://127.0.0.1:${var.container_port}"
     # PDO expects KDMS_* vars (see api/config/database.php); Laravel-style DB_* are kept for Composer/tools.
@@ -47,6 +56,7 @@ locals {
     "KDMS_EVENT_ID",
     "WEBROOT_URL",
     "API_BASE_URL",
+    "KDMS_OCR_BASE_URL",
     "KDMS_INTERNAL_ORIGIN",
     "KDMS_DB_NAME",
     "KDMS_DB_USER",

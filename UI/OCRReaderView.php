@@ -5,6 +5,9 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/includes/web_session.php';
 
 include_once('header.php');
+if (!isset($config_data) || !is_array($config_data)) {
+    $config_data = include(dirname(__DIR__) . '/site_config.php');
+}
 $eventId = $config_data['event_id'];
 
 ?>
@@ -273,5 +276,9 @@ $eventId = $config_data['event_id'];
     </div>
 </body>
 <?php include_once("scriptJS.php") ?>
+<?php $ocrBaseUrl = !empty($config_data['ocr_base_url']) ? $config_data['ocr_base_url'] : ''; ?>
+<script>
+window.KDMS_OCR_BASE_URL = <?php echo json_encode($ocrBaseUrl, JSON_UNESCAPED_SLASHES); ?>;
+</script>
 <script src="../assets/js/ocr_reader/main.js"></script>
 </html>
