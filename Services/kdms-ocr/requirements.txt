@@ -1,0 +1,6 @@
+Flask
+gunicorn
+flake8
+flask_restful
+python-dateutil
+pytesseract

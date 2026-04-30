@@ -1,0 +1,1 @@
+""" Parser OCR data for using passport image."""
