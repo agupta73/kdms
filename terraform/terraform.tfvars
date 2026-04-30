@@ -56,8 +56,8 @@ api_cpu                   = "1"
 api_memory                = "2Gi"
 api_container_concurrency = 120
 
-ingress               = "INGRESS_TRAFFIC_ALL"
-allow_unauthenticated = true
+ingress                   = "INGRESS_TRAFFIC_ALL"
+allow_unauthenticated     = true
 api_allow_unauthenticated = true
 
 labels = {
@@ -111,11 +111,11 @@ ocr_image_digest = "sha256:REPLACE_ME"
 ocr_image_tag    = ""
 ocr_url          = "https://kdms-ocr-prod-684080887473.asia-south1.run.app"
 
-ocr_min_instances        = 0
-ocr_max_instances        = 6
-ocr_cpu                  = "1"
-ocr_memory               = "2Gi"
-ocr_container_port       = 5001
+ocr_min_instances         = 0
+ocr_max_instances         = 6
+ocr_cpu                   = "1"
+ocr_memory                = "2Gi"
+ocr_container_port        = 5001
 ocr_container_concurrency = 20
 ocr_allow_unauthenticated = true
 

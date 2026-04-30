@@ -39,15 +39,15 @@ locals {
 
   # Plain env vars before APP_URL (secrets follow; APP_URL applied last in main.tf).
   env_vars_plain_prefix = {
-    APP_ENV         = "production"
-    APP_DEBUG       = "false"
-    LOG_CHANNEL     = "stderr"
-    SESSION_DRIVER  = "cookie"
-    CACHE_DRIVER    = "array"
-    TRUSTED_PROXIES = "*"
-    KDMS_EVENT_ID   = var.kdms_event_id
-    WEBROOT_URL     = "${local.app_public_base}/"
-    API_BASE_URL    = "${local.api_public_base}/"
+    APP_ENV           = "production"
+    APP_DEBUG         = "false"
+    LOG_CHANNEL       = "stderr"
+    SESSION_DRIVER    = "cookie"
+    CACHE_DRIVER      = "array"
+    TRUSTED_PROXIES   = "*"
+    KDMS_EVENT_ID     = var.kdms_event_id
+    WEBROOT_URL       = "${local.app_public_base}/"
+    API_BASE_URL      = "${local.api_public_base}/"
     KDMS_OCR_BASE_URL = local.ocr_public_base
     # Server-side curl (login/API) hits Apache on loopback — no /kdms prefix (production vhost is root DocRoot).
     KDMS_INTERNAL_ORIGIN = "http://127.0.0.1:${var.container_port}"

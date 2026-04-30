@@ -43,13 +43,13 @@ jobs:
               test -n "${{ vars.KMREPORTS_REPO_URL }}" || { echo "::error::Set repository variable KMREPORTS_REPO_URL"; exit 1; }
               git clone --depth 1 "${{ vars.KMREPORTS_REPO_URL }}" /tmp/kdms-reports
               if [ ! -f /tmp/kdms-reports/Dockerfile ]; then
-                cat > /tmp/kdms-reports/Dockerfile <<'EOF'
-FROM php:8.3-apache
-WORKDIR /var/www/html
-COPY . .
-RUN printf "<?php\nheader('Location: /UI/login.php');\nexit;\n" > /var/www/html/index.php
-EXPOSE 80
-EOF
+                printf '%s\n' \
+                  'FROM php:8.3-apache' \
+                  'WORKDIR /var/www/html' \
+                  'COPY . .' \
+                  "RUN printf \"<?php\\nheader('Location: /UI/login.php');\\nexit;\\n\" > /var/www/html/index.php" \
+                  'EXPOSE 80' \
+                  > /tmp/kdms-reports/Dockerfile
               fi
               echo "context=/tmp/kdms-reports" >> "$GITHUB_OUTPUT"
               echo "dockerfile=/tmp/kdms-reports/Dockerfile" >> "$GITHUB_OUTPUT"
@@ -58,16 +58,16 @@ EOF
               test -n "${{ vars.KDMS_OCR_REPO_URL }}" || { echo "::error::Set repository variable KDMS_OCR_REPO_URL"; exit 1; }
               git clone --depth 1 "${{ vars.KDMS_OCR_REPO_URL }}" /tmp/kdms-ocr
               if [ ! -f /tmp/kdms-ocr/Dockerfile ]; then
-                cat > /tmp/kdms-ocr/Dockerfile <<'EOF'
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
-COPY . /app
-ENV PYTHONUNBUFFERED=1
-EXPOSE 5001
-CMD ["python", "app.py"]
-EOF
+                printf '%s\n' \
+                  'FROM python:3.11-slim' \
+                  'WORKDIR /app' \
+                  'COPY requirements.txt /app/requirements.txt' \
+                  'RUN pip install --no-cache-dir -r /app/requirements.txt' \
+                  'COPY . /app' \
+                  'ENV PYTHONUNBUFFERED=1' \
+                  'EXPOSE 5001' \
+                  'CMD ["python", "app.py"]' \
+                  > /tmp/kdms-ocr/Dockerfile
               fi
               echo "context=/tmp/kdms-ocr" >> "$GITHUB_OUTPUT"
               echo "dockerfile=/tmp/kdms-ocr/Dockerfile" >> "$GITHUB_OUTPUT"

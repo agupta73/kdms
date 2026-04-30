@@ -29,7 +29,17 @@ The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on 
 3. In this GitHub repo, add repository variable **`GCP_WIF_PROVIDER`** (Settings → Secrets and variables → Actions → Variables) with the full provider resource name, for example:  
    `projects/684080887473/locations/global/workloadIdentityPools/github-pool/providers/github-provider`
 
-4. Pushes to **`main`** run **Build and push to Artifact Registry** and tag the image with the **short commit SHA** and **`branch-main`**. You can also run that workflow manually: **Actions** → **Build and push to Artifact Registry** → **Run workflow**.
+4. Pushes to **`main`** run **Build and push service images to Artifact Registry** and build/push all four images:
+   - `kdms-main`
+   - `kdms-api`
+   - `kdms-reports`
+   - `kdms-ocr`
+   using the **short commit SHA** and **`branch-main`** tags.
+   You can also run it manually: **Actions** → **Build and push service images to Artifact Registry** → **Run workflow**.
+
+5. Add repository variables for external service repos:
+   - `KMREPORTS_REPO_URL`
+   - `KDMS_OCR_REPO_URL`
 
 CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (after setting **`image_digest`** or **`image_tag`** in **`terraform.tfvars`**) or with **`gcloud run services update`**.
 
@@ -67,10 +77,12 @@ terraform plan
 After CI builds and pushes images:
 
 1. Update **`terraform.tfvars`**:
-   - `image_digest`/`image_tag` for `kdms`
-   - `api_image_digest`/`api_image_tag` for `kdms-api` (or leave both empty to reuse `kdms` image)
-   - set `api_url` so UI points API calls at `kdms-api`
-   - set `enable_reports_service`/`enable_ocr_service` and corresponding `*_image_uri` + `*_url` when enabling those services
+   - `image_digest`/`image_tag` for `kdms-main`
+   - `api_image_digest`/`api_image_tag` for `kdms-api` (or leave both empty to reuse `kdms-main` image)
+   - `reports_image_digest`/`reports_image_tag` (or `reports_image_uri`) for `kdms-reports`
+   - `ocr_image_digest`/`ocr_image_tag` (or `ocr_image_uri`) for `kdms-ocr`
+   - set `api_url`, `reports_url`, `ocr_url` to live service URLs
+   - enable services with `enable_reports_service` and `enable_ocr_service` as needed
 2. Plan and apply (from **`terraform/`**):
 
 ```bash
