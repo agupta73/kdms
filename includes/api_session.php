@@ -23,5 +23,23 @@ if (! defined('KDMS_SKIP_OPTION_PRELOAD')) {
     define('KDMS_SKIP_OPTION_PRELOAD', true);
 }
 
+$trustedService = false;
+$configuredServiceKey = getenv('KDMS_SERVICE_KEY');
+if (is_string($configuredServiceKey) && $configuredServiceKey !== '') {
+    $headerServiceKey = '';
+    if (!empty($_SERVER['HTTP_X_KDMS_SERVICE_KEY'])) {
+        $headerServiceKey = (string) $_SERVER['HTTP_X_KDMS_SERVICE_KEY'];
+    } elseif (!empty($_REQUEST['service_key'])) {
+        $headerServiceKey = (string) $_REQUEST['service_key'];
+    }
+
+    if ($headerServiceKey !== '' && hash_equals($configuredServiceKey, $headerServiceKey)) {
+        $trustedService = true;
+        define('KDMS_TRUSTED_SERVICE_AUTH', true);
+    }
+}
+
 require_once dirname(__DIR__) . '/initialize.php';
-require_once dirname(__DIR__) . '/sessionCheck.php';
+if (! $trustedService) {
+    require_once dirname(__DIR__) . '/sessionCheck.php';
+}

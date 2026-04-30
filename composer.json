@@ -4,7 +4,6 @@
   "description": "KDMS — Devotee management (PHP)",
   "license": "proprietary",
   "require": {
-    "php": ">=8.1",
-    "phpoffice/phpspreadsheet": "^2.0"
+    "php": ">=8.1"
   }
 }

@@ -1,0 +1,83 @@
+version: "3.9"
+
+name: kdms-split-local
+
+networks:
+  kdms-public:
+  kdms-private:
+    internal: true
+
+services:
+  kdms-main:
+    build:
+      context: .
+    image: kdms-main:local
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      KDMS_APACHE_USE_PREFIX: "0"
+      WEBROOT_URL: "http://localhost:8080/"
+      API_BASE_URL: "http://localhost:8081/api/"
+      KDMS_OCR_BASE_URL: "http://localhost:5001"
+      KDMS_INTERNAL_ORIGIN: "http://kdms-api:8080"
+      KDMS_DB_HOST: "host.docker.internal:3306"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - kdms-api
+      - kdms-ocr
+    networks:
+      - kdms-public
+      - kdms-private
+
+  kdms-api:
+    build:
+      context: .
+    image: kdms-api:local
+    ports:
+      - "8081:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      KDMS_APACHE_USE_PREFIX: "0"
+      WEBROOT_URL: "http://localhost:8081/"
+      API_BASE_URL: "http://localhost:8081/api/"
+      KDMS_INTERNAL_ORIGIN: "http://127.0.0.1:8080"
+      KDMS_DB_HOST: "host.docker.internal:3306"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - kdms-private
+
+  kdms-ocr:
+    image: python:3.11-slim
+    working_dir: /app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    volumes:
+      - ../kdms-ocr:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      FLASK_ENV: development
+    ports:
+      - "5001:5001"
+    networks:
+      - kdms-private
+
+  kdms-reports:
+    image: php:8.3-apache
+    working_dir: /var/www/html
+    volumes:
+      - ../kmreports:/var/www/html
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html
+    ports:
+      - "8082:80"
+    networks:
+      - kdms-public
+      - kdms-private

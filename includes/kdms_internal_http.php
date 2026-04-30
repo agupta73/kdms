@@ -48,4 +48,9 @@ function kdms_curl_setopt_internal_cookie($ch): void
     if (! empty($GLOBALS['KDMS_INTERNAL_SESSION_COOKIE'])) {
         curl_setopt($ch, CURLOPT_COOKIE, (string) $GLOBALS['KDMS_INTERNAL_SESSION_COOKIE']);
     }
+
+    $serviceKey = getenv('KDMS_SERVICE_KEY');
+    if (is_string($serviceKey) && $serviceKey !== '') {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-KDMS-SERVICE-KEY: ' . $serviceKey]);
+    }
 }
