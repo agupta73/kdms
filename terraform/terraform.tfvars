@@ -27,12 +27,12 @@ service_name     = "kdms-prod"
 api_service_name = "kdms-api-prod"
 
 ar_repo    = "apps"
-image_name = "kdms"
+image_name = "kdms-main"
 # Pin exact manifest (recommended). Copy from Artifact Registry after CI push.
 image_digest = "sha256:9b0c4e87347e7c88e4ba5ab7d8ebbc6d536bd9cc77f9bfbcf7d3a5d5099d9a6b"
 image_tag    = ""
 
-api_image_name   = "kdms"
+api_image_name   = "kdms-api"
 api_image_digest = "sha256:9b0c4e87347e7c88e4ba5ab7d8ebbc6d536bd9cc77f9bfbcf7d3a5d5099d9a6b"
 api_image_tag    = ""
 
@@ -82,7 +82,7 @@ secret_service_key = "kdms-service-key"
 # When true, set reports_image_uri to e.g.
 # asia-south1-docker.pkg.dev/PROJECT/apps/kdms-reports@sha256:...
 # and reports_url to the deployed service URL (see terraform output reports_service_url).
-enable_reports_service = false
+enable_reports_service = true
 
 reports_service_name = "kdms-reports-prod"
 reports_image_name   = "kdms-reports"
@@ -102,7 +102,7 @@ reports_allow_unauthenticated = true
 # -----------------------------------------------------------------------------
 # Optional: kdms-ocr Python service (enable after image exists)
 # -----------------------------------------------------------------------------
-enable_ocr_service = false
+enable_ocr_service = true
 
 ocr_service_name = "kdms-ocr-prod"
 ocr_image_name   = "kdms-ocr"

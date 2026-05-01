@@ -52,7 +52,7 @@ Create the **`apps`** repository in GCP if it does not exist yet (once per proje
 
 ### Production image: digest or tag
 
-- **Digest (recommended):** set **`image_digest`** to the **`sha256:…`** value from Artifact Registry for the image you intend to run, and set **`image_tag`** to **`""`**. Terraform deploys `…/kdms@sha256:…`, so the revision always matches that manifest — no ambiguity if a tag is reused elsewhere (e.g. GitHub vs GCP).
+- **Digest (recommended):** set **`image_digest`** to the **`sha256:…`** value from Artifact Registry for the image you intend to run, and set **`image_tag`** to **`""`**. With current defaults this resolves to `…/kdms-main@sha256:…` for the `kdms` Cloud Run service.
 - **Tag only:** set **`image_digest`** to **`""`** and **`image_tag`** to the **short git SHA** tag CI pushed to Artifact Registry. Do **not** use floating tags like **`branch-main`** for production; treat the short SHA as **immutable** (never move that tag to another image).
 
 See **`variables.tf`** and **`terraform.tfvars.example`** for **`app_url`** and other inputs.
@@ -77,7 +77,7 @@ terraform plan
 After CI builds and pushes images:
 
 1. Update **`terraform.tfvars`**:
-   - `image_digest`/`image_tag` for `kdms-main`
+   - `image_digest`/`image_tag` for `kdms-main` (deployed to Cloud Run service `kdms`)
    - `api_image_digest`/`api_image_tag` for `kdms-api` (or leave both empty to reuse `kdms-main` image)
    - `reports_image_digest`/`reports_image_tag` (or `reports_image_uri`) for `kdms-reports`
    - `ocr_image_digest`/`ocr_image_tag` (or `ocr_image_uri`) for `kdms-ocr`

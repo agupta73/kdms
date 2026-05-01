@@ -31,7 +31,7 @@ variable "ar_repo" {
 variable "image_name" {
   description = "Artifact Registry image name within the repository."
   type        = string
-  default     = "kdms"
+  default     = "kdms-main"
 }
 
 variable "image_digest" {
@@ -197,7 +197,7 @@ variable "api_service_name" {
 variable "api_image_name" {
   description = "Artifact Registry image name for split KDMS API."
   type        = string
-  default     = "kdms"
+  default     = "kdms-api"
 }
 
 variable "api_image_digest" {
@@ -257,7 +257,7 @@ variable "api_allow_unauthenticated" {
 variable "enable_reports_service" {
   description = "Create split Cloud Run service for kdms-reports."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "reports_service_name" {
@@ -335,7 +335,7 @@ variable "reports_allow_unauthenticated" {
 variable "enable_ocr_service" {
   description = "Create split Cloud Run service for kdms-ocr."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "ocr_service_name" {
