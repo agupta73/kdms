@@ -168,6 +168,11 @@ if ($debug) {
         return true;
     }
 
+    /**
+     * Opens multiple report URLs. Strict browsers often block 2+ synchronous window.open()
+     * from one click; short stagger keeps each open in the "popup chain". Per-row try/catch
+     * avoids Select2/DOM errors stopping the loop after the first report (seen in prod).
+     */
     function submitPrint(formId, flag) {
         var printForm = document.getElementById(formId);
         if (!printForm) {
@@ -175,74 +180,116 @@ if ($debug) {
             return;
         }
 
-        var I = 0;
-        var option = "";
+        var urlsToOpen = [];
         var selectedCount = 0;
+        var I = 0;
 
         for (I = 0; I < printForm.length; I++) {
-            if (printForm[I].value !== "" && printForm[I].type === 'checkbox' && printForm[I].checked) {
+            try {
+                if (!printForm[I] || printForm[I].value === "" || printForm[I].type !== "checkbox" || !printForm[I].checked) {
+                    continue;
+                }
                 selectedCount++;
-                option = printForm[I].value || "";
+                var option = printForm[I].value || "";
+                var fid = printForm[I].id;
 
-                var fallbackInput = document.getElementById("S" + printForm[I].id);
+                var fallbackInput = document.getElementById("S" + fid);
                 if (fallbackInput && typeof fallbackInput.value === "string") {
                     option = fallbackInput.value;
                 }
 
-                var selectId = $('#' + printForm[I].id).parent().siblings('td').children('select').prop('id');
-                if (selectId && $.fn && $.fn.select2) {
-                    var data = $('#' + selectId).select2('data');
-                    if (Array.isArray(data) && data.length > 0) {
-                        var txt = "";
-                        $(data).each(function (i, u) {
-                            var sVal = (u && typeof u.id !== "undefined") ? u.id : "";
-                            if (sVal === "") {
-                                return;
+                var selectId = "";
+                try {
+                    selectId = $("#" + fid).parent().siblings("td").children("select").prop("id") || "";
+                } catch (e1) {
+                    selectId = "";
+                }
+
+                if (selectId && typeof $.fn !== "undefined" && $.fn.select2) {
+                    try {
+                        var $sel = $("#" + selectId);
+                        if ($sel.length && $sel.data && $sel.data("select2")) {
+                            var data = $sel.select2("data");
+                            if (Array.isArray(data) && data.length > 0) {
+                                var txt = "";
+                                $(data).each(function (idx, u) {
+                                    var sVal = (u && typeof u.id !== "undefined") ? u.id : "";
+                                    if (sVal === "") {
+                                        return;
+                                    }
+                                    if (idx === 0 || txt === "") {
+                                        txt = sVal;
+                                    } else {
+                                        txt = txt + "," + sVal;
+                                    }
+                                });
+                                if (txt !== "") {
+                                    option = txt;
+                                }
                             }
-                            if (i === 0 || txt === "") {
-                                txt = sVal;
-                            } else {
-                                txt = txt + ',' + sVal;
-                            }
-                        });
-                        if (txt !== "") {
-                            option = txt;
+                        }
+                    } catch (e2) {
+                        if (typeof console !== "undefined" && console.warn) {
+                            console.warn("KMReports submitPrint select2", fid, e2);
                         }
                     }
                 }
 
-                switch (printForm[I].id) {
-                            case "DRWP":
-                                window.open("../reports/rptDutyReport.php?mode=ADS&photo_required=Y&key=" + option, "_blank");
-                                break;
-                            case "DRWOP":
-                                window.open("../reports/rptDutyReport.php?mode=ADS&photo_required=N&key=" + option, "_blank");
-                                break;
-                            case "ADRWP":
-                                window.open("../reports/rptAttendanceReport.php?mode=ADS&photo_required=N&key=" + option, "_blank");
-                                break;
-                            case "ODRWP":
-                                window.open("../reports/rptOfficeDuty.php?mode=DutyReport&photo_required=Y&key=" + option, "_blank");
-                                break;
-                            case "ODRWOP":
-                                window.open("../reports/rptOfficeDuty.php?mode=DutyReport&photo_required=N&key=" + option, "_blank");
-                                break;
-                            case "ARWP":
-                                window.open("../reports/rptAcco.php?mode=AccoReport&photo_required=Y&key=" + option, "_blank");
-                                break;
-                            case "ARWOP":
-                                window.open("../reports/rptAcco.php?mode=AccoReport&photo_required=N&key=" + option, "_blank");
-                                break;
-                            case "AAR":
-                                window.open("../reports/rptAccoAvailability.php", "_blank");
-                                break;
-                        }
+                var enc = encodeURIComponent(option);
+                switch (fid) {
+                    case "DRWP":
+                        urlsToOpen.push("../reports/rptDutyReport.php?mode=ADS&photo_required=Y&key=" + enc);
+                        break;
+                    case "DRWOP":
+                        urlsToOpen.push("../reports/rptDutyReport.php?mode=ADS&photo_required=N&key=" + enc);
+                        break;
+                    case "ADRWP":
+                        urlsToOpen.push("../reports/rptAttendanceReport.php?mode=ADS&photo_required=N&key=" + enc);
+                        break;
+                    case "ODRWP":
+                        urlsToOpen.push("../reports/rptOfficeDuty.php?mode=DutyReport&photo_required=Y&key=" + enc);
+                        break;
+                    case "ODRWOP":
+                        urlsToOpen.push("../reports/rptOfficeDuty.php?mode=DutyReport&photo_required=N&key=" + enc);
+                        break;
+                    case "ARWP":
+                        urlsToOpen.push("../reports/rptAcco.php?mode=AccoReport&photo_required=Y&key=" + enc);
+                        break;
+                    case "ARWOP":
+                        urlsToOpen.push("../reports/rptAcco.php?mode=AccoReport&photo_required=N&key=" + enc);
+                        break;
+                    case "AAR":
+                        urlsToOpen.push("../reports/rptAccoAvailability.php");
+                        break;
+                    default:
+                        break;
+                }
+            } catch (eRow) {
+                if (typeof console !== "undefined" && console.warn) {
+                    console.warn("KMReports submitPrint row", eRow);
                 }
             }
+        }
 
         if (selectedCount === 0) {
             alert("Please select at least one report to print.");
+            return;
         }
+
+        urlsToOpen.forEach(function (url, idx) {
+            setTimeout(function () {
+                var w = window.open(url, "_blank");
+                if (!w || (typeof w.closed !== "undefined" && w.closed)) {
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            }, idx * 75);
+        });
     }
 
     function generateReport(formId, flag) {
