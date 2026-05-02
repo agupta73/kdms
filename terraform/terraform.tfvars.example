@@ -39,6 +39,7 @@ memory                = "2Gi"
 container_port        = 8080
 container_concurrency = 80
 ingress               = "INGRESS_TRAFFIC_ALL"
+# cloud_run_deletion_protection = false # default; set true only to block accidental destroys (disable before removing services)
 allow_unauthenticated = true
 labels = {
   app = "kdms"

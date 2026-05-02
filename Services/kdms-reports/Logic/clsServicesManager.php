@@ -370,8 +370,9 @@ class clsServicesManager
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-KDMS-SERVICE-KEY: ' . $serviceKey]);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
+        $rawResponse = curl_exec($ch);
         $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $response = $rawResponse;
         if ($response === false) {
             $curlError = curl_error($ch);
             if (function_exists('kmreports_log')) {
@@ -394,14 +395,32 @@ class clsServicesManager
             //var_dump($response);
         }
         try {
-            $response = json_decode($response, true);
+            $response = json_decode((string) $rawResponse, true);
             if ($response === null && $httpCode >= 400) {
+                if (function_exists('kmreports_log')) {
+                    $snippet = is_string($rawResponse) ? substr(preg_replace('/\s+/', ' ', $rawResponse), 0, 400) : '';
+                    kmreports_log('ERROR', 'KMReports API non-JSON error response', [
+                        'url'        => $url,
+                        'optionType' => $this->optionType,
+                        'http_code'  => $httpCode,
+                        'body_snip'  => $snippet,
+                    ]);
+                }
                 $response = [
                     'status'  => false,
                     'message' => 'API returned error response.',
                     'info'    => 'HTTP ' . $httpCode,
                 ];
             } elseif ($response === null) {
+                if (function_exists('kmreports_log')) {
+                    $snippet = is_string($rawResponse) ? substr(preg_replace('/\s+/', ' ', $rawResponse), 0, 400) : '';
+                    kmreports_log('ERROR', 'KMReports API invalid JSON', [
+                        'url'        => $url,
+                        'optionType' => $this->optionType,
+                        'http_code'  => $httpCode,
+                        'body_snip'  => $snippet,
+                    ]);
+                }
                 $response = [
                     'status'  => false,
                     'message' => 'API returned invalid JSON.',

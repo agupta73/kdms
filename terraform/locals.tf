@@ -42,7 +42,9 @@ locals {
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.
   app_public_base = trimsuffix(trimspace(var.app_url), "/")
   api_public_base = trimspace(var.api_url) != "" ? trimsuffix(trimspace(var.api_url), "/") : "${local.app_public_base}/api"
-  ocr_public_base = trimspace(var.ocr_url) != "" ? trimsuffix(trimspace(var.ocr_url), "/") : ""
+  # PHP endpoints (manageAdmin.php, …) live under /api/ on the API host. Use this for KMREPORTS_API_BASE_URL etc.
+  api_dir_http_base = trimspace(var.api_url) != "" ? "${trimsuffix(trimspace(var.api_url), "/")}/api" : "${local.app_public_base}/api"
+  ocr_public_base   = trimspace(var.ocr_url) != "" ? trimsuffix(trimspace(var.ocr_url), "/") : ""
 
   # Plain env vars before APP_URL (secrets follow; APP_URL applied last in main.tf).
   env_vars_plain_prefix = {

@@ -1,8 +1,9 @@
 resource "google_cloud_run_v2_service" "kdms" {
-  name     = var.service_name
-  location = var.region
-  project  = var.project_id
-  ingress  = var.ingress
+  name                = var.service_name
+  location            = var.region
+  project             = var.project_id
+  ingress             = var.ingress
+  deletion_protection = var.cloud_run_deletion_protection
 
   # Only user labels — never set cloud.googleapis.com/* or run.googleapis.com/* here; the API rejects
   # system labels on update (they appear in effective_labels from GCP automatically).
@@ -120,11 +121,12 @@ resource "google_cloud_run_v2_service_iam_binding" "kdms_invoker" {
 }
 
 resource "google_cloud_run_v2_service" "kdms_api" {
-  name     = var.api_service_name
-  location = var.region
-  project  = var.project_id
-  ingress  = var.ingress
-  labels   = var.labels
+  name                = var.api_service_name
+  location            = var.region
+  project             = var.project_id
+  ingress             = var.ingress
+  deletion_protection = var.cloud_run_deletion_protection
+  labels              = var.labels
 
   template {
     labels = var.labels
@@ -248,12 +250,13 @@ resource "google_cloud_run_v2_service_iam_binding" "kdms_api_invoker" {
 }
 
 resource "google_cloud_run_v2_service" "kdms_reports" {
-  count    = var.enable_reports_service ? 1 : 0
-  name     = var.reports_service_name
-  location = var.region
-  project  = var.project_id
-  ingress  = var.ingress
-  labels   = var.labels
+  count               = var.enable_reports_service ? 1 : 0
+  name                = var.reports_service_name
+  location            = var.region
+  project             = var.project_id
+  ingress             = var.ingress
+  deletion_protection = var.cloud_run_deletion_protection
+  labels              = var.labels
 
   template {
     labels = var.labels
@@ -311,12 +314,12 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
 
       env {
         name  = "API_BASE_URL"
-        value = "${local.api_public_base}/"
+        value = "${local.api_dir_http_base}/"
       }
 
       env {
         name  = "KMREPORTS_API_BASE_URL"
-        value = "${local.api_public_base}/"
+        value = "${local.api_dir_http_base}/"
       }
 
       env {
@@ -327,6 +330,16 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
       env {
         name  = "KMREPORTS_PROTOCOL"
         value = "https://"
+      }
+
+      env {
+        name = "KDMS_SERVICE_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = local.secret_env_vars["KDMS_SERVICE_KEY"].secret
+            version = local.secret_env_vars["KDMS_SERVICE_KEY"].version
+          }
+        }
       }
     }
 
@@ -352,12 +365,13 @@ resource "google_cloud_run_v2_service_iam_binding" "kdms_reports_invoker" {
 }
 
 resource "google_cloud_run_v2_service" "kdms_ocr" {
-  count    = var.enable_ocr_service ? 1 : 0
-  name     = var.ocr_service_name
-  location = var.region
-  project  = var.project_id
-  ingress  = var.ingress
-  labels   = var.labels
+  count               = var.enable_ocr_service ? 1 : 0
+  name                = var.ocr_service_name
+  location            = var.region
+  project             = var.project_id
+  ingress             = var.ingress
+  deletion_protection = var.cloud_run_deletion_protection
+  labels              = var.labels
 
   template {
     labels = var.labels

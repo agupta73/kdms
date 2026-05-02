@@ -164,6 +164,16 @@ variable "ingress" {
   default     = "INGRESS_TRAFFIC_ALL"
 }
 
+variable "cloud_run_deletion_protection" {
+  description = <<-EOT
+    Passed to google_cloud_run_v2_service.deletion_protection. The provider treats protection as enabled when unset,
+    which blocks terraform destroy / removing a service from config. Default false so applies can replace or drop services.
+    Set true only for extra safety; you must set false and apply before Terraform can destroy a managed service.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "allow_unauthenticated" {
   description = "If true, bind roles/run.invoker to allUsers."
   type        = bool
