@@ -2,14 +2,16 @@
 # KDMS production — Cloud Run (split services)
 # =============================================================================
 # Commit policy: This file holds non-secret inputs only (Secret Manager ids, not
-# passwords). Update image digests after each promote from CI (immutable deploy).
+# passwords).
+#
+# Images: digest > explicit *_image_tag > rolling_image_tag (default branch-main).
+# Leave digest and tag empty to deploy whatever CI last pushed to branch-main;
+# set *_image_digest when pinning / rollback is required.
 #
 # Rollout checklist:
-# 1. Push images to Artifact Registry (kdms image used for UI + API until a
-#    dedicated kdms-api image exists).
-# 2. Set image_digest + api_image_digest to the same digest (or leave api_* empty
-#    to inherit the main kdms image).
-# 3. Set app_url + api_url to the live Cloud Run HTTPS URLs (no trailing slash).
+# 1. Push images to Artifact Registry (CI tags branch-main + short SHA per service).
+# 2. Either leave digests empty for rolling deploy, or set per-service digests to pin.
+# 3. Set app_url + api_url (+ reports_url, ocr_url) to live HTTPS URLs (no trailing slash).
 # 4. terraform plan && terraform apply
 #
 # Cloud Run URL shape (example): https://SERVICE-PROJECT_NUMBER.REGION.run.app
@@ -28,12 +30,13 @@ api_service_name = "kdms-api-prod"
 
 ar_repo    = "apps"
 image_name = "kdms-main"
-# Pin exact manifest (recommended). Copy from Artifact Registry after CI push.
-image_digest = "sha256:9b0c4e87347e7c88e4ba5ab7d8ebbc6d536bd9cc77f9bfbcf7d3a5d5099d9a6b"
+# Optional: pin with sha256:… ; leave empty to use branch-main (or set image_tag).
+image_digest = ""
 image_tag    = ""
+# rolling_image_tag = "branch-main"  # when digest and image_tag are both empty
 
 api_image_name   = "kdms-api"
-api_image_digest = "sha256:9b0c4e87347e7c88e4ba5ab7d8ebbc6d536bd9cc77f9bfbcf7d3a5d5099d9a6b"
+api_image_digest = ""
 api_image_tag    = ""
 
 runtime_sa_email  = "run-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com"
@@ -87,7 +90,7 @@ enable_reports_service = true
 reports_service_name = "kdms-reports-prod"
 reports_image_name   = "kdms-reports"
 reports_image_uri    = ""
-reports_image_digest = "sha256:REPLACE_ME"
+reports_image_digest = ""
 reports_image_tag    = ""
 # Placeholder — replace with actual URL after first deploy or from `gcloud run services describe`.
 reports_url = "https://kdms-reports-prod-684080887473.asia-south1.run.app"
@@ -107,7 +110,7 @@ enable_ocr_service = true
 ocr_service_name = "kdms-ocr-prod"
 ocr_image_name   = "kdms-ocr"
 ocr_image_uri    = ""
-ocr_image_digest = "sha256:REPLACE_ME"
+ocr_image_digest = "sha256:44badddbf213fca09be134c15f44573556ff03523028ce9c695beafc3760f710"
 ocr_image_tag    = ""
 ocr_url          = "https://kdms-ocr-prod-684080887473.asia-south1.run.app"
 

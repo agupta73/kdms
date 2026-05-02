@@ -41,18 +41,8 @@ jobs:
               ;;
             kdms-reports)
               test -d "Services/kdms-reports" || { echo "::error::Services/kdms-reports not found in repo"; exit 1; }
-              if [ ! -f "Services/kdms-reports/Dockerfile" ]; then
-                printf '%s\n' \
-                  'FROM php:8.3-apache' \
-                  'WORKDIR /var/www/html' \
-                  'COPY . .' \
-                  "RUN printf \"<?php\\nheader('Location: /UI/login.php');\\nexit;\\n\" > /var/www/html/index.php" \
-                  'EXPOSE 80' \
-                  > /tmp/kdms-reports.Dockerfile
-                echo "dockerfile=/tmp/kdms-reports.Dockerfile" >> "$GITHUB_OUTPUT"
-              else
-                echo "dockerfile=./Services/kdms-reports/Dockerfile" >> "$GITHUB_OUTPUT"
-              fi
+              test -f "Services/kdms-reports/Dockerfile" || { echo "::error::Services/kdms-reports/Dockerfile is required (must listen on \$PORT for Cloud Run)"; exit 1; }
+              echo "dockerfile=./Services/kdms-reports/Dockerfile" >> "$GITHUB_OUTPUT"
               echo "context=./Services/kdms-reports" >> "$GITHUB_OUTPUT"
               ;;
             kdms-ocr)

@@ -37,11 +37,9 @@ The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on 
    using the **short commit SHA** and **`branch-main`** tags.
    You can also run it manually: **Actions** → **Build and push service images to Artifact Registry** → **Run workflow**.
 
-5. Add repository variables for external service repos:
-   - `KMREPORTS_REPO_URL`
-   - `KDMS_OCR_REPO_URL`
+5. The monorepo includes **`Services/kdms-reports`** and **`Services/kdms-ocr`**; CI builds all four images from one push.
 
-CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (after setting **`image_digest`** or **`image_tag`** in **`terraform.tfvars`**) or with **`gcloud run services update`**.
+CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (see image settings in **`terraform.tfvars`**) or with **`gcloud run services update`**.
 
 ### Artifact Registry
 
@@ -50,10 +48,15 @@ Repository: **`apps`** in **`asia-south1`**, image **`kdms`**:
 
 Create the **`apps`** repository in GCP if it does not exist yet (once per project/region), or codify it in a separate bootstrap stack if you choose.
 
-### Production image: digest or tag
+### Production images: rolling tag, explicit tag, or digest
 
-- **Digest (recommended):** set **`image_digest`** to the **`sha256:…`** value from Artifact Registry for the image you intend to run, and set **`image_tag`** to **`""`**. With current defaults this resolves to `…/kdms-main@sha256:…` for the `kdms` Cloud Run service.
-- **Tag only:** set **`image_digest`** to **`""`** and **`image_tag`** to the **short git SHA** tag CI pushed to Artifact Registry. Do **not** use floating tags like **`branch-main`** for production; treat the short SHA as **immutable** (never move that tag to another image).
+Precedence for each service: **`image_digest` (or `api_image_digest`, etc.)** if set, else **`*_image_tag`** if set, else **`rolling_image_tag`** (default **`branch-main`**, the tag CI updates on every push to `main`).
+
+- **Rolling (track CI):** leave **`image_digest`** and **`image_tag`** empty (and the same for optional per-service `*_image_digest` / `*_image_tag`). Terraform resolves images to **`…/SERVICE:branch-main`** (or **`rolling_image_tag`**). Because the URI string often stays identical while Artifact Registry moves the tag to a new manifest, **`terraform plan` may show no diff** after CI pushes. Bump **`revision_trigger`** in **`terraform.tfvars`** (or pin **`image_digest`**) so Terraform creates a new revision that pulls the current manifest.
+- **Explicit tag:** set **`image_tag`** (or **`api_image_tag`**, …) to an **immutable tag** CI pushed (e.g. short git SHA) with digest empty.
+- **Digest (pin / rollback):** set **`image_digest`** (or **`api_image_digest`**, …) to **`sha256:…`** and leave the matching **`image_tag`** empty. Overrides **`rolling_image_tag`**.
+
+To use a different moving tag than **`branch-main`**, set **`rolling_image_tag`** (e.g. some teams publish **`latest`**).
 
 See **`variables.tf`** and **`terraform.tfvars.example`** for **`app_url`** and other inputs.
 
@@ -64,7 +67,7 @@ From the repository root:
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# set image_digest (and image_tag = "") or image_tag (and image_digest = "")
+# set images: see terraform.tfvars.example (rolling vs tag vs digest)
 
 terraform init
 terraform workspace select prod || terraform workspace new prod
@@ -76,11 +79,10 @@ terraform plan
 
 After CI builds and pushes images:
 
-1. Update **`terraform.tfvars`**:
-   - `image_digest`/`image_tag` for `kdms-main` (deployed to Cloud Run service `kdms`)
-   - `api_image_digest`/`api_image_tag` for `kdms-api` (or leave both empty to reuse `kdms-main` image)
-   - `reports_image_digest`/`reports_image_tag` (or `reports_image_uri`) for `kdms-reports`
-   - `ocr_image_digest`/`ocr_image_tag` (or `ocr_image_uri`) for `kdms-ocr`
+1. Update **`terraform.tfvars`** as needed:
+   - **`rolling_image_tag`** or leave empty digests/tags to track **`branch-main`**
+   - Per-service **`image_digest`** / **`*_image_tag`** when pinning or using an explicit SHA tag
+   - Optional **`reports_image_uri`** / **`ocr_image_uri`** to override computed URIs entirely
    - set `api_url`, `reports_url`, `ocr_url` to live service URLs
    - enable services with `enable_reports_service` and `enable_ocr_service` as needed
 2. Plan and apply (from **`terraform/`**):
@@ -93,7 +95,7 @@ terraform apply plan.tfplan
 
 ## Rollback
 
-Set **`image_digest`** or **`image_tag`** back to the previous known-good value, then **`terraform plan`** and **`terraform apply`** as above.
+Set the affected service’s **`image_digest`** (or immutable **`image_tag`**) to a known-good value from Artifact Registry, then **`terraform plan`** and **`terraform apply`**.
 
 ## Teardown
 

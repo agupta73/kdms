@@ -56,19 +56,40 @@ variable "image_digest" {
 
 variable "image_tag" {
   description = <<-EOT
-    Container tag (e.g. short git SHA) when image_digest is unset.
-    Set to empty string when deploying by digest only.
+    Explicit container tag when not pinning by digest (e.g. short git SHA).
+    Leave empty to deploy the rolling tag from CI (see rolling_image_tag), or set image_digest to pin an exact manifest for rollback.
   EOT
   type        = string
   default     = ""
 
   validation {
-    condition = (
-      (trimspace(var.image_digest) != "" && trimspace(var.image_tag) == "") ||
-      (trimspace(var.image_digest) == "" && trimspace(var.image_tag) != "")
-    )
-    error_message = "Set exactly one of image_digest (recommended) or image_tag."
+    condition     = !(trimspace(var.image_digest) != "" && trimspace(var.image_tag) != "")
+    error_message = "When image_digest is set, leave image_tag empty (digest wins)."
   }
+}
+
+variable "rolling_image_tag" {
+  description = <<-EOT
+    Tag applied when image_digest and image_tag are both empty — typically the tag CI updates on each push (e.g. branch-main).
+    Override per environment if your pipeline uses a different moving tag (some teams use "latest").
+  EOT
+  type        = string
+  default     = "branch-main"
+
+  validation {
+    condition     = trimspace(var.rolling_image_tag) != ""
+    error_message = "rolling_image_tag must be non-empty."
+  }
+}
+
+variable "revision_trigger" {
+  description = <<-EOT
+    Bump when releasing a new image behind the same rolling tag (e.g. branch-main). Terraform compares literal image URIs;
+    if the tag string is unchanged, plan may be empty unless this value changes or you pin image_digest.
+    Set to a build id, date, or git SHA from CI. Ignored when empty (no extra annotation).
+  EOT
+  type        = string
+  default     = ""
 }
 
 variable "runtime_sa_email" {

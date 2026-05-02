@@ -1,25 +1,32 @@
 locals {
+  # Optional: set var.revision_trigger when rolling tags so Terraform creates a new revision (see README).
+  revision_template_annotations = trimspace(var.revision_trigger) == "" ? {} : {
+    "terraform.io/revision-trigger" = var.revision_trigger
+  }
+
   sql_connection_name = coalesce(
     var.cloudsql_connection_name,
     "${var.project_id}:${var.region}:${var.cloudsql_instance}"
   )
 
-  # Pin by digest (preferred) or by tag — see variables image_digest / image_tag.
+  # Resolve image: digest (immutable / rollback) > explicit tag > rolling tag (CI “latest”, e.g. branch-main).
   image_digest_hex = trimspace(var.image_digest) == "" ? "" : replace(trimspace(lower(var.image_digest)), "sha256:", "")
   image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.image_name}"
-  image_uri        = local.image_digest_hex != "" ? "${local.image_base}@sha256:${local.image_digest_hex}" : "${local.image_base}:${trimspace(var.image_tag)}"
+  image_uri = local.image_digest_hex != "" ? "${local.image_base}@sha256:${local.image_digest_hex}" : (
+    trimspace(var.image_tag) != "" ? "${local.image_base}:${trimspace(var.image_tag)}" : "${local.image_base}:${var.rolling_image_tag}"
+  )
 
   api_image_digest_hex = trimspace(var.api_image_digest) == "" ? "" : replace(trimspace(lower(var.api_image_digest)), "sha256:", "")
   api_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.api_image_name}"
   api_image_uri = local.api_image_digest_hex != "" ? "${local.api_image_base}@sha256:${local.api_image_digest_hex}" : (
-    trimspace(var.api_image_tag) != "" ? "${local.api_image_base}:${trimspace(var.api_image_tag)}" : local.image_uri
+    trimspace(var.api_image_tag) != "" ? "${local.api_image_base}:${trimspace(var.api_image_tag)}" : "${local.api_image_base}:${var.rolling_image_tag}"
   )
 
   reports_image_digest_hex = trimspace(var.reports_image_digest) == "" ? "" : replace(trimspace(lower(var.reports_image_digest)), "sha256:", "")
   reports_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.reports_image_name}"
   reports_image_uri = trimspace(var.reports_image_uri) != "" ? trimspace(var.reports_image_uri) : (
     local.reports_image_digest_hex != "" ? "${local.reports_image_base}@sha256:${local.reports_image_digest_hex}" : (
-      trimspace(var.reports_image_tag) != "" ? "${local.reports_image_base}:${trimspace(var.reports_image_tag)}" : ""
+      trimspace(var.reports_image_tag) != "" ? "${local.reports_image_base}:${trimspace(var.reports_image_tag)}" : "${local.reports_image_base}:${var.rolling_image_tag}"
     )
   )
 
@@ -27,7 +34,7 @@ locals {
   ocr_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.ocr_image_name}"
   ocr_image_uri = trimspace(var.ocr_image_uri) != "" ? trimspace(var.ocr_image_uri) : (
     local.ocr_image_digest_hex != "" ? "${local.ocr_image_base}@sha256:${local.ocr_image_digest_hex}" : (
-      trimspace(var.ocr_image_tag) != "" ? "${local.ocr_image_base}:${trimspace(var.ocr_image_tag)}" : ""
+      trimspace(var.ocr_image_tag) != "" ? "${local.ocr_image_base}:${trimspace(var.ocr_image_tag)}" : "${local.ocr_image_base}:${var.rolling_image_tag}"
     )
   )
 

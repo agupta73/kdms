@@ -1,12 +1,19 @@
-# Copy to terraform.tfvars. Deploy by digest (recommended) or by tag — set exactly one.
+# Copy to terraform.tfvars.
 #
-# Digest (pins the exact bytes in Artifact Registry; copy from "gcloud artifacts docker describe" or UI):
-#   image_digest = "sha256:ed35e404d46758de087fcd76bbcbe64663a931f91f1f84fadadd06bbd57f7523"
+# Images (per service): precedence is digest > explicit *_image_tag > rolling_image_tag (default branch-main).
+#
+# Rolling deploy (always pull what CI last pushed to branch-main):
+#   image_digest = ""
 #   image_tag    = ""
+#   rolling_image_tag = "branch-main"   # optional override if CI uses another moving tag
 #
-# Or tag only (short SHA from CI; must not be reused for different builds):
+# Pin a build without digest (explicit immutable tag from CI, e.g. short SHA):
 #   image_digest = ""
 #   image_tag    = "f92d440"
+#
+# Pin exact bytes — rollback / audit (optional):
+#   image_digest = "sha256:ed35e404d46758de087fcd76bbcbe64663a931f91f1f84fadadd06bbd57f7523"
+#   image_tag    = ""
 
 project_id            = "project-12f4b54b-d692-4583-83b"
 project_number        = "684080887473"
@@ -16,7 +23,8 @@ api_service_name      = "kdms-api-prod"
 ar_repo               = "apps"
 image_name            = "kdms-main"
 image_digest          = ""
-image_tag             = "f92d440"
+image_tag             = ""
+rolling_image_tag     = "branch-main"
 api_image_name        = "kdms-api"
 api_image_digest      = ""
 api_image_tag         = ""
@@ -53,6 +61,8 @@ api_allow_unauthenticated = true
 enable_reports_service         = true
 reports_service_name           = "kdms-reports-prod"
 reports_image_uri              = ""
+reports_image_digest           = ""
+reports_image_tag              = ""
 reports_url                    = ""
 reports_min_instances          = 0
 reports_max_instances          = 4
@@ -64,6 +74,8 @@ reports_allow_unauthenticated  = true
 enable_ocr_service         = true
 ocr_service_name           = "kdms-ocr-prod"
 ocr_image_uri              = ""
+ocr_image_digest           = ""
+ocr_image_tag              = ""
 ocr_url                    = ""
 ocr_min_instances          = 0
 ocr_max_instances          = 6

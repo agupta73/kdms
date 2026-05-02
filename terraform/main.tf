@@ -86,6 +86,8 @@ resource "google_cloud_run_v2_service" "kdms" {
         mount_path = "/cloudsql"
       }
     }
+
+    annotations = local.revision_template_annotations
   }
 
   traffic {
@@ -212,6 +214,8 @@ resource "google_cloud_run_v2_service" "kdms_api" {
         mount_path = "/cloudsql"
       }
     }
+
+    annotations = local.revision_template_annotations
   }
 
   traffic {
@@ -264,9 +268,8 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
     }
 
     containers {
-      image   = local.reports_image_uri
-      command = ["sh", "-c"]
-      args    = ["printf '%s\\n' '<?php header(\"Location: /UI/login.php\"); exit; ?>' > /var/www/html/index.php && apache2-foreground"]
+      image = local.reports_image_uri
+      # Image ENTRYPOINT configures Apache to listen on $PORT (8080). Do not override with apache2-foreground alone — stock Apache listens on 80 and fails Cloud Run startup probes.
 
       ports {
         name           = "http1"
@@ -326,6 +329,8 @@ resource "google_cloud_run_v2_service" "kdms_reports" {
         value = "https://"
       }
     }
+
+    annotations = local.revision_template_annotations
   }
 
   traffic {
@@ -392,6 +397,8 @@ resource "google_cloud_run_v2_service" "kdms_ocr" {
         failure_threshold = 1
       }
     }
+
+    annotations = local.revision_template_annotations
   }
 
   traffic {
