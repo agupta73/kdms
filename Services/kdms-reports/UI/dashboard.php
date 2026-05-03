@@ -169,9 +169,9 @@ if ($debug) {
     }
 
     /**
-     * Opens multiple report URLs. Strict browsers often block 2+ synchronous window.open()
-     * from one click; short stagger keeps each open in the "popup chain". Per-row try/catch
-     * avoids Select2/DOM errors stopping the loop after the first report (seen in prod).
+     * Opens multiple report URLs in one user gesture. Do NOT use setTimeout — deferred opens
+     * lose user activation and browsers block every popup after the first.
+     * Checkboxes may have no value attribute (then .value is "" or "on"); selection is by id + checked.
      */
     function submitPrint(formId, flag) {
         var printForm = document.getElementById(formId);
@@ -181,15 +181,13 @@ if ($debug) {
         }
 
         var urlsToOpen = [];
-        var selectedCount = 0;
         var I = 0;
 
         for (I = 0; I < printForm.length; I++) {
             try {
-                if (!printForm[I] || printForm[I].value === "" || printForm[I].type !== "checkbox" || !printForm[I].checked) {
+                if (!printForm[I] || printForm[I].type !== "checkbox" || !printForm[I].checked) {
                     continue;
                 }
-                selectedCount++;
                 var option = printForm[I].value || "";
                 var fid = printForm[I].id;
 
@@ -271,25 +269,24 @@ if ($debug) {
             }
         }
 
-        if (selectedCount === 0) {
+        if (urlsToOpen.length === 0) {
             alert("Please select at least one report to print.");
             return;
         }
 
-        urlsToOpen.forEach(function (url, idx) {
-            setTimeout(function () {
-                var w = window.open(url, "_blank");
-                if (!w || (typeof w.closed !== "undefined" && w.closed)) {
-                    var a = document.createElement("a");
-                    a.href = url;
-                    a.target = "_blank";
-                    a.rel = "noopener noreferrer";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                }
-            }, idx * 75);
-        });
+        /* Prefer programmatic <a target=_blank> clicks in one synchronous turn; multiple
+           window.open calls are often reduced to one tab in Chromium-based browsers. */
+        var j = 0;
+        for (j = 0; j < urlsToOpen.length; j++) {
+            var a = document.createElement("a");
+            a.href = urlsToOpen[j];
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
     }
 
     function generateReport(formId, flag) {
@@ -832,11 +829,7 @@ if ($debug) {
                                         <!-- </table>
                                             </div> -->
                                 </table>
-                        </div>
-                        </td>
-                        </tr>
-                        </tbody>
-                        </table>
+                            </div>
                         <button type="button" class="btn btn-success pull-right"
                             onclick="submitPrint('printForm', 1); return false;">Print Selected Reports</button>
                         </form>
