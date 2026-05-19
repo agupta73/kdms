@@ -1,0 +1,12 @@
+RewriteEngine On
+RewriteBase /
+
+# API routes
+RewriteRule ^api/(csrf-token|ocr-extract|selfie-upload-url|register|health)$ index.php [QSA,L]
+
+# PWA static assets
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# SPA entry
+RewriteRule ^$ /pwa/index.html [L]

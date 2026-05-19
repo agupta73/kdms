@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Day Visit Registration QR</title>
+  <style>
+    @page { size: A4; margin: 20mm; }
+    body {
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 { font-size: 2rem; margin: 0.5rem 0; }
+    .hi { font-size: 1.5rem; margin: 0.5rem 0 1.5rem; }
+    #qrcode { margin: 1rem auto; }
+    .url { font-size: 0.75rem; color: #444; word-break: break-all; max-width: 14cm; margin: 1rem auto; }
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <p class="no-print">Set <code>REGISTRATION_URL</code> below, open in browser, Print → Save as PDF or PNG.</p>
+  <h1>Register for Day Visit Pass</h1>
+  <p class="hi">दिन के दर्शनार्थियों का पंजीकरण</p>
+  <div id="qrcode"></div>
+  <p class="url" id="url-display"></p>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    // Staging/prod URL — update before printing (Phase 4 prod URL).
+    const REGISTRATION_URL = 'https://kdms-registration-prod-684080887473.asia-south1.run.app/';
+    document.getElementById('url-display').textContent = REGISTRATION_URL;
+    QRCode.toCanvas(document.getElementById('qrcode'), REGISTRATION_URL, {
+      width: 320,
+      margin: 2,
+      color: { dark: '#000000', light: '#ffffff' }
+    });
+  </script>
+</body>
+</html>

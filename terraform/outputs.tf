@@ -18,6 +18,11 @@ output "ocr_service_url" {
   value       = var.enable_ocr_service ? google_cloud_run_v2_service.kdms_ocr[0].uri : null
 }
 
+output "registration_service_url" {
+  description = "HTTPS URI of kdms-registration (day-visitor PWA)."
+  value       = var.enable_registration_service ? google_cloud_run_v2_service.kdms_registration[0].uri : null
+}
+
 output "latest_revision" {
   description = "Latest ready revision name."
   value       = google_cloud_run_v2_service.kdms.latest_ready_revision

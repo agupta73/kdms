@@ -1,0 +1,15 @@
+{
+  "name": "kainchi/kdms-registration",
+  "description": "KDMS day-visitor self-registration (Cloud Run)",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.1",
+    "google/cloud-storage": "^1.44",
+    "google/cloud-document-ai": "^1.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "KdmsRegistration\\": "includes/"
+    }
+  }
+}

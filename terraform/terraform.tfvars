@@ -122,5 +122,28 @@ ocr_container_port        = 5001
 ocr_container_concurrency = 20
 ocr_allow_unauthenticated = true
 
+# -----------------------------------------------------------------------------
+# kdms-registration (Phase 1.5) — enable after image in Artifact Registry + secrets
+# -----------------------------------------------------------------------------
+enable_registration_service = false
+
+registration_service_name = "kdms-registration-prod"
+registration_image_name   = "kdms-registration"
+registration_image_uri    = ""
+registration_image_digest = ""
+registration_image_tag    = ""
+# Set after first deploy (QR poster / validation):
+registration_url = "https://kdms-registration-prod-684080887473.asia-south1.run.app"
+
+registration_max_instances         = 10
+registration_cpu                   = "1"
+registration_memory                = "1Gi"
+registration_container_concurrency = 80
+registration_allow_unauthenticated = true
+registration_db_username           = "kdms_reg"
+
+secret_registration_db_password  = "kdms-reg-db-password"
+secret_document_ai_processor_id  = "document-ai-processor-id"
+
 # Optional: only if the connection name must differ from project_id:region:instance
 # cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"

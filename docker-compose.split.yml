@@ -69,6 +69,33 @@ services:
       - kdms-public
       - kdms-private
 
+  kdms-registration:
+    build:
+      context: ./Services/kdms-registration
+    image: kdms-registration:local
+    ports:
+      - "8083:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      DOCUMENT_AI_PROCESSOR_ID: mock
+      KDMS_API_BASE_URL: "http://kdms-api:8080/api/"
+      KDMS_DB_HOST: "host.docker.internal:3306"
+      KDMS_DB_USER: "${KDMS_DB_USER:-kdms}"
+      KDMS_DB_PASSWORD: "${KDMS_DB_PASSWORD:-kdms}"
+      KDMS_DB_NAME: "${KDMS_DB_NAME:-kdms}"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+      ACTIVE_EVENT_ID: "${KDMS_EVENT_ID:-2026JB}"
+      KDMS_GCS_PHOTOS_BUCKET: "${KDMS_GCS_PHOTOS_BUCKET:-kdms-photos}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - kdms-api
+    networks:
+      - kdms-public
+      - kdms-private
+
   kdms-reports:
     image: php:8.3-apache
     working_dir: /var/www/html

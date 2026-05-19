@@ -26,6 +26,7 @@ jobs:
           - kdms-api
           - kdms-reports
           - kdms-ocr
+          - kdms-registration
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,6 +45,12 @@ jobs:
               test -f "Services/kdms-reports/Dockerfile" || { echo "::error::Services/kdms-reports/Dockerfile is required (must listen on \$PORT for Cloud Run)"; exit 1; }
               echo "dockerfile=./Services/kdms-reports/Dockerfile" >> "$GITHUB_OUTPUT"
               echo "context=./Services/kdms-reports" >> "$GITHUB_OUTPUT"
+              ;;
+            kdms-registration)
+              test -d "Services/kdms-registration" || { echo "::error::Services/kdms-registration not found"; exit 1; }
+              test -f "Services/kdms-registration/Dockerfile" || { echo "::error::Services/kdms-registration/Dockerfile required"; exit 1; }
+              echo "dockerfile=./Services/kdms-registration/Dockerfile" >> "$GITHUB_OUTPUT"
+              echo "context=./Services/kdms-registration" >> "$GITHUB_OUTPUT"
               ;;
             kdms-ocr)
               test -d "Services/kdms-ocr" || { echo "::error::Services/kdms-ocr not found in repo"; exit 1; }

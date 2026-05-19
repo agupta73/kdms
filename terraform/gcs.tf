@@ -35,6 +35,24 @@ output "gcs_photos_bucket_name" {
   value       = google_storage_bucket.kdms_photos.name
 }
 
+resource "google_project_iam_member" "kdms_registration_documentai" {
+  project = var.project_id
+  role    = "roles/documentai.apiUser"
+  member  = "serviceAccount:${google_service_account.kdms_registration.email}"
+}
+
+resource "google_project_iam_member" "kdms_registration_cloudsql_client" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.kdms_registration.email}"
+}
+
+resource "google_project_iam_member" "kdms_registration_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.kdms_registration.email}"
+}
+
 output "kdms_registration_service_account_email" {
   description = "Service account for kdms-registration Cloud Run (Phase 1.5)."
   value       = google_service_account.kdms_registration.email

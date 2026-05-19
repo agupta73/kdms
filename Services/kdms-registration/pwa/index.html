@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5c2d0e">
+  <title>Day Visit Registration</title>
+  <link rel="stylesheet" href="/pwa/styles.css">
+</head>
+<body>
+  <main id="app" class="app">
+    <header class="header">
+      <img src="/pwa/assets/banner.png" alt="" class="logo" onerror="this.style.display='none'">
+      <h1>Day Visit Registration</h1>
+      <p class="subtitle">Please register to receive your entry pass.</p>
+    </header>
+
+    <section id="scan-section" class="card">
+      <button type="button" id="btn-scan" class="btn btn-primary btn-large">Scan ID Card</button>
+      <input type="file" id="id-file" accept="image/*" capture="environment" hidden>
+      <p id="scan-status" class="hint" hidden></p>
+    </section>
+
+    <form id="reg-form" class="card" novalidate>
+      <label>First Name <span class="req">*</span>
+        <input type="text" name="Devotee_First_Name" required maxlength="50" autocomplete="given-name">
+      </label>
+      <label>Last Name <span class="req">*</span>
+        <input type="text" name="Devotee_Last_Name" required maxlength="50" autocomplete="family-name">
+      </label>
+      <label>ID Type <span class="req">*</span>
+        <select name="Devotee_ID_Type" required>
+          <option value="">Select…</option>
+          <option>Aadhaar</option>
+          <option>Voter ID</option>
+          <option>PAN Card</option>
+          <option>Passport</option>
+          <option>Driving License</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>ID Number <span class="req">*</span>
+        <input type="text" name="Devotee_ID_Number" required maxlength="50" autocomplete="off">
+        <small id="id-hint" class="hint"></small>
+      </label>
+      <label>Phone (optional)
+        <input type="tel" name="Devotee_Cell_Phone_Number" maxlength="15" autocomplete="tel">
+      </label>
+      <label>Date of Birth (optional)
+        <input type="date" name="Devotee_DOB">
+      </label>
+      <label>City / Town (optional)
+        <input type="text" name="Devotee_Station" maxlength="50" autocomplete="address-level2">
+      </label>
+
+      <section class="selfie-section">
+        <p class="hint">Photo for your entry pass (optional)</p>
+        <button type="button" id="btn-selfie" class="btn btn-secondary">Take Photo</button>
+        <input type="file" id="selfie-file" accept="image/*" capture="user" hidden>
+        <img id="selfie-preview" class="selfie-preview" alt="" hidden>
+      </section>
+
+      <p class="consent">
+        Your information is collected for temple entry records only.<br>
+        <span lang="hi">आपकी जानकारी केवल मंदिर प्रवेश रिकॉर्ड के लिए है।</span>
+      </p>
+
+      <button type="submit" id="btn-submit" class="btn btn-primary btn-large">Register</button>
+      <p id="form-error" class="error" hidden></p>
+    </form>
+
+    <section id="success-screen" class="card success" hidden>
+      <h2>✓ Registration complete.</h2>
+      <p>Please proceed to the card counter to collect your entry pass.</p>
+      <p lang="hi">कृपया अपना प्रवेश पास लेने के लिए काउंटर पर जाएं।</p>
+      <p class="ref">Reference: <strong id="ref-key"></strong></p>
+    </section>
+
+    <section id="error-screen" class="card error-panel" hidden>
+      <p id="error-message"></p>
+      <p class="hint">Please try again or ask for help at the counter.</p>
+      <button type="button" id="btn-retry" class="btn btn-secondary">Back to form</button>
+    </section>
+  </main>
+  <div id="spinner" class="spinner" hidden aria-live="polite"></div>
+  <script src="/pwa/app.js" defer></script>
+</body>
+</html>

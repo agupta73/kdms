@@ -86,5 +86,14 @@ ocr_container_port         = 5001
 ocr_container_concurrency  = 20
 ocr_allow_unauthenticated  = true
 
+# kdms-registration (Phase 1.5) — day-visitor PWA
+enable_registration_service         = false
+registration_service_name           = "kdms-registration-prod"
+registration_image_name             = "kdms-registration"
+registration_url                    = ""
+secret_registration_db_password     = "kdms-reg-db-password"
+secret_document_ai_processor_id     = "document-ai-processor-id"
+registration_db_username            = "kdms_reg"
+
 # Optional: only if the connection name must differ from project_id:region:cloudsql_instance
 # cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"

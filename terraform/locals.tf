@@ -38,6 +38,14 @@ locals {
     )
   )
 
+  registration_image_digest_hex = trimspace(var.registration_image_digest) == "" ? "" : replace(trimspace(lower(var.registration_image_digest)), "sha256:", "")
+  registration_image_base       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ar_repo}/${var.registration_image_name}"
+  registration_image_uri = trimspace(var.registration_image_uri) != "" ? trimspace(var.registration_image_uri) : (
+    local.registration_image_digest_hex != "" ? "${local.registration_image_base}@sha256:${local.registration_image_digest_hex}" : (
+      trimspace(var.registration_image_tag) != "" ? "${local.registration_image_base}:${trimspace(var.registration_image_tag)}" : "${local.registration_image_base}:${var.rolling_image_tag}"
+    )
+  )
+
   # Public HTTPS URL without trailing slash (site_config derives WEBROOT / API URLs from these).
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.
   app_public_base = trimsuffix(trimspace(var.app_url), "/")

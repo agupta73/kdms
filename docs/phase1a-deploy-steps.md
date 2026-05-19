@@ -121,17 +121,34 @@ Expect `KDMS_GCS_PHOTOS_BUCKET=kdms-photos`.
 From Cloud Shell or machine with DB + GCP access:
 
 ```bash
+# Cloud Shell / proxy to Cloud SQL:
 export KDMS_DB_SOCKET=/cloudsql/project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod
 export KDMS_DB_NAME=kdms
 export KDMS_DB_USER=kdms
 export KDMS_DB_PASSWORD='...'   # from Secret Manager
 
+# Mac/XAMPP from host (not Docker) — override host; .env often has host.docker.internal:
+export KDMS_DB_HOST=127.0.0.1:3306
+
 export KDMS_GCS_PHOTOS_BUCKET=kdms-photos
+# gcloud auth application-default login   # for live run only
 
 php scripts/migrate_photos_to_gcs.php --dry-run
 ```
 
-Do **not** run live migration until Phase 6/7 unless explicitly approved.
+Dry-run uses `COUNT(*)` only (no BLOBs loaded). Live mode processes **one BLOB per row** to avoid memory exhaustion.
+
+Production live migration (batched):
+
+```bash
+# Repeat until pending counts are zero
+php scripts/migrate_photos_to_gcs.php --limit=500
+php scripts/migrate_photos_to_gcs.php --limit=500
+```
+
+Optional: `KDMS_MIGRATE_MAX_BLOB_MB=20` skips oversized images with a log line.
+
+Do **not** run full live migration until Phase 6/7 unless explicitly approved.
 
 ---
 

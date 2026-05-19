@@ -452,3 +452,93 @@ variable "gcs_photos_bucket_name" {
   type        = string
   default     = "kdms-photos"
 }
+
+variable "enable_registration_service" {
+  description = "Create Cloud Run service for kdms-registration (day-visitor PWA)."
+  type        = bool
+  default     = false
+}
+
+variable "registration_service_name" {
+  description = "Cloud Run service name for kdms-registration."
+  type        = string
+  default     = "kdms-registration-prod"
+}
+
+variable "registration_image_uri" {
+  description = "Optional full image URI for kdms-registration."
+  type        = string
+  default     = ""
+}
+
+variable "registration_image_name" {
+  description = "Artifact Registry image name for kdms-registration."
+  type        = string
+  default     = "kdms-registration"
+}
+
+variable "registration_image_digest" {
+  description = "Optional digest for kdms-registration image."
+  type        = string
+  default     = ""
+}
+
+variable "registration_image_tag" {
+  description = "Optional tag for kdms-registration image."
+  type        = string
+  default     = ""
+}
+
+variable "registration_url" {
+  description = "Public HTTPS URL for kdms-registration (QR / validation; no trailing slash)."
+  type        = string
+  default     = ""
+}
+
+variable "registration_max_instances" {
+  description = "Maximum Cloud Run instances for kdms-registration."
+  type        = number
+  default     = 10
+}
+
+variable "registration_cpu" {
+  description = "CPU limit for kdms-registration."
+  type        = string
+  default     = "1"
+}
+
+variable "registration_memory" {
+  description = "Memory limit for kdms-registration."
+  type        = string
+  default     = "1Gi"
+}
+
+variable "registration_container_concurrency" {
+  description = "Max concurrent requests per kdms-registration instance."
+  type        = number
+  default     = 80
+}
+
+variable "registration_allow_unauthenticated" {
+  description = "If true, allow public ingress to kdms-registration."
+  type        = bool
+  default     = true
+}
+
+variable "registration_db_username" {
+  description = "MySQL user for kdms-registration (restricted grants)."
+  type        = string
+  default     = "kdms_reg"
+}
+
+variable "secret_registration_db_password" {
+  description = "Secret Manager secret id for kdms_reg DB password."
+  type        = string
+  default     = "kdms-reg-db-password"
+}
+
+variable "secret_document_ai_processor_id" {
+  description = "Secret Manager secret id holding full Document AI processor resource name."
+  type        = string
+  default     = "document-ai-processor-id"
+}
