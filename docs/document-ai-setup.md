@@ -144,6 +144,31 @@ Or set that version as the **default deployment** in the Console so `DOCUMENT_AI
 
 **asia-south1:** Cloud Run must use the regional API endpoint (`asia-south1-documentai.googleapis.com`). Redeploy `kdms-registration` after pulling latest code if OCR returns all-null while Document AI works in Console tests.
 
+### Empty OCR fields but GCS path saved (common cause)
+
+If `id_staging_gcs_path` is set but all field values are `null`, the API call often **succeeded** but returned **zero entities**.
+
+After deploying custom version `kdms_aadhaar_260519`, it may become the **default** processor. That model can return **0 entities** while the **foundation** version still works.
+
+**Fix:** Pin the foundation version in `terraform.tfvars`:
+
+```hcl
+document_ai_processor_version = "pretrained-foundation-model-v1.5-2025-08-06"
+```
+
+Then `terraform apply` (new Cloud Run revision). Switch to `93bab276fea4e9cc` only when custom model evaluation is acceptable.
+
+**Verify locally:**
+
+```bash
+# Should show entities: 4 for test Aadhaar
+curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  -d '{"rawDocument":{"content":"'$(base64 -i /path/to/id.jpg | tr -d '\n')'","mimeType":"image/jpeg"}}' \
+  "https://asia-south1-documentai.googleapis.com/v1/projects/PROJECT/locations/asia-south1/processors/PROCESSOR_ID/processorVersions/pretrained-foundation-model-v1.5-2025-08-06:process" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('document',{}).get('entities',[])))"
+```
+
 ## 5. IAM for Cloud Run SA
 
 ```bash

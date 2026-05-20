@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace KdmsRegistration;
 
 use Google\Cloud\DocumentAI\V1\DocumentProcessorServiceClient;
-use Google\Cloud\DocumentAI\V1\ProcessRequest;
 use Google\Cloud\DocumentAI\V1\RawDocument;
 use Throwable;
 
@@ -35,15 +34,18 @@ final class DocumentAiOcr
                 ->setContent($imageBytes)
                 ->setMimeType($mimeType);
 
-            $request = (new ProcessRequest())
-                ->setName(self::resolveProcessorResourceName($processor))
-                ->setRawDocument($raw);
+            $processorName = self::resolveProcessorResourceName(trim($processor));
 
-            $response = $client->processDocument($request);
+            // Client API: processDocument(string $name, array{rawDocument?: RawDocument} $optionalArgs)
+            $response = $client->processDocument($processorName, [
+                'rawDocument' => $raw,
+            ]);
             $document = $response->getDocument();
             $mapped = $empty;
 
+            $entityCount = 0;
             foreach ($document->getEntities() as $entity) {
+                $entityCount++;
                 $type = strtolower((string) $entity->getType());
                 $text = self::entityText($entity);
                 $conf = (float) $entity->getConfidence();
@@ -89,6 +91,14 @@ final class DocumentAiOcr
                     default:
                         break;
                 }
+            }
+
+            if ($entityCount === 0) {
+                $processorUsed = self::resolveProcessorResourceName(trim($processor));
+                kdms_log('WARNING', 'Document AI returned no entities', [
+                    'processor' => $processorUsed,
+                    'entity_count' => 0,
+                ]);
             }
 
             return $mapped;
