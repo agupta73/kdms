@@ -132,6 +132,18 @@ echo -n "$PROCESSOR_NAME" | gcloud secrets versions add document-ai-processor-id
 
 **Dataset initializing:** Wait until the dataset finishes initializing before importing training documents.
 
+**Deployed custom version:** Console display name `kdms_aadhaar_260519` maps to version id `93bab276fea4e9cc`. Wait until state is **DEPLOYED** (not `CREATING`). Set in Terraform:
+
+```hcl
+document_ai_processor_version = "93bab276fea4e9cc"
+```
+
+Or set that version as the **default deployment** in the Console so `DOCUMENT_AI_PROCESSOR_VERSION` can stay empty.
+
+**Label names** (must match Custom Extractor schema): `first_name`, `last_name`, `dob`, `id_number`, `full_address`, `city` (optional: `state`, `zip_code`).
+
+**asia-south1:** Cloud Run must use the regional API endpoint (`asia-south1-documentai.googleapis.com`). Redeploy `kdms-registration` after pulling latest code if OCR returns all-null while Document AI works in Console tests.
+
 ## 5. IAM for Cloud Run SA
 
 ```bash

@@ -75,6 +75,7 @@
       applyOcrField('Devotee_Last_Name', data.Devotee_Last_Name);
       applyOcrField('Devotee_ID_Number', data.Devotee_ID_Number);
       applyOcrField('Devotee_DOB', data.Devotee_DOB);
+      applyOcrField('Devotee_Station', data.Devotee_Station);
       status.textContent = 'ID scanned. Please check and complete the form below.';
     } catch (err) {
       status.textContent = 'Could not read ID. Please enter details manually.';

@@ -125,7 +125,7 @@ ocr_allow_unauthenticated = true
 # -----------------------------------------------------------------------------
 # kdms-registration (Phase 1.5) — enable after image in Artifact Registry + secrets
 # -----------------------------------------------------------------------------
-enable_registration_service = false
+enable_registration_service = true
 
 registration_service_name = "kdms-registration-prod"
 registration_image_name   = "kdms-registration"
@@ -133,7 +133,7 @@ registration_image_uri    = ""
 registration_image_digest = ""
 registration_image_tag    = ""
 # Set after first deploy (QR poster / validation):
-registration_url = "https://kdms-registration-prod-684080887473.asia-south1.run.app"
+registration_url = "https://kdms-registration-prod-zeqw3ha4ya-el.a.run.app"
 
 registration_max_instances         = 10
 registration_cpu                   = "1"

@@ -120,6 +120,11 @@ resource "google_cloud_run_v2_service" "kdms_registration" {
         }
       }
 
+      env {
+        name  = "DOCUMENT_AI_PROCESSOR_VERSION"
+        value = var.document_ai_processor_version
+      }
+
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"

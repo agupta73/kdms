@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use KdmsRegistration\DocumentAiOcr;
+use KdmsRegistration\ImageResize;
 use KdmsRegistration\RegistrationGcs;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,6 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 if (empty($_FILES['id_image']) || !is_uploaded_file($_FILES['id_image']['tmp_name'] ?? '')) {
+    $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($contentLength > 2 * 1024 * 1024 && empty($_POST) && empty($_FILES)) {
+        reg_json_response(400, ['error' => 'Image too large for server (max 5MB). Try a smaller photo or move closer.']);
+        exit;
+    }
     reg_json_response(400, ['error' => 'id_image is required']);
     exit;
 }
@@ -35,6 +41,14 @@ if ($bytes === false) {
     reg_json_response(400, ['error' => 'Could not read uploaded image']);
     exit;
 }
+
+$normalized = ImageResize::normalizeForOcr($bytes, $mime);
+if ($normalized === null) {
+    reg_json_response(400, ['error' => 'Could not process image']);
+    exit;
+}
+$bytes = $normalized['bytes'];
+$mime = $normalized['mime'];
 
 $stagingPath = RegistrationGcs::stagingIdPath();
 $contentType = $mime === 'image/png' ? 'image/png' : 'image/jpeg';

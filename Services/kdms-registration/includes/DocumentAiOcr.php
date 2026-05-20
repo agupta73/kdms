@@ -36,7 +36,7 @@ final class DocumentAiOcr
                 ->setMimeType($mimeType);
 
             $request = (new ProcessRequest())
-                ->setName($processor)
+                ->setName(self::resolveProcessorResourceName($processor))
                 ->setRawDocument($raw);
 
             $response = $client->processDocument($request);
@@ -45,8 +45,11 @@ final class DocumentAiOcr
 
             foreach ($document->getEntities() as $entity) {
                 $type = strtolower((string) $entity->getType());
-                $text = trim((string) $entity->getMentionText());
+                $text = self::entityText($entity);
                 $conf = (float) $entity->getConfidence();
+                if ($text === '') {
+                    continue;
+                }
 
                 switch ($type) {
                     case 'given_name':
@@ -67,6 +70,7 @@ final class DocumentAiOcr
                         break;
                     case 'birth_date':
                     case 'date_of_birth':
+                    case 'dob':
                     case 'devotee_dob':
                         $mapped['Devotee_DOB'] = [
                             'value' => self::normalizeDate($text),
@@ -74,8 +78,13 @@ final class DocumentAiOcr
                         ];
                         break;
                     case 'address':
+                    case 'full_address':
                     case 'devotee_address_1':
                         $mapped['Devotee_Address_1'] = ['value' => $text, 'confidence' => $conf];
+                        break;
+                    case 'city':
+                    case 'devotee_station':
+                        $mapped['Devotee_Station'] = ['value' => $text, 'confidence' => $conf];
                         break;
                     default:
                         break;
@@ -101,7 +110,60 @@ final class DocumentAiOcr
             'Devotee_ID_Number' => ['value' => null, 'confidence' => 0],
             'Devotee_DOB' => ['value' => null, 'confidence' => 0],
             'Devotee_Address_1' => ['value' => null, 'confidence' => 0],
+            'Devotee_Station' => ['value' => null, 'confidence' => 0],
         ];
+    }
+
+    private static function resolveProcessorResourceName(string $processor): string
+    {
+        $processor = trim($processor);
+        $version = getenv('DOCUMENT_AI_PROCESSOR_VERSION');
+        if (!is_string($version) || trim($version) === '') {
+            return $processor;
+        }
+        $version = trim($version);
+        if (str_contains($processor, '/processorVersions/')) {
+            return $processor;
+        }
+
+        return rtrim($processor, '/') . '/processorVersions/' . $version;
+    }
+
+    /**
+     * @param object $entity Document AI Entity message
+     */
+    private static function entityText(object $entity): string
+    {
+        $text = trim((string) $entity->getMentionText());
+        if ($text !== '') {
+            return $text;
+        }
+        if (!method_exists($entity, 'getNormalizedValue')) {
+            return '';
+        }
+        $normalized = $entity->getNormalizedValue();
+        if ($normalized === null) {
+            return '';
+        }
+        if (method_exists($normalized, 'getText')) {
+            $text = trim((string) $normalized->getText());
+            if ($text !== '') {
+                return $text;
+            }
+        }
+        if (method_exists($normalized, 'getDateValue')) {
+            $date = $normalized->getDateValue();
+            if ($date !== null && method_exists($date, 'getYear')) {
+                $y = (int) $date->getYear();
+                $m = (int) $date->getMonth();
+                $d = (int) $date->getDay();
+                if ($y > 0 && $m > 0 && $d > 0) {
+                    return sprintf('%04d-%02d-%02d', $y, $m, $d);
+                }
+            }
+        }
+
+        return '';
     }
 
     /**

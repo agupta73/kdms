@@ -542,3 +542,9 @@ variable "secret_document_ai_processor_id" {
   type        = string
   default     = "document-ai-processor-id"
 }
+
+variable "document_ai_processor_version" {
+  description = "Optional processor version id (e.g. 93bab276fea4e9cc for kdms_aadhaar_260519). Leave empty to use the processor default deployed version."
+  type        = string
+  default     = ""
+}
