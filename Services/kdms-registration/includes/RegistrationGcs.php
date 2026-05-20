@@ -70,22 +70,17 @@ final class RegistrationGcs
         }
     }
 
-    public static function stagingIdPath(): string
+    public static function stagingIdPath(string $devoteeKey): string
     {
-        return 'id-staging/' . date('Y-m-d') . '/' . self::uuid() . '.jpg';
+        $key = strtoupper(preg_replace('/[^A-Z0-9]/', '', $devoteeKey) ?? '');
+
+        return 'id-staging/' . date('Y-m-d') . '/' . $key . '.jpg';
     }
 
-    public static function stagingSelfiePath(): string
+    public static function stagingSelfiePath(string $devoteeKey): string
     {
-        return 'devotee-selfies/' . date('Y-m-d') . '/' . self::uuid() . '.jpg';
-    }
+        $key = strtoupper(preg_replace('/[^A-Z0-9]/', '', $devoteeKey) ?? '');
 
-    private static function uuid(): string
-    {
-        $data = random_bytes(16);
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+        return 'devotee-selfies/' . date('Y-m-d') . '/' . $key . '.jpg';
     }
 }

@@ -50,7 +50,13 @@ if ($normalized === null) {
 $bytes = $normalized['bytes'];
 $mime = $normalized['mime'];
 
-$stagingPath = RegistrationGcs::stagingIdPath();
+$devoteeKey = strtoupper(trim((string) ($_POST['Devotee_Key'] ?? $_POST['devotee_key'] ?? '')));
+if ($devoteeKey === '' || !preg_match('/^P[0-9A-Z]+$/', $devoteeKey)) {
+    reg_json_response(400, ['error' => 'Devotee_Key is required before ID scan. Refresh the page.']);
+    exit;
+}
+
+$stagingPath = RegistrationGcs::stagingIdPath($devoteeKey);
 $contentType = $mime === 'image/png' ? 'image/png' : 'image/jpeg';
 $saved = RegistrationGcs::uploadBytes($stagingPath, $bytes, $contentType);
 if ($saved === null) {

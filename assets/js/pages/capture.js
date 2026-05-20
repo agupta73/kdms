@@ -146,41 +146,38 @@
 
     function uploadImage() {
         var dataUrl = canvas.toDataURL();
-        if (devoteeID.value != "") {
-            $.ajax({
-                url: '../api/managePhoto.php',
-                method: 'POST',
-                data: {image: dataUrl, api_type: 3, devotee_key: devoteeID.value}
-            }).done(function (data) {
-                var url = window.location.href;
-                alert('Devotee Image updated!!');
-                // window.location = url;
-                // window.location.reload();
-                let image_tag = document.getElementById('photo2');
-                image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
-            });
-        } else {
-            $.ajax({
-                url: '../api/managePhoto.php',
-                method: 'POST',
-                data: {image: dataUrl, api_type: 3}
-            }).done(function (data) {
-                data = $.parseJSON(data);
-                if (data.status==true) {
-                    var newId = data.message;
-                    var url = window.location.href;
-                    url = url + '?devotee_key=' + newId;
-                    $('#devotee_key').val(newId);
-                    alert('Image uploaded to new Devotee record!!');
-                    window.history.pushState('devotee', 'AddDevotee', url);
-                    let image_tag = document.getElementById('photo2');
-                    image_tag.innerHTML = `<img class="devoteeImage" id="devoteeImage" src="${dataUrl}" alt="devotee image"></img>`;
-                    // window.location = url;                 
-                } else {
-                    alert('Error while image uploade !!');                    
-                }
-            });
+        var keyField = document.getElementById('devotee_key');
+        var reservedKey = (keyField && keyField.value) ? keyField.value.trim() : '';
+        if (devoteeID.value !== '') {
+            reservedKey = devoteeID.value.trim();
         }
+        if (reservedKey === '') {
+            alert('Devotee ID is not reserved yet. Refresh the Add Devotee page and try again.');
+            return;
+        }
+        if (keyField) {
+            keyField.value = reservedKey;
+        }
+        devoteeID.value = reservedKey;
+
+        $.ajax({
+            url: '../api/managePhoto.php',
+            method: 'POST',
+            data: {image: dataUrl, api_type: 3, devotee_key: reservedKey}
+        }).done(function (data) {
+            var parsed = typeof data === 'string' ? JSON.parse(data) : data;
+            if (!parsed || parsed.status !== true) {
+                alert(parsed && parsed.message ? parsed.message : 'Photo upload failed.');
+                return;
+            }
+            alert('Devotee image saved for key ' + reservedKey);
+            var image_tag = document.getElementById('photo2');
+            if (image_tag) {
+                image_tag.innerHTML = '<img class="devoteeImage" id="devoteeImage" src="' + dataUrl + '" alt="devotee image"></img>';
+            }
+        }).fail(function () {
+            alert('Photo upload request failed.');
+        });
     }
 
     function getBase64(file) {

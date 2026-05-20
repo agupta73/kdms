@@ -24,6 +24,7 @@ if (! defined('KDMS_SKIP_OPTION_PRELOAD')) {
 }
 
 $trustedService = false;
+$serviceKeyRejected = false;
 $configuredServiceKey = getenv('KDMS_SERVICE_KEY');
 if (is_string($configuredServiceKey) && $configuredServiceKey !== '') {
     $headerServiceKey = '';
@@ -36,7 +37,19 @@ if (is_string($configuredServiceKey) && $configuredServiceKey !== '') {
     if ($headerServiceKey !== '' && hash_equals($configuredServiceKey, $headerServiceKey)) {
         $trustedService = true;
         define('KDMS_TRUSTED_SERVICE_AUTH', true);
+    } elseif ($headerServiceKey !== '') {
+        $serviceKeyRejected = true;
     }
+}
+
+if ($serviceKeyRejected) {
+    if (! headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        header('HTTP/1.1 401 Unauthorized');
+    }
+    echo json_encode(['ok' => false, 'error' => 'invalid_service_key']);
+
+    exit;
 }
 
 require_once dirname(__DIR__) . '/initialize.php';

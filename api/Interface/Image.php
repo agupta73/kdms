@@ -88,7 +88,10 @@ Class Image {
 //        }
 //    }
 
-    public function upload($requestData, $devotee_id, $is_update) {
+    /**
+     * @param bool $stageOnly When true (reserved key, no devotee row yet), only write devotee_photo — no INSERT into devotee.
+     */
+    public function upload($requestData, $devotee_id, $is_update, $stageOnly = false) {
 
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
@@ -99,11 +102,11 @@ Class Image {
         // Now save this info to db
         /*
          * If it is update ,insert data to Devotee_photo table only.
-         * Else create an empty row in Devotee table with given id
+         * Else create an empty row in Devotee table with given id (unless $stageOnly).
          */
         // To devotee table 
 
-        if ($is_update) {
+        if ($is_update || $stageOnly) {
             $query0 = "REPLACE INTO devotee_photo
                         SET
                         Devotee_Key=:id,
@@ -118,42 +121,34 @@ Class Image {
 
             if (!$stmt->execute()) {
                 return false;
-            } else {
-                return true;
             }
-        } else {
-            // In devotee table
-            $query02 = "INSERT INTO devotee
-                   SET
-                Devotee_Key=:id";
-            $stmt02 = $this->conn->prepare($query02);
-            $stmt02->bindParam(":id", $devotee_id);
-            if (!$stmt02->execute()) {
-                return false;
-            }
-        
-            // In photo table
-            $query2 = "INSERT INTO devotee_photo
-                   SET
-                Devotee_Key=:id,
-                Devotee_Photo=:photo,
-                photo_type=:type,
-                status=:status";
-            $stmt2 = $this->conn->prepare($query2);
-            $stmt2->bindParam(":id", $devotee_id);
-            $stmt2->bindParam(":photo", $unencoded);
-            $stmt2->bindParam(":type", $type);
-            $stmt2->bindParam(":status", $status);
-            
-            if (!$stmt2->execute()) {
-                return false;
-            } else {
-                return true;
-            }
+
+            return true;
         }
+
+        // Legacy path: create stub devotee row + photo (avoid for Phase 2 — use $stageOnly from managePhoto).
+        $query02 = "INSERT INTO devotee SET Devotee_Key=:id";
+        $stmt02 = $this->conn->prepare($query02);
+        $stmt02->bindParam(":id", $devotee_id);
+        if (!$stmt02->execute()) {
+            return false;
+        }
+
+        $query2 = "INSERT INTO devotee_photo
+                   SET Devotee_Key=:id, Devotee_Photo=:photo, photo_type=:type, status=:status";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(":id", $devotee_id);
+        $stmt2->bindParam(":photo", $unencoded);
+        $stmt2->bindParam(":type", $type);
+        $stmt2->bindParam(":status", $status);
+
+        return (bool) $stmt2->execute();
     }
 
-    public function uploadDocumentID($requestData, $devotee_id, $is_update) {
+    /**
+     * @param bool $stageOnly When true, only write devotee_id — no INSERT into devotee.
+     */
+    public function uploadDocumentID($requestData, $devotee_id, $is_update, $stageOnly = false) {
 
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
@@ -167,7 +162,7 @@ Class Image {
          */
         // To devotee table 
 
-        if ($is_update) {
+        if ($is_update || $stageOnly) {
             $query0 = "REPLACE INTO devotee_id
                         SET
                         Devotee_ID_Image=:photo,
@@ -180,58 +175,42 @@ Class Image {
             try {
                 if (!$stmt->execute()) {
                     return false;
-                } else {
-                    return true;
                 }
+
+                return true;
             } catch (Exception $e) {
                 echo 'Error : ' . $e->getMessage();
                 die;
             }
-        } else {
-            // In devotee table
-            $query02 = "INSERT INTO devotee
-                   SET
-                Devotee_Key=:id";
-            $stmt02 = $this->conn->prepare($query02);
-            $stmt02->bindParam(":id", $devotee_id);
-            if (!$stmt02->execute()) {
-                return false;
-            }
-        
-            // In photo table
-            $query2 = "INSERT INTO devotee_id
-                        SET
-                        Devotee_Key=:id,
-                        Devotee_ID_Image=:photo,
-                        Devotee_ID_Type=:type";
-            $stmt2 = $this->conn->prepare($query2);
-            $stmt2->bindParam(":id", $devotee_id);
-            $stmt2->bindParam(":photo", $unencoded);
-            $stmt2->bindParam(":type", $type);
-            
-            try {
-                $stmt2->execute();
-                $error_info = $stmt2->errorInfo();
-                if ($error_info[0] !== '00000') {
-                    print_r($error_info);
-                    die;
-                }
-            } catch (Exception $e) {
-                echo 'Error : ' . $e->getMessage();
-                die;
-            }
-            // if (!$stmt2->execute()) {
-            //     $error_info = $stmt->errorInfo();
-            //     if (!empty($error_info[0] != '00000')) {
-            //         print_r($error_info);
-            //         die;
-            //     }
-            //     // return false;
-            // } 
-            // else {
-            //      return true;
-            // }
         }
+
+        $query02 = "INSERT INTO devotee SET Devotee_Key=:id";
+        $stmt02 = $this->conn->prepare($query02);
+        $stmt02->bindParam(":id", $devotee_id);
+        if (!$stmt02->execute()) {
+            return false;
+        }
+
+        $query2 = "INSERT INTO devotee_id
+                        SET Devotee_Key=:id, Devotee_ID_Image=:photo, Devotee_ID_Type=:type";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(":id", $devotee_id);
+        $stmt2->bindParam(":photo", $unencoded);
+        $stmt2->bindParam(":type", $type);
+
+        try {
+            $stmt2->execute();
+            $error_info = $stmt2->errorInfo();
+            if ($error_info[0] !== '00000') {
+                print_r($error_info);
+                die;
+            }
+        } catch (Exception $e) {
+            echo 'Error : ' . $e->getMessage();
+            die;
+        }
+
+        return true;
     }
 
     public function uploadDocument($requestData, $devotee_id, $is_update) {

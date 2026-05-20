@@ -16,6 +16,8 @@ function kdmsParseAjaxJson(response) {
             var msg =
                 o.error === 'unauthenticated'
                     ? 'Your session expired or you are not signed in. Please sign in again and retry.'
+                    : o.error === 'invalid_service_key'
+                    ? 'Service authentication failed.'
                     : o.error === 'forbidden'
                     ? 'You do not have permission for this action.'
                     : (o.message || JSON.stringify(o));

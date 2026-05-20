@@ -13,6 +13,7 @@
   };
 
   let csrfToken = '';
+  let reservedDevoteeKey = '';
   let idStagingPath = '';
   let selfieGcsPath = '';
 
@@ -28,6 +29,12 @@
     const res = await fetch('/api/csrf-token');
     const data = await res.json();
     csrfToken = data.token || '';
+    const keyRes = await fetch('/api/reserve-devotee-key');
+    const keyData = await keyRes.json();
+    reservedDevoteeKey = (keyData.Devotee_Key || '').trim();
+    if (!reservedDevoteeKey) {
+      throw new Error('Could not reserve devotee key');
+    }
   }
 
   function setFieldConfidence(input, confidence) {
@@ -68,6 +75,7 @@
     try {
       const fd = new FormData();
       fd.append('id_image', file);
+      fd.append('Devotee_Key', reservedDevoteeKey);
       const res = await fetch('/api/ocr-extract', { method: 'POST', body: fd });
       const data = await res.json();
       idStagingPath = data.id_staging_gcs_path || '';
@@ -97,7 +105,7 @@
     if (!file) return;
     showSpinner(true);
     try {
-      const urlRes = await fetch('/api/selfie-upload-url');
+      const urlRes = await fetch('/api/selfie-upload-url?Devotee_Key=' + encodeURIComponent(reservedDevoteeKey));
       const urlData = await urlRes.json();
       if (!urlData.upload_url) throw new Error('no url');
       const put = await fetch(urlData.upload_url, {
@@ -129,6 +137,7 @@
     btn.disabled = true;
     showSpinner(true);
     const payload = {
+      Devotee_Key: reservedDevoteeKey,
       Devotee_First_Name: form.elements.Devotee_First_Name.value.trim(),
       Devotee_Last_Name: form.elements.Devotee_Last_Name.value.trim(),
       Devotee_ID_Type: form.elements.Devotee_ID_Type.value,

@@ -65,7 +65,7 @@ $is_key_available = false;
         $accommodations = is_array($accommodations) ? $accommodations : [];
         $sevas = is_array($sevas) ? $sevas : [];
 
-        //Pre-populate devotee record in case of edit
+        // Pre-populate devotee record in case of edit; otherwise reserve key for photo/ID before save (Phase 2).
         if (!empty($requestData['devotee_key'])) {
             $devotee_key=$requestData['devotee_key'];
             $is_key_available=true;
@@ -76,7 +76,15 @@ $is_key_available = false;
             }
 
             if($debug){ echo "<br> response: "; var_dump($response); echo "<br> eventID: "; var_dump($eventId);}
+        } else {
+            require_once dirname(__DIR__) . '/api/config/database.php';
+            require_once dirname(__DIR__) . '/api/Interface/devotees.php';
+            $reserveDb = (new Database())->getConnection();
+            $reserveDevotee = new Devotee($reserveDb);
+            $devotee_key = $reserveDevotee->generateId();
+        }
 
+        if ($is_key_available) {
             //assign values
             if ($response !== null && is_array($response)) {
                 if (! empty($response['Devotee_Key'])) {
@@ -655,6 +663,22 @@ $is_key_available = false;
                                 </div>
                                 </div>
                             </div>
+                            <?php if ($is_key_available && $devotee_key !== '') { ?>
+                            <div class="col-md-4">
+                                <div class="card" id="dedup-hints-card">
+                                    <div class="card-header card-header-info">
+                                        <h4 class="card-title">Possible duplicates</h4>
+                                        <p class="card-category">Read-only hints (Phase 2)</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="dedup-hints-loading">Loading…</div>
+                                        <ul id="dedup-hints-list" class="list-unstyled" style="display:none;"></ul>
+                                        <p id="dedup-hints-empty" style="display:none;">No likely duplicates found.</p>
+                                        <button type="button" class="btn btn-sm btn-warning" id="dedup-btn-merge" style="display:none;">Merge selected into this record</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -664,6 +688,70 @@ $is_key_available = false;
 </div>
 <!--   Core JS Files   -->
 <?php include_once("scriptJS.php") ?>
+<?php if ($is_key_available && $devotee_key !== '') {
+    $dedupApi = htmlspecialchars($config_data['api_dir'] ?? '../api/', ENT_QUOTES, 'UTF-8');
+    $dedupEvent = htmlspecialchars((string) $eventId, ENT_QUOTES, 'UTF-8');
+    $dedupKey = htmlspecialchars($devotee_key, ENT_QUOTES, 'UTF-8');
+?>
+<script>
+(function () {
+  const apiBase = <?php echo json_encode(rtrim($config_data['api_dir'] ?? '../api/', '/') . '/'); ?>;
+  const devoteeKey = <?php echo json_encode($devotee_key); ?>;
+  const eventId = <?php echo json_encode($eventId); ?>;
+  const loading = document.getElementById('dedup-hints-loading');
+  const list = document.getElementById('dedup-hints-list');
+  const empty = document.getElementById('dedup-hints-empty');
+  const mergeBtn = document.getElementById('dedup-btn-merge');
+  const selected = new Set();
+
+  fetch(apiBase + 'dedupHints.php?devotee_key=' + encodeURIComponent(devoteeKey) + '&eventId=' + encodeURIComponent(eventId), { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(data => {
+      loading.style.display = 'none';
+      const matches = (data && data.matches) ? data.matches.filter(m => m.devotee_key !== devoteeKey && m.action !== 'new') : [];
+      if (!matches.length) {
+        empty.style.display = 'block';
+        return;
+      }
+      list.style.display = 'block';
+      matches.forEach(m => {
+        const li = document.createElement('li');
+        li.className = 'mb-2';
+        const id = 'dedup-cb-' + m.devotee_key;
+        li.innerHTML = '<label><input type="checkbox" id="' + id + '" value="' + m.devotee_key + '"> ' +
+          m.devotee_key + ' (score ' + m.score + ', signal ' + m.signal + ')</label>';
+        list.appendChild(li);
+        li.querySelector('input').addEventListener('change', (e) => {
+          if (e.target.checked) selected.add(m.devotee_key);
+          else selected.delete(m.devotee_key);
+          mergeBtn.style.display = selected.size ? 'inline-block' : 'none';
+        });
+      });
+    })
+    .catch(() => { loading.textContent = 'Could not load duplicate hints.'; });
+
+  mergeBtn.addEventListener('click', () => {
+    if (!selected.size || !confirm('Merge selected records into ' + devoteeKey + '? This cannot be undone easily.')) return;
+    fetch(apiBase + 'adminMergeDevotees.php', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_devotee_key: devoteeKey, tbm_devotee_keys: Array.from(selected), eventId: eventId })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status) {
+          alert('Merged. Survivor: ' + data.Devotee_Key);
+          location.reload();
+        } else {
+          alert(data.message || 'Merge failed');
+        }
+      })
+      .catch(() => alert('Merge request failed'));
+  });
+})();
+</script>
+<?php } ?>
 <script src="../assets/js/pages/capture.js"></script>
 <script src="../assets/js/pages/captureID.js"></script>
 

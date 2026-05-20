@@ -2,7 +2,7 @@ RewriteEngine On
 RewriteBase /
 
 # API routes
-RewriteRule ^api/(csrf-token|ocr-extract|selfie-upload-url|register|health)$ index.php [QSA,L]
+RewriteRule ^api/(csrf-token|reserve-devotee-key|ocr-extract|selfie-upload-url|register|health)$ index.php [QSA,L]
 
 # PWA static assets
 RewriteCond %{REQUEST_FILENAME} -f
