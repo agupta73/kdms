@@ -39,7 +39,13 @@ The **`run-kdms@...`** service account must have **`roles/cloudsql.client`** on 
 
 5. The monorepo includes **`Services/kdms-reports`** and **`Services/kdms-ocr`**; CI builds all four images from one push.
 
-CI does **not** deploy Cloud Run; roll out by applying this stack from **`terraform/`** (see image settings in **`terraform.tfvars`**) or with **`gcloud run services update`**.
+CI does **not** deploy Cloud Run automatically; after each push to **`main`**, the **pin-tfvars** job in **`.github/workflows/push-gar.yml`** resolves each service’s **`branch-main`** digest in Artifact Registry and commits updated **`image_digest`** / **`*_image_digest`** fields in **`terraform.tfvars`** (commit message includes **`[skip ci]`** so only one image build runs per code push). Run **`terraform apply`** locally or in a separate pipeline to roll out new revisions.
+
+To pin digests manually without waiting for CI:
+
+```bash
+bash terraform/scripts/ci-update-image-digests.sh terraform/terraform.tfvars
+```
 
 ### Artifact Registry
 
@@ -77,14 +83,9 @@ terraform plan
 
 ## Day-to-day deploys (new image)
 
-After CI builds and pushes images:
+After CI builds and pushes images (and commits digests to **`terraform.tfvars`** on **`main`**):
 
-1. Update **`terraform.tfvars`** as needed:
-   - **`rolling_image_tag`** or leave empty digests/tags to track **`branch-main`**
-   - Per-service **`image_digest`** / **`*_image_tag`** when pinning or using an explicit SHA tag
-   - Optional **`reports_image_uri`** / **`ocr_image_uri`** to override computed URIs entirely
-   - set `api_url`, `reports_url`, `ocr_url` to live service URLs
-   - enable services with `enable_reports_service` and `enable_ocr_service` as needed
+1. Pull latest **`main`** so **`terraform.tfvars`** has the new digests (or run **`terraform/scripts/ci-update-image-digests.sh`**).
 2. Plan and apply (from **`terraform/`**):
 
 ```bash
