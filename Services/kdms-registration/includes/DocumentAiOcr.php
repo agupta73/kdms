@@ -30,7 +30,7 @@ final class DocumentAiOcr
         }
 
         try {
-            $client = new DocumentProcessorServiceClient();
+            $client = new DocumentProcessorServiceClient(self::clientConfigForProcessor($processor));
             $raw = (new RawDocument())
                 ->setContent($imageBytes)
                 ->setMimeType($mimeType);
@@ -51,25 +51,30 @@ final class DocumentAiOcr
                 switch ($type) {
                     case 'given_name':
                     case 'first_name':
+                    case 'devotee_first_name':
                         $mapped['Devotee_First_Name'] = ['value' => $text, 'confidence' => $conf];
                         break;
                     case 'family_name':
                     case 'last_name':
                     case 'surname':
+                    case 'devotee_last_name':
                         $mapped['Devotee_Last_Name'] = ['value' => $text, 'confidence' => $conf];
                         break;
                     case 'document_id':
                     case 'id_number':
+                    case 'devotee_id_number':
                         $mapped['Devotee_ID_Number'] = ['value' => $text, 'confidence' => $conf];
                         break;
                     case 'birth_date':
                     case 'date_of_birth':
+                    case 'devotee_dob':
                         $mapped['Devotee_DOB'] = [
                             'value' => self::normalizeDate($text),
                             'confidence' => $conf,
                         ];
                         break;
                     case 'address':
+                    case 'devotee_address_1':
                         $mapped['Devotee_Address_1'] = ['value' => $text, 'confidence' => $conf];
                         break;
                     default:
@@ -97,6 +102,27 @@ final class DocumentAiOcr
             'Devotee_DOB' => ['value' => null, 'confidence' => 0],
             'Devotee_Address_1' => ['value' => null, 'confidence' => 0],
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function clientConfigForProcessor(string $processorName): array
+    {
+        $location = getenv('DOCUMENT_AI_LOCATION');
+        if (!is_string($location) || trim($location) === '') {
+            if (preg_match('#/locations/([a-z0-9-]+)/processors/#', $processorName, $m)) {
+                $location = $m[1];
+            } else {
+                $location = 'us';
+            }
+        }
+        $location = trim($location);
+        if ($location === 'us') {
+            return [];
+        }
+
+        return ['apiEndpoint' => $location . '-documentai.googleapis.com'];
     }
 
     private static function normalizeDate(string $text): ?string

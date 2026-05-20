@@ -1,6 +1,29 @@
 # Document AI setup (kdms-registration)
 
-Identity Document Parser runs in **us** or **eu** (not all processor types are available in `asia-south1`). Cloud Run stays in `asia-south1`; API latency to us/eu is acceptable (~200–400ms).
+Cloud Run stays in `asia-south1`; processors are created in **`us`** or **`eu`** (~200–400ms extra latency).
+
+> **Note:** There is no `gcloud documentai` subcommand in the standard Google Cloud CLI. Use the **Console**, **REST + curl** (below), or the Python client.
+
+## Which processor for day-visitor ID scan?
+
+Our PWA needs **structured fields** from ID photos (name, ID number, DOB) to pre-fill the form — mostly **Indian** documents (Aadhaar, PAN, Voter ID, Passport, Driving License).
+
+| Console name | Use for KDMS registration? | Why |
+|--------------|----------------------------|-----|
+| **Utility Parser** | **No** | For utility bills (amounts, line items), not identity cards. |
+| **Identity Document Proofing** | **No** (as primary OCR) | Focus is **fraud / validity signals** (“is this ID tampered?”), not reliable extraction of name/number/DOB for form pre-fill. Poor fit for Aadhaar/PAN-heavy traffic. |
+| **Custom Extractor** | **Yes** (recommended for production) | You define fields (e.g. `first_name`, `last_name`, `id_number`, `dob`) and train on sample images of your real ID types. Best match for mixed Indian IDs. |
+| **Enterprise Document OCR** | **Yes** (good staging / fallback) | Generic OCR (Hindi + English). Returns **text**, not `given_name` entities — requires extra parsing in PHP (not implemented in Phase 1.5 as-shipped). |
+| **US Passport / US Driver License** (if shown in gallery) | **Partial** | Only for US-format passport/DL; not for Aadhaar/PAN. |
+
+**Recommendation**
+
+1. **Do not** create Utility Parser or rely on Identity Document Proofing for form pre-fill.
+2. **Production (Indian IDs):** create a **Custom Extractor** processor, define your five fields, label ~20–50 samples per document type (or use foundation-model mode with fewer docs — see [custom extractor overview](https://cloud.google.com/document-ai/docs/custom-extractor-overview)).
+3. **Staging / quick test:** use **`DOCUMENT_AI_PROCESSOR_ID=mock`** (manual entry) until Custom Extractor is trained; optionally add **Enterprise Document OCR** later with a small parsing layer.
+4. After creating Custom Extractor, map its entity names in `Services/kdms-registration/includes/DocumentAiOcr.php` (today it expects types like `given_name`, `document_id` from US-style parsers).
+
+The REST examples below still use `ID_PROOFING_PROCESSOR` only as a **smoke-test** processor type. Replace with your Custom Extractor processor resource name once trained.
 
 ## 1. Enable API
 
@@ -9,38 +32,107 @@ gcloud services enable documentai.googleapis.com \
   --project=project-12f4b54b-d692-4583-83b
 ```
 
-## 2. Create processor
-
-Check current locations: [Document AI processors list](https://cloud.google.com/document-ai/docs/processors-list).
-
-Example (US):
+## 2. List available processor types (optional)
 
 ```bash
-gcloud documentai processors create \
-  --project=project-12f4b54b-d692-4583-83b \
-  --location=us \
-  --display-name="KDMS ID Parser" \
-  --type=ID_DOCUMENT_PROCESSOR
+export PROJECT_ID=project-12f4b54b-d692-4583-83b
+export LOCATION=us
+
+curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  "https://${LOCATION}-documentai.googleapis.com/v1/projects/${PROJECT_ID}/locations/${LOCATION}:fetchProcessorTypes" \
+  | python3 -m json.tool
 ```
 
-Note the full resource name, e.g.:
+Look for `CUSTOM_EXTRACTION_PROCESSOR` / Custom Extractor (production) or `OCR_PROCESSOR` (generic OCR).
 
-`projects/project-12f4b54b-d692-4583-83b/locations/us/processors/PROCESSOR_ID`
+## 3. Create processor (REST — smoke test only)
 
-## 3. Secret Manager
-
-Store the processor resource name (not just the short id):
+For a quick API test you can create **ID Proofing** (not recommended for production form fill):
 
 ```bash
-echo -n 'projects/.../locations/us/processors/...' | \
+export PROJECT_ID=project-12f4b54b-d692-4583-83b
+export LOCATION=us
+
+cat > /tmp/docai-processor.json <<'EOF'
+{
+  "type": "ID_PROOFING_PROCESSOR",
+  "displayName": "KDMS ID Parser"
+}
+EOF
+
+curl -s -X POST \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d @/tmp/docai-processor.json \
+  "https://${LOCATION}-documentai.googleapis.com/v1/projects/${PROJECT_ID}/locations/${LOCATION}/processors" \
+  | python3 -m json.tool
+```
+
+Copy the full **`name`** from the response, e.g.:
+
+`projects/project-12f4b54b-d692-4583-83b/locations/us/processors/abc123def456`
+
+That entire string is what `DOCUMENT_AI_PROCESSOR_ID` / Secret Manager must hold.
+
+### Production: Custom Extractor (Console)
+
+1. Open [Document AI → Processor gallery](https://console.cloud.google.com/ai/document-ai/processor-library?project=project-12f4b54b-d692-4583-83b).
+2. Choose **Custom Extractor** (not Utility Parser, not Identity Document Proofing).
+3. Region: **us** (or **eu**).
+4. Define schema fields aligned with the registration form (first name, last name, ID number, DOB, optional address).
+5. Import and label training documents (Aadhaar, PAN, etc.), train, deploy.
+6. Copy the full processor resource `name` from the processor details page.
+
+### Smoke test only: ID Proofing
+
+Only use **Identity Document Proofing** to verify API wiring — expect weak or empty form pre-fill on Indian IDs.
+
+## 4. Secret Manager
+
+```bash
+# Replace PROCESSOR_NAME with the full "name" from step 3
+echo -n 'projects/project-12f4b54b-d692-4583-83b/locations/us/processors/YOUR_PROCESSOR_ID' | \
   gcloud secrets create document-ai-processor-id \
     --project=project-12f4b54b-d692-4583-83b \
     --data-file=-
 ```
 
-Or add a new version to the existing secret id configured in `terraform.tfvars` (`secret_document_ai_processor_id`).
+If the secret already exists, add a version:
 
-## 4. IAM for Cloud Run SA
+```bash
+echo -n 'projects/.../processors/...' | \
+  gcloud secrets versions add document-ai-processor-id \
+    --project=project-12f4b54b-d692-4583-83b \
+    --data-file=-
+```
+
+Terraform references this via `secret_document_ai_processor_id` in `terraform.tfvars`.
+
+### Your processor (KDMS ID Parser, asia-south1)
+
+Use this **exact** value in Secret Manager (project **ID**, not project number):
+
+```text
+projects/project-12f4b54b-d692-4583-83b/locations/asia-south1/processors/d3d78b619ba1d6b
+```
+
+```bash
+export PROCESSOR_NAME='projects/project-12f4b54b-d692-4583-83b/locations/asia-south1/processors/d3d78b619ba1d6b'
+
+echo -n "$PROCESSOR_NAME" | gcloud secrets versions add document-ai-processor-id \
+  --project=project-12f4b54b-d692-4583-83b \
+  --data-file=-
+```
+
+(If the secret does not exist yet, use `gcloud secrets create` instead of `versions add` — see step 4 above.)
+
+**Custom Extractor schema:** When you define fields in the Console, prefer these names so the PWA mapper picks them up: `first_name`, `last_name`, `id_number`, `dob`, `address` (or `devotee_first_name`, etc.).
+
+**Console “Use out-of-the-box”:** You can test the foundation model before labeling a full dataset. For production accuracy on varied Aadhaar layouts, use **Customize** and import labeled samples later.
+
+**Dataset initializing:** Wait until the dataset finishes initializing before importing training documents.
+
+## 5. IAM for Cloud Run SA
 
 ```bash
 gcloud projects add-iam-policy-binding project-12f4b54b-d692-4583-83b \
@@ -48,8 +140,16 @@ gcloud projects add-iam-policy-binding project-12f4b54b-d692-4583-83b \
   --role="roles/documentai.apiUser"
 ```
 
-(Terraform also applies this via `terraform/gcs.tf`.)
+(Terraform also applies this in `terraform/gcs.tf`.)
 
-## 5. Local dev without Document AI
+## 6. Local dev without Document AI
 
-Set `DOCUMENT_AI_PROCESSOR_ID=mock` (see `docker-compose.split.yml`). OCR returns empty fields; images still upload to GCS when credentials allow.
+Set `DOCUMENT_AI_PROCESSOR_ID=mock` (see `docker-compose.split.yml`). OCR returns empty fields; the PWA still works for manual entry.
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| `Invalid choice: 'documentai'` | Use REST/curl or Console — not `gcloud documentai`. |
+| `PROCESSOR_TYPE_NOT_FOUND` | Run `fetchProcessorTypes` for your `LOCATION`; use exact `type` string (e.g. `ID_PROOFING_PROCESSOR`). |
+| Permission denied | Your user needs `roles/documentai.editor` or `roles/owner` on the project. |
