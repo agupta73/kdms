@@ -386,6 +386,13 @@ final class DeduplicationService
 
     /**
      * devotee_photo has INDEX but not UNIQUE on Devotee_Key — blind UPDATE creates duplicate survivor rows.
+     *
+     * Photo GCS/BLOB merge (Phase 6 Stream A):
+     * - TBM has GCS path, survivor does not → copy TBM path to survivor; clear survivor BLOB.
+     * - Both have GCS paths → keep survivor path; clear BLOB when GCS kept.
+     * - TBM has BLOB only, survivor has GCS → survivor GCS wins; discard TBM BLOB.
+     * - Survivor has BLOB only, TBM has GCS → copy TBM path; survivor BLOB = NULL.
+     * - Neither has GCS → keep survivor BLOB if present, else TBM BLOB.
      */
     private function repointDevoteePhotoRow(string $baseKey, string $tbmKey): void
     {
@@ -414,27 +421,34 @@ final class DeduplicationService
             return;
         }
 
-        $gcs = trim((string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''));
-        if ($gcs === '') {
-            $gcs = trim((string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''));
-        }
-        $blob = $survivor['Devotee_Photo'] ?? null;
-        if ($blob === null || (is_string($blob) && $blob === '')) {
-            $blob = $tbm['Devotee_Photo'] ?? null;
+        $survivorGcs = trim((string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''));
+        $tbmGcs = trim((string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''));
+        $gcs = $survivorGcs !== '' ? $survivorGcs : ($tbmGcs !== '' ? $tbmGcs : '');
+
+        $survivorBlob = $survivor['Devotee_Photo'] ?? null;
+        $tbmBlob = $tbm['Devotee_Photo'] ?? null;
+        if ($gcs !== '') {
+            $blob = null;
+        } elseif ($survivorBlob !== null && (!is_string($survivorBlob) || $survivorBlob !== '')) {
+            $blob = $survivorBlob;
+        } else {
+            $blob = $tbmBlob;
         }
 
         $upd = $this->db->prepare(
             'UPDATE devotee_photo SET Devotee_Photo_Gcs_Path = :gcs, Devotee_Photo = :blob WHERE Devotee_Key = :base LIMIT 1'
         );
-        $upd->execute([
-            'base' => $baseKey,
-            'gcs' => $gcs !== '' ? $gcs : null,
-            'blob' => $blob,
-        ]);
+        $upd->bindValue('base', $baseKey);
+        $upd->bindValue('gcs', $gcs !== '' ? $gcs : null);
+        $upd->bindValue('blob', $blob, $blob === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+        $upd->execute();
         $del = $this->db->prepare('DELETE FROM devotee_photo WHERE Devotee_Key = :tbm');
         $del->execute(['tbm' => $tbmKey]);
     }
 
+    /**
+     * ID image GCS/BLOB merge — same rules as repointDevoteePhotoRow (Phase 6 Stream A).
+     */
     private function repointDevoteeIdRow(string $baseKey, string $tbmKey): void
     {
         $stmt = $this->db->prepare(
@@ -462,17 +476,23 @@ final class DeduplicationService
             return;
         }
 
-        $gcs = trim((string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''));
-        if ($gcs === '') {
-            $gcs = trim((string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''));
-        }
-        $idType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
+        $survivorGcs = trim((string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''));
+        $tbmGcs = trim((string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''));
+        $gcs = $survivorGcs !== '' ? $survivorGcs : ($tbmGcs !== '' ? $tbmGcs : '');
+
+        $idType = trim((string) ($survivor['Devotee_ID_Type'] ?? ''));
         if ($idType === '') {
-            $idType = trim((string) ($survivor['Devotee_ID_Type'] ?? ''));
+            $idType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
         }
-        $blob = $survivor['Devotee_ID_Image'] ?? null;
-        if ($blob === null || (is_string($blob) && $blob === '')) {
-            $blob = $tbm['Devotee_ID_Image'] ?? null;
+
+        $survivorBlob = $survivor['Devotee_ID_Image'] ?? null;
+        $tbmBlob = $tbm['Devotee_ID_Image'] ?? null;
+        if ($gcs !== '') {
+            $blob = null;
+        } elseif ($survivorBlob !== null && (!is_string($survivorBlob) || $survivorBlob !== '')) {
+            $blob = $survivorBlob;
+        } else {
+            $blob = $tbmBlob;
         }
 
         $upd = $this->db->prepare(
@@ -482,12 +502,11 @@ final class DeduplicationService
                 Devotee_ID_Image = :blob
              WHERE Devotee_Key = :base LIMIT 1'
         );
-        $upd->execute([
-            'base' => $baseKey,
-            'type' => $idType !== '' ? $idType : null,
-            'gcs' => $gcs !== '' ? $gcs : null,
-            'blob' => $blob,
-        ]);
+        $upd->bindValue('base', $baseKey);
+        $upd->bindValue('type', $idType !== '' ? $idType : null);
+        $upd->bindValue('gcs', $gcs !== '' ? $gcs : null);
+        $upd->bindValue('blob', $blob, $blob === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+        $upd->execute();
         $del = $this->db->prepare('DELETE FROM devotee_id WHERE Devotee_Key = :tbm');
         $del->execute(['tbm' => $tbmKey]);
     }

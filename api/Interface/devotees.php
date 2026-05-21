@@ -14,20 +14,31 @@ Class Devotee {
         $this->conn = $db;
     }
 
+    private function parseIncludePhotos(array $requestData): bool
+    {
+        if (!isset($requestData['include_photos'])) {
+            return false;
+        }
+        $v = strtolower(trim((string) $requestData['include_photos']));
+
+        return in_array($v, ['1', 'true', 'yes', 'y'], true);
+    }
+
     public function search($requestData){
         if($this->debug){var_dump($requestData); }
         if(!empty($requestData['mode'])){
+                $includePhotos = $this->parseIncludePhotos($requestData);
                 switch ($requestData['mode']){
                     case "KEY": //Devotee key supplied
                             return $this->getDetails(urldecode($requestData['key']), $requestData['eventId']);
                     break;
 
                     case "SET": //set query, like devotee without photo
-                            return $this->searchDevotee($requestData['key'], $requestData['eventId']);
+                            return $this->searchDevotee($requestData['key'], $requestData['eventId'], $includePhotos);
                     break;
                 
                     case "CUS": //Custom query                            
-                            return $this->searchDevotee($requestData['key'], $requestData['eventId']);
+                            return $this->searchDevotee($requestData['key'], $requestData['eventId'], $includePhotos);
                     break;
                        
                     case "iSET": //set query, like devotee without photo
@@ -59,7 +70,7 @@ Class Devotee {
                     break;
                 
                     case "ADS": //Assigned Devotees to Seva
-                            return $this->getDevoteesForSeva($requestData['key'], $requestData['eventId']);
+                            return $this->getDevoteesForSeva($requestData['key'], $requestData['eventId'], $includePhotos);
                     break;
 
                     case "DSA": //Devotees Seva Attendance
@@ -143,7 +154,7 @@ Class Devotee {
         return $DevoteeDetails;
     }
     
-    private function searchDevotee($requestData, $eventId = ""){
+    private function searchDevotee($requestData, $eventId = "", bool $includePhotos = false){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -169,11 +180,18 @@ Class Devotee {
        
         if($this->debug){ echo "request data from search devotee: ", $requestData, " event Id: ", $eventId; }
 
+        // Photo hydration removed from grid path (Phase 6 Stream B).
+        // Grid and kmreports use lazy api/devoteePhoto.php (via same-host proxy).
+        // Print path retains eager load. PHP memory_limit for kdms-api can be reviewed
+        // after confirming no large base64 payloads in non-print paths.
+        $photoSelect = $includePhotos
+            ? ', did.Devotee_ID_Image, dp.Devotee_Photo'
+            : ", (dp.Devotee_Photo_Gcs_Path IS NOT NULL OR dp.Devotee_Photo IS NOT NULL) AS has_photo
+               , (did.Devotee_ID_Image_Gcs_Path IS NOT NULL OR did.Devotee_ID_Image IS NOT NULL) AS has_id_image";
         $query = "select " .
                     "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
                     ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_status " .
-                    ", did.Devotee_ID_Image " .
-                    ", dp.Devotee_Photo ".
+                    $photoSelect .
                     ", d.devotee_station " .
                     ", d.Devotee_ID_Type " .
                     ", d.Devotee_ID_Number " .
@@ -256,8 +274,15 @@ Class Devotee {
                 continue;
             }
             $seenKeys[$devoteeKey] = true;
-            $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'});
-            $row->{'Devotee_ID_Image'} = PhotoStorage::legacyBase64IdImage($this->conn, $devoteeKey, $row->{'Devotee_ID_Image'});
+            if ($includePhotos) {
+                $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'} ?? null);
+                $row->{'Devotee_ID_Image'} = PhotoStorage::legacyBase64IdImage($this->conn, $devoteeKey, $row->{'Devotee_ID_Image'} ?? null);
+            } else {
+                $row->{'Devotee_Photo'} = '';
+                $row->{'Devotee_ID_Image'} = '';
+                $row->{'has_photo'} = !empty($row->{'has_photo'});
+                $row->{'has_id_image'} = !empty($row->{'has_id_image'});
+            }
             $devoteeSearchResult[] = $row;
             $i = $i + 1;
         }
@@ -733,7 +758,7 @@ Class Devotee {
         return $devoteeSearchResult;
     }
     
-    private function getDevoteesForSeva($requestData, $eventId = ""){
+    private function getDevoteesForSeva($requestData, $eventId = "", bool $includePhotoBlobs = false){
         $res = array();
         $res['status'] = false;
         $res['message'] = '';
@@ -767,24 +792,23 @@ Class Devotee {
                      left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key 
                      left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         */
-        $includePhotos = (($requestData != "") and ($requestData != "All"));
+        $filterBySeva = (($requestData != "") and ($requestData != "All"));
 
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name 
                     , d.devotee_station 
                     , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number";
-        if ($includePhotos) {
+        if ($includePhotoBlobs) {
             $query = $query . ", dp.Devotee_Photo ";
         } else {
-            $query = $query . ", '' AS Devotee_Photo ";
+            $query = $query . ", '' AS Devotee_Photo
+                    , (dp.Devotee_Photo_Gcs_Path IS NOT NULL OR dp.Devotee_Photo IS NOT NULL) AS has_photo ";
         }
         $query = $query . "
                     , sm.Seva_description
                  from 
                      devotee d ";
-        if ($includePhotos) {
-            $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key ";
-        }
+        $query = $query . " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key ";
         $query = $query . "
                      left outer join devotee_seva ds ON d.Devotee_Key = ds.Devotee_Key AND ds.Seva_Status = 'Assigned' " ;
         if($eventId <> ""){
@@ -794,7 +818,7 @@ Class Devotee {
         $query = $query . " left outer join seva_master sm on ds.seva_id = sm.seva_id ";
         $query = $query . "WHERE ds.seva_id is not null " ;
 
-        if($includePhotos){            
+        if($filterBySeva){            
                 $requestData = trim(urldecode($requestData));
                 if(substr($requestData, 0) == "," or substr($requestData, -1) == ",") {
                     $key = trim($requestData, ",");
@@ -813,10 +837,12 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            if (!empty($row->{'Devotee_Photo'})) {
-                $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
+            if ($includePhotoBlobs) {
+                $devoteeKey = (string) ($row->devotee_key ?? '');
+                $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'} ?? null);
             } else {
                 $row->{'Devotee_Photo'} = '';
+                $row->{'has_photo'} = !empty($row->{'has_photo'});
             }
             $devoteeSearchResult[]=$row;
             $i = $i+1;

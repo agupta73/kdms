@@ -280,9 +280,9 @@ class clsReport {
 
         if($this->debug){echo "key passed is: ", $key; }
         //concat('(',substr(num_cleansed,1,3),') ',substr(num_cleansed,4,3),'-',substr(num_cleansed,7)) AS num_formatted
-        $includePhotos = ($photoRequired === "Y" && trim((string)$key) !== "");
-        $photoSelect = $includePhotos ? "dp.devotee_photo" : "'' AS devotee_photo";
-        $photoJoin = $includePhotos ? "LEFT OUTER JOIN devotee_photo dp ON d.devotee_key = dp.devotee_key" : "";
+        // Phase 6 Stream B: never hydrate BLOBs for duty report; kmreports lazy-loads via devoteePhotoProxy.
+        $photoSelect = "'' AS devotee_photo";
+        $photoJoin = "";
 
         $baseQuery = "SELECT dlm.duty_location_name, d.devotee_key, CONCAT(d.devotee_first_name , ' ' , d.devotee_last_name) AS devotee_name, " . $photoSelect . ",
                         IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number
@@ -316,7 +316,7 @@ class clsReport {
             $results = $this->conn->query($query);
             $dutyReportResult = array();
             while ($row = $results->fetchObject()) {
-                $row->{'devotee_photo'} = !empty($row->{'devotee_photo'}) ? base64_encode($row->{'devotee_photo'}) : '';
+                $row->{'devotee_photo'} = '';
                 $dutyReportResult[] = $row;
             }
             return $dutyReportResult;

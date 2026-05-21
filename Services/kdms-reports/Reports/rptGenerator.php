@@ -2,6 +2,41 @@
 // ===================================
 // Common Functions
 // ===================================
+
+function kmreports_devotee_photo_proxy_src(string $devoteeKey, string $type = 'photo'): string
+{
+    static $proxyBase = null;
+    if ($proxyBase === null) {
+        $cfg = include dirname(__DIR__) . '/site_config.php';
+        $root = rtrim((string) ($cfg['local_root'] ?? $cfg['webroot']), '/');
+        $proxyBase = $root . '/api/devoteePhotoProxy.php';
+    }
+
+    return htmlspecialchars(
+        $proxyBase . '?devotee_key=' . rawurlencode($devoteeKey) . '&type=' . rawurlencode($type),
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
+
+function kmreports_print_lazy_devotee_photo(string $devoteeKey, bool $wrapLink = false, string $linkDataId = ''): void
+{
+    if ($devoteeKey === '') {
+        print_r('<img class="reportDevoteeProfileImage" src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80" width="80"></img>');
+
+        return;
+    }
+    $src = kmreports_devotee_photo_proxy_src($devoteeKey, 'photo');
+    $img = '<img class="reportDevoteeProfileImage" src="' . $src . '" loading="lazy" width="80" height="80" alt="devotee image" onerror="this.src=\'../assets/img/faces/devotee.ico\'"></img>';
+    if ($wrapLink && $linkDataId !== '') {
+        print_r("<a href='#' title='Click to add seva feedback!' data-toggle='modal' class='identifyingClass' data-target='#RemarksModalLong' data-backdrop='static' data-keyboard='false' data-id='" . htmlspecialchars($linkDataId, ENT_QUOTES, 'UTF-8') . "'>");
+        print_r($img);
+        print_r('</a>');
+    } else {
+        print_r($img);
+    }
+}
+
 function printTitle($param, $debug = false)
 {
     if ($debug) {
@@ -99,13 +134,10 @@ function printRow($param, $debug = false)
     print_r(("<tr>"));
     foreach ($param as $paramKey => $name) {
         if (strtolower($paramKey) == 'devotee_photo') {
-            if (strlen($name) > 10000) {
-                print_r("<td class='reportCol reportImageSection'><div>");
-                print_r('<img class="reportDevoteeProfileImage" src="data:image/jpeg;base64,' . $name . '" alt="devotee image" height="80px" width="80px"></img>');
-            } else {
-                print_r("<td class='reportCol reportImageSection'><div>");
-                print_r('<img class="reportDevoteeProfileImage" src="../assets/img/faces/devotee.ico" alt="Devotee Image"></img>');
-            }
+            print_r("<td class='reportCol reportImageSection'><div>");
+            $dk = (string) ($param['devotee_key'] ?? '');
+            kmreports_print_lazy_devotee_photo($dk, false);
+            print_r('</div>');
         }
         else {
             print_r(('<td class="' . str_replace("+", " ", strtolower($paramKey)) . ' reportCol reportCell"><label>'));
@@ -170,14 +202,9 @@ function printRowWithRem($param, $debug = false)
     foreach ($param as $paramKey => $val) {
         switch (strtolower($paramKey)) {
             case 'devotee_photo':
-
-                print_r("<td class='reportCol reportImageSection'><a href='#' title='Click to add seva feedback!' data-toggle='modal' class='identifyingClass' data-target='#RemarksModalLong' data-backdrop='static'  data-keyboard='false' data-id='" . $param["devotee_key"] . "'>");
-                if (strlen($val) > 10000) {
-                    print_r('<img class="reportDevoteeProfileImage" src="data:image/jpeg;base64,' . $val . '" alt="devotee image" height="80px" width="80px"></img>');
-                } else {
-                    print_r('<img class="reportDevoteeProfileImage" src="../assets/img/faces/devotee.ico" alt="Devotee Image"></img>');
-                }
-                print_r('</a>');
+                print_r("<td class='reportCol reportImageSection'>");
+                kmreports_print_lazy_devotee_photo((string) ($param['devotee_key'] ?? ''), true, (string) ($param['devotee_key'] ?? ''));
+                print_r('</td>');
                 break;
 
             case 'devotee_key':

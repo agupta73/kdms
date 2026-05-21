@@ -93,12 +93,7 @@ $navCanKitchen = kdms_session_has_asset('KD-KITCHEN');
           <p>Recently Printed Cards</p>
         </a>
       </li>         
-      <li class="nav-item ">
-        <a class="nav-link" href="./OCRReaderView.php">
-          <i class="material-icons">badge</i>
-          <p>KDMS OCR</p>
-        </a>
-      </li>
+      <?php /* KDMS OCR nav removed Phase 6/7 — OCR integrated into Add Devotee form (addDevoteeI.php). */ ?>
       <?php endif; ?>
       <?php if ($navCanKitchen): ?>
       <li class="nav-item ">

@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(__DIR__, 2) . '/includes/PhotoStorage.php';
+require_once dirname(__DIR__, 2) . '/includes/kdms_log.php';
+
 Class Image {
 
     //private $ImageDir = '../assets/devotee/';
@@ -89,6 +92,48 @@ Class Image {
 //    }
 
     /**
+     * @return array{gcs: ?string, blob: ?string}
+     */
+    private function persistPhotoBytes(string $devoteeKey, string $bytes): array
+    {
+        $path = PhotoStorage::objectPathForPhoto($devoteeKey);
+        $written = PhotoStorage::writeGcsObject($path, $bytes, 'image/jpeg');
+        if ($written !== null) {
+            kdms_log('INFO', 'Staff devotee photo written to GCS', [
+                'devotee_key' => $devoteeKey,
+                'path' => $path,
+            ]);
+
+            return ['gcs' => $path, 'blob' => null];
+        }
+
+        kdms_log('ERROR', 'Staff devotee photo GCS write failed; using BLOB fallback', [
+            'devotee_key' => $devoteeKey,
+            'path' => $path,
+        ]);
+
+        return ['gcs' => null, 'blob' => $bytes];
+    }
+
+    private function saveDevoteePhotoRow(string $devoteeKey, ?string $gcsPath, ?string $blob, string $photoType, int $status): bool
+    {
+        $query0 = 'REPLACE INTO devotee_photo
+                    SET Devotee_Key = :id,
+                        Devotee_Photo_Gcs_Path = :gcs,
+                        Devotee_Photo = :photo,
+                        photo_type = :type,
+                        status = :status';
+        $stmt = $this->conn->prepare($query0);
+        $stmt->bindValue(':id', $devoteeKey);
+        $stmt->bindValue(':gcs', $gcsPath);
+        $stmt->bindValue(':photo', $blob, $blob === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+        $stmt->bindValue(':type', $photoType);
+        $stmt->bindValue(':status', $status, PDO::PARAM_INT);
+
+        return (bool) $stmt->execute();
+    }
+
+    /**
      * @param bool $stageOnly When true (reserved key, no devotee row yet), only write devotee_photo — no INSERT into devotee.
      */
     public function upload($requestData, $devotee_id, $is_update, $stageOnly = false) {
@@ -99,34 +144,18 @@ Class Image {
         //$unencoded = base64_decode($rawData);
         $type = "self";
         $status = 1;
-        // Now save this info to db
-        /*
-         * If it is update ,insert data to Devotee_photo table only.
-         * Else create an empty row in Devotee table with given id (unless $stageOnly).
-         */
-        // To devotee table 
+        $stored = $this->persistPhotoBytes((string) $devotee_id, $unencoded);
 
         if ($is_update || $stageOnly) {
-            $query0 = "REPLACE INTO devotee_photo
-                        SET
-                        Devotee_Key=:id,
-                        Devotee_Photo=:photo,
-                        photo_type=:type,
-                        status=:status";
-            $stmt = $this->conn->prepare($query0);
-            $stmt->bindParam(":photo", $unencoded);
-            $stmt->bindParam(":id", $devotee_id);
-            $stmt->bindParam(":type", $type);
-            $stmt->bindParam(":status", $status);
-
-            if (!$stmt->execute()) {
-                return false;
-            }
-
-            return true;
+            return $this->saveDevoteePhotoRow(
+                (string) $devotee_id,
+                $stored['gcs'],
+                $stored['blob'],
+                $type,
+                $status
+            );
         }
 
-        // Legacy path: create stub devotee row + photo (avoid for Phase 2 — use $stageOnly from managePhoto).
         $query02 = "INSERT INTO devotee SET Devotee_Key=:id";
         $stmt02 = $this->conn->prepare($query02);
         $stmt02->bindParam(":id", $devotee_id);
@@ -134,15 +163,59 @@ Class Image {
             return false;
         }
 
-        $query2 = "INSERT INTO devotee_photo
-                   SET Devotee_Key=:id, Devotee_Photo=:photo, photo_type=:type, status=:status";
-        $stmt2 = $this->conn->prepare($query2);
-        $stmt2->bindParam(":id", $devotee_id);
-        $stmt2->bindParam(":photo", $unencoded);
-        $stmt2->bindParam(":type", $type);
-        $stmt2->bindParam(":status", $status);
+        return $this->saveDevoteePhotoRow(
+            (string) $devotee_id,
+            $stored['gcs'],
+            $stored['blob'],
+            $type,
+            $status
+        );
+    }
 
-        return (bool) $stmt2->execute();
+    /**
+     * @return array{gcs: ?string, blob: ?string}
+     */
+    private function persistIdImageBytes(string $devoteeKey, string $bytes): array
+    {
+        $path = PhotoStorage::objectPathForIdImage($devoteeKey);
+        $written = PhotoStorage::writeGcsObject($path, $bytes, 'image/jpeg');
+        if ($written !== null) {
+            kdms_log('INFO', 'Staff devotee ID image written to GCS', [
+                'devotee_key' => $devoteeKey,
+                'path' => $path,
+            ]);
+
+            return ['gcs' => $path, 'blob' => null];
+        }
+
+        kdms_log('ERROR', 'Staff devotee ID image GCS write failed; using BLOB fallback', [
+            'devotee_key' => $devoteeKey,
+            'path' => $path,
+        ]);
+
+        return ['gcs' => null, 'blob' => $bytes];
+    }
+
+    private function saveDevoteeIdRow(string $devoteeKey, ?string $gcsPath, ?string $blob, string $idType): bool
+    {
+        $query0 = 'REPLACE INTO devotee_id
+                    SET Devotee_Key = :id,
+                        Devotee_ID_Image_Gcs_Path = :gcs,
+                        Devotee_ID_Image = :photo,
+                        Devotee_ID_Type = :type';
+        $stmt = $this->conn->prepare($query0);
+        $stmt->bindValue(':id', $devoteeKey);
+        $stmt->bindValue(':gcs', $gcsPath);
+        $stmt->bindValue(':photo', $blob, $blob === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+        $stmt->bindValue(':type', $idType);
+
+        try {
+            return (bool) $stmt->execute();
+        } catch (Exception $e) {
+            kdms_log('ERROR', 'saveDevoteeIdRow failed', ['devotee_key' => $devoteeKey, 'error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     /**
@@ -153,35 +226,13 @@ Class Image {
         $rawData = $requestData['image'];
         $filteredData = explode(',', $rawData);
         $unencoded = base64_decode($filteredData[1]);
-        //$unencoded = base64_decode($rawData);
-        $type = "self";
-        // Now save this info to db
-        /*
-         * If it is update ,insert data to Devotee_photo table only.
-         * Else create an empty row in Devotee table with given id
-         */
-        // To devotee table 
+        $type = !empty($requestData['devotee_id_type'])
+            ? (string) $requestData['devotee_id_type']
+            : (!empty($requestData['Devotee_ID_Type']) ? (string) $requestData['Devotee_ID_Type'] : 'self');
+        $stored = $this->persistIdImageBytes((string) $devotee_id, $unencoded);
 
         if ($is_update || $stageOnly) {
-            $query0 = "REPLACE INTO devotee_id
-                        SET
-                        Devotee_ID_Image=:photo,
-                        Devotee_Key=:id,
-                        Devotee_ID_Type=:type";
-            $stmt = $this->conn->prepare($query0);
-            $stmt->bindParam(":photo", $unencoded);
-            $stmt->bindParam(":id", $devotee_id);
-            $stmt->bindParam(":type", $type);
-            try {
-                if (!$stmt->execute()) {
-                    return false;
-                }
-
-                return true;
-            } catch (Exception $e) {
-                echo 'Error : ' . $e->getMessage();
-                die;
-            }
+            return $this->saveDevoteeIdRow((string) $devotee_id, $stored['gcs'], $stored['blob'], $type);
         }
 
         $query02 = "INSERT INTO devotee SET Devotee_Key=:id";
@@ -191,26 +242,7 @@ Class Image {
             return false;
         }
 
-        $query2 = "INSERT INTO devotee_id
-                        SET Devotee_Key=:id, Devotee_ID_Image=:photo, Devotee_ID_Type=:type";
-        $stmt2 = $this->conn->prepare($query2);
-        $stmt2->bindParam(":id", $devotee_id);
-        $stmt2->bindParam(":photo", $unencoded);
-        $stmt2->bindParam(":type", $type);
-
-        try {
-            $stmt2->execute();
-            $error_info = $stmt2->errorInfo();
-            if ($error_info[0] !== '00000') {
-                print_r($error_info);
-                die;
-            }
-        } catch (Exception $e) {
-            echo 'Error : ' . $e->getMessage();
-            die;
-        }
-
-        return true;
+        return $this->saveDevoteeIdRow((string) $devotee_id, $stored['gcs'], $stored['blob'], $type);
     }
 
     public function uploadDocument($requestData, $devotee_id, $is_update) {

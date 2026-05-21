@@ -105,7 +105,7 @@ reports_allow_unauthenticated = true
 # -----------------------------------------------------------------------------
 # Optional: kdms-ocr Python service (enable after image exists)
 # -----------------------------------------------------------------------------
-enable_ocr_service = true
+enable_ocr_service = false
 
 ocr_service_name = "kdms-ocr-prod"
 ocr_image_name   = "kdms-ocr"

@@ -19,7 +19,6 @@ services:
       KDMS_APACHE_USE_PREFIX: "0"
       WEBROOT_URL: "http://localhost:8080/"
       API_BASE_URL: "http://localhost:8081/api/"
-      KDMS_OCR_BASE_URL: "http://localhost:5002"
       KDMS_INTERNAL_ORIGIN: "http://kdms-api:8080"
       KDMS_DB_HOST: "host.docker.internal:3306"
       KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
@@ -27,7 +26,7 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - kdms-api
-      - kdms-ocr
+      - kdms-registration
     networks:
       - kdms-public
       - kdms-private
@@ -46,28 +45,19 @@ services:
       WEBROOT_URL: "http://localhost:8081/"
       API_BASE_URL: "http://localhost:8081/api/"
       KDMS_INTERNAL_ORIGIN: "http://127.0.0.1:8080"
+      KDMS_REGISTRATION_URL: "http://kdms-registration:8080"
       KDMS_DB_HOST: "host.docker.internal:3306"
       KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - kdms-registration
     networks:
       - kdms-public
       - kdms-private
 
-  kdms-ocr:
-    image: python:3.11-slim
-    working_dir: /app
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
-    volumes:
-      - ../kdms-ocr:/app
-    environment:
-      PYTHONUNBUFFERED: "1"
-      FLASK_ENV: development
-    ports:
-      - "5002:5001"
-    networks:
-      - kdms-public
-      - kdms-private
+  # kdms-ocr removed Phase 6/7 — use kdms-registration OCR mock locally:
+  # DOCUMENT_AI_PROCESSOR_ID=mock docker compose up kdms-registration
 
   kdms-registration:
     build:
@@ -115,7 +105,7 @@ services:
       KMREPORTS_LOCAL_ROOT: "http://localhost:8082/"
       KMREPORTS_WEBROOT_URL: "http://kdms-main:8080/"
       KMREPORTS_API_BASE_URL: "http://kdms-api:8080/api/"
-      KMREPORTS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
+      KDMS_SERVICE_KEY: "${KDMS_SERVICE_KEY:-local-dev-shared-key}"
     ports:
       - "8082:80"
     networks:

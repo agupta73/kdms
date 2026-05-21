@@ -211,6 +211,11 @@ resource "google_cloud_run_v2_service" "kdms_api" {
         value = local.api_public_base
       }
 
+      env {
+        name  = "KDMS_REGISTRATION_URL"
+        value = trimsuffix(trimspace(var.registration_url), "/")
+      }
+
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"
@@ -364,6 +369,8 @@ resource "google_cloud_run_v2_service_iam_binding" "kdms_reports_invoker" {
   depends_on = [google_cloud_run_v2_service.kdms_reports]
 }
 
+# DECOMMISSIONED Phase 6/7 — kdms-ocr (Tesseract) replaced by Document AI in kdms-registration
+# and staff OCR via staffOcrExtract.php. Set enable_ocr_service = false and apply to destroy.
 resource "google_cloud_run_v2_service" "kdms_ocr" {
   count               = var.enable_ocr_service ? 1 : 0
   name                = var.ocr_service_name

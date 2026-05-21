@@ -65,7 +65,10 @@ private $debug = false;
 
         kdms_begin_internal_apache_curl();
         $ch = curl_init();
-        $url =$this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
+        $url = $this->url . "?key=" . urlencode($requestData) . "&mode=" . $mode . "&eventId=" . $eventId;
+        if (in_array($mode, ['SET', 'CUS'], true)) {
+            $url .= '&include_photos=0';
+        }
         if($this->debug){return  $url; die;}
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);

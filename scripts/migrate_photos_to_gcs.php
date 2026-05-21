@@ -35,9 +35,11 @@ require_once $root . '/api/config/database.php';
 kdms_log_bootstrap();
 
 $dryRun = in_array('--dry-run', $argv, true);
+$report = in_array('--report', $argv, true);
 $limit = 0;
-$batchSize = 25;
+$batchSize = 100;
 $sampleLines = 3;
+$tableFilter = 'both';
 $maxBlobBytes = (int) (getenv('KDMS_MIGRATE_MAX_BLOB_MB') ?: '20') * 1024 * 1024;
 
 foreach ($argv as $arg) {
@@ -49,6 +51,9 @@ foreach ($argv as $arg) {
     }
     if (preg_match('/^--sample=(\d+)$/', $arg, $m)) {
         $sampleLines = max(0, (int) $m[1]);
+    }
+    if (preg_match('/^--table=(photo|id|both)$/', $arg, $m)) {
+        $tableFilter = $m[1];
     }
 }
 
@@ -63,14 +68,21 @@ if (!$dryRun) {
 $stats = [
     'photo_would_migrate' => 0,
     'photo_migrated' => 0,
+    'photo_already_path' => 0,
+    'photo_no_blob' => 0,
     'photo_skipped' => 0,
     'id_would_migrate' => 0,
     'id_migrated' => 0,
+    'id_already_path' => 0,
+    'id_no_blob' => 0,
     'id_skipped' => 0,
     'errors' => 0,
     'oversized_skipped' => 0,
 ];
 
+migratePrintBaselineCounts($db, $report);
+
+if ($tableFilter === 'photo' || $tableFilter === 'both') {
 migrateTable(
     $db,
     'devotee_photo',
@@ -86,7 +98,9 @@ migrateTable(
     $sampleLines,
     $maxBlobBytes
 );
+}
 
+if ($tableFilter === 'id' || $tableFilter === 'both') {
 migrateTable(
     $db,
     'devotee_id',
@@ -102,9 +116,14 @@ migrateTable(
     $sampleLines,
     $maxBlobBytes
 );
+}
 
 echo PHP_EOL . 'Summary:' . PHP_EOL;
 print_r($stats);
+
+if ($report) {
+    migratePrintReport($stats, $tableFilter);
+}
 
 function migratePhotosConnectDatabase(): PDO
 {
@@ -266,16 +285,54 @@ function migrateTable(
             echo "[ok] {$table} {$key} -> {$objectPath}" . PHP_EOL;
             $processed++;
 
-            if ($processed % 50 === 0) {
+            if ($processed % 500 === 0) {
+                echo "[progress] {$table}: {$processed} row(s) migrated so far" . PHP_EOL;
                 gc_collect_cycles();
             }
         }
 
         unset($keys);
+        usleep(100000);
 
         if ($keyBatchCount < $take) {
             break;
         }
+    }
+}
+
+function migratePrintBaselineCounts(PDO $db, bool $report): void
+{
+    if (!$report) {
+        return;
+    }
+    $sql = 'SELECT
+        (SELECT COUNT(*) FROM devotee_photo WHERE Devotee_Photo IS NOT NULL) AS blobs_photo,
+        (SELECT COUNT(*) FROM devotee_photo WHERE Devotee_Photo_Gcs_Path IS NOT NULL AND TRIM(Devotee_Photo_Gcs_Path) <> \'\') AS gcs_photo,
+        (SELECT COUNT(*) FROM devotee_id WHERE Devotee_ID_Image IS NOT NULL) AS blobs_id,
+        (SELECT COUNT(*) FROM devotee_id WHERE Devotee_ID_Image_Gcs_Path IS NOT NULL AND TRIM(Devotee_ID_Image_Gcs_Path) <> \'\') AS gcs_id';
+    $row = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+    echo PHP_EOL . 'Baseline counts:' . PHP_EOL;
+    echo '  devotee_photo BLOB rows: ' . (int) ($row['blobs_photo'] ?? 0) . PHP_EOL;
+    echo '  devotee_photo GCS path rows: ' . (int) ($row['gcs_photo'] ?? 0) . PHP_EOL;
+    echo '  devotee_id BLOB rows: ' . (int) ($row['blobs_id'] ?? 0) . PHP_EOL;
+    echo '  devotee_id GCS path rows: ' . (int) ($row['gcs_id'] ?? 0) . PHP_EOL;
+}
+
+/**
+ * @param array<string, int> $stats
+ */
+function migratePrintReport(array $stats, string $tableFilter): void
+{
+    echo PHP_EOL . 'Report:' . PHP_EOL;
+    if ($tableFilter === 'photo' || $tableFilter === 'both') {
+        $n = (int) ($stats['photo_migrated'] ?? 0) + (int) ($stats['photo_would_migrate'] ?? 0);
+        echo "Photos: {$n} migrated, " . (int) ($stats['photo_already_path'] ?? 0) . ' already had path, '
+            . (int) ($stats['photo_no_blob'] ?? 0) . " had no BLOB (skipped)" . PHP_EOL;
+    }
+    if ($tableFilter === 'id' || $tableFilter === 'both') {
+        $n = (int) ($stats['id_migrated'] ?? 0) + (int) ($stats['id_would_migrate'] ?? 0);
+        echo "IDs:    {$n} migrated, " . (int) ($stats['id_already_path'] ?? 0) . ' already had path, '
+            . (int) ($stats['id_no_blob'] ?? 0) . " had no BLOB (skipped)" . PHP_EOL;
     }
 }
 
