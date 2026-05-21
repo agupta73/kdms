@@ -5,8 +5,14 @@ declare(strict_types=1);
 
 /**
  * One-time repair: collapse multiple devotee_photo / devotee_id rows per Devotee_Key.
- * Usage: php scripts/repair_duplicate_photo_id_rows.php P16200766
- *        php scripts/repair_duplicate_photo_id_rows.php --all
+ *
+ * Usage:
+ *   php scripts/repair_duplicate_photo_id_rows.php P16200766
+ *   php scripts/repair_duplicate_photo_id_rows.php --all
+ *
+ * DB (pick one):
+ *   cp .env.example .env   # edit KDMS_DB_* for your MySQL
+ *   KDMS_DB_HOST=127.0.0.1:3306 KDMS_DB_PASSWORD=secret php scripts/repair_duplicate_photo_id_rows.php P16200766
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -15,8 +21,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $root = dirname(__DIR__);
-require_once $root . '/includes/kdms_load_dotenv.php';
-require_once $root . '/api/config/database.php';
+require_once $root . '/includes/kdms_cli_database.php';
 require_once $root . '/includes/DeduplicationService.php';
 
 $arg = $argv[1] ?? '';
@@ -26,8 +31,15 @@ if ($arg === '' || $arg === '-h' || $arg === '--help') {
     exit($arg === '' ? 1 : 0);
 }
 
-$db = (new Database())->getConnection();
-$svc = new DeduplicationService($db, getenv('KDMS_EVENT_ID') ?: '2026JB', 'REPAIR-SCRIPT');
+try {
+    $db = kdms_cli_connect_database();
+} catch (PDOException $e) {
+    fwrite(STDERR, 'MySQL connection failed: ' . $e->getMessage() . "\n");
+    exit(1);
+}
+
+$eventId = getenv('KDMS_EVENT_ID') ?: '2026JB';
+$svc = new DeduplicationService($db, $eventId, 'REPAIR-SCRIPT');
 
 if ($arg === '--all') {
     $keys = [];
