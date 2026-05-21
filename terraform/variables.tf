@@ -453,6 +453,12 @@ variable "gcs_photos_bucket_name" {
   default     = "kdms-photos"
 }
 
+variable "registration_pwa_cors_origins" {
+  description = "Extra origins allowed for browser PUT to kdms-photos (PWA selfie). registration_url is added automatically in locals."
+  type        = list(string)
+  default     = []
+}
+
 variable "enable_registration_service" {
   description = "Create Cloud Run service for kdms-registration (day-visitor PWA)."
   type        = bool

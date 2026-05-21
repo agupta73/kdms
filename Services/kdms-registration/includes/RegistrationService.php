@@ -156,18 +156,17 @@ final class RegistrationService
         string $selfiePath
     ): void {
         if ($idStaging !== '') {
+            // devotee_id holds image + type only; ID number lives on devotee (set in insertDevotee / merge path).
             $idStmt = $this->db->prepare(
-                'INSERT INTO devotee_id (Devotee_Key, Devotee_ID_Type, Devotee_ID_Number, Devotee_ID_Image_Gcs_Path)
-                 VALUES (:key, :type, :number, :gcs_path)
+                'INSERT INTO devotee_id (Devotee_Key, Devotee_ID_Type, Devotee_ID_Image_Gcs_Path)
+                 VALUES (:key, :type, :gcs_path)
                  ON DUPLICATE KEY UPDATE
                     Devotee_ID_Image_Gcs_Path = VALUES(Devotee_ID_Image_Gcs_Path),
-                    Devotee_ID_Type = VALUES(Devotee_ID_Type),
-                    Devotee_ID_Number = VALUES(Devotee_ID_Number)'
+                    Devotee_ID_Type = VALUES(Devotee_ID_Type)'
             );
             $idStmt->execute([
                 'key' => $devoteeKey,
                 'type' => $idType,
-                'number' => $idNumber,
                 'gcs_path' => $idStaging,
             ]);
         }

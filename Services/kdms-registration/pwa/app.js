@@ -107,7 +107,9 @@
     try {
       const urlRes = await fetch('/api/selfie-upload-url?Devotee_Key=' + encodeURIComponent(reservedDevoteeKey));
       const urlData = await urlRes.json();
-      if (!urlData.upload_url) throw new Error('no url');
+      if (!urlRes.ok || !urlData.upload_url) {
+        throw new Error(urlData.error || 'Could not prepare photo upload');
+      }
       const put = await fetch(urlData.upload_url, {
         method: 'PUT',
         headers: { 'Content-Type': 'image/jpeg' },
@@ -119,7 +121,10 @@
       preview.src = URL.createObjectURL(file);
       preview.hidden = false;
     } catch (err) {
-      alert('Photo upload failed. You can still register without a photo.');
+      const detail = err && err.message ? String(err.message) : '';
+      alert(detail
+        ? 'Photo upload failed: ' + detail + '. You can still register without a photo.'
+        : 'Photo upload failed. You can still register without a photo.');
     } finally {
       showSpinner(false);
       e.target.value = '';

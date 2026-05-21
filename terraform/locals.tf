@@ -46,6 +46,11 @@ locals {
     )
   )
 
+  registration_pwa_cors_origins = distinct(compact(concat(
+    var.registration_pwa_cors_origins,
+    trimspace(var.registration_url) != "" ? [trimsuffix(trimspace(var.registration_url), "/")] : []
+  )))
+
   # Public HTTPS URL without trailing slash (site_config derives WEBROOT / API URLs from these).
   # Cloud Run revision URL has no /kdms segment — Docker local uses kdms-prefix vhost separately.
   app_public_base = trimsuffix(trimspace(var.app_url), "/")
