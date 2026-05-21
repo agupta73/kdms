@@ -28,6 +28,18 @@
       <label>Last Name <span class="req">*</span>
         <input type="text" name="Devotee_Last_Name" required maxlength="50" autocomplete="family-name">
       </label>
+      <label>Gender (optional)
+        <select name="Devotee_Gender">
+          <option value="">—</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </label>
+      <label>Date of Birth (optional)
+        <input type="text" name="Devotee_DOB" maxlength="10" placeholder="DD-MM-YYYY" inputmode="numeric" autocomplete="bday">
+        <small class="hint">Type DD-MM-YYYY or use the date picker</small>
+        <input type="date" id="dob-picker" class="dob-picker" aria-label="Pick date of birth">
+      </label>
       <label>ID Type <span class="req">*</span>
         <select name="Devotee_ID_Type" required>
           <option value="">Select…</option>
@@ -46,11 +58,26 @@
       <label>Phone (optional)
         <input type="tel" name="Devotee_Cell_Phone_Number" maxlength="15" autocomplete="tel">
       </label>
-      <label>Date of Birth (optional)
-        <input type="date" name="Devotee_DOB">
+      <label>Email (optional)
+        <input type="email" name="Devotee_Email" maxlength="40" autocomplete="email">
+      </label>
+      <label>Referral (optional)
+        <input type="text" name="Devotee_Referral" maxlength="50" placeholder="Enter only if referred by someone">
+      </label>
+      <label>Address Line 1 (optional)
+        <input type="text" name="Devotee_Address_1" maxlength="100" autocomplete="address-line1">
+      </label>
+      <label>Address Line 2 (optional)
+        <input type="text" name="Devotee_Address_2" maxlength="100" autocomplete="address-line2">
       </label>
       <label>City / Town (optional)
         <input type="text" name="Devotee_Station" maxlength="50" autocomplete="address-level2">
+      </label>
+      <label>State (optional)
+        <input type="text" name="Devotee_State" maxlength="25" autocomplete="address-level1">
+      </label>
+      <label>Zip Code (optional)
+        <input type="text" name="Devotee_Zip" maxlength="12" autocomplete="postal-code">
       </label>
 
       <section class="selfie-section">

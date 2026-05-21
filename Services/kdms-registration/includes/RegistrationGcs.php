@@ -7,6 +7,9 @@ namespace KdmsRegistration;
 use Google\Cloud\Storage\StorageClient;
 use Throwable;
 
+/**
+ * GCS paths align with includes/PhotoStorage.php (kdms-api staff UI / migration).
+ */
 final class RegistrationGcs
 {
     private const DEFAULT_BUCKET = 'kdms-photos';
@@ -70,17 +73,31 @@ final class RegistrationGcs
         }
     }
 
-    public static function stagingIdPath(string $devoteeKey): string
+    /** Permanent ID image path (same as PhotoStorage::objectPathForIdImage). */
+    public static function idImagePath(string $devoteeKey): string
     {
-        $key = strtoupper(preg_replace('/[^A-Z0-9]/', '', $devoteeKey) ?? '');
-
-        return 'id-staging/' . date('Y-m-d') . '/' . $key . '.jpg';
+        return 'devotee/' . self::normalizeKey($devoteeKey) . '/id.jpg';
     }
 
-    public static function stagingSelfiePath(string $devoteeKey): string
+    /** Permanent devotee photo path (same as PhotoStorage::objectPathForPhoto). */
+    public static function photoPath(string $devoteeKey): string
     {
-        $key = strtoupper(preg_replace('/[^A-Z0-9]/', '', $devoteeKey) ?? '');
+        return 'devotee/' . self::normalizeKey($devoteeKey) . '/photo.jpg';
+    }
 
-        return 'devotee-selfies/' . date('Y-m-d') . '/' . $key . '.jpg';
+    public static function normalizeKey(string $devoteeKey): string
+    {
+        return strtoupper(preg_replace('/[^A-Z0-9]/', '', $devoteeKey) ?? '');
+    }
+
+    public static function isAllowedPath(string $path, string $devoteeKey): bool
+    {
+        $path = trim($path);
+        if ($path === '' || str_contains($path, '..')) {
+            return false;
+        }
+        $key = preg_quote(self::normalizeKey($devoteeKey), '#');
+
+        return (bool) preg_match('#^devotee/' . $key . '/(id|photo)\.jpg$#i', $path);
     }
 }

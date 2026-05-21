@@ -9,7 +9,7 @@ Production gate remains **Phase 1.5 + 2 + 3** together. This document captures a
 **Solution (recommended — simple and future-proof):**
 
 1. **Reserve `Devotee_Key` early** via `GET /api/reserve-devotee-key` when the PWA loads (or on first scan).
-2. Store GCS objects under paths that include that key, e.g. `id-staging/YYYY-MM-DD/{Devotee_Key}.jpg` and `devotee-selfies/YYYY-MM-DD/{Devotee_Key}.jpg`.
+2. Store GCS objects at permanent paths: `devotee/{Devotee_Key}/id.jpg` and `devotee/{Devotee_Key}/photo.jpg` (same as `PhotoStorage` / staff UI).
 3. On **final submit**, registration calls **`deduplicateDevotee.php` before any `INSERT` into `devotee`** (fail closed if API errors).
 4. Outcomes:
    - **`merged`** — survivor is an existing key; registration **does not insert** `devotee`; attaches `devotee_id` / `devotee_photo` / accommodation to **survivor**; print queue uses survivor.

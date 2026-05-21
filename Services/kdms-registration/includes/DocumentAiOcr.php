@@ -57,36 +57,61 @@ final class DocumentAiOcr
                     case 'given_name':
                     case 'first_name':
                     case 'devotee_first_name':
-                        $mapped['Devotee_First_Name'] = ['value' => $text, 'confidence' => $conf];
+                        self::setField($mapped, 'Devotee_First_Name', RegistrationFields::sanitizeName($text), $conf);
                         break;
                     case 'family_name':
                     case 'last_name':
                     case 'surname':
                     case 'devotee_last_name':
-                        $mapped['Devotee_Last_Name'] = ['value' => $text, 'confidence' => $conf];
+                        self::setField($mapped, 'Devotee_Last_Name', RegistrationFields::sanitizeName($text), $conf);
                         break;
                     case 'document_id':
                     case 'id_number':
                     case 'devotee_id_number':
-                        $mapped['Devotee_ID_Number'] = ['value' => $text, 'confidence' => $conf];
+                        self::setField($mapped, 'Devotee_ID_Number', $text, $conf);
                         break;
                     case 'birth_date':
                     case 'date_of_birth':
                     case 'dob':
                     case 'devotee_dob':
-                        $mapped['Devotee_DOB'] = [
-                            'value' => self::normalizeDate($text),
-                            'confidence' => $conf,
-                        ];
+                        $iso = RegistrationFields::parseDate($text);
+                        self::setField(
+                            $mapped,
+                            'Devotee_DOB',
+                            $iso !== '' ? RegistrationFields::formatDobDisplay($iso) : null,
+                            $conf
+                        );
                         break;
                     case 'address':
                     case 'full_address':
+                    case 'address_line_1':
                     case 'devotee_address_1':
-                        $mapped['Devotee_Address_1'] = ['value' => $text, 'confidence' => $conf];
+                        self::setField($mapped, 'Devotee_Address_1', RegistrationFields::sanitizeShort($text, 100), $conf);
+                        break;
+                    case 'address_line_2':
+                    case 'devotee_address_2':
+                        self::setField($mapped, 'Devotee_Address_2', RegistrationFields::sanitizeShort($text, 100), $conf);
                         break;
                     case 'city':
                     case 'devotee_station':
-                        $mapped['Devotee_Station'] = ['value' => $text, 'confidence' => $conf];
+                        self::setField($mapped, 'Devotee_Station', RegistrationFields::sanitizeShort($text, 50), $conf);
+                        break;
+                    case 'state':
+                    case 'devotee_state':
+                        self::setField($mapped, 'Devotee_State', RegistrationFields::sanitizeShort($text, 25), $conf);
+                        break;
+                    case 'zip_code':
+                    case 'postal_code':
+                    case 'devotee_zip':
+                        self::setField($mapped, 'Devotee_Zip', RegistrationFields::sanitizeZip($text), $conf);
+                        break;
+                    case 'gender':
+                    case 'sex':
+                        self::setField($mapped, 'Devotee_Gender', RegistrationFields::sanitizeGender($text), $conf);
+                        break;
+                    case 'email':
+                    case 'email_address':
+                        self::setField($mapped, 'Devotee_Email', RegistrationFields::sanitizeEmail($text), $conf);
                         break;
                     default:
                         break;
@@ -120,8 +145,24 @@ final class DocumentAiOcr
             'Devotee_ID_Number' => ['value' => null, 'confidence' => 0],
             'Devotee_DOB' => ['value' => null, 'confidence' => 0],
             'Devotee_Address_1' => ['value' => null, 'confidence' => 0],
+            'Devotee_Address_2' => ['value' => null, 'confidence' => 0],
             'Devotee_Station' => ['value' => null, 'confidence' => 0],
+            'Devotee_State' => ['value' => null, 'confidence' => 0],
+            'Devotee_Zip' => ['value' => null, 'confidence' => 0],
+            'Devotee_Gender' => ['value' => null, 'confidence' => 0],
+            'Devotee_Email' => ['value' => null, 'confidence' => 0],
         ];
+    }
+
+    /**
+     * @param array<string, array{value: ?string, confidence: float}> $mapped
+     */
+    private static function setField(array &$mapped, string $key, ?string $value, float $conf): void
+    {
+        if ($value === null || $value === '') {
+            return;
+        }
+        $mapped[$key] = ['value' => $value, 'confidence' => $conf];
     }
 
     private static function resolveProcessorResourceName(string $processor): string
@@ -197,24 +238,4 @@ final class DocumentAiOcr
         return ['apiEndpoint' => $location . '-documentai.googleapis.com'];
     }
 
-    private static function normalizeDate(string $text): ?string
-    {
-        $text = trim($text);
-        if ($text === '') {
-            return null;
-        }
-        $formats = ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd-m-Y', 'Y/m/d'];
-        foreach ($formats as $fmt) {
-            $d = \DateTime::createFromFormat($fmt, $text);
-            if ($d && $d->format($fmt) === $text) {
-                return $d->format('Y-m-d');
-            }
-        }
-        $ts = strtotime($text);
-        if ($ts !== false) {
-            return date('Y-m-d', $ts);
-        }
-
-        return null;
-    }
 }

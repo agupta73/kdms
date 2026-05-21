@@ -145,9 +145,9 @@ registration_db_username           = "kdms_reg"
 secret_registration_db_password  = "kdms-reg-db-password"
 secret_document_ai_processor_id  = "document-ai-processor-id"
 
-# Pin foundation model until custom kdms_aadhaar_260519 (93bab276fea4e9cc) F1 is production-ready.
-# Without this, :process uses the custom default (0 entities on test Aadhaar as of 2026-05-20).
-document_ai_processor_version = "pretrained-foundation-model-v1.5-2025-08-06"
+# Leave empty to use the processor default version set in Document AI Console.
+# Set only when pinning a specific processorVersions/... id (e.g. for rollback).
+document_ai_processor_version = ""
 
 # Optional: only if the connection name must differ from project_id:region:instance
 # cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"

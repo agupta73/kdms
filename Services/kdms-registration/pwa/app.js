@@ -12,17 +12,82 @@
     Other: ''
   };
 
+  const TITLE_CASE_FIELDS = [
+    'Devotee_First_Name',
+    'Devotee_Last_Name',
+    'Devotee_Address_1',
+    'Devotee_Address_2',
+    'Devotee_Station',
+    'Devotee_State'
+  ];
+
+  const OCR_FIELDS = [
+    'Devotee_First_Name',
+    'Devotee_Last_Name',
+    'Devotee_ID_Number',
+    'Devotee_DOB',
+    'Devotee_Gender',
+    'Devotee_Email',
+    'Devotee_Address_1',
+    'Devotee_Address_2',
+    'Devotee_Station',
+    'Devotee_State',
+    'Devotee_Zip'
+  ];
+
   let csrfToken = '';
   let reservedDevoteeKey = '';
-  let idStagingPath = '';
+  let idGcsPath = '';
   let selfieGcsPath = '';
 
   const $ = (sel) => document.querySelector(sel);
   const form = $('#reg-form');
   const spinner = $('#spinner');
+  const dobInput = form.elements.Devotee_DOB;
+  const dobPicker = $('#dob-picker');
 
   function showSpinner(on) {
     spinner.hidden = !on;
+  }
+
+  function toTitleCase(str) {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .replace(/\b([a-zà-ÿ])/g, (m) => m.toUpperCase());
+  }
+
+  function parseDobForSubmit(val) {
+    val = (val || '').trim();
+    if (!val) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+    const m = val.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+    if (m) {
+      const d = m[1].padStart(2, '0');
+      const mo = m[2].padStart(2, '0');
+      const y = m[3];
+      return y + '-' + mo + '-' + d;
+    }
+    return val;
+  }
+
+  function isoToDisplayDob(iso) {
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso || '';
+    const parts = iso.split('-');
+    return parts[2] + '-' + parts[1] + '-' + parts[0];
+  }
+
+  function syncDobPickerFromText() {
+    const iso = parseDobForSubmit(dobInput.value);
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+      dobPicker.value = iso;
+    }
+  }
+
+  function syncDobTextFromPicker() {
+    if (dobPicker.value) {
+      dobInput.value = isoToDisplayDob(dobPicker.value);
+    }
   }
 
   async function loadCsrf() {
@@ -39,7 +104,7 @@
 
   function setFieldConfidence(input, confidence) {
     input.classList.remove('conf-high', 'conf-med');
-    let verify = input.parentElement.querySelector('.verify');
+    const verify = input.parentElement.querySelector('.verify');
     if (verify) verify.remove();
     if (confidence >= HIGH) {
       input.classList.add('conf-high');
@@ -63,6 +128,19 @@
     }
   }
 
+  TITLE_CASE_FIELDS.forEach((name) => {
+    const el = form.elements.namedItem(name);
+    if (!el) return;
+    el.addEventListener('blur', () => {
+      if (el.value.trim()) {
+        el.value = toTitleCase(el.value.trim());
+      }
+    });
+  });
+
+  dobPicker.addEventListener('change', syncDobTextFromPicker);
+  dobInput.addEventListener('blur', syncDobPickerFromText);
+
   $('#btn-scan').addEventListener('click', () => $('#id-file').click());
 
   $('#id-file').addEventListener('change', async (e) => {
@@ -78,12 +156,9 @@
       fd.append('Devotee_Key', reservedDevoteeKey);
       const res = await fetch('/api/ocr-extract', { method: 'POST', body: fd });
       const data = await res.json();
-      idStagingPath = data.id_staging_gcs_path || '';
-      applyOcrField('Devotee_First_Name', data.Devotee_First_Name);
-      applyOcrField('Devotee_Last_Name', data.Devotee_Last_Name);
-      applyOcrField('Devotee_ID_Number', data.Devotee_ID_Number);
-      applyOcrField('Devotee_DOB', data.Devotee_DOB);
-      applyOcrField('Devotee_Station', data.Devotee_Station);
+      idGcsPath = data.id_gcs_path || '';
+      OCR_FIELDS.forEach((name) => applyOcrField(name, data[name]));
+      syncDobPickerFromText();
       status.textContent = 'ID scanned. Please check and complete the form below.';
     } catch (err) {
       status.textContent = 'Could not read ID. Please enter details manually.';
@@ -141,16 +216,31 @@
     const btn = $('#btn-submit');
     btn.disabled = true;
     showSpinner(true);
+
+    TITLE_CASE_FIELDS.forEach((name) => {
+      const el = form.elements.namedItem(name);
+      if (el && el.value.trim()) {
+        el.value = toTitleCase(el.value.trim());
+      }
+    });
+
     const payload = {
       Devotee_Key: reservedDevoteeKey,
       Devotee_First_Name: form.elements.Devotee_First_Name.value.trim(),
       Devotee_Last_Name: form.elements.Devotee_Last_Name.value.trim(),
+      Devotee_Gender: form.elements.Devotee_Gender.value,
+      Devotee_DOB: parseDobForSubmit(form.elements.Devotee_DOB.value),
       Devotee_ID_Type: form.elements.Devotee_ID_Type.value,
       Devotee_ID_Number: form.elements.Devotee_ID_Number.value.trim(),
       Devotee_Cell_Phone_Number: form.elements.Devotee_Cell_Phone_Number.value.trim(),
-      Devotee_DOB: form.elements.Devotee_DOB.value,
+      Devotee_Email: form.elements.Devotee_Email.value.trim(),
+      Devotee_Referral: form.elements.Devotee_Referral.value.trim(),
+      Devotee_Address_1: form.elements.Devotee_Address_1.value.trim(),
+      Devotee_Address_2: form.elements.Devotee_Address_2.value.trim(),
       Devotee_Station: form.elements.Devotee_Station.value.trim(),
-      id_staging_gcs_path: idStagingPath,
+      Devotee_State: form.elements.Devotee_State.value.trim(),
+      Devotee_Zip: form.elements.Devotee_Zip.value.trim(),
+      id_gcs_path: idGcsPath,
       selfie_gcs_path: selfieGcsPath,
       csrf_token: csrfToken
     };

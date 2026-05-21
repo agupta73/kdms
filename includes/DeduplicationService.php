@@ -638,11 +638,18 @@ final class DeduplicationService
         }
 
         $fields = [
-            'Devotee_First_Name' => trim((string) ($newData['Devotee_First_Name'] ?? '')),
-            'Devotee_Last_Name' => trim((string) ($newData['Devotee_Last_Name'] ?? '')),
+            'Devotee_First_Name' => $this->titleCaseField((string) ($newData['Devotee_First_Name'] ?? ''), 50),
+            'Devotee_Last_Name' => $this->titleCaseField((string) ($newData['Devotee_Last_Name'] ?? ''), 50),
+            'Devotee_Gender' => $this->normalizeGender((string) ($newData['Devotee_Gender'] ?? '')),
             'Devotee_DOB' => $this->normalizeDate((string) ($newData['Devotee_DOB'] ?? '')),
             'Devotee_Cell_Phone_Number' => trim((string) ($newData['Devotee_Cell_Phone_Number'] ?? '')),
-            'Devotee_Station' => trim((string) ($newData['Devotee_Station'] ?? '')),
+            'Devotee_Email' => trim((string) ($newData['Devotee_Email'] ?? '')),
+            'Devotee_Referral' => trim((string) ($newData['Devotee_Referral'] ?? '')),
+            'Devotee_Address_1' => $this->titleCaseField((string) ($newData['Devotee_Address_1'] ?? ''), 100),
+            'Devotee_Address_2' => $this->titleCaseField((string) ($newData['Devotee_Address_2'] ?? ''), 100),
+            'Devotee_Station' => $this->titleCaseField((string) ($newData['Devotee_Station'] ?? ''), 50),
+            'Devotee_State' => $this->titleCaseField((string) ($newData['Devotee_State'] ?? ''), 25),
+            'Devotee_Zip' => trim((string) ($newData['Devotee_Zip'] ?? '')),
             'Devotee_ID_Type' => trim((string) ($newData['Devotee_ID_Type'] ?? '')),
             'Devotee_ID_Number' => IdNormalizer::normalize(
                 (string) ($newData['Devotee_ID_Type'] ?? ''),
@@ -653,14 +660,8 @@ final class DeduplicationService
         $sets = [];
         $params = ['k' => $baseKey];
         foreach ($fields as $col => $incoming) {
-            if ($incoming === '') {
-                continue;
-            }
-            $current = trim((string) ($row[$col] ?? ''));
-            if ($current === '' || in_array($col, ['Devotee_First_Name', 'Devotee_Last_Name', 'Devotee_DOB', 'Devotee_Cell_Phone_Number', 'Devotee_Station'], true)) {
-                $sets[] = "{$col} = :{$col}";
-                $params[$col] = $incoming;
-            }
+            $sets[] = "{$col} = :{$col}";
+            $params[$col] = $incoming === '' ? null : $incoming;
         }
         if ($sets === []) {
             return;
@@ -872,9 +873,35 @@ final class DeduplicationService
         if ($value === '') {
             return '';
         }
-        $d = DateTime::createFromFormat('Y-m-d', $value);
+        foreach (['Y-m-d', 'd-m-Y', 'd/m/Y'] as $fmt) {
+            $d = DateTime::createFromFormat($fmt, $value);
+            if ($d instanceof DateTime) {
+                $errors = DateTime::getLastErrors();
+                if (($errors['warning_count'] ?? 0) === 0 && ($errors['error_count'] ?? 0) === 0) {
+                    return $d->format('Y-m-d');
+                }
+            }
+        }
 
-        return ($d && $d->format('Y-m-d') === $value) ? $value : '';
+        return '';
+    }
+
+    private function titleCaseField(string $value, int $maxLen): string
+    {
+        $value = trim(strip_tags($value));
+        if ($value === '') {
+            return '';
+        }
+        $cased = mb_convert_case(mb_strtolower($value, 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+
+        return mb_strlen($cased) > $maxLen ? mb_substr($cased, 0, $maxLen) : $cased;
+    }
+
+    private function normalizeGender(string $value): string
+    {
+        $value = strtoupper(trim($value));
+
+        return $value === 'M' || $value === 'F' ? $value : '';
     }
 
     private function nameDistance(string $a, string $b): int

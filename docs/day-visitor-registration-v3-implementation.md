@@ -41,7 +41,7 @@ These do not block Phase 1a but should be fixed in v3.1 or during build:
 | # | Gap | Recommendation |
 |---|-----|----------------|
 | 1 | **`api/addToPrintQueue.php`** not in repo today | Add thin wrapper endpoint **or** call existing `api/upsertDevotee.php` with `requestType=addToPrintQueue` from registration service (document chosen approach in Phase 1.5) |
-| 2 | **GCS ID path inconsistency** | OCR staging: `id-photos/{date}/{uuid}.jpg` before `Devotee_Key` exists; after register: `devotee/{Devotee_Key}/id.jpg`. Document copy/rename on submit |
+| 2 | ~~**GCS ID path inconsistency**~~ | **Resolved:** PWA writes directly to `devotee/{Devotee_Key}/id.jpg` and `devotee/{Devotee_Key}/photo.jpg` (aligned with `PhotoStorage`) |
 | 3 | **Kitchen count vs archive trim** | `card_print_archive` is trimmed to ~25 rows globally — **do not rely on it alone** for “printed today.” Primary source: **`print_log`** (`Print_Date_Time = CURDATE()`, `Devotee_Status='D'`, `Devotee_Type='T'`). Use archive only as secondary |
 | 4 | **`devotee_remarks.remark`** is VARCHAR(250) | Long dedup audit may need **multiple rows** (`remark_type='dedup'`, suffix in type or split chunks) — same limit as `Comments` |
 | 5 | **Diagram: kdms-api “internal ingress”** | Today all Run services are public (`INGRESS_TRAFFIC_ALL`). Treat as **future** hardening; not Phase 1–4 scope |

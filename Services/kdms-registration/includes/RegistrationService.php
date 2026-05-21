@@ -22,13 +22,15 @@ final class RegistrationService
      */
     public function register(array $input): array
     {
-        $first = $this->sanitizeName((string) ($input['Devotee_First_Name'] ?? ''));
-        $last = $this->sanitizeName((string) ($input['Devotee_Last_Name'] ?? ''));
-        $idType = $this->sanitizeShort((string) ($input['Devotee_ID_Type'] ?? ''));
-        $idNumber = IdNormalizer::normalize($idType, (string) ($input['Devotee_ID_Number'] ?? ''));
+        $fields = RegistrationFields::fromRegistrationInput($input);
 
-        if ($first === '' || $last === '' || $idType === '' || $idNumber === '') {
+        if ($fields['first'] === '' || $fields['last'] === '' || $fields['idType'] === '' || $fields['idNumber'] === '') {
             return ['success' => false, 'error' => 'Please fill in all required fields.'];
+        }
+
+        $rawEmail = trim(strip_tags((string) ($input['Devotee_Email'] ?? '')));
+        if ($rawEmail !== '' && $fields['email'] === '') {
+            return ['success' => false, 'error' => 'Please enter a valid email address.'];
         }
 
         $candidateKey = strtoupper(trim((string) ($input['Devotee_Key'] ?? '')));
@@ -36,28 +38,14 @@ final class RegistrationService
             $candidateKey = GenerateId::generate($this->db);
         }
 
-        $phone = $this->sanitizePhone((string) ($input['Devotee_Cell_Phone_Number'] ?? ''));
-        $dob = $this->sanitizeDate((string) ($input['Devotee_DOB'] ?? ''));
-        $station = $this->sanitizeShort((string) ($input['Devotee_Station'] ?? ''));
-        $idStaging = $this->sanitizePath((string) ($input['id_staging_gcs_path'] ?? ''), $candidateKey);
-        $selfiePath = $this->sanitizePath((string) ($input['selfie_gcs_path'] ?? ''), $candidateKey);
+        $idPath = $this->sanitizeGcsPath(
+            (string) ($input['id_gcs_path'] ?? $input['id_staging_gcs_path'] ?? ''),
+            $candidateKey
+        );
+        $selfiePath = $this->sanitizeGcsPath((string) ($input['selfie_gcs_path'] ?? ''), $candidateKey);
         $eventId = reg_active_event_id();
 
-        $dedupPayload = [
-            'Devotee_Key' => $candidateKey,
-            'Devotee_First_Name' => $first,
-            'Devotee_Last_Name' => $last,
-            'Devotee_ID_Type' => $idType,
-            'Devotee_ID_Number' => $idNumber,
-            'Devotee_Cell_Phone_Number' => $phone,
-            'Devotee_DOB' => $dob,
-            'Devotee_Station' => $station,
-            'Devotee_Type' => 'T',
-            'Devotee_Status' => 'D',
-            'eventId' => $eventId,
-        ];
-
-        $dedup = KdmsApiClient::deduplicate($dedupPayload);
+        $dedup = KdmsApiClient::deduplicate(RegistrationFields::toDedupPayload($candidateKey, $fields, $eventId));
         if (!$dedup['ok']) {
             return [
                 'success' => false,
@@ -71,7 +59,8 @@ final class RegistrationService
         if ($action === 'merged') {
             try {
                 $this->db->beginTransaction();
-                $this->attachChildRows($survivorKey, $idType, $idNumber, $idStaging, $selfiePath);
+                $this->saveDevoteeRow($survivorKey, $fields, true);
+                $this->attachChildRows($survivorKey, $fields['idType'], $idPath, $selfiePath);
                 if ($eventId !== '' && !$this->hasAccommodationForEvent($survivorKey, $eventId)) {
                     AccommodationAssigner::assignOther($this->db, $survivorKey, $eventId);
                 }
@@ -87,8 +76,8 @@ final class RegistrationService
         } else {
             try {
                 $this->db->beginTransaction();
-                $this->insertDevotee($survivorKey, $first, $last, $idType, $idNumber, $phone, $dob, $station);
-                $this->attachChildRows($survivorKey, $idType, $idNumber, $idStaging, $selfiePath);
+                $this->saveDevoteeRow($survivorKey, $fields, false);
+                $this->attachChildRows($survivorKey, $fields['idType'], $idPath, $selfiePath);
                 AccommodationAssigner::assignOther($this->db, $survivorKey, $eventId);
                 $this->db->commit();
             } catch (PDOException $e) {
@@ -112,51 +101,89 @@ final class RegistrationService
         ];
     }
 
-    private function insertDevotee(
-        string $key,
-        string $first,
-        string $last,
-        string $idType,
-        string $idNumber,
-        string $phone,
-        string $dob,
-        string $station
-    ): void {
+    /**
+     * @param array<string, string> $fields
+     */
+    private function saveDevoteeRow(string $key, array $fields, bool $overwrite): void
+    {
+        if ($overwrite) {
+            $stmt = $this->db->prepare(
+                'UPDATE devotee SET
+                    Devotee_First_Name = :first,
+                    Devotee_Last_Name = :last,
+                    Devotee_Gender = :gender,
+                    Devotee_DOB = :dob,
+                    Devotee_ID_Type = :id_type,
+                    Devotee_ID_Number = :id_number,
+                    Devotee_Address_1 = :addr1,
+                    Devotee_Address_2 = :addr2,
+                    Devotee_Station = :station,
+                    Devotee_State = :state,
+                    Devotee_Zip = :zip,
+                    Devotee_Cell_Phone_Number = :phone,
+                    Devotee_Email = :email,
+                    Devotee_Referral = :referral,
+                    Devotee_Record_Update_Date_Time = NOW(),
+                    Devotee_Record_Updated_By = :updated_by
+                 WHERE Devotee_Key = :key'
+            );
+            $stmt->execute($this->devoteeBindParams($key, $fields, 'REG-PWA'));
+
+            return;
+        }
+
         $stmt = $this->db->prepare(
             'INSERT INTO devotee (
                 Devotee_Key, Devotee_Type, Devotee_First_Name, Devotee_Last_Name, Devotee_Gender,
-                Devotee_DOB, Devotee_ID_Type, Devotee_ID_Number, Devotee_Station,
-                Devotee_Cell_Phone_Number, Devotee_Status, Devotee_Record_Update_Date_Time, Devotee_Record_Updated_By
+                Devotee_DOB, Devotee_ID_Type, Devotee_ID_Number,
+                Devotee_Address_1, Devotee_Address_2, Devotee_Station, Devotee_State, Devotee_Zip,
+                Devotee_Cell_Phone_Number, Devotee_Email, Devotee_Referral,
+                Devotee_Status, Devotee_Record_Update_Date_Time, Devotee_Record_Updated_By
             ) VALUES (
                 :key, :type, :first, :last, :gender, :dob, :id_type, :id_number,
-                :station, :phone, :status, NOW(), :updated_by
+                :addr1, :addr2, :station, :state, :zip,
+                :phone, :email, :referral, :status, NOW(), :updated_by
             )'
         );
-        $stmt->execute([
+        $params = $this->devoteeBindParams($key, $fields, 'REG-PWA');
+        $params['type'] = 'T';
+        $params['status'] = 'D';
+        $stmt->execute($params);
+    }
+
+    /**
+     * @param array<string, string> $fields
+     * @return array<string, mixed>
+     */
+    private function devoteeBindParams(string $key, array $fields, string $updatedBy): array
+    {
+        return [
             'key' => $key,
-            'type' => 'T',
-            'first' => $first,
-            'last' => $last,
-            'gender' => '',
-            'dob' => $dob !== '' ? $dob : null,
-            'id_type' => $idType,
-            'id_number' => $idNumber,
-            'station' => $station,
-            'phone' => $phone,
-            'status' => 'D',
-            'updated_by' => 'REG-PWA',
-        ]);
+            'first' => $fields['first'],
+            'last' => $fields['last'],
+            'gender' => $fields['gender'],
+            'dob' => $fields['dob'] !== '' ? $fields['dob'] : null,
+            'id_type' => $fields['idType'],
+            'id_number' => $fields['idNumber'],
+            'addr1' => $fields['address1'],
+            'addr2' => $fields['address2'],
+            'station' => $fields['station'],
+            'state' => $fields['state'],
+            'zip' => $fields['zip'],
+            'phone' => $fields['phone'],
+            'email' => $fields['email'],
+            'referral' => $fields['referral'],
+            'updated_by' => $updatedBy,
+        ];
     }
 
     private function attachChildRows(
         string $devoteeKey,
         string $idType,
-        string $idNumber,
-        string $idStaging,
+        string $idGcsPath,
         string $selfiePath
     ): void {
-        if ($idStaging !== '') {
-            // devotee_id holds image + type only; ID number lives on devotee (set in insertDevotee / merge path).
+        if ($idGcsPath !== '') {
             $idStmt = $this->db->prepare(
                 'INSERT INTO devotee_id (Devotee_Key, Devotee_ID_Type, Devotee_ID_Image_Gcs_Path)
                  VALUES (:key, :type, :gcs_path)
@@ -167,7 +194,7 @@ final class RegistrationService
             $idStmt->execute([
                 'key' => $devoteeKey,
                 'type' => $idType,
-                'gcs_path' => $idStaging,
+                'gcs_path' => $idGcsPath,
             ]);
         }
 
@@ -193,52 +220,10 @@ final class RegistrationService
         return (bool) $stmt->fetchColumn();
     }
 
-    private function sanitizeName(string $value): string
-    {
-        $value = trim(strip_tags($value));
-        if (strlen($value) > 50) {
-            $value = substr($value, 0, 50);
-        }
-
-        return $value;
-    }
-
-    private function sanitizeShort(string $value): string
-    {
-        $value = trim(strip_tags($value));
-
-        return strlen($value) > 100 ? substr($value, 0, 100) : $value;
-    }
-
-    private function sanitizePhone(string $value): string
-    {
-        $value = preg_replace('/[^\d+\-\s]/', '', trim($value)) ?? '';
-
-        return strlen($value) > 15 ? substr($value, 0, 15) : $value;
-    }
-
-    private function sanitizeDate(string $value): string
+    private function sanitizeGcsPath(string $value, string $devoteeKey): string
     {
         $value = trim($value);
-        if ($value === '') {
-            return '';
-        }
-        $d = \DateTime::createFromFormat('Y-m-d', $value);
 
-        return ($d && $d->format('Y-m-d') === $value) ? $value : '';
-    }
-
-    private function sanitizePath(string $value, string $devoteeKey): string
-    {
-        $value = trim($value);
-        if ($value === '' || str_contains($value, '..')) {
-            return '';
-        }
-        $key = preg_quote(strtoupper($devoteeKey), '#');
-        if (!preg_match('#^(id-staging|devotee-selfies)/[0-9]{4}-[0-9]{2}-[0-9]{2}/' . $key . '\.jpg$#i', $value)) {
-            return '';
-        }
-
-        return $value;
+        return RegistrationGcs::isAllowedPath($value, $devoteeKey) ? $value : '';
     }
 }

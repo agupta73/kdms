@@ -148,7 +148,7 @@ curl -s "https://kdms-api-prod-.../api/getPhoto.php?devotee_key=P..." \
 | Approach | Verdict |
 |----------|---------|
 | Multiple buckets (staff vs PWA) | Extra IAM, migration, and env complexity; little gain |
-| Single bucket + prefixes | `devotee/{Devotee_Key}/photo.jpg`; optional `id-staging/{date}/{uuid}.jpg` before register |
+| Single bucket + prefixes | `devotee/{Devotee_Key}/photo.jpg` and `devotee/{Devotee_Key}/id.jpg` (PWA writes directly; no date staging) |
 | Isolation | Separate **service accounts** and app logic (PWA only creates `D`/`T` rows); not bucket boundaries |
 
 Staff and PWA “interference” is prevented by **application rules** (who can write which records), not separate buckets.

@@ -15,7 +15,7 @@ if ($devoteeKey === '' || !preg_match('/^P[0-9A-Z]+$/', $devoteeKey)) {
     exit;
 }
 
-$path = RegistrationGcs::stagingSelfiePath($devoteeKey);
+$path = RegistrationGcs::photoPath($devoteeKey);
 $result = RegistrationGcs::signedPutUrl($path, 900);
 if ($result === null) {
     reg_json_response(500, ['error' => 'Could not prepare upload. Please try again.']);

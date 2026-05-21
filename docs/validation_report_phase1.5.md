@@ -65,8 +65,8 @@ Setup: `docs/document-ai-setup.md`
 ## 5. Test B — ID scan (clear Aadhaar)
 
 - [ ] Green/yellow borders per confidence thresholds
-- [ ] `id_staging_gcs_path` in OCR JSON
-- [ ] Object in GCS under `id-staging/YYYY-MM-DD/`
+- [ ] `id_gcs_path` in OCR JSON (permanent path `devotee/{Devotee_Key}/id.jpg`)
+- [ ] Object in GCS under `devotee/{Devotee_Key}/id.jpg`
 
 ---
 
@@ -86,7 +86,7 @@ Setup: `docs/document-ai-setup.md`
 ## 8. Test E — Selfie
 
 - [ ] Thumbnail after upload
-- [ ] GCS path `devotee-selfies/YYYY-MM-DD/*.jpg`
+- [ ] GCS path `devotee/{Devotee_Key}/photo.jpg`
 
 ---
 

@@ -57,6 +57,10 @@ input, select {
   font-weight: 400;
 }
 
+.dob-picker {
+  margin-top: 0.35rem;
+}
+
 input.conf-high { border-left: 4px solid var(--ok); }
 input.conf-med { border-left: 4px solid var(--warn); }
 

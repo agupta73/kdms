@@ -132,13 +132,9 @@ echo -n "$PROCESSOR_NAME" | gcloud secrets versions add document-ai-processor-id
 
 **Dataset initializing:** Wait until the dataset finishes initializing before importing training documents.
 
-**Deployed custom version:** Console display name `kdms_aadhaar_260519` maps to version id `93bab276fea4e9cc`. Wait until state is **DEPLOYED** (not `CREATING`). Set in Terraform:
+**Processor version:** Leave `document_ai_processor_version` empty in `terraform.tfvars` to use whichever version is marked **default** in the Document AI Console. Pin a specific `processorVersions/...` id only for rollback testing.
 
-```hcl
-document_ai_processor_version = "93bab276fea4e9cc"
-```
-
-Or set that version as the **default deployment** in the Console so `DOCUMENT_AI_PROCESSOR_VERSION` can stay empty.
+**Deployed custom version:** Console display name `kdms_aadhaar_260519` maps to version id `93bab276fea4e9cc`. To use it in production, set it as the **default deployment** in Console (recommended) or set `document_ai_processor_version = "93bab276fea4e9cc"` in tfvars.
 
 **Label names** (must match Custom Extractor schema): `first_name`, `last_name`, `dob`, `id_number`, `full_address`, `city` (optional: `state`, `zip_code`).
 
@@ -150,13 +146,7 @@ If `id_staging_gcs_path` is set but all field values are `null`, the API call of
 
 After deploying custom version `kdms_aadhaar_260519`, it may become the **default** processor. That model can return **0 entities** while the **foundation** version still works.
 
-**Fix:** Pin the foundation version in `terraform.tfvars`:
-
-```hcl
-document_ai_processor_version = "pretrained-foundation-model-v1.5-2025-08-06"
-```
-
-Then `terraform apply` (new Cloud Run revision). Switch to `93bab276fea4e9cc` only when custom model evaluation is acceptable.
+**Fix:** Either set the foundation (or best-performing) version as **default** in the Document AI Console, or pin in `terraform.tfvars` with `document_ai_processor_version = "pretrained-foundation-model-v1.5-2025-08-06"` then `terraform apply`.
 
 **PHP extensions:** Cloud Run image must include `bcmath` (protobuf uses `bccomp()`). If logs show `Call to undefined function bccomp()`, rebuild `kdms-registration` after updating the Dockerfile.
 

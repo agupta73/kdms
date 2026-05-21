@@ -56,15 +56,15 @@ if ($devoteeKey === '' || !preg_match('/^P[0-9A-Z]+$/', $devoteeKey)) {
     exit;
 }
 
-$stagingPath = RegistrationGcs::stagingIdPath($devoteeKey);
+$idPath = RegistrationGcs::idImagePath($devoteeKey);
 $contentType = $mime === 'image/png' ? 'image/png' : 'image/jpeg';
-$saved = RegistrationGcs::uploadBytes($stagingPath, $bytes, $contentType);
+$saved = RegistrationGcs::uploadBytes($idPath, $bytes, $contentType);
 if ($saved === null) {
     reg_json_response(500, ['error' => 'Could not store image. Please try again.']);
     exit;
 }
 
 $fields = DocumentAiOcr::extract($bytes, $mime);
-$fields['id_staging_gcs_path'] = $saved;
+$fields['id_gcs_path'] = $saved;
 
 reg_json_response(200, $fields);
