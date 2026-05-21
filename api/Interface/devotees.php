@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__DIR__, 2) . '/includes/PhotoStorage.php';
+
 Class Devotee {
 
     //TODO: modify PROC_REPLACE_DEVOTEE_W_SEVA_I - it doesn't have Seva availability handled yet
@@ -249,8 +251,9 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'});
-            $row->{'Devotee_ID_Image'} = base64_encode($row->{'Devotee_ID_Image'});
+            $devoteeKey = (string) ($row->devotee_key ?? '');
+            $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'});
+            $row->{'Devotee_ID_Image'} = PhotoStorage::legacyBase64IdImage($this->conn, $devoteeKey, $row->{'Devotee_ID_Image'});
             $devoteeSearchResult[] = $row;
             $i = $i + 1;
         }
@@ -578,7 +581,8 @@ Class Devotee {
         $i = 0;
         if ($results !== false) {
             while ($row = $results->fetchObject()) {
-                $row->{'Devotee_Photo'} = base64_encode($row->{'Devotee_Photo'} ?? '');
+                $devoteeKey = (string) ($row->devotee_key ?? '');
+                $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'} ?? '');
 
                 $devoteeSearchResult[]=$row;
                 $i = $i+1;

@@ -44,7 +44,8 @@ INSERT IGNORE INTO `asset_list` (`asset_key`, `asset_name`, `asset_updated_by`, 
   ('KD-AMT-I', 'KDMS.upsertAmenityI', 'kdms_grant_script', NOW()),
   ('KD-AMT-II', 'KDMS.upsertAmenityII', 'kdms_grant_script', NOW()),
   ('KD-EVNT-I', 'KDMS.upsertEventI', 'kdms_grant_script', NOW()),
-  ('KD-EVNT-II', 'KDMS.upsertEventII', 'kdms_grant_script', NOW());
+  ('KD-EVNT-II', 'KDMS.upsertEventII', 'kdms_grant_script', NOW()),
+  ('KD-KITCHEN', 'KDMS.kitchenDashboard (kitchen counts only)', 'kdms_grant_script', NOW());
 
 /*
   If you already had older keys in asset_list (e.g. KD-DVT-DSP for display devotees, KD-PRT_ID for print),
@@ -84,7 +85,8 @@ CROSS JOIN (
   SELECT 'KD-AMT-I' UNION ALL
   SELECT 'KD-AMT-II' UNION ALL
   SELECT 'KD-EVNT-I' UNION ALL
-  SELECT 'KD-EVNT-II'
+  SELECT 'KD-EVNT-II' UNION ALL
+  SELECT 'KD-KITCHEN'
 ) AS nk;
 
 /*

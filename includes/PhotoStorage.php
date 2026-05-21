@@ -96,6 +96,46 @@ final class PhotoStorage
         return null;
     }
 
+    /**
+     * Base64 for legacy JSON/UI consumers (search grid, card print PCD).
+     * Uses query BLOB when present; otherwise dual-read from devotee_photo row.
+     */
+    public static function legacyBase64Photo(PDO $db, string $devoteeKey, mixed $blobFromQuery): string
+    {
+        $blob = self::normalizeBlobValue($blobFromQuery);
+        if ($blob !== '') {
+            return base64_encode($blob);
+        }
+
+        $read = self::readDevoteePhoto($db, $devoteeKey);
+
+        return $read !== null ? base64_encode($read['bytes']) : '';
+    }
+
+    /**
+     * Base64 for legacy JSON/UI consumers (search grid).
+     */
+    public static function legacyBase64IdImage(PDO $db, string $devoteeKey, mixed $blobFromQuery): string
+    {
+        $blob = self::normalizeBlobValue($blobFromQuery);
+        if ($blob !== '') {
+            return base64_encode($blob);
+        }
+
+        $read = self::readDevoteeIdImage($db, $devoteeKey);
+
+        return $read !== null ? base64_encode($read['bytes']) : '';
+    }
+
+    private static function normalizeBlobValue(mixed $blob): string
+    {
+        if (is_resource($blob)) {
+            $blob = stream_get_contents($blob);
+        }
+
+        return is_string($blob) ? $blob : '';
+    }
+
     public static function readGcsObject(string $objectPath): ?string
     {
         $objectPath = ltrim($objectPath, '/');

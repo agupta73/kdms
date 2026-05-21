@@ -1,6 +1,9 @@
 <?php
 $debug = false;
 $config_data = include dirname(__DIR__) . '/site_config.php';
+require_once dirname(__DIR__) . '/includes/kdms_access_helpers.php';
+$navCanDevoteeSearch = kdms_session_has_asset('KD-DVT-SCR');
+$navCanKitchen = kdms_session_has_asset('KD-KITCHEN');
 ?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
   <!--
@@ -52,6 +55,7 @@ $config_data = include dirname(__DIR__) . '/site_config.php';
           <p>Register New Devotee</p>
         </a>
       </li>     
+      <?php if ($navCanDevoteeSearch): ?>
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=CUS&key=">
           <i class="material-icons">search</i>
@@ -80,7 +84,7 @@ $config_data = include dirname(__DIR__) . '/site_config.php';
       <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=TMP">
           <i class="material-icons">print</i>
-          <p>Temporary Cards for Printing</p>
+          <p>Day Visitor Print Queue</p>
         </a>
       </li>
       <li class="nav-item ">
@@ -95,6 +99,15 @@ $config_data = include dirname(__DIR__) . '/site_config.php';
           <p>KDMS OCR</p>
         </a>
       </li>
+      <?php endif; ?>
+      <?php if ($navCanKitchen): ?>
+      <li class="nav-item ">
+        <a class="nav-link" href="./kitchenDashboard.php">
+          <i class="material-icons">restaurant</i>
+          <p>Kitchen Dashboard</p>
+        </a>
+      </li>
+      <?php endif; ?>
     </ul>
   </div>
 </div>

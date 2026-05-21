@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/web_session.php';
+require_once dirname(__DIR__) . '/includes/kdms_card_photo_block.php';
+$config_data = include dirname(__DIR__) . '/site_config.php';
 
 // Set timezone to IST for all date functions
 date_default_timezone_set('Asia/Kolkata');
@@ -13,7 +15,7 @@ $debug = false;
 $devotees_to_print = [];
 
 if (!empty($_GET['key'])) {
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+    include_once dirname(__DIR__) . '/Logic/clsDevoteeSearch.php';
     // Assuming clsDevoteeSearch handles sanitization of $_GET['key'] internally
     $devoteeSearch = new clsDevoteeSearch($_GET);
     $response = $devoteeSearch->getDevoteeRecords($eventId);
@@ -242,13 +244,31 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                     </span>
                 <!-- This is for prasad vitran -->
                 <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T") : // Day Visitor Card ?>
-
-                    <hr style="width: 80%; margin: 10 auto;">
-                    <span class="devotee-name" style="margin:0;">Only for Prasad</span>
-
-                        <span class="card-footer">
-                            This card is not valid after 15th June <strong>2025</strong>
-                        </span>
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width:70%; vertical-align:top;">
+                                <div class="details-row">
+                                    <span class="card-label">Reg No.:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['key']); ?></span>
+                                </div>
+                                <div class="details-row">
+                                    <span class="card-label">Station:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['station']); ?></span>
+                                </div>
+                                <span class="devotee-name" style="margin:0; font-size: 16px;">Day visitor — prasad / access</span>
+                                <div class="details-row">
+                                    <span class="card-label">Date:</span>
+                                    <span class="card-data"><?php echo date('jS F Y'); ?></span>
+                                </div>
+                            </td>
+                            <td style="width:30%; text-align:center; vertical-align:top;">
+                                <?php kdms_render_card_photo_html((string) ($devotee['photo'] ?? '')); ?>
+                            </td>
+                        </tr>
+                    </table>
+                    <span class="card-footer">
+                        This card is not valid after <?php echo isset($_SESSION['eventDesc']) ? htmlspecialchars($_SESSION['eventDesc']) : 'EVENT_END_DATE'; ?>
+                    </span>
                 <?php else: // Standard Card (including Blocked, etc.) ?>
                     <table style="width:100%;">
                         <tr>

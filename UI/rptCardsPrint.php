@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/web_session.php';
+require_once dirname(__DIR__) . '/includes/kdms_card_photo_block.php';
 
 /** @var array<string,mixed> $config_data Set by initialize.php via web_session; fallback ensures tooling/runtime always have site config */
 $config_data ??= include dirname(__DIR__) . '/site_config.php';
@@ -177,24 +178,24 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
                 </span>
                 <!-- This is for prasad vitran -->
                 <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos((string) ($devotee['devotee_referral'] ?? ''), 'devesh') === 0) : // Day Visitor Card ?>
-                    <span class="devotee-status" style="font-size: 14px;">
-                        <?php echo '( ' . $devotee['key'] . ' )'; ?>
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width:70%; vertical-align:top;">
+                                <div class="details-row">
+                                    <span class="card-label">Reg No.:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['key']); ?></span>
+                                </div>
+                                <span class="devotee-status" style="margin:0; font-size: 18px;">Prasad Vitran</span>
+                                <span style="display: block; text-align: center; margin-top: 8px; font-size: 14px; font-weight: bold;">Referred by: Devesh Agarwal Ji</span>
+                            </td>
+                            <td style="width:30%; text-align:center; vertical-align:top;">
+                                <?php kdms_render_card_photo_html((string) ($devotee['photo'] ?? '')); ?>
+                            </td>
+                        </tr>
+                    </table>
+                    <span class="card-footer">
+                        This card is not valid after 15th June <strong>2025</strong>
                     </span>
-                    <span class="devotee-status" style="margin:0;">Prasad Vitran</span>
-                    <hr style="width: 80%; margin: 5px 0; margin: 0 auto;">
-
-                        <span style="display: block; text-align: center; margin-bottom: 2px; margin-top: 10px; font-size: 14px; font-weight: bold;">Referred by: </span>
-                        <div class="details-row" style="margin-top: 0; margin-bottom:10px;">
-                            <div class="details-row" style="text-align: center;">
-                                <span class="card-data"
-                                      style="font-size: 16px; font-weight: bold; display: inline-block; margin-left: 0;">
-                                    <?php echo 'Devesh Agarwal Ji'; ?>
-                                </span>
-                            </div>
-                        </div>
-                        <span class="card-footer">
-                            This card is not valid after 15th June <strong>2025</strong>
-                        </span>
                 <?php elseif ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
                     <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
                     <span class="devotee-status" style="margin: 20px 0; margin: 5px 0; font-size: 24px;">Temporary Accommodation for 2025</span>
@@ -223,7 +224,32 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php // Photo and other details are intentionally omitted for Day Visitor ?>
+                    <table style="width:100%; margin-top: 6px;">
+                        <tr>
+                            <td style="width:70%; vertical-align:top;">
+                                <div class="details-row">
+                                    <span class="card-label">Reg No.:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['key']); ?></span>
+                                </div>
+                                <?php if (!empty($devotee['station']) && $devotee['station'] !== 'N/A'): ?>
+                                <div class="details-row">
+                                    <span class="card-label">Station:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['station']); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <div class="details-row">
+                                    <span class="card-label">Date:</span>
+                                    <span class="card-data"><?php echo date('jS F Y'); ?></span>
+                                </div>
+                            </td>
+                            <td style="width:30%; text-align:center; vertical-align:top;">
+                                <?php kdms_render_card_photo_html((string) ($devotee['photo'] ?? '')); ?>
+                            </td>
+                        </tr>
+                    </table>
+                    <span class="card-footer">
+                        This card is not valid after <?php echo isset($_SESSION['eventDesc']) ? htmlspecialchars($_SESSION['eventDesc']) : 'EVENT_END_DATE'; ?>
+                    </span>
 
                 <?php else: // Standard Card (including Blocked, etc.) ?>
                     <table style="width:100%;">

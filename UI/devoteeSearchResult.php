@@ -47,6 +47,15 @@ $eventId = $config_data['event_id'];
                 }
             }
 
+            function printQueueReturnKey() {
+                var q = new URLSearchParams(window.location.search);
+                var key = q.get('key');
+                if (key === 'TMP' || key === 'RPC' || key === 'CTP') {
+                    return key;
+                }
+                return 'CTP';
+            }
+
             function submitPrint(formId, flag) {
                 printForm = document.getElementById(formId);
                 var I = 0;
@@ -88,7 +97,7 @@ $eventId = $config_data['event_id'];
 
                             if (r['flag'] == true) {
                                 alert("Card removed from the printing queue!");
-                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=" + printQueueReturnKey());
                             } else {
                                 alert(r['message']);
                                 updateSuccess = false;
@@ -132,7 +141,7 @@ $eventId = $config_data['event_id'];
 
                             if (r['flag'] == true) {
                                 alert("Card removed from the printing queue!");
-                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=CTP");
+                                window.location.assign("./devoteeSearchResult.php?mode=SET&key=" + printQueueReturnKey());
                             } else {
                                 alert(r['message']);
                                 updateSuccess = false;

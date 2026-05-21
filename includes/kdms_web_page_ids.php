@@ -33,4 +33,6 @@ return [
     'upsertEventI.php'         => 'KD-EVNT-I',
     'upsertEventII.php'        => 'KD-EVNT-II',
     'OCRReaderView.php'        => 'KD-DVT-SCR',
+    'kitchenDashboard.php'     => 'KD-KITCHEN',
+    'getKitchenCounts.php'       => 'KD-KITCHEN',
 ];
