@@ -82,8 +82,6 @@ final class DocumentAiOcr
                             $conf
                         );
                         break;
-                    case 'address':
-                    case 'full_address':
                     case 'address_line_1':
                     case 'devotee_address_1':
                         self::setField($mapped, 'Devotee_Address_1', RegistrationFields::sanitizeShort($text, 100), $conf);

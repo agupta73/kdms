@@ -199,6 +199,23 @@ function validateInput() {
         }
     }
 
+    var phoneEl = document.getElementById("devotee_cell_phone_number");
+    if (phoneEl && phoneEl.value.trim() !== "") {
+        var phoneDigits = phoneEl.value.replace(/\D+/g, "");
+        if (phoneDigits.length > 12 && phoneDigits.indexOf("91") === 0) {
+            phoneDigits = phoneDigits.substring(2);
+        }
+        if (phoneDigits.length > 11 && phoneDigits.indexOf("0") === 0) {
+            phoneDigits = phoneDigits.substring(1);
+        }
+        if (phoneDigits.length > 10) {
+            message = message + "Phone number must be at most 10 digits.\n";
+            response = false;
+        } else if (phoneDigits.length > 0) {
+            phoneEl.value = phoneDigits;
+        }
+    }
+
     if (!response) {
         alert(message);
     }

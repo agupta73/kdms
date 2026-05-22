@@ -33,6 +33,11 @@ final class RegistrationService
             return ['success' => false, 'error' => 'Please enter a valid email address.'];
         }
 
+        $rawPhone = trim(strip_tags((string) ($input['Devotee_Cell_Phone_Number'] ?? '')));
+        if ($rawPhone !== '' && $fields['phone'] === '') {
+            return ['success' => false, 'error' => 'Please enter a valid 10-digit phone number.'];
+        }
+
         $candidateKey = strtoupper(trim((string) ($input['Devotee_Key'] ?? '')));
         if ($candidateKey === '') {
             $candidateKey = GenerateId::generate($this->db);
@@ -107,27 +112,7 @@ final class RegistrationService
     private function saveDevoteeRow(string $key, array $fields, bool $overwrite): void
     {
         if ($overwrite) {
-            $stmt = $this->db->prepare(
-                'UPDATE devotee SET
-                    Devotee_First_Name = :first,
-                    Devotee_Last_Name = :last,
-                    Devotee_Gender = :gender,
-                    Devotee_DOB = :dob,
-                    Devotee_ID_Type = :id_type,
-                    Devotee_ID_Number = :id_number,
-                    Devotee_Address_1 = :addr1,
-                    Devotee_Address_2 = :addr2,
-                    Devotee_Station = :station,
-                    Devotee_State = :state,
-                    Devotee_Zip = :zip,
-                    Devotee_Cell_Phone_Number = :phone,
-                    Devotee_Email = :email,
-                    Devotee_Referral = :referral,
-                    Devotee_Record_Update_Date_Time = NOW(),
-                    Devotee_Record_Updated_By = :updated_by
-                 WHERE Devotee_Key = :key'
-            );
-            $stmt->execute($this->devoteeBindParams($key, $fields, 'REG-PWA'));
+            $this->patchDevoteeRowFromRegistration($key, $fields);
 
             return;
         }
@@ -148,6 +133,62 @@ final class RegistrationService
         $params = $this->devoteeBindParams($key, $fields, 'REG-PWA');
         $params['type'] = 'T';
         $params['status'] = 'D';
+        $stmt->execute($params);
+    }
+
+    /**
+     * On merge into an existing devotee, update only fields the visitor actually provided.
+     * Empty optional PWA fields must not clear phone, address, etc. already on file.
+     *
+     * @param array<string, string> $fields
+     */
+    private function patchDevoteeRowFromRegistration(string $key, array $fields): void
+    {
+        $set = [];
+        $params = ['key' => $key, 'updated_by' => 'REG-PWA'];
+
+        $textMap = [
+            'first' => 'Devotee_First_Name',
+            'last' => 'Devotee_Last_Name',
+            'idType' => 'Devotee_ID_Type',
+            'idNumber' => 'Devotee_ID_Number',
+            'address1' => 'Devotee_Address_1',
+            'address2' => 'Devotee_Address_2',
+            'station' => 'Devotee_Station',
+            'state' => 'Devotee_State',
+            'zip' => 'Devotee_Zip',
+            'phone' => 'Devotee_Cell_Phone_Number',
+            'email' => 'Devotee_Email',
+            'referral' => 'Devotee_Referral',
+        ];
+
+        foreach ($textMap as $fieldKey => $column) {
+            $value = trim((string) ($fields[$fieldKey] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+            $set[] = $column . ' = :' . $fieldKey;
+            $params[$fieldKey] = $value;
+        }
+
+        if (($fields['gender'] ?? '') !== '') {
+            $set[] = 'Devotee_Gender = :gender';
+            $params['gender'] = $fields['gender'];
+        }
+        if (($fields['dob'] ?? '') !== '') {
+            $set[] = 'Devotee_DOB = :dob';
+            $params['dob'] = $fields['dob'];
+        }
+
+        if ($set === []) {
+            return;
+        }
+
+        $set[] = 'Devotee_Record_Update_Date_Time = NOW()';
+        $set[] = 'Devotee_Record_Updated_By = :updated_by';
+
+        $sql = 'UPDATE devotee SET ' . implode(', ', $set) . ' WHERE Devotee_Key = :key';
+        $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
     }
 

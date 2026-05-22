@@ -76,9 +76,18 @@ final class RegistrationFields
 
     public static function sanitizePhone(string $value): string
     {
-        $value = preg_replace('/[^\d+\-\s]/', '', trim($value)) ?? '';
+        $root = dirname(__DIR__, 3);
+        $helper = $root . '/includes/kdms_phone.php';
+        if (is_file($helper)) {
+            require_once $helper;
+            [$normalized, $err] = kdms_normalize_devotee_phone($value);
 
-        return strlen($value) > 15 ? substr($value, 0, 15) : $value;
+            return $err === null ? $normalized : '';
+        }
+
+        $digits = preg_replace('/\D+/', '', trim($value)) ?? '';
+
+        return strlen($digits) > 10 ? substr($digits, 0, 10) : $digits;
     }
 
     /**
@@ -91,7 +100,7 @@ final class RegistrationFields
             return '';
         }
 
-        $formats = ['Y-m-d', 'd-m-Y', 'd/m/Y', 'm/d/Y', 'd-m-y', 'd/m/y'];
+        $formats = ['Y-m-d', 'd-m-Y', 'd/m/Y', 'd-m-y', 'd/m/y'];
         foreach ($formats as $fmt) {
             $d = \DateTime::createFromFormat($fmt, $value);
             if ($d instanceof \DateTime) {

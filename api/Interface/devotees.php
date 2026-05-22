@@ -1329,11 +1329,20 @@ Class Devotee {
         }
 
         //Devotee Cell Phone Number
-        if (empty($requestData['devotee_cell_phone_number'])){
-            $Devotee_Cell_Phone_Number="";
-        }
-        else {
-            $Devotee_Cell_Phone_Number=htmlspecialchars(strip_tags($requestData['devotee_cell_phone_number']));
+        require_once dirname(__DIR__, 2) . '/includes/kdms_phone.php';
+        if (empty($requestData['devotee_cell_phone_number'])) {
+            $Devotee_Cell_Phone_Number = '';
+        } else {
+            [$phoneNorm, $phoneErr] = kdms_normalize_devotee_phone(
+                (string) $requestData['devotee_cell_phone_number']
+            );
+            if ($phoneErr !== null) {
+                $errormsg .= ' ' . $phoneErr;
+                $status = false;
+                $Devotee_Cell_Phone_Number = '';
+            } else {
+                $Devotee_Cell_Phone_Number = htmlspecialchars(strip_tags($phoneNorm));
+            }
         }
 
         //Devotee Status
@@ -1550,18 +1559,32 @@ Class Devotee {
 
         if($this->debug){echo "reaching before statement execution: "; var_dump($stmt);}
 
-        if ($stmt->execute()) {
-            $res['status'] = true;
-            $res['message'] = $dedupUserMessage;
-            $res['info'] = $unique_id;
-        } else {
+        try {
+            if ($stmt->execute()) {
+                $res['status'] = true;
+                $res['message'] = $dedupUserMessage;
+                $res['info'] = $unique_id;
+            } else {
+                $res['status'] = false;
+                $res['message'] = '[Devotees] Adding Devotee Record Failed at API!!';
+                if ($this->debug) {
+                    $res['info'] = $query;
+                } else {
+                    $res['info'] = $stmt->errorInfo();
+                }
+            }
+        } catch (PDOException $e) {
             $res['status'] = false;
-            $res['message'] = "[Devotees] Adding Devotee Record Failed at API!!";
+            $res['message'] = 'Save failed. Check phone number (max 10 digits), dates, and other field lengths.';
             if ($this->debug) {
-                $res['info'] = $query;
+                $res['info'] = $e->getMessage();
             } else {
                 $res['info'] = $stmt->errorInfo();
             }
+            kdms_log('ERROR', 'upsertDevotee PROC_REPLACE failed', [
+                'devotee_key' => $unique_id ?? '',
+                'error' => $e->getMessage(),
+            ]);
         }
         return $res;
          
