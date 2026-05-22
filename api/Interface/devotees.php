@@ -1232,17 +1232,19 @@ Class Devotee {
         }
 
         //Devotee DOB
-        if (empty($requestData['devotee_dob'])){
-            $Devotee_DOB="1900-01-01";
-        }
-        elseif ($this->validateDate(htmlspecialchars(strip_tags($requestData['devotee_dob'])))) {
-
-            $Devotee_DOB=htmlspecialchars(strip_tags($requestData['devotee_dob']));
-        }
-        else {
-            $Devotee_DOB = "";
-            $errormsg .= " Date of Birth is invalid.";
-            $status = false;
+        require_once dirname(__DIR__, 2) . '/includes/kdms_dob.php';
+        if (empty($requestData['devotee_dob'])) {
+            $Devotee_DOB = '1900-01-01';
+        } else {
+            $rawDob = htmlspecialchars(strip_tags((string) $requestData['devotee_dob']));
+            $normalizedDob = kdms_normalize_devotee_dob($rawDob);
+            if ($normalizedDob === null) {
+                $Devotee_DOB = '';
+                $errormsg .= ' Date of Birth is invalid.';
+                $status = false;
+            } else {
+                $Devotee_DOB = $normalizedDob;
+            }
         }
 
         //Devotee ID Type

@@ -7,6 +7,12 @@ require_once __DIR__ . '/../includes/api_session.php';
 // Setting
 $Interface_path = "Interface/";
 $requestData = $_POST;
+if ($requestData === [] && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($contentLength > 0) {
+        res_error('Upload payload too large for server limits (post_max_size). Try a smaller image.');
+    }
+}
 $api_type = 0; // Default
 // each api call will have "api_type" to reconize it.
 if (!empty($requestData['api_type'])) {
@@ -54,7 +60,18 @@ if ($api_type === 3) {
     $stageOnly = !$rowExists;
 
     $imageClass = new Image($db);
-    if ($imageClass->uploadDocumentID($requestData, $devotee_key, $rowExists, $stageOnly)) {
+    $uploaded = false;
+    if (
+        !empty($_FILES['id_image']['tmp_name'])
+        && is_uploaded_file((string) $_FILES['id_image']['tmp_name'])
+    ) {
+        $uploaded = $imageClass->uploadDocumentIDFile($_FILES['id_image'], $devotee_key, $rowExists, $stageOnly, $requestData);
+    } elseif (!empty($requestData['image'])) {
+        $uploaded = $imageClass->uploadDocumentID($requestData, $devotee_key, $rowExists, $stageOnly);
+    } else {
+        res_error('ID image is required (multipart id_image or base64 image field).');
+    }
+    if ($uploaded) {
         res_success($rowExists ? 'Devotee document id image updated successfully!' : $devotee_key);
     } else {
         res_error('Error while updating document id image!');

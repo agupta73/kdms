@@ -203,7 +203,7 @@ resource "google_cloud_run_v2_service" "kdms_api" {
 
       env {
         name  = "API_BASE_URL"
-        value = "${local.api_public_base}/"
+        value = "${local.api_dir_http_base}/"
       }
 
       env {

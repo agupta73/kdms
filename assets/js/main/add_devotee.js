@@ -182,9 +182,14 @@ function validateInput() {
         }
     }
 
-    if (document.getElementById("devotee_dob").value != "") {                        
-        if (!validateDate(document.getElementById("devotee_dob").value)) {
-            message = message + "Date of birth is invalid.\n";
+    var dobEl = document.getElementById("devotee_dob");
+    if (dobEl && dobEl.value !== "") {
+        var normalizedDob = normalizeDateInput(dobEl.value);
+        if (normalizedDob) {
+            dobEl.value = normalizedDob;
+        }
+        if (!validateDate(normalizedDob || dobEl.value)) {
+            message = message + "Date of birth is invalid. Use yyyy-mm-dd or dd-mm-yyyy.\n";
             response = false;
         }
     }
@@ -202,13 +207,42 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function validateDate(isoDate) {
-    if (isNaN(Date.parse(isoDate))) {
-        return false;
-    } else {
-        if (isoDate != (new Date(isoDate)).toISOString().substr(0, 10)) {
-            return false;
+/** Accept yyyy-mm-dd, dd-mm-yyyy, or dd/mm/yyyy; return ISO yyyy-mm-dd or empty. */
+function normalizeDateInput(raw) {
+    raw = (raw || '').trim();
+    if (!raw) {
+        return '';
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+        return raw;
+    }
+    var dmy = raw.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    if (dmy) {
+        var day = parseInt(dmy[1], 10);
+        var month = parseInt(dmy[2], 10);
+        var year = parseInt(dmy[3], 10);
+        var dt = new Date(Date.UTC(year, month - 1, day));
+        if (
+            dt.getUTCFullYear() === year &&
+            dt.getUTCMonth() === month - 1 &&
+            dt.getUTCDate() === day
+        ) {
+            return dt.toISOString().slice(0, 10);
         }
     }
-    return true;
+    return '';
+}
+
+function validateDate(isoDate) {
+    var normalized = normalizeDateInput(isoDate);
+    if (!normalized) {
+        return false;
+    }
+    if (normalized !== isoDate && isoDate.indexOf('-') !== 4) {
+        isoDate = normalized;
+    }
+    if (isNaN(Date.parse(isoDate))) {
+        return false;
+    }
+    return isoDate === new Date(isoDate).toISOString().substr(0, 10);
 }

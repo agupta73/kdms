@@ -100,7 +100,7 @@
         context.fillStyle = "#AAA";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        var data = canvas.toDataURL('image/png');
+        var data = canvas.toDataURL('image/jpeg', 0.92);
         photo.setAttribute('src', data);
         //photo2.setAttribute('src', data);
     }
@@ -121,7 +121,7 @@
             // context.drawImage(video, 220, 50, 210, 450, 0, 0, 320, 350);
             context.drawImage(video, 140, 0, 360, 770, 0, 0, 300, 400);
             // context.drawImage(video, 0, 0, width, height);
-            var data = canvas.toDataURL('image/png');
+            var data = canvas.toDataURL('image/jpeg', 0.92);
             photo.setAttribute('src', data);
             uploadbutton.style.visibility = 'visible';
         } else {
@@ -139,13 +139,13 @@
         canvas.height = height;
         image.src = base64_image_data;
 
-        var data = canvas.toDataURL('image/png');
+        var data = canvas.toDataURL('image/jpeg', 0.92);
         photo.setAttribute('src', data);
         uploadbutton.style.visibility = 'visible';
     }
 
     function uploadImage() {
-        var dataUrl = canvas.toDataURL();
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
         var keyField = document.getElementById('devotee_key');
         var reservedKey = (keyField && keyField.value) ? keyField.value.trim() : '';
         if (devoteeID.value !== '') {
@@ -160,8 +160,13 @@
         }
         devoteeID.value = reservedKey;
 
+        var managePhotoUrl =
+            (typeof window.kdmsManagePhotoUrl === 'string' && window.kdmsManagePhotoUrl !== '')
+                ? window.kdmsManagePhotoUrl
+                : '../api/managePhoto.php';
+
         $.ajax({
-            url: '../api/managePhoto.php',
+            url: managePhotoUrl,
             method: 'POST',
             data: {image: dataUrl, api_type: 3, devotee_key: reservedKey}
         }).done(function (data) {

@@ -3,6 +3,10 @@
 
     const HIGH = 0.7;
     const MED = 0.4;
+    const MAX_ID_DIM = 1600;
+    const MAX_OCR_BYTES = 5 * 1024 * 1024;
+    const OCR_TIMEOUT_MS = 90000;
+    const UPLOAD_TIMEOUT_MS = 120000;
 
     const FIELD_MAP = {
         Devotee_First_Name: 'devotee_first_name',
@@ -29,19 +33,104 @@
 
     const OCR_FIELDS = Object.keys(FIELD_MAP);
 
+    function getManagePhotoUrl() {
+        return (typeof window.kdmsManagePhotoUrl === 'string' && window.kdmsManagePhotoUrl !== '')
+            ? window.kdmsManagePhotoUrl
+            : '../api/managePhoto.php';
+    }
+
+    function getIdUploadStatusEl() {
+        var el = document.getElementById('id-upload-status');
+        if (!el) {
+            var host = document.getElementById('photo-id-preview_div');
+            if (!host || !host.parentElement) {
+                return null;
+            }
+            el = document.createElement('div');
+            el.id = 'id-upload-status';
+            el.className = 'text-info small mt-2';
+            el.style.display = 'none';
+            host.parentElement.appendChild(el);
+        }
+        return el;
+    }
+
+    function setIdUploadStatus(message, isError) {
+        var el = getIdUploadStatusEl();
+        if (!el) {
+            return;
+        }
+        el.style.display = message ? 'block' : 'none';
+        el.className = (isError ? 'text-danger' : 'text-info') + ' small mt-2';
+        el.textContent = message || '';
+    }
+
+    function setIdUploadBusy(busy) {
+        var input = document.getElementById('cameraIDFileInput');
+        if (input) {
+            input.disabled = !!busy;
+        }
+    }
+
     function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
+            reader.onload = function () { resolve(reader.result); };
+            reader.onerror = function (error) { reject(error); };
+        });
+    }
+
+    /**
+     * Resize large camera-roll photos before upload/OCR (keeps under PHP post limits).
+     * @returns {Promise<{blob: Blob, previewUrl: string}>}
+     */
+    function compressImageFile(file, maxDim, quality) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var w = img.width;
+                    var h = img.height;
+                    var max = maxDim || MAX_ID_DIM;
+                    if (w > max || h > max) {
+                        if (w >= h) {
+                            h = Math.round(h * max / w);
+                            w = max;
+                        } else {
+                            w = Math.round(w * max / h);
+                            h = max;
+                        }
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    var q = quality || 0.85;
+                    canvas.toBlob(function (blob) {
+                        if (!blob) {
+                            reject(new Error('Could not compress image'));
+                            return;
+                        }
+                        resolve({
+                            blob: blob,
+                            previewUrl: canvas.toDataURL('image/jpeg', q)
+                        });
+                    }, 'image/jpeg', q);
+                };
+                img.onerror = function () { reject(new Error('Invalid image file')); };
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
         });
     }
 
     function resolveReservedKey() {
-        const modal = document.getElementById('devotee_key_modal');
-        const main = document.getElementById('devotee_key');
-        let key = (modal && modal.value) ? modal.value.trim() : '';
+        var modal = document.getElementById('devotee_key_modal');
+        var main = document.getElementById('devotee_key');
+        var key = (modal && modal.value) ? modal.value.trim() : '';
         if (key === '' && main && main.value) {
             key = main.value.trim();
             if (modal) {
@@ -52,18 +141,22 @@
     }
 
     function toTitleCase(str) {
-        if (!str) return '';
-        return str.toLowerCase().replace(/\b([a-zà-ÿ])/g, (m) => m.toUpperCase());
+        if (!str) {
+            return '';
+        }
+        return str.toLowerCase().replace(/\b([a-zà-ÿ])/g, function (m) { return m.toUpperCase(); });
     }
 
     function normalizeDobForStaff(val) {
         val = (val || '').trim();
-        if (!val) return '';
+        if (!val) {
+            return '';
+        }
         if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-            const p = val.split('-');
+            var p = val.split('-');
             return p[2] + '-' + p[1] + '-' + p[0];
         }
-        const m = val.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+        var m = val.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
         if (m) {
             return m[1].padStart(2, '0') + '-' + m[2].padStart(2, '0') + '-' + m[3];
         }
@@ -71,15 +164,19 @@
     }
 
     function setFieldConfidence(input, confidence) {
-        if (!input || !input.parentElement) return;
+        if (!input || !input.parentElement) {
+            return;
+        }
         input.style.borderLeft = '';
-        const hint = input.parentElement.querySelector('.ocr-verify-hint');
-        if (hint) hint.remove();
+        var hint = input.parentElement.querySelector('.ocr-verify-hint');
+        if (hint) {
+            hint.remove();
+        }
         if (confidence >= HIGH) {
             input.style.borderLeft = '4px solid #4caf50';
         } else if (confidence >= MED) {
             input.style.borderLeft = '4px solid #ff9800';
-            const s = document.createElement('small');
+            var s = document.createElement('small');
             s.className = 'ocr-verify-hint text-warning d-block';
             s.textContent = 'Please verify';
             input.parentElement.appendChild(s);
@@ -87,20 +184,28 @@
     }
 
     function applyOcrField(ocrName, field) {
-        const elId = FIELD_MAP[ocrName];
-        if (!elId) return;
-        const input = document.getElementById(elId);
-        if (!input || !field) return;
-        const conf = Number(field.confidence) || 0;
-        let val = field.value != null ? String(field.value) : '';
-        if (conf < MED || !val) return;
+        var elId = FIELD_MAP[ocrName];
+        if (!elId) {
+            return;
+        }
+        var input = document.getElementById(elId);
+        if (!input || !field) {
+            return;
+        }
+        var conf = Number(field.confidence) || 0;
+        var val = field.value != null ? String(field.value) : '';
+        if (conf < MED || !val) {
+            return;
+        }
         if (ocrName === 'Devotee_DOB') {
             val = normalizeDobForStaff(val);
         }
         if (ocrName === 'Devotee_Gender') {
-            const g = val.toUpperCase().charAt(0);
+            var g = val.toUpperCase().charAt(0);
             val = g === 'F' ? 'F' : g === 'M' ? 'M' : '';
-            if (!val) return;
+            if (!val) {
+                return;
+            }
         }
         input.value = val;
         if (TITLE_CASE_IDS.indexOf(elId) >= 0 && val) {
@@ -110,89 +215,153 @@
     }
 
     function applyStaffOcrResponse(data) {
-        if (!data || typeof data !== 'object') return;
-        OCR_FIELDS.forEach((name) => applyOcrField(name, data[name]));
+        if (!data || typeof data !== 'object') {
+            return false;
+        }
+        var applied = false;
+        OCR_FIELDS.forEach(function (name) {
+            var before = document.getElementById(FIELD_MAP[name]);
+            var beforeVal = before ? before.value : '';
+            applyOcrField(name, data[name]);
+            if (before && before.value !== beforeVal) {
+                applied = true;
+            }
+        });
+        return applied;
     }
 
     async function runStaffOcrPrefill(file) {
-        const devoteeKey = resolveReservedKey().toUpperCase();
+        var devoteeKey = resolveReservedKey().toUpperCase();
         if (!devoteeKey || !/^P[0-9A-Z]+$/.test(devoteeKey)) {
-            return;
+            return false;
         }
-        const ocrUrl = (window.kdmsWebRoot || '/').replace(/\/?$/, '/') + 'Logic/staffOcrExtractProxy.php';
-        const fd = new FormData();
+        var ocrUrl = (window.kdmsWebRoot || '/').replace(/\/?$/, '/') + 'Logic/staffOcrExtractProxy.php';
+        var fd = new FormData();
         fd.append('id_image', file);
         fd.append('Devotee_Key', devoteeKey);
+
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, OCR_TIMEOUT_MS);
         try {
-            const res = await fetch(ocrUrl, { method: 'POST', body: fd, credentials: 'same-origin' });
-            const data = await res.json().catch(() => ({}));
-            if (res.ok || res.status === 200) {
-                applyStaffOcrResponse(data);
+            var res = await fetch(ocrUrl, {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin',
+                signal: controller.signal
+            });
+            var data = await res.json().catch(function () { return {}; });
+            if (res.ok) {
+                return applyStaffOcrResponse(data);
             }
         } catch (e) {
             /* OCR failure is non-fatal; upload still proceeds */
+        } finally {
+            clearTimeout(timer);
         }
+        return false;
     }
 
-    function uploadIDImage(base64_image_data, ocrRan) {
-        const devoteeID = resolveReservedKey();
+    function uploadIDImageMultipart(blob, previewUrl, ocrRan) {
+        var devoteeID = resolveReservedKey();
         if (devoteeID === '') {
             alert('Devotee ID is not reserved yet. Refresh the Add Devotee page and try again.');
             return;
         }
+
+        var fd = new FormData();
+        fd.append('id_image', blob, 'id_image.jpg');
+        fd.append('api_type', '4');
+        fd.append('devotee_key', devoteeID);
+
         $.ajax({
-            url: '../api/managePhoto.php',
+            url: getManagePhotoUrl(),
             method: 'POST',
-            data: { image: base64_image_data, api_type: 4, devotee_key: devoteeID }
+            data: fd,
+            processData: false,
+            contentType: false,
+            timeout: UPLOAD_TIMEOUT_MS
         }).done(function (resp) {
+            setIdUploadBusy(false);
+            setIdUploadStatus('');
             var parsed = typeof resp === 'string' ? JSON.parse(resp) : resp;
             if (!parsed || parsed.status !== true) {
                 alert(parsed && parsed.message ? parsed.message : 'ID image upload failed.');
                 return;
             }
-            const msg = ocrRan
+            var msg = ocrRan
                 ? 'ID image saved for ' + devoteeID + '. Form fields were prefilled where detected — please verify.'
                 : 'ID image saved for key ' + devoteeID;
             alert(msg);
-            const photo_id_preview_div = document.getElementById('photo-id-preview_div');
-            const preview_image = `<img class="photo-id-preview" src="${base64_image_data}" alt="devotee ID" height="400px" width="200px"></img>`;
-            photo_id_preview_div.innerHTML = preview_image;
-        }).fail(function () {
-            alert('ID image upload request failed.');
+            var photoIdPreviewDiv = document.getElementById('photo-id-preview_div');
+            if (photoIdPreviewDiv) {
+                photoIdPreviewDiv.innerHTML =
+                    '<img class="photo-id-preview" src="' + previewUrl + '" alt="devotee ID" height="400px" width="200px"></img>';
+            }
+        }).fail(function (xhr) {
+            setIdUploadBusy(false);
+            setIdUploadStatus('');
+            var msg = 'ID image upload request failed.';
+            if (xhr && xhr.responseText) {
+                try {
+                    var err = JSON.parse(xhr.responseText);
+                    if (err && err.message) {
+                        msg = err.message;
+                    }
+                } catch (ignore) { /* use default */ }
+            }
+            alert(msg);
         });
     }
 
     document.getElementById('cameraIDFileInput').addEventListener('change', async function () {
-        const file = this.files && this.files[0];
+        var file = this.files && this.files[0];
         this.value = '';
-        if (!file) return;
+        if (!file) {
+            return;
+        }
 
-        let ocrRan = false;
+        setIdUploadBusy(true);
+        setIdUploadStatus('Preparing image…');
+
+        var compressed;
         try {
-            await runStaffOcrPrefill(file);
-            ocrRan = true;
+            compressed = await compressImageFile(file);
+        } catch (e) {
+            setIdUploadBusy(false);
+            setIdUploadStatus('');
+            alert('Could not read the selected image.');
+            return;
+        }
+
+        var ocrFile = file;
+        if (file.size > MAX_OCR_BYTES) {
+            ocrFile = new File([compressed.blob], 'id_ocr.jpg', { type: 'image/jpeg' });
+        }
+
+        setIdUploadStatus('Scanning ID (OCR)…');
+        var ocrRan = false;
+        try {
+            ocrRan = await runStaffOcrPrefill(ocrFile);
         } catch (e) {
             ocrRan = false;
         }
 
-        try {
-            const base64_image_data = await getBase64(file);
-            uploadIDImage(base64_image_data, ocrRan);
-        } catch (e) {
-            alert('Could not read the selected image.');
-        }
+        setIdUploadStatus('Uploading ID image…');
+        uploadIDImageMultipart(compressed.blob, compressed.previewUrl, ocrRan);
     });
 
     function uploadDevoteeImage(base64_image_data) {
-        const devoteeID = resolveReservedKey();
+        var devoteeID = resolveReservedKey();
         if (devoteeID === '') {
             alert('Devotee ID is not reserved yet. Refresh the Add Devotee page and try again.');
             return;
         }
+
         $.ajax({
-            url: '../api/managePhoto.php',
+            url: getManagePhotoUrl(),
             method: 'POST',
-            data: { image: base64_image_data, api_type: 3, devotee_key: devoteeID }
+            data: { image: base64_image_data, api_type: 3, devotee_key: devoteeID },
+            timeout: UPLOAD_TIMEOUT_MS
         }).done(function (resp) {
             var parsed = typeof resp === 'string' ? JSON.parse(resp) : resp;
             if (!parsed || parsed.status !== true) {
@@ -200,17 +369,26 @@
                 return;
             }
             alert('Devotee image saved for key ' + devoteeID);
-            const photo_mobile_preview_div = document.getElementById('photo-mobile-preview_div');
-            const preview_image = `<img class="devoteeImage" id="devoteeImage" src="${base64_image_data}" alt="devotee image"></img>`;
-            photo_mobile_preview_div.innerHTML = preview_image;
+            var photoMobilePreviewDiv = document.getElementById('photo-mobile-preview_div');
+            if (photoMobilePreviewDiv) {
+                photoMobilePreviewDiv.innerHTML =
+                    '<img class="devoteeImage" id="devoteeImage" src="' + base64_image_data + '" alt="devotee image"></img>';
+            }
         }).fail(function () {
             alert('Photo upload request failed.');
         });
     }
 
-    document.getElementById('cameraMobilePhotoFileInput').addEventListener('change', function () {
-        const file = this.files && this.files[0];
-        if (!file) return;
-        getBase64(file).then((base64_image_data) => uploadDevoteeImage(base64_image_data));
-    });
+    var mobileInput = document.getElementById('cameraMobilePhotoFileInput');
+    if (mobileInput) {
+        mobileInput.addEventListener('change', function () {
+            var file = this.files && this.files[0];
+            if (!file) {
+                return;
+            }
+            getBase64(file).then(function (base64_image_data) {
+                uploadDevoteeImage(base64_image_data);
+            });
+        });
+    }
 })();

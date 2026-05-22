@@ -104,7 +104,8 @@ Class Image {
                 'path' => $path,
             ]);
 
-            return ['gcs' => $path, 'blob' => null];
+            // Keep BLOB on upload so UI can read photos when GCS read is unavailable locally.
+            return ['gcs' => $path, 'blob' => $bytes];
         }
 
         kdms_log('ERROR', 'Staff devotee photo GCS write failed; using BLOB fallback', [
@@ -113,6 +114,32 @@ Class Image {
         ]);
 
         return ['gcs' => null, 'blob' => $bytes];
+    }
+
+    /**
+     * @param array<string, mixed> $requestData
+     */
+    private function decodeDataUrlImage(array $requestData, string $devoteeKey, string $label): ?string
+    {
+        $rawData = $requestData['image'] ?? '';
+        if (!is_string($rawData) || strpos($rawData, ',') === false) {
+            kdms_log('ERROR', 'Staff ' . $label . ' upload: missing or invalid image data', [
+                'devotee_key' => $devoteeKey,
+            ]);
+
+            return null;
+        }
+        $filteredData = explode(',', $rawData, 2);
+        $unencoded = base64_decode($filteredData[1], true);
+        if ($unencoded === false || strlen($unencoded) < 64) {
+            kdms_log('ERROR', 'Staff ' . $label . ' upload: base64 decode failed or image too small', [
+                'devotee_key' => $devoteeKey,
+            ]);
+
+            return null;
+        }
+
+        return $unencoded;
     }
 
     private function saveDevoteePhotoRow(string $devoteeKey, ?string $gcsPath, ?string $blob, string $photoType, int $status): bool
@@ -138,10 +165,10 @@ Class Image {
      */
     public function upload($requestData, $devotee_id, $is_update, $stageOnly = false) {
 
-        $rawData = $requestData['image'];
-        $filteredData = explode(',', $rawData);
-        $unencoded = base64_decode($filteredData[1]);
-        //$unencoded = base64_decode($rawData);
+        $unencoded = $this->decodeDataUrlImage($requestData, (string) $devotee_id, 'photo');
+        if ($unencoded === null) {
+            return false;
+        }
         $type = "self";
         $status = 1;
         $stored = $this->persistPhotoBytes((string) $devotee_id, $unencoded);
@@ -185,7 +212,7 @@ Class Image {
                 'path' => $path,
             ]);
 
-            return ['gcs' => $path, 'blob' => null];
+            return ['gcs' => $path, 'blob' => $bytes];
         }
 
         kdms_log('ERROR', 'Staff devotee ID image GCS write failed; using BLOB fallback', [
@@ -221,28 +248,106 @@ Class Image {
     /**
      * @param bool $stageOnly When true, only write devotee_id — no INSERT into devotee.
      */
+    /**
+     * @param array<string, mixed> $requestData
+     */
     public function uploadDocumentID($requestData, $devotee_id, $is_update, $stageOnly = false) {
 
-        $rawData = $requestData['image'];
-        $filteredData = explode(',', $rawData);
-        $unencoded = base64_decode($filteredData[1]);
-        $type = !empty($requestData['devotee_id_type'])
-            ? (string) $requestData['devotee_id_type']
-            : (!empty($requestData['Devotee_ID_Type']) ? (string) $requestData['Devotee_ID_Type'] : 'self');
-        $stored = $this->persistIdImageBytes((string) $devotee_id, $unencoded);
-
-        if ($is_update || $stageOnly) {
-            return $this->saveDevoteeIdRow((string) $devotee_id, $stored['gcs'], $stored['blob'], $type);
+        $unencoded = $this->decodeDataUrlImage($requestData, (string) $devotee_id, 'ID image');
+        if ($unencoded === null) {
+            return false;
         }
 
-        $query02 = "INSERT INTO devotee SET Devotee_Key=:id";
+        return $this->uploadDocumentIDBytes(
+            $unencoded,
+            (string) $devotee_id,
+            $is_update,
+            $stageOnly,
+            $this->resolveIdTypeFromRequest($requestData)
+        );
+    }
+
+    /**
+     * Multipart upload from staff UI (avoids huge base64 POST bodies).
+     *
+     * @param array<string, mixed> $file $_FILES['id_image']
+     * @param array<string, mixed> $requestData
+     */
+    public function uploadDocumentIDFile(array $file, $devotee_id, $is_update, $stageOnly, array $requestData): bool
+    {
+        $tmp = $file['tmp_name'] ?? '';
+        if (!is_string($tmp) || $tmp === '' || !is_uploaded_file($tmp)) {
+            kdms_log('ERROR', 'Staff ID image upload: missing uploaded file', [
+                'devotee_key' => $devotee_id,
+            ]);
+
+            return false;
+        }
+
+        $bytes = file_get_contents($tmp);
+        if ($bytes === false || strlen($bytes) < 64) {
+            kdms_log('ERROR', 'Staff ID image upload: file empty or unreadable', [
+                'devotee_key' => $devotee_id,
+            ]);
+
+            return false;
+        }
+
+        $size = (int) ($file['size'] ?? strlen($bytes));
+        if ($size > 5 * 1024 * 1024) {
+            kdms_log('ERROR', 'Staff ID image upload: file exceeds 5MB', [
+                'devotee_key' => $devotee_id,
+                'size' => $size,
+            ]);
+
+            return false;
+        }
+
+        return $this->uploadDocumentIDBytes(
+            $bytes,
+            (string) $devotee_id,
+            $is_update,
+            $stageOnly,
+            $this->resolveIdTypeFromRequest($requestData)
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $requestData
+     */
+    private function resolveIdTypeFromRequest(array $requestData): string
+    {
+        if (!empty($requestData['devotee_id_type'])) {
+            return (string) $requestData['devotee_id_type'];
+        }
+        if (!empty($requestData['Devotee_ID_Type'])) {
+            return (string) $requestData['Devotee_ID_Type'];
+        }
+
+        return 'self';
+    }
+
+    private function uploadDocumentIDBytes(
+        string $unencoded,
+        string $devotee_id,
+        bool $is_update,
+        bool $stageOnly,
+        string $type
+    ): bool {
+        $stored = $this->persistIdImageBytes($devotee_id, $unencoded);
+
+        if ($is_update || $stageOnly) {
+            return $this->saveDevoteeIdRow($devotee_id, $stored['gcs'], $stored['blob'], $type);
+        }
+
+        $query02 = 'INSERT INTO devotee SET Devotee_Key=:id';
         $stmt02 = $this->conn->prepare($query02);
-        $stmt02->bindParam(":id", $devotee_id);
+        $stmt02->bindParam(':id', $devotee_id);
         if (!$stmt02->execute()) {
             return false;
         }
 
-        return $this->saveDevoteeIdRow((string) $devotee_id, $stored['gcs'], $stored['blob'], $type);
+        return $this->saveDevoteeIdRow($devotee_id, $stored['gcs'], $stored['blob'], $type);
     }
 
     public function uploadDocument($requestData, $devotee_id, $is_update) {

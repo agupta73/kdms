@@ -68,7 +68,8 @@ locals {
     TRUSTED_PROXIES   = "*"
     KDMS_EVENT_ID     = var.kdms_event_id
     WEBROOT_URL       = "${local.app_public_base}/"
-    API_BASE_URL      = "${local.api_public_base}/"
+    # Must include /api/ when api_url is a separate Cloud Run host (PHP lives under /api/).
+    API_BASE_URL      = "${local.api_dir_http_base}/"
     # Server-side curl (login/API) hits Apache on loopback — no /kdms prefix (production vhost is root DocRoot).
     KDMS_INTERNAL_ORIGIN = "http://127.0.0.1:${var.container_port}"
     # PDO expects KDMS_* vars (see api/config/database.php); Laravel-style DB_* are kept for Composer/tools.

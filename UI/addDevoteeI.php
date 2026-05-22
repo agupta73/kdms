@@ -19,6 +19,7 @@ if ($debug) {
 $requestData = $_GET;
 $response = null;
 $is_key_available = false;
+        $record_loaded = false;
         $devotee_key = "";
         $devotee_type = "T";
         $devotee_first_name = "";
@@ -89,6 +90,7 @@ $is_key_available = false;
             if ($response !== null && is_array($response)) {
                 if (! empty($response['Devotee_Key'])) {
                     $devotee_key = urldecode($response['Devotee_Key']); //"P1810142093"
+                    $record_loaded = true;
                 }
 
             if (!empty($response['Devotee_Type'])) {
@@ -201,6 +203,8 @@ $is_key_available = false;
     <script>
         window.kdmsRequestManagerUrl = <?= json_encode($config_data['webroot'] . 'Logic/requestManager.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
         window.kdmsWebRoot = <?= json_encode($config_data['webroot'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
+        window.kdmsManagePhotoUrl = <?= json_encode($config_data['webroot'] . 'Logic/managePhotoProxy.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
+        window.kdmsDedupHintsUrl = <?= json_encode($config_data['webroot'] . 'Logic/dedupHintsProxy.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
         var directoryName = <?= json_encode($directoryName, JSON_HEX_TAG | JSON_HEX_APOS) ?>;
         var dataSaved = false;
     </script>
@@ -315,7 +319,7 @@ $is_key_available = false;
                                                 <div class="col-md-3"style="margin-top:36px;">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Date of Birth</label>
-                                                        <input type="text" class="form-control" name="devotee_dob" title="yyyy-mm-dd" id="devotee_dob" value="<?php print_r($devotee_dob); ?>">
+                                                        <input type="text" class="form-control" name="devotee_dob" title="yyyy-mm-dd or dd-mm-yyyy" id="devotee_dob" placeholder="yyyy-mm-dd or dd-mm-yyyy" value="<?php print_r($devotee_dob); ?>">
                                                         
                                                     </div>
                                                 </div>
@@ -643,6 +647,7 @@ $is_key_available = false;
                                 <div class="card card-profile">
                                     <label class="cameraFileInput" for="cameraIDFileInput">
                                         <div class="card-body" id="photo-id-preview_div">
+                                            <div id="id-upload-status" class="text-info small mb-2" style="display:none;" aria-live="polite"></div>
                                             <?php
                                             if ($devotee_id_image == "") {
                                                 echo '<img class="photo-id-preview" src="../assets/img/faces/doc.png" alt="devotee ID" height="350px" width="200px"></img>';
@@ -663,17 +668,16 @@ $is_key_available = false;
                                 </div>
                                 </div>
                             </div>
-                            <?php if ($is_key_available && $devotee_key !== '') { ?>
-                            <div class="col-md-4">
+                            <?php if (!empty($record_loaded) && $devotee_key !== '') { ?>
+                            <div class="col-md-4" id="dedup-hints-col" style="display:none;">
                                 <div class="card" id="dedup-hints-card">
-                                    <div class="card-header card-header-info">
+                                    <div class="card-header card-header-primary">
                                         <h4 class="card-title">Possible duplicates</h4>
-                                        <p class="card-category">Read-only hints (Phase 2)</p>
+                                        <p class="card-category">Review before saving changes</p>
                                     </div>
                                     <div class="card-body">
-                                        <div id="dedup-hints-loading">Loading…</div>
+                                        <div id="dedup-hints-loading" class="text-muted">Loading…</div>
                                         <ul id="dedup-hints-list" class="list-unstyled" style="display:none;"></ul>
-                                        <p id="dedup-hints-empty" style="display:none;">No likely duplicates found.</p>
                                         <button type="button" class="btn btn-sm btn-warning" id="dedup-btn-merge" style="display:none;">Merge selected into this record</button>
                                     </div>
                                 </div>
@@ -688,58 +692,79 @@ $is_key_available = false;
 </div>
 <!--   Core JS Files   -->
 <?php include_once("scriptJS.php") ?>
-<?php if ($is_key_available && $devotee_key !== '') {
-    $dedupApi = htmlspecialchars($config_data['api_dir'] ?? '../api/', ENT_QUOTES, 'UTF-8');
-    $dedupEvent = htmlspecialchars((string) $eventId, ENT_QUOTES, 'UTF-8');
-    $dedupKey = htmlspecialchars($devotee_key, ENT_QUOTES, 'UTF-8');
-?>
+<?php if (!empty($record_loaded) && $devotee_key !== '') { ?>
 <script>
 (function () {
+  const hintsUrl = (typeof window.kdmsDedupHintsUrl === 'string' && window.kdmsDedupHintsUrl !== '')
+    ? window.kdmsDedupHintsUrl
+    : '../Logic/dedupHintsProxy.php';
   const apiBase = <?php echo json_encode(rtrim($config_data['api_dir'] ?? '../api/', '/') . '/'); ?>;
   const devoteeKey = <?php echo json_encode($devotee_key); ?>;
   const eventId = <?php echo json_encode($eventId); ?>;
+  const col = document.getElementById('dedup-hints-col');
   const loading = document.getElementById('dedup-hints-loading');
   const list = document.getElementById('dedup-hints-list');
-  const empty = document.getElementById('dedup-hints-empty');
   const mergeBtn = document.getElementById('dedup-btn-merge');
   const selected = new Set();
 
-  fetch(apiBase + 'dedupHints.php?devotee_key=' + encodeURIComponent(devoteeKey) + '&eventId=' + encodeURIComponent(eventId), { credentials: 'same-origin' })
-    .then(r => r.json())
-    .then(data => {
+  if (!col || !loading || !list || !mergeBtn) {
+    return;
+  }
+
+  function hideDedupSection() {
+    col.style.display = 'none';
+  }
+
+  fetch(hintsUrl + '?devotee_key=' + encodeURIComponent(devoteeKey) + '&eventId=' + encodeURIComponent(eventId), { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
       loading.style.display = 'none';
-      const matches = (data && data.matches) ? data.matches.filter(m => m.devotee_key !== devoteeKey && m.action !== 'new') : [];
-      if (!matches.length) {
-        empty.style.display = 'block';
+      if (!data || data.status !== true) {
+        hideDedupSection();
         return;
       }
+      const matches = (data.matches || []).filter(function (m) {
+        return m.devotee_key !== devoteeKey && m.action !== 'new';
+      });
+      if (!matches.length) {
+        hideDedupSection();
+        return;
+      }
+      col.style.display = '';
       list.style.display = 'block';
-      matches.forEach(m => {
+      matches.forEach(function (m) {
         const li = document.createElement('li');
         li.className = 'mb-2';
         const id = 'dedup-cb-' + m.devotee_key;
-        li.innerHTML = '<label><input type="checkbox" id="' + id + '" value="' + m.devotee_key + '"> ' +
+        li.innerHTML = '<label class="form-check-label"><input type="checkbox" class="form-check-input" id="' + id + '" value="' + m.devotee_key + '"> ' +
           m.devotee_key + ' (score ' + m.score + ', signal ' + m.signal + ')</label>';
         list.appendChild(li);
-        li.querySelector('input').addEventListener('change', (e) => {
-          if (e.target.checked) selected.add(m.devotee_key);
-          else selected.delete(m.devotee_key);
+        li.querySelector('input').addEventListener('change', function (e) {
+          if (e.target.checked) {
+            selected.add(m.devotee_key);
+          } else {
+            selected.delete(m.devotee_key);
+          }
           mergeBtn.style.display = selected.size ? 'inline-block' : 'none';
         });
       });
     })
-    .catch(() => { loading.textContent = 'Could not load duplicate hints.'; });
+    .catch(function () {
+      hideDedupSection();
+    });
 
-  mergeBtn.addEventListener('click', () => {
-    if (!selected.size || !confirm('Merge selected records into ' + devoteeKey + '? This cannot be undone easily.')) return;
+  mergeBtn.addEventListener('click', function () {
+    if (!selected.size || !confirm('Merge selected records into ' + devoteeKey + '? This cannot be undone easily.')) {
+      return;
+    }
     fetch(apiBase + 'adminMergeDevotees.php', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_devotee_key: devoteeKey, tbm_devotee_keys: Array.from(selected), eventId: eventId })
     })
-      .then(r => r.json())
-      .then(data => {
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
         if (data.status) {
           alert('Merged. Survivor: ' + data.Devotee_Key);
           location.reload();
@@ -747,7 +772,9 @@ $is_key_available = false;
           alert(data.message || 'Merge failed');
         }
       })
-      .catch(() => alert('Merge request failed'));
+      .catch(function () {
+        alert('Merge request failed');
+      });
   });
 })();
 </script>
