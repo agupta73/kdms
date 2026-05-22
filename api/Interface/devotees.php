@@ -1431,6 +1431,7 @@ Class Devotee {
             : strtoupper($this->generateId());
         $unique_id = $candidateKey;
         $rowExists = DeduplicationService::devoteeRowExists($this->conn, $candidateKey);
+        $dedupUserMessage = '';
 
         if (!$rowExists) {
 
@@ -1455,6 +1456,12 @@ Class Devotee {
 
                 if ($dedup['action'] === 'merged' && strcasecmp($unique_id, $candidateKey) !== 0) {
                     DeduplicationService::repointStagedMediaKeys($this->conn, $unique_id, $candidateKey);
+                    $dedupUserMessage = 'Duplicate detected: this record was merged into existing devotee '
+                        . $unique_id . ' (same ID number).';
+                } elseif ($dedup['action'] === 'merged') {
+                    $dedupUserMessage = 'Duplicate detected: saved as existing devotee ' . $unique_id . '.';
+                } elseif ($dedup['action'] === 'flagged_new') {
+                    $dedupUserMessage = 'Possible duplicate on file — please verify before printing cards.';
                 }
             } catch (Throwable $e) {
                 $res['status'] = false;
@@ -1538,7 +1545,7 @@ Class Devotee {
 
         if ($stmt->execute()) {
             $res['status'] = true;
-            $res['message'] = '';
+            $res['message'] = $dedupUserMessage;
             $res['info'] = $unique_id;
         } else {
             $res['status'] = false;

@@ -39,37 +39,40 @@
             : '../api/managePhoto.php';
     }
 
-    function getIdUploadStatusEl() {
-        var el = document.getElementById('id-upload-status');
-        if (!el) {
-            var host = document.getElementById('photo-id-preview_div');
-            if (!host || !host.parentElement) {
-                return null;
-            }
-            el = document.createElement('div');
-            el.id = 'id-upload-status';
-            el.className = 'text-info small mt-2';
-            el.style.display = 'none';
-            host.parentElement.appendChild(el);
-        }
-        return el;
-    }
-
     function setIdUploadStatus(message, isError) {
-        var el = getIdUploadStatusEl();
+        var el = document.getElementById('id-upload-status');
         if (!el) {
             return;
         }
-        el.style.display = message ? 'block' : 'none';
-        el.className = (isError ? 'text-danger' : 'text-info') + ' small mt-2';
-        el.textContent = message || '';
+        el.className = (isError ? 'text-danger' : 'text-info') + ' small mt-3 text-center px-2';
+        el.textContent = message || 'Processing…';
     }
 
-    function setIdUploadBusy(busy) {
+    function setIdUploadBusy(busy, statusText) {
         var input = document.getElementById('cameraIDFileInput');
+        var spinner = document.getElementById('id-upload-spinner');
         if (input) {
             input.disabled = !!busy;
         }
+        if (spinner) {
+            spinner.style.display = busy ? 'flex' : 'none';
+        }
+        if (busy && statusText) {
+            setIdUploadStatus(statusText, false);
+        }
+    }
+
+    function ocrResponseHasFields(data) {
+        if (!data || typeof data !== 'object') {
+            return false;
+        }
+        return OCR_FIELDS.some(function (name) {
+            var field = data[name];
+            if (!field || field.value == null || String(field.value).trim() === '') {
+                return false;
+            }
+            return (Number(field.confidence) || 0) >= MED;
+        });
     }
 
     function getBase64(file) {
@@ -250,18 +253,22 @@
                 signal: controller.signal
             });
             var data = await res.json().catch(function () { return {}; });
+            if (res.ok && ocrResponseHasFields(data)) {
+                applyStaffOcrResponse(data);
+                return 'filled';
+            }
             if (res.ok) {
-                return applyStaffOcrResponse(data);
+                return 'empty';
             }
         } catch (e) {
             /* OCR failure is non-fatal; upload still proceeds */
         } finally {
             clearTimeout(timer);
         }
-        return false;
+        return 'failed';
     }
 
-    function uploadIDImageMultipart(blob, previewUrl, ocrRan) {
+    function uploadIDImageMultipart(blob, previewUrl, ocrResult) {
         var devoteeID = resolveReservedKey();
         if (devoteeID === '') {
             alert('Devotee ID is not reserved yet. Refresh the Add Devotee page and try again.');
@@ -282,24 +289,28 @@
             timeout: UPLOAD_TIMEOUT_MS
         }).done(function (resp) {
             setIdUploadBusy(false);
-            setIdUploadStatus('');
             var parsed = typeof resp === 'string' ? JSON.parse(resp) : resp;
             if (!parsed || parsed.status !== true) {
                 alert(parsed && parsed.message ? parsed.message : 'ID image upload failed.');
                 return;
             }
-            var msg = ocrRan
-                ? 'ID image saved for ' + devoteeID + '. Form fields were prefilled where detected — please verify.'
-                : 'ID image saved for key ' + devoteeID;
+            var msg = 'ID image saved for key ' + devoteeID + '.';
+            if (ocrResult === 'filled') {
+                msg += ' Form fields were prefilled from the ID — please verify.';
+            } else if (ocrResult === 'empty') {
+                msg += ' OCR did not return field data (registration service may be unavailable) — enter details manually.';
+            }
             alert(msg);
-            var photoIdPreviewDiv = document.getElementById('photo-id-preview_div');
-            if (photoIdPreviewDiv) {
-                photoIdPreviewDiv.innerHTML =
+            var previewContent = document.getElementById('photo-id-preview-content');
+            if (previewContent) {
+                previewContent.innerHTML =
                     '<img class="photo-id-preview" src="' + previewUrl + '" alt="devotee ID" height="400px" width="200px"></img>';
+            }
+            if (typeof window.kdmsRefreshDedupHints === 'function') {
+                window.kdmsRefreshDedupHints();
             }
         }).fail(function (xhr) {
             setIdUploadBusy(false);
-            setIdUploadStatus('');
             var msg = 'ID image upload request failed.';
             if (xhr && xhr.responseText) {
                 try {
@@ -320,15 +331,13 @@
             return;
         }
 
-        setIdUploadBusy(true);
-        setIdUploadStatus('Preparing image…');
+        setIdUploadBusy(true, 'Preparing image…');
 
         var compressed;
         try {
             compressed = await compressImageFile(file);
         } catch (e) {
             setIdUploadBusy(false);
-            setIdUploadStatus('');
             alert('Could not read the selected image.');
             return;
         }
@@ -338,16 +347,16 @@
             ocrFile = new File([compressed.blob], 'id_ocr.jpg', { type: 'image/jpeg' });
         }
 
-        setIdUploadStatus('Scanning ID (OCR)…');
-        var ocrRan = false;
+        setIdUploadBusy(true, 'Scanning ID (OCR)…');
+        var ocrResult = 'failed';
         try {
-            ocrRan = await runStaffOcrPrefill(ocrFile);
+            ocrResult = await runStaffOcrPrefill(ocrFile);
         } catch (e) {
-            ocrRan = false;
+            ocrResult = 'failed';
         }
 
-        setIdUploadStatus('Uploading ID image…');
-        uploadIDImageMultipart(compressed.blob, compressed.previewUrl, ocrRan);
+        setIdUploadBusy(true, 'Uploading ID image…');
+        uploadIDImageMultipart(compressed.blob, compressed.previewUrl, ocrResult);
     });
 
     function uploadDevoteeImage(base64_image_data) {

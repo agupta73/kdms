@@ -73,6 +73,10 @@ function saveFormData(formId, flag) {
                     dataSaved = true;
                     document.getElementById("devotee_key").value = r['info'];
                     duplicateEntryBlocker(1);
+                    window.kdmsDedupSaveNotice = (r.message && String(r.message).trim() !== '') ? r.message : '';
+                    if (typeof window.kdmsRefreshDedupHints === 'function') {
+                        window.kdmsRefreshDedupHints();
+                    }
                 } else {
                     alert(typeof r.message !== 'undefined' ? r.message : 'Save failed.');
                     updateSuccess = false;
@@ -84,7 +88,8 @@ function saveFormData(formId, flag) {
         });
         //Save and stay on the record
         if (flag == 1 && updateSuccess) {
-            alert("Devotee record updated successfully!");                        
+            var saveMsg = window.kdmsDedupSaveNotice || 'Devotee record updated successfully!';
+            alert(saveMsg);
             window.location.assign(webRoot + 'UI/addDevoteeI.php?devotee_key=' + encodeURIComponent(r['info']));
         }
         var check =false;
@@ -133,7 +138,7 @@ function saveFormData(formId, flag) {
         }
         //save and exit
         if (flag == 0 && updateSuccess) {
-            alert("Devotee record updated successfully!");
+            alert(window.kdmsDedupSaveNotice || 'Devotee record updated successfully!');
             window.location.assign(webRoot + 'UI/index.php');
         }
     }

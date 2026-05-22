@@ -82,6 +82,11 @@ resource "google_cloud_run_v2_service" "kdms" {
         value = var.app_url
       }
 
+      env {
+        name  = "KDMS_REGISTRATION_URL"
+        value = trimsuffix(trimspace(var.registration_url), "/")
+      }
+
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"

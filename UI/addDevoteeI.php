@@ -205,6 +205,7 @@ $is_key_available = false;
         window.kdmsWebRoot = <?= json_encode($config_data['webroot'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
         window.kdmsManagePhotoUrl = <?= json_encode($config_data['webroot'] . 'Logic/managePhotoProxy.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
         window.kdmsDedupHintsUrl = <?= json_encode($config_data['webroot'] . 'Logic/dedupHintsProxy.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
+        window.kdmsDedupCheckUrl = <?= json_encode($config_data['webroot'] . 'Logic/dedupCheckProxy.php', JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) ?>;
         var directoryName = <?= json_encode($directoryName, JSON_HEX_TAG | JSON_HEX_APOS) ?>;
         var dataSaved = false;
     </script>
@@ -319,8 +320,8 @@ $is_key_available = false;
                                                 <div class="col-md-3"style="margin-top:36px;">
                                                     <div class="form-group">
                                                         <label class="bmd-label-floating">Date of Birth</label>
-                                                        <input type="text" class="form-control" name="devotee_dob" title="yyyy-mm-dd or dd-mm-yyyy" id="devotee_dob" placeholder="yyyy-mm-dd or dd-mm-yyyy" value="<?php print_r($devotee_dob); ?>">
-                                                        
+                                                        <input type="text" class="form-control" name="devotee_dob" title="yyyy-mm-dd or dd-mm-yyyy" id="devotee_dob" value="<?php print_r($devotee_dob); ?>">
+                                                        <small class="form-text text-muted">Format: yyyy-mm-dd or dd-mm-yyyy</small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -646,8 +647,12 @@ $is_key_available = false;
                                 </div>
                                 <div class="card card-profile">
                                     <label class="cameraFileInput" for="cameraIDFileInput">
-                                        <div class="card-body" id="photo-id-preview_div">
-                                            <div id="id-upload-status" class="text-info small mb-2" style="display:none;" aria-live="polite"></div>
+                                        <div class="card-body" id="photo-id-preview_div" style="position:relative;min-height:200px;">
+                                            <div id="id-upload-spinner" style="display:none;position:absolute;inset:0;z-index:2;background:rgba(255,255,255,0.88);flex-direction:column;" class="d-flex align-items-center justify-content-center">
+                                                <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                                                <span id="id-upload-status" class="text-info small mt-3 text-center px-2" aria-live="polite">Processing…</span>
+                                            </div>
+                                            <div id="photo-id-preview-content">
                                             <?php
                                             if ($devotee_id_image == "") {
                                                 echo '<img class="photo-id-preview" src="../assets/img/faces/doc.png" alt="devotee ID" height="350px" width="200px"></img>';
@@ -655,6 +660,7 @@ $is_key_available = false;
                                                 echo '<img class="photo-id-preview" src="data:image/jpeg;base64,' . $devotee_id_image . '" alt="devotee ID" height="400px" width="200px"></img>';
                                             }
                                             ?>
+                                            </div>
                                         </div>
                                         <!-- The hidden file `input` for opening the native camera -->
                                         <input
@@ -668,7 +674,7 @@ $is_key_available = false;
                                 </div>
                                 </div>
                             </div>
-                            <?php if (!empty($record_loaded) && $devotee_key !== '') { ?>
+                            <?php if ($devotee_key !== '') { ?>
                             <div class="col-md-4" id="dedup-hints-col" style="display:none;">
                                 <div class="card" id="dedup-hints-card">
                                     <div class="card-header card-header-primary">
@@ -692,12 +698,12 @@ $is_key_available = false;
 </div>
 <!--   Core JS Files   -->
 <?php include_once("scriptJS.php") ?>
-<?php if (!empty($record_loaded) && $devotee_key !== '') { ?>
+<?php if ($devotee_key !== '') { ?>
 <script>
 (function () {
-  const hintsUrl = (typeof window.kdmsDedupHintsUrl === 'string' && window.kdmsDedupHintsUrl !== '')
-    ? window.kdmsDedupHintsUrl
-    : '../Logic/dedupHintsProxy.php';
+  const checkUrl = (typeof window.kdmsDedupCheckUrl === 'string' && window.kdmsDedupCheckUrl !== '')
+    ? window.kdmsDedupCheckUrl
+    : '../Logic/dedupCheckProxy.php';
   const apiBase = <?php echo json_encode(rtrim($config_data['api_dir'] ?? '../api/', '/') . '/'); ?>;
   const devoteeKey = <?php echo json_encode($devotee_key); ?>;
   const eventId = <?php echo json_encode($eventId); ?>;
@@ -706,6 +712,8 @@ $is_key_available = false;
   const list = document.getElementById('dedup-hints-list');
   const mergeBtn = document.getElementById('dedup-btn-merge');
   const selected = new Set();
+  const form = document.getElementById('myForm');
+  let dedupTimer = null;
 
   if (!col || !loading || !list || !mergeBtn) {
     return;
@@ -713,45 +721,98 @@ $is_key_available = false;
 
   function hideDedupSection() {
     col.style.display = 'none';
+    list.innerHTML = '';
+    list.style.display = 'none';
+    mergeBtn.style.display = 'none';
+    selected.clear();
   }
 
-  fetch(hintsUrl + '?devotee_key=' + encodeURIComponent(devoteeKey) + '&eventId=' + encodeURIComponent(eventId), { credentials: 'same-origin' })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      loading.style.display = 'none';
-      if (!data || data.status !== true) {
-        hideDedupSection();
-        return;
+  function formDedupParams() {
+    const params = new URLSearchParams();
+    params.set('devotee_key', devoteeKey);
+    params.set('eventId', eventId);
+    if (!form) {
+      return params;
+    }
+    ['devotee_first_name', 'devotee_last_name', 'devotee_id_type', 'devotee_id_number',
+      'devotee_dob', 'devotee_cell_phone_number', 'devotee_station'].forEach(function (name) {
+      const el = form.querySelector('[name="' + name + '"]');
+      if (el && el.value) {
+        params.set(name, el.value);
       }
-      const matches = (data.matches || []).filter(function (m) {
-        return m.devotee_key !== devoteeKey && m.action !== 'new';
-      });
-      if (!matches.length) {
-        hideDedupSection();
-        return;
-      }
-      col.style.display = '';
-      list.style.display = 'block';
-      matches.forEach(function (m) {
-        const li = document.createElement('li');
-        li.className = 'mb-2';
-        const id = 'dedup-cb-' + m.devotee_key;
-        li.innerHTML = '<label class="form-check-label"><input type="checkbox" class="form-check-input" id="' + id + '" value="' + m.devotee_key + '"> ' +
-          m.devotee_key + ' (score ' + m.score + ', signal ' + m.signal + ')</label>';
-        list.appendChild(li);
-        li.querySelector('input').addEventListener('change', function (e) {
-          if (e.target.checked) {
-            selected.add(m.devotee_key);
-          } else {
-            selected.delete(m.devotee_key);
-          }
-          mergeBtn.style.display = selected.size ? 'inline-block' : 'none';
-        });
-      });
-    })
-    .catch(function () {
-      hideDedupSection();
     });
+    return params;
+  }
+
+  function renderMatches(matches) {
+    list.innerHTML = '';
+    matches.forEach(function (m) {
+      const li = document.createElement('li');
+      li.className = 'mb-2';
+      const id = 'dedup-cb-' + m.devotee_key;
+      const signalLabel = m.score >= 100 ? 'same ID' : 'possible match';
+      li.innerHTML = '<label class="form-check-label"><input type="checkbox" class="form-check-input" id="' + id + '" value="' + m.devotee_key + '"> ' +
+        '<a href="addDevoteeI.php?devotee_key=' + encodeURIComponent(m.devotee_key) + '" target="_blank" rel="noopener">' + m.devotee_key + '</a>' +
+        ' (' + signalLabel + ', score ' + m.score + ')</label>';
+      list.appendChild(li);
+      li.querySelector('input').addEventListener('change', function (e) {
+        if (e.target.checked) {
+          selected.add(m.devotee_key);
+        } else {
+          selected.delete(m.devotee_key);
+        }
+        mergeBtn.style.display = selected.size ? 'inline-block' : 'none';
+      });
+    });
+  }
+
+  function refreshDedupHints() {
+    loading.style.display = 'block';
+    loading.textContent = 'Checking for duplicates…';
+    const params = formDedupParams();
+    fetch(checkUrl + '?' + params.toString(), { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        loading.style.display = 'none';
+        if (!data || data.status !== true) {
+          hideDedupSection();
+          return;
+        }
+        const matches = (data.matches || []).filter(function (m) {
+          return m.devotee_key !== devoteeKey && m.action !== 'new';
+        });
+        if (!matches.length) {
+          hideDedupSection();
+          return;
+        }
+        col.style.display = '';
+        list.style.display = 'block';
+        renderMatches(matches);
+      })
+      .catch(function () {
+        hideDedupSection();
+      });
+  }
+
+  function scheduleDedupCheck() {
+    if (dedupTimer) {
+      clearTimeout(dedupTimer);
+    }
+    dedupTimer = setTimeout(refreshDedupHints, 400);
+  }
+
+  window.kdmsRefreshDedupHints = refreshDedupHints;
+  refreshDedupHints();
+  if (form) {
+    ['devotee_id_number', 'devotee_id_type', 'devotee_first_name', 'devotee_last_name',
+      'devotee_dob', 'devotee_cell_phone_number', 'devotee_station'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('change', scheduleDedupCheck);
+        el.addEventListener('blur', scheduleDedupCheck);
+      }
+    });
+  }
 
   mergeBtn.addEventListener('click', function () {
     if (!selected.size || !confirm('Merge selected records into ' + devoteeKey + '? This cannot be undone easily.')) {

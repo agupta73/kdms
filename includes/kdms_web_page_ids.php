@@ -28,6 +28,7 @@ return [
     'managePhotoProxy.php'     => 'KD-DVT-I',
     'staffOcrExtractProxy.php' => 'KD-DVT-I',
     'dedupHintsProxy.php'      => 'KD-DVT-I',
+    'dedupCheckProxy.php'      => 'KD-DVT-I',
     'devoteePhotoProxy.php'    => 'KD-DVT-I',
     'addSevaI.php'             => 'KD-SEVA-I',
     'addSevaII.php'            => 'KD-SEVA-II',
