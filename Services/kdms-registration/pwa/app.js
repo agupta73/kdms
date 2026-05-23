@@ -43,7 +43,55 @@
   const $ = (sel) => document.querySelector(sel);
   const form = $('#reg-form');
   const spinner = $('#spinner');
-  const dobPicker = form.elements.Devotee_DOB;
+  const dobPicker = form ? form.elements.Devotee_DOB : null;
+  const REFERRAL_MAX_LEN = 50;
+
+  /**
+   * Optional query param ?r= — pre-fills and locks Devotee_Referral (e.g. QR / staff link).
+   */
+  function initReferralFromUrlParam() {
+    if (!form) {
+      return;
+    }
+    const referralInput = form.elements.Devotee_Referral;
+    if (!referralInput) {
+      return;
+    }
+
+    let raw = '';
+    try {
+      raw = new URLSearchParams(window.location.search).get('r') || '';
+    } catch (e) {
+      raw = '';
+    }
+
+    let decoded = '';
+    if (raw !== '') {
+      try {
+        decoded = decodeURIComponent(raw.replace(/\+/g, ' '));
+      } catch (e) {
+        decoded = raw.replace(/\+/g, ' ');
+      }
+    }
+    decoded = decoded.trim();
+    if (decoded.length > REFERRAL_MAX_LEN) {
+      decoded = decoded.substring(0, REFERRAL_MAX_LEN);
+    }
+
+    if (decoded !== '') {
+      referralInput.value = decoded;
+      referralInput.readOnly = true;
+      referralInput.classList.add('is-locked');
+      referralInput.setAttribute('aria-readonly', 'true');
+      return;
+    }
+
+    referralInput.readOnly = false;
+    referralInput.classList.remove('is-locked');
+    referralInput.removeAttribute('aria-readonly');
+  }
+
+  initReferralFromUrlParam();
 
   function showSpinner(on) {
     spinner.hidden = !on;

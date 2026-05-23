@@ -31,21 +31,27 @@ api_service_name = "kdms-api-prod"
 ar_repo    = "apps"
 image_name = "kdms-main"
 # Optional: pin with sha256:… ; leave empty to use branch-main (or set image_tag).
-image_digest = "sha256:6bcf67661ac4f8821e0ab7847f4627842d6a7b7d5016c893f55d1fc71a9791ca"
+image_digest = "sha256:36ba50181106fe625c32b3b99c747f4da2c8c2a5e064b55b7530757d5fa90173"
 image_tag    = ""
 # rolling_image_tag = "branch-main"  # when digest and image_tag are both empty
 
 api_image_name   = "kdms-api"
-api_image_digest = "sha256:9b40c0a37654c6f51311f650f34d85e83a7072d441245d7191692412b16f9a2e"
+api_image_digest = "sha256:a0f4f842bd6ff17f80ea454ece0ca107ff921027427babda058e3a9f97da82eb"
 api_image_tag    = ""
 
 runtime_sa_email  = "run-kdms@project-12f4b54b-d692-4583-83b.iam.gserviceaccount.com"
 
 # --- Database (Cloud SQL) ---
 # CURRENT DEPLOY: staging instance (kdms-api-prod / kdms-prod point here today).
+# Staging/test env values
 cloudsql_instance = "mysql-skm-prod"
 db_name           = "kdms"
 db_username       = "kdms"
+
+# Production values
+# cloudsql_instance = "mysql-kdms-prod"
+# db_name           = "kdms_prod"
+# db_username       = "kdms_user"
 
 # PRODUCTION (required before Stream C BLOB migration — switch both kdms-prod + kdms-api-prod):
 # cloudsql_instance        = "mysql-kdms-prod"
@@ -100,7 +106,7 @@ enable_reports_service = true
 reports_service_name = "kdms-reports-prod"
 reports_image_name   = "kdms-reports"
 reports_image_uri    = ""
-reports_image_digest = "sha256:45bb00021baf5aff49fc98b3e2436f14a43c3ce0a7d86d9565ff4913508fcbf3"
+reports_image_digest = "sha256:68bf1f27170cac4be726bcc7388a89349c671799198289a71a53c023e1ef9c9a"
 reports_image_tag    = ""
 # Placeholder — replace with actual URL after first deploy or from `gcloud run services describe`.
 reports_url = "https://kdms-reports-prod-684080887473.asia-south1.run.app"
@@ -126,7 +132,7 @@ enable_registration_service = true
 registration_service_name = "kdms-registration-prod"
 registration_image_name   = "kdms-registration"
 registration_image_uri    = ""
-registration_image_digest = "sha256:eb1d42cc0a3260bdf47a39261945adcd9e5091185a62d46c8da6cdb1e993ecf7"
+registration_image_digest = "sha256:4c13dbcc3bf34e8bf457bdae681ad1c3255fa18f93e40ea6af40557566677b15"
 registration_image_tag    = ""
 # Public URL for kdms-registration-prod. Terraform sets KDMS_REGISTRATION_URL on kdms-api-prod
 # (used by api/staffOcrExtract.php — required for staff "Scan ID Card" on addDevoteeI).
@@ -148,4 +154,4 @@ document_ai_processor_version = ""
 
 # Optional: only if the connection name must differ from project_id:region:instance
 # cloudsql_connection_name = "project-12f4b54b-d692-4583-83b:asia-south1:mysql-skm-prod"
-ocr_image_digest = "sha256:39afff036321d8a2a56f5d25bb9a32d2e856dcb2a99d1eb42dcec14c8e31bd12"
+ocr_image_digest = "sha256:ed568a8ea0b3a3c4e99ec064957bf8e833768abf0e094ca6182be9cb89d9017f"

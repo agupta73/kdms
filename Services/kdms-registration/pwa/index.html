@@ -3,16 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#5c2d0e">
+  <meta name="theme-color" content="#ff8c00">
   <title>Day Visit Registration</title>
+  <link rel="icon" type="image/png" href="/pwa/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/pwa/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/pwa/styles.css">
 </head>
 <body>
   <main id="app" class="app">
     <header class="header">
-      <img src="/pwa/assets/banner.png" alt="" class="logo" onerror="this.style.display='none'">
-      <h1>Day Visit Registration</h1>
-      <p class="subtitle">Please register to receive your entry pass.</p>
+      <div class="logo-wrap">
+        <img src="/pwa/assets/banner.png" alt="" class="logo" onerror="this.parentElement.style.display='none'">
+      </div>
+      <div class="header-band">
+        <h1>Day Visit Registration</h1>
+        <p class="subtitle">Please register to receive your entry pass.</p>
+      </div>
     </header>
 
     <section id="scan-section" class="card">
@@ -62,7 +71,8 @@
         <input type="email" name="Devotee_Email" maxlength="40" autocomplete="email">
       </label>
       <label>Referral (optional)
-        <input type="text" name="Devotee_Referral" maxlength="50" placeholder="Enter only if referred by someone">
+        <input type="text" name="Devotee_Referral" id="devotee_referral" maxlength="50"
+               placeholder="Enter only if referred by someone" autocomplete="off">
       </label>
       <label>Address Line 1 (optional)
         <input type="text" name="Devotee_Address_1" maxlength="100" autocomplete="address-line1">
