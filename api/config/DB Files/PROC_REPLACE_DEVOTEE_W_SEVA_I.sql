@@ -1,13 +1,12 @@
 -- Deploy to Cloud SQL / production when PHP calls CALL PROC_REPLACE_DEVOTEE_W_SEVA_I(...).
 -- Table names use lowercase as in kdms schema dump (Linux case-sensitive MySQL).
--- Source reference: devotee_accomodation, accommodation_availability, devotee_seva, seva_availability.
 --
--- Cloud Console / SQL Studio: do not use DELIMITER — it is only understood by the mysql CLI, not the server.
--- Paste and run the entire file in one execution if the editor allows multiple statements.
--- If the editor runs one statement at a time, execute DROP first, then paste from CREATE through the final "END;".
--- From macOS/Linux mysql CLI, use: scripts/mysql_apply_PROC_REPLACE_DEVOTEE_W_SEVA_I.sh (uses DELIMITER correctly).
+-- Apply via mysql CLI (not Cloud SQL Studio):
+--   ./api/config/DB\ Files/apply_PROC_REPLACE_DEVOTEE_W_SEVA_I.sh
 
 DROP PROCEDURE IF EXISTS PROC_REPLACE_DEVOTEE_W_SEVA_I;
+
+DELIMITER $$
 CREATE DEFINER=`kdms`@`%` PROCEDURE `PROC_REPLACE_DEVOTEE_W_SEVA_I`(
 	IN `p_Devotee_Key` VARCHAR(10),
 	IN `p_Devotee_Type` VARCHAR(30),
@@ -263,5 +262,6 @@ WHERE
 
 END IF;
 
-END;
+END$$
+DELIMITER ;
 

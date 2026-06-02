@@ -1587,7 +1587,7 @@ Class Devotee {
             }
         } catch (PDOException $e) {
             $res['status'] = false;
-            $res['message'] = 'Save failed. Check phone number (max 10 digits), dates, and other field lengths.';
+            $res['message'] = $this->upsertDevoteeSaveErrorMessage($e);
             if ($this->debug) {
                 $res['info'] = $e->getMessage();
             } else {
@@ -1600,6 +1600,23 @@ Class Devotee {
         }
         return $res;
          
+    }
+
+    private function upsertDevoteeSaveErrorMessage(PDOException $e): string
+    {
+        $msg = $e->getMessage();
+        if (str_contains($msg, '1146') || stripos($msg, "doesn't exist") !== false) {
+            return 'Save failed: database procedure is out of date (missing table). '
+                . 'An operator must apply PROC_REPLACE_DEVOTEE_W_SEVA_I.sql on production.';
+        }
+        if (str_contains($msg, '1406') || stripos($msg, 'Data too long') !== false) {
+            return 'Save failed. One or more fields exceed the maximum allowed length.';
+        }
+        if (str_contains($msg, '22001') || str_contains($msg, '22007') || stripos($msg, 'Incorrect date') !== false) {
+            return 'Save failed. Check phone number (max 10 digits), dates, and other field formats.';
+        }
+
+        return 'Save failed. Check phone number (max 10 digits), dates, and other field lengths.';
     }
 
     public function manageCardPrinting($requestData)

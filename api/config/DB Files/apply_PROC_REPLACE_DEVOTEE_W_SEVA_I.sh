@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Apply PROC_OPTIONS_CASE_SENSITIVE_TABLES.sql via mysql CLI (not Cloud SQL Studio).
+# Apply PROC_REPLACE_DEVOTEE_W_SEVA_I.sql via mysql CLI (staff devotee save / upsertDevotee).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,5 +7,5 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/_apply_sql_via_proxy.sh"
 
 apply_sql_via_proxy \
-  "${SCRIPT_DIR}/PROC_OPTIONS_CASE_SENSITIVE_TABLES.sql" \
-  "PROC_REFRESH_ACCO_COUNT_W_EVENT"
+  "${SCRIPT_DIR}/PROC_REPLACE_DEVOTEE_W_SEVA_I.sql" \
+  "PROC_REPLACE_DEVOTEE_W_SEVA_I"
