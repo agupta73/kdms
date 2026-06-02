@@ -224,7 +224,7 @@ $eventId = $config_data['event_id'];
                         break;
 
                     case "AR":
-                        $gridTitle = "Devotees Residing in Ashram (allocated accommodation)";
+                        $gridTitle = "Devotees Residing in Ashram";
                         break;
 
                     default :

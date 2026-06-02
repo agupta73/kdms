@@ -195,10 +195,11 @@ class clsReport {
         $devoteeResults = array();
 
 
-        //1. Devotees with allocated accommodation for the event (dashboard drill-down: SET key AR)
+        //1. Resident devotees: allocated ashram accommodation (excl. day visitor othr, local LCL, own arrangement OWNAR)
         $query[0] = "SELECT COUNT(DISTINCT acco.Devotee_Key) AS SpaceOccupiedOrDevoteesPresent
             FROM devotee_accomodation acco
-            WHERE acco.Accomodation_Status = 'Allocated'";
+            WHERE acco.Accomodation_Status = 'Allocated'
+            AND LOWER(acco.Accomodation_Key) NOT IN ('othr', 'lcl', 'ownar')";
 
         //2. Devotees registered for seva (assigned), excluding seva code UN
         $query[1] = "SELECT COUNT(DISTINCT ds.Devotee_Key) AS DevoteesRegisteredForSeva

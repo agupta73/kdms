@@ -247,9 +247,10 @@ Class Devotee {
                     
                     break;
 
-            case "AR": // Allocated accommodation for event (dashboard: Devotees Residing in Ashram)
+            case "AR": // Ashram residents only (excl. othr, LCL, OWNAR) — dashboard drill-down
                 $query = $query .
                     " WHERE da.Devotee_Key IS NOT NULL"
+                    . " AND LOWER(da.Accomodation_Key) NOT IN ('othr', 'lcl', 'ownar')"
                     . " ORDER BY d.Devotee_Record_update_date_time Desc LIMIT 500";
                 break;
 
