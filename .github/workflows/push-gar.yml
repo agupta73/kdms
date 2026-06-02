@@ -103,6 +103,10 @@ jobs:
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          # Default docker-container driver pulls moby/buildkit from Docker Hub and often
+          # times out on GHA (registry-1.docker.io). The docker driver uses the runner daemon.
+          driver: docker
 
       - name: Build and push
         id: buildpush
