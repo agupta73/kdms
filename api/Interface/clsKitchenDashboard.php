@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 /**
  * Kitchen meal-planning counts (Phase 3).
- * Allocated (non–day-visitor) = Allocated accommodation for the event, excluding
- * Devotee_Status D + Devotee_Type T (day visitors counted only via print_log today).
- * Includes own-arrangement, local, and ashram rooms.
- * Day visitors today = distinct day visitors printed today (print_log + devotee D/T).
+ *
+ * Residents: distinct devotees with a print_log row for the event (any print date),
+ *   excluding day visitors (Devotee_Status D + Devotee_Type T).
+ * Day visitors: distinct D/T devotees with print_log for the event on the current calendar day only.
+ *
+ * PWA registration queues card_print_log via addToPrintQueue; print_log is append-only and
+ * idempotent (one row per devotee + event + calendar day via PrintLog::recordIfNotExistsToday).
+ * Written on removeFromPrintQueue when eventId is supplied. Rows are never deleted by the app.
+ * Merged duplicates are not counted until the survivor's card is printed.
  */
 class clsKitchenDashboard
 {
@@ -36,13 +41,12 @@ class clsKitchenDashboard
         $query = "SELECT
             {$qEvent} AS Event_ID,
             (
-                SELECT COUNT(DISTINCT d.Devotee_Key)
-                FROM devotee d
-                JOIN devotee_accomodation da ON d.Devotee_Key = da.Devotee_Key
-                WHERE da.Accommodation_Event = {$qEvent}
-                    AND da.Accomodation_Status = 'Allocated'
+                SELECT COUNT(DISTINCT pl.Devotee_Key)
+                FROM print_log pl
+                INNER JOIN devotee d ON pl.Devotee_Key = d.Devotee_Key
+                WHERE pl.Event_Id = {$qEvent}
                     AND NOT (d.Devotee_Status = 'D' AND d.Devotee_Type = 'T')
-            ) AS Residents_Today,
+            ) AS Residents_Printed_For_Event,
             (
                 SELECT COUNT(DISTINCT pl.Devotee_Key)
                 FROM print_log pl
@@ -64,18 +68,18 @@ class clsKitchenDashboard
         if ($row === false) {
             return [[
                 'Event_ID' => $eventId,
-                'Residents_Today' => 0,
+                'Residents_Printed_For_Event' => 0,
                 'Day_Visitors_Printed_Today' => 0,
                 'Total_For_Kitchen' => 0,
             ]];
         }
 
-        $residents = (int) ($row['Residents_Today'] ?? 0);
+        $residents = (int) ($row['Residents_Printed_For_Event'] ?? 0);
         $dayVisitors = (int) ($row['Day_Visitors_Printed_Today'] ?? 0);
 
         return [[
             'Event_ID' => (string) ($row['Event_ID'] ?? $eventId),
-            'Residents_Today' => $residents,
+            'Residents_Printed_For_Event' => $residents,
             'Day_Visitors_Printed_Today' => $dayVisitors,
             'Total_For_Kitchen' => $residents + $dayVisitors,
         ]];

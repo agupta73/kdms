@@ -24,7 +24,7 @@ try {
 } catch (Throwable $e) {
     $row = [
         'Event_ID' => $eventId,
-        'Residents_Today' => 0,
+        'Residents_Printed_For_Event' => 0,
         'Day_Visitors_Printed_Today' => 0,
         'Total_For_Kitchen' => 0,
     ];
@@ -35,7 +35,7 @@ try {
 echo json_encode([
     'status' => $status,
     'eventId' => (string) ($row['Event_ID'] ?? $eventId),
-    'residentsToday' => (int) ($row['Residents_Today'] ?? 0),
+        'residentsToday' => (int) ($row['Residents_Printed_For_Event'] ?? 0),
     'dayVisitorsPrintedToday' => (int) ($row['Day_Visitors_Printed_Today'] ?? 0),
     'totalForKitchen' => (int) ($row['Total_For_Kitchen'] ?? 0),
     'refreshTime' => date('H:i:s'),

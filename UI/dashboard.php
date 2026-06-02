@@ -331,15 +331,20 @@ if (! is_array($sevaRes)) {
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <a href="../UI/devoteeSearchResult.php?mode=CUS&key=devotee_accommodation_key=OWNAR" class="dash-link">Devotees with Own Arrangement:
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&amp;key=devotee_accommodation_key=othr" class="dash-link">Total Day Visitors:
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 8, 'TotalDayVisitors'); ?> </b> </a></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons text-danger">home</i>
+                            <a href="../UI/devoteeSearchResult.php?mode=CUS&amp;key=devotee_accommodation_key=LCL|OWNAR" class="dash-link">Devotees with Own Arrangement:
                                 <b>  <?= $dashboardStat(is_array($response) ? $response : null, 4, 'DevoteesWithOwnArrangements'); ?> </b> </a></div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons text-danger">home</i>
-                            <!-- <a href="../UI/devoteeSearchResult.php?mode=CUS&key=" class="dash-link">Devotees Registered for Seva: -->
                             <a href="../UI/index.php?sevaType=Assigned" class="dash-link">Devotees Registered for Seva:
-                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 1, 'RegisteredDevoteesIncludingLocals'); ?> </b> </a>
+                                <b>  <?= $dashboardStat(is_array($response) ? $response : null, 1, 'DevoteesRegisteredForSeva'); ?> </b> </a>
                         </div> 
                     </div>
                 </div>

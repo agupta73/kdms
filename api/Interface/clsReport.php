@@ -100,37 +100,25 @@ class clsReport {
                 " WHERE";
 
         switch ($AccoSpecific) {
-            case "All":
-                $query = $query .
-                        " aa.Available_Count <= 1000" ;
-                break;
-
             case "Available":
-                $query = $query .
-                        " aa.Available_Count <= 1000" .
-                        " AND aa.Available_Count > 0 ";
+                $query = $query . " aa.Available_Count > 0 ";
                 break;
 
             case "Reserved":
-                $query = $query .
-                        " aa.Available_Count <= 1000" .
-                        " AND aa.Reserved_Count > 0 " ;
+                $query = $query . " aa.Reserved_Count > 0 ";
                 break;
 
             case "Occupied":
-                $query = $query .
-                        " aa.Available_Count <= 1000" .
-                        " AND aa.Allocated_Count > 0 ";
+                $query = $query . " aa.Allocated_Count > 0 ";
                 break;
 
             case "Allocated":
-                $query = $query .                        
-                        " aa.Allocated_Count > 0 ";
+                $query = $query . " aa.Allocated_Count > 0 ";
                 break;
 
+            case "All":
             default:
-                $query = $query .
-                        " aa.Available_Count <= 1000" ;
+                $query = $query . " 1=1 ";
                 break;
         }
 
@@ -210,17 +198,28 @@ class clsReport {
         //1. Total devotees present in the ashram
         $query[0] = "SELECT sum(acco.allocated_Count) as SpaceOccupiedOrDevoteesPresent FROM `accommodation_availability` acco WHERE acco.available_count < 1000 ";
 
-        //2. Total devotees registered this year
-        $query[1] = "select sum(acco.Allocated_Count) as RegisteredDevoteesIncludingLocals from accommodation_availability acco WHERE 1=1 ";
-        //" where Availability_Update_Date_Time >= DATE_SUB(NOW(), INTERVAL 3 MONTH)" ;
+        //2. Devotees registered for seva (assigned), excluding seva code UN
+        $query[1] = "SELECT COUNT(DISTINCT ds.Devotee_Key) AS DevoteesRegisteredForSeva
+            FROM devotee_seva ds
+            WHERE ds.Seva_Status = 'Assigned'
+            AND ds.Seva_ID <> 'UN'";
         //3. Total spaces available for allocation
         $query[2] = "SELECT sum(acco.Available_Count) as AvailableSpaces FROM `accommodation_availability` acco where acco.Available_Count < 1000";
 
         //4. Total spaces reserved
         $query[3] = "SELECT sum(acco.Reserved_Count) as ReservedSpaces FROM `accommodation_availability` acco where acco.Available_Count < 1000";
 
-        //5. Total devotees with own arrangement
-        $query[4] = "SELECT sum(acco.allocated_Count) as DevoteesWithOwnArrangements FROM `accommodation_availability` acco WHERE acco.available_count > 1000";
+        //5. Devotees with own arrangement / local (accommodation keys LCL, OWNAR)
+        $query[4] = "SELECT COUNT(DISTINCT acco.Devotee_Key) AS DevoteesWithOwnArrangements
+            FROM devotee_accomodation acco
+            WHERE acco.Accomodation_Status = 'Allocated'
+            AND acco.Accomodation_Key IN ('LCL', 'OWNAR')";
+
+        //9. Day visitors (accommodation key othr)
+        $query[8] = "SELECT COUNT(DISTINCT acco.Devotee_Key) AS TotalDayVisitors
+            FROM devotee_accomodation acco
+            WHERE acco.Accomodation_Status = 'Allocated'
+            AND LOWER(acco.Accomodation_Key) = 'othr'";
 
         //6. Total mature devotees (12 years or older))
         $query[5] = "SELECT count(distinct dm.devotee_key) as MatureDevotee FROM devotee_accomodation acco
@@ -243,9 +242,15 @@ class clsReport {
 
 
         for ($i = 0; $i < sizeof($query); $i++) {
-            if($eventId != ""){
-                $query[$i] = $query[$i] . " AND acco.Accommodation_Event = '" . $eventId . "'";
-                if($this->debug){echo "<br>", $query[$i], "<br>";}
+            if ($eventId !== '') {
+                if ($i === 1) {
+                    $query[$i] .= " AND ds.Seva_Event = '" . $eventId . "'";
+                } else {
+                    $query[$i] .= " AND acco.Accommodation_Event = '" . $eventId . "'";
+                }
+                if ($this->debug) {
+                    echo '<br>', $query[$i], '<br>';
+                }
             }
 
             $result = $this->conn->query($query[$i]);

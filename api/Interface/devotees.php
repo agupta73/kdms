@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__, 2) . '/includes/PhotoStorage.php';
+require_once dirname(__DIR__, 2) . '/includes/PrintLog.php';
 
 Class Devotee {
 
@@ -521,8 +522,19 @@ Class Devotee {
                     case "DevoteeAccomodationKey" :
                     case "Accomodation" :
                     case "accomodation" :                        
-                    case "Accomodation Key" :                          
-                        $searchClause = $searchClause . "(da.accomodation_key = '" . str_replace(' ', '+', $subValue) . "' OR da.accomodation_key = '" .  $subValue . "') AND ";
+                    case "Accomodation Key" :
+                        if (strpos($subValue, '|') !== false) {
+                            $keys = array_filter(array_map(static function ($k) {
+                                return preg_replace('/[^A-Za-z0-9]/', '', trim($k));
+                            }, explode('|', $subValue)));
+                            if ($keys !== []) {
+                                $in = implode("','", $keys);
+                                $searchClause .= "(da.accomodation_key IN ('" . $in . "')) AND ";
+                            }
+                        } else {
+                            $safeKey = preg_replace('/[^A-Za-z0-9]/', '', $subValue);
+                            $searchClause .= "(da.accomodation_key = '" . $safeKey . "') AND ";
+                        }
                         break;
                 }           
         }
@@ -1631,32 +1643,13 @@ Class Devotee {
         } elseif ($rq === 'removeFromPrintQueue') {
             $query[] = 'REPLACE INTO `card_print_archive` SELECT * FROM `card_print_log` WHERE `Devotee_Key` IN (' . $inClause . ')';
             $query[] = 'DELETE FROM `card_print_log` WHERE `Devotee_Key` IN (' . $inClause . ')';
+            // card_print_archive only — print_log is append-only (see PrintLog.php).
             $query[] = 'DELETE FROM `card_print_archive`
                 WHERE `Devotee_Key` NOT IN (
                     SELECT `Devotee_Key` FROM (
                         SELECT `Devotee_Key` FROM `card_print_archive` ORDER BY `Print_Requested_Date_Time` LIMIT 25
                     ) AS tmp
                 )';
-
-            if (!empty($requestData['eventId'])) {
-                $eventId = trim(strip_tags((string) $requestData['eventId']));
-                $eventId = preg_replace('/[^\w.-]/', '', $eventId);
-                if ($eventId !== '') {
-                    $qEvent = $this->conn->quote($eventId);
-                    $printedBy = $this->conn->quote('Admin');
-                    $chunks = [];
-                    foreach ($normalizedKeys as $k) {
-                        $qk = $this->conn->quote($k);
-                        $chunks[] = '(' . $qk . ',' . $qEvent . ',' . $printedBy . ', NOW())';
-                    }
-                    $query[] = 'INSERT INTO `print_log`(
-                        `Devotee_Key`,
-                        `Event_Id`,
-                        `Print_Requested_By_User`,
-                        `Print_Date_Time`
-                    ) VALUES ' . implode(',', $chunks);
-                }
-            }
         } else {
             $res['message'] = ' Invalid request type for card printing.';
             return $res;
@@ -1682,6 +1675,18 @@ Class Devotee {
                 $res['message'] = '[Card Print] Adding/Removing Devotee Card to/from print queue failed.';
                 $res['info'] = $stmt->errorInfo();
                 break;
+            }
+        }
+
+        if ($res['status'] && $rq === 'removeFromPrintQueue' && !empty($requestData['eventId'])) {
+            $eventId = preg_replace('/[^\w.-]/', '', trim(strip_tags((string) $requestData['eventId']))) ?? '';
+            if ($eventId !== '') {
+                PrintLog::recordManyIfNotExistsToday(
+                    $this->conn,
+                    $normalizedKeys,
+                    $eventId,
+                    $Print_Record_Updated_By
+                );
             }
         }
 
@@ -1742,11 +1747,10 @@ Class Devotee {
             $query[8] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "'";
             $query[9] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "'";
             $query[10] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "'";
-            $query[11] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "'";
-            //refresh the accommodation, amenities and seva counts in both cases
-            $query[12] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
-            $query[13] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
-            $query[14] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
+            // print_log is append-only for kitchen counts — never delete on devotee removal
+            $query[11] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
+            $query[12] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
+            $query[13] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
         }
         // Otherwise its unregistering records, which means, delete omly selected records from the current event 
         else {
@@ -1914,10 +1918,10 @@ Class Devotee {
         $query[8] = "delete from devotee_seva where Devotee_Key = '" . $Devotee_Key . "'";
         $query[9] = "delete from office_duty where Devotee_Key = '" . $Devotee_Key . "'";
         $query[10] = "delete from office_duty_archive where Devotee_Key = '" . $Devotee_Key . "'";
-        $query[11] = "delete from print_log where Devotee_Key = '" . $Devotee_Key . "'";
-        $query[12] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
-        $query[13] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
-        $query[14] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
+        // print_log is append-only for kitchen counts — never delete on devotee removal
+        $query[11] = "CALL `PROC_REFRESH_ACCO_COUNT_W_EVENT`('" . $eventId . "')";
+        $query[12] = "CALL `PROC_REFRESH_AMENITIES_COUNT`('" . $eventId . "')";
+        $query[13] = "CALL `PROC_REFRESH_SEVA_COUNT_I`('" . $eventId . "');";
 
         $res['status'] = true;
         $res['message'] = "";

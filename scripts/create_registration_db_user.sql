@@ -16,6 +16,7 @@ GRANT SELECT, INSERT, UPDATE ON kdms.devotee_photo TO 'kdms_reg'@'%';
 GRANT SELECT, INSERT, UPDATE ON kdms.devotee_id TO 'kdms_reg'@'%';
 GRANT SELECT, INSERT, UPDATE ON kdms.devotee_accomodation TO 'kdms_reg'@'%';
 GRANT SELECT ON kdms.accommodation_master TO 'kdms_reg'@'%';
+GRANT SELECT, UPDATE ON kdms.accommodation_availability TO 'kdms_reg'@'%';
 GRANT SELECT, INSERT ON kdms.devotee_aliases TO 'kdms_reg'@'%';
 GRANT SELECT, INSERT ON kdms.devotee_merge_archive TO 'kdms_reg'@'%';
 GRANT SELECT ON kdms.devotee_remarks TO 'kdms_reg'@'%';

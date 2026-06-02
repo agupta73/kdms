@@ -16,7 +16,7 @@ $kitchen = new clsKitchenDashboard($db);
 $rows = $kitchen->getReport(['eventId' => $eventId]);
 $row = $rows[0] ?? [];
 
-$residents = (int) ($row['Residents_Today'] ?? 0);
+$residents = (int) ($row['Residents_Printed_For_Event'] ?? 0);
 $dayVisitors = (int) ($row['Day_Visitors_Printed_Today'] ?? 0);
 $total = (int) ($row['Total_For_Kitchen'] ?? 0);
 ?>
@@ -70,15 +70,16 @@ $total = (int) ($row['Total_For_Kitchen'] ?? 0);
                             </div>
                             <div class="card-body">
                                 <p class="kitchen-note text-center">
-                                    <strong>Allocated devotees</strong> — event allocations (Allocated), including own arrangement and local,
-                                    but <strong>excluding day visitors</strong> (status D, type T — they are counted only when printed today).
-                                    <strong>Day visitors printed today</strong> — distinct cards printed today (<code>print_log</code>, D / T).
+                                    <strong>Residents printed (event)</strong> — distinct devotees with a card print recorded in
+                                    <code>print_log</code> for this event (any date), excluding day visitors (status D, type T).
+                                    <strong>Day visitors printed today</strong> — distinct D/T devotees with <code>print_log</code> dated today only.
+                                    Queuing via registration does not count until the card is printed.
                                     <strong>Total for kitchen</strong> is the sum of those two figures (no double-count).
                                 </p>
                                 <div class="row">
                                     <div class="col-md-4 kitchen-metric">
                                         <div class="value" id="metric-residents"><?= $residents; ?></div>
-                                        <div class="label">Allocated devotees (event)</div>
+                                        <div class="label">Residents printed (event)</div>
                                     </div>
                                     <div class="col-md-4 kitchen-metric">
                                         <div class="value" id="metric-day-visitors"><?= $dayVisitors; ?></div>
