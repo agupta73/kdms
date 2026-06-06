@@ -65,6 +65,8 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
 
 $webroot = isset($config_data['webroot']) ? rtrim((string) $config_data['webroot'], '/') . '/' : '';
 $bannerImgSrc = $webroot . 'assets/img/banner.png';
+/** Set true to restore compact day-visitor layout in this file; rptCardsPrintTemp.php is unchanged. */
+$useDayVisitorCardLayout = false;
 ?>
 <html>
 <head>
@@ -177,7 +179,7 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
                     <?php echo htmlspecialchars($devotee['first_name'] . ' ' . $devotee['last_name']); ?>
                 </span>
                 <!-- This is for prasad vitran -->
-                <?php if ($devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos((string) ($devotee['devotee_referral'] ?? ''), 'devesh') === 0) : // Day Visitor Card ?>
+                <?php if ($useDayVisitorCardLayout && $devotee['status'] == "D" && $devotee['devotee_type'] == "T" && stripos((string) ($devotee['devotee_referral'] ?? ''), 'devesh') === 0) : // Day Visitor Card ?>
                     <table style="width:100%;">
                         <tr>
                             <td style="width:70%; vertical-align:top;">
@@ -196,7 +198,7 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
                     <span class="card-footer">
                         This card is not valid after 15th June <strong>2025</strong>
                     </span>
-                <?php elseif ($devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
+                <?php elseif ($useDayVisitorCardLayout && $devotee['status'] == "D" && $devotee['devotee_type'] == "T"): // Day Visitor Card ?>
                     <?php if (!empty($devotee['accommodation_name']) && $devotee['accommodation_name'] !== "N/A" && $devotee['accommodation_name'] !== "Own Arrangement (Outside)" && $devotee['accommodation_name'] !== "Local"): ?>
                     <span class="devotee-status" style="margin: 20px 0; margin: 5px 0; font-size: 24px;">Temporary Accommodation for 2025</span>
                     <?php else: ?>

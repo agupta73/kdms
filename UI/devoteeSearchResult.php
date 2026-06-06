@@ -75,10 +75,12 @@ $eventId = $config_data['event_id'];
 
                     const queryParams = new URLSearchParams(window.location.search);
 
-                    if (queryParams.get('key') === 'TMP') {
+                    // Day-visitor queue (TMP): use resident card layout in rptCardsPrint.php.
+                    // rptCardsPrintTemp.php kept for future switch-back (?template=dayvisitor).
+                    const useDayVisitorPrintTemplate = false;
+                    if (useDayVisitorPrintTemplate && queryParams.get('key') === 'TMP') {
                         window.open("./rptCardsPrintTemp.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
                     } else {
-                        // If not, open rptCardsPrint.php file
                         window.open("./rptCardsPrint.php?key=" + printString.substr(0, printString.length - 1) + "&mode=PCD");
                     }
 

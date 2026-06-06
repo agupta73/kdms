@@ -799,7 +799,7 @@ $is_key_available = false;
   const checkUrl = (typeof window.kdmsDedupCheckUrl === 'string' && window.kdmsDedupCheckUrl !== '')
     ? window.kdmsDedupCheckUrl
     : '../Logic/dedupCheckProxy.php';
-  const apiBase = <?php echo json_encode(rtrim($config_data['api_dir'] ?? '../api/', '/') . '/'); ?>;
+  const mergeUrl = '../Logic/adminMergeProxy.php';
   const devoteeKey = <?php echo json_encode($devotee_key); ?>;
   const eventId = <?php echo json_encode($eventId); ?>;
   const col = document.getElementById('dedup-hints-col');
@@ -979,7 +979,7 @@ $is_key_available = false;
     if (!selected.size || !confirm('Merge selected records into ' + devoteeKey + '? This cannot be undone easily.')) {
       return;
     }
-    fetch(apiBase + 'adminMergeDevotees.php', {
+    fetch(mergeUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },

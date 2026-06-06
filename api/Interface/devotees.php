@@ -629,7 +629,6 @@ Class Devotee {
         $inClause = implode(',', array_map(function ($k) {
             return $this->conn->quote($k);
         }, $keysNormalized));
-        $qEvent = $this->conn->quote((string) $eventId);
 
         $query = "select " .
                     "d.devotee_key, devotee_first_name, d.devotee_last_name " .
@@ -641,9 +640,7 @@ Class Devotee {
                     " devotee d ".
                     " left outer join devotee_id did on d.Devotee_Key=did.Devotee_Key " .
                     " left outer join devotee_photo dp on d.Devotee_Key=dp.Devotee_Key " .
-                    " left outer join devotee_accomodation da on d.Devotee_Key=da.Devotee_key  " .
-                    " AND da.Accommodation_Event = " . $qEvent . " AND da.Accomodation_Status = 'Allocated' " .
-                    " left outer join accommodation_master acm on da.accomodation_key = acm.accomodation_key " .
+                    $this->searchAccommodationJoinSql($eventId) .
                  "where " .
                     "d.devotee_key in (" . $inClause . ") ORDER BY d.Devotee_Record_update_date_time Desc" ;
                 
@@ -656,10 +653,15 @@ Class Devotee {
         $results = $this->conn->query($query);
 
         $devoteeSearchResult = array();
+        $seenKeys = [];
         $i = 0;
         if ($results !== false) {
             while ($row = $results->fetchObject()) {
                 $devoteeKey = (string) ($row->devotee_key ?? '');
+                if ($devoteeKey === '' || isset($seenKeys[$devoteeKey])) {
+                    continue;
+                }
+                $seenKeys[$devoteeKey] = true;
                 $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'} ?? '');
 
                 $devoteeSearchResult[]=$row;
