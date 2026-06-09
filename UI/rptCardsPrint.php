@@ -346,10 +346,17 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
                                     <span class="card-label">Staying at:</span>
                                     <span class="card-data"><?php echo htmlspecialchars($devotee['accommodation_name']); ?></span>
                                 </div>
+                                <?php if (!empty($devotee['devotee_referral']) && $devotee['devotee_referral'] !== "N/A"): ?>
+                                <div class="details-row">
+                                    <span class="card-label">Reference:</span>
+                                    <span class="card-data"><?php echo htmlspecialchars($devotee['devotee_referral']); ?></span>
+                                </div>
+                                <?php else: ?>
                                 <div class="details-row">
                                     <span class="card-label">Mobile No:</span>
                                     <span class="card-data"><?php echo htmlspecialchars($devotee['cell_phone_number']); ?></span>
                                 </div>
+                                <?php endif; ?>
                             </td>
                             <td style="width:35%; text-align:center; vertical-align:top; padding-top:2px; padding-right:6px;">
                                 <div class="photo-badge">
