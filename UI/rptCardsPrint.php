@@ -71,6 +71,15 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
     <style>
         body {
             font-family: sans-serif;
+            margin: 0;
+        }
+        #printpage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 0;
         }
         .card-item {
             background-color: #ffffff;
@@ -78,11 +87,15 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
             border: 2px solid #2c2c2c;
             min-height: 220px;
             width: 360px;
+            max-width: calc(100% - 16px);
+            margin-left: auto;
+            margin-right: auto;
             margin-bottom: 7px;
             page-break-inside: avoid;
             overflow: hidden;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            box-sizing: border-box;
         }
         .card-item img.banner {
             display: block;
@@ -173,13 +186,27 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
         }
         /* Print-specific styles */
         @media print {
+            @page {
+                margin: 8mm;
+            }
             body {
                 margin: 0;
-                font-family: sans-serif; /* Ensure font consistency */
+                padding: 0;
+                font-family: sans-serif;
+            }
+            #printpage {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                padding: 0;
             }
             .card-item {
-                margin-bottom: 7mm; /* Space between cards on a printed page */
-                page-break-after: auto; /* Let browser decide, or 'always' if one card per page */
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 7mm;
+                page-break-inside: avoid;
+                page-break-after: auto;
             }
             .no-print {
                 display: none;
@@ -216,7 +243,9 @@ $bannerImgSrc = $webroot . 'assets/img/banner.png';
             popupWin.document.write('<html><head><title>Print Card</title>');
             popupWin.document.write('<style type="text/css">' + pageStyles + '</style>');
             popupWin.document.write('</head><body onload="window.print(); window.close();">');
+            popupWin.document.write('<div id="printpage">');
             popupWin.document.write(printContent);
+            popupWin.document.write('</div>');
             popupWin.document.write('</body></html>');
             popupWin.document.close();
 
