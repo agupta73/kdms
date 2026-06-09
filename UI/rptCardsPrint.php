@@ -1,25 +1,38 @@
 <?php
-$config_data = include("../site_config.php");
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-include_once("../sessionCheck.php");
-$eventId = $config_data['event_id']; // This variable is set but not used in the provided snippet.
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/web_session.php';
+require_once dirname(__DIR__) . '/includes/kdms_card_photo_block.php';
+
+/** @var array<string,mixed> $config_data Set by initialize.php via web_session; fallback ensures tooling/runtime always have site config */
+$config_data ??= include dirname(__DIR__) . '/site_config.php';
+
+$eventId = isset($config_data['event_id']) ? (string) $config_data['event_id'] : '';
 $debug = false;
 
 $devotees_to_print = [];
 
 if (!empty($_GET['key'])) {
-    include_once($_SERVER['DOCUMENT_ROOT'] . "/kdms/Logic/clsDevoteeSearch.php");
+    include_once dirname(__DIR__) . '/Logic/clsDevoteeSearch.php';
     // Assuming clsDevoteeSearch handles sanitization of $_GET['key'] internally
     $devoteeSearch = new clsDevoteeSearch($_GET);
     $response = $devoteeSearch->getDevoteeRecords($eventId);
     unset($devoteeSearch);
 
-    if (!empty($response)) {
-        foreach ($response as $devoteeRecord) {
+    if (is_array($response) || is_object($response)) {
+        foreach ((array) $response as $idx => $devoteeRecord) {
+            if (in_array((string) $idx, ['status', 'message', 'info'], true)) {
+                continue;
+            }
+            if (is_object($devoteeRecord)) {
+                $devoteeRecord = (array) $devoteeRecord;
+            }
+            if (! is_array($devoteeRecord)) {
+                continue;
+            }
             $get_val = function ($key, $default = "N/A") use ($devoteeRecord) {
-                return !empty($devoteeRecord[$key]) ? urldecode($devoteeRecord[$key]) : $default;
+                return !empty($devoteeRecord[$key]) ? urldecode((string) $devoteeRecord[$key]) : $default;
             };
 
             $devotee_key = $get_val('devotee_key');
@@ -48,6 +61,9 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
     // To debug processed data: var_dump($devotees_to_print);
     die;
 }
+
+$webroot = isset($config_data['webroot']) ? rtrim((string) $config_data['webroot'], '/') . '/' : '';
+$bannerImgSrc = $webroot . 'assets/img/banner.png';
 ?>
 <html>
 <head>
@@ -216,7 +232,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
     <?php if (!empty($devotees_to_print)): ?>
         <?php foreach ($devotees_to_print as $index => $devotee): ?>
         <div class="card-item" id="card-<?php echo $index; ?>">
-            <img src="/kdms/assets/img/banner-v2.png" height="35px" width="100%" alt="Banner" class="banner" style="max-width:360px;">
+            <img src="<?php echo htmlspecialchars($bannerImgSrc); ?>" height="35px" width="100%" alt="Banner" class="banner" style="max-width:360px;">
             <div class="card-accent-strip"></div>
             <div class="card-body">
                 <!-- This is for prasad vitran -->
@@ -308,7 +324,7 @@ if ($debug && isset($response)) { // Check if $response is set before var_dump
                             <td style="width:35%; text-align:center; vertical-align:top; padding-top:2px; padding-right:6px;">
                                 <div class="photo-badge">
                                     <?php if (empty($devotee['photo'])): ?>
-                                        <img src="../assets/img/faces/devotee.ico" alt="Devotee Image">
+                                        <img src="<?php echo htmlspecialchars($webroot . 'assets/img/faces/devotee.ico'); ?>" alt="Devotee Image">
                                     <?php else: ?>
                                         <img src="data:image/jpeg;base64,<?php echo htmlspecialchars($devotee['photo']); ?>" alt="Devotee Image">
                                     <?php endif; ?>
