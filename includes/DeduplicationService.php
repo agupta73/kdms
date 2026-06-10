@@ -251,6 +251,30 @@ final class DeduplicationService
             }
             $tbmKeys = array_values(array_unique($tbmKeys));
 
+            // Registration / dedup-only: ID match on an existing devotee with a reserved (not yet
+            // inserted) candidate key — survivor is already the match; nothing to merge away.
+            if ($tbmKeys === []) {
+                if (!$this->devoteeExists($survivor)) {
+                    throw new RuntimeException('Survivor devotee not found: ' . $survivor);
+                }
+                if ($candidateKey !== '' && strcasecmp($candidateKey, $survivor) !== 0 && !$this->devoteeExists($candidateKey)) {
+                    $this->insertAlias(
+                        $survivor,
+                        $candidateKey,
+                        $mergeScore >= 100 ? 'auto_definite' : 'auto_fuzzy_review',
+                        $mergeScore
+                    );
+                    $aliasCount++;
+                }
+
+                return [
+                    'devotee_key' => $survivor,
+                    'action' => 'merged',
+                    'merge_score' => $mergeScore,
+                    'alias_count' => $aliasCount,
+                ];
+            }
+
             $survivor = $this->mergeRecords($survivor, $tbmKeys, $newRecord, 'auto_definite', $mergeScore);
             if ($candidateKey !== '' && strcasecmp($candidateKey, $survivor) !== 0 && !$this->devoteeExists($candidateKey)) {
                 $this->insertAlias($survivor, $candidateKey, $mergeScore >= 100 ? 'auto_definite' : 'auto_fuzzy_review', $mergeScore);
