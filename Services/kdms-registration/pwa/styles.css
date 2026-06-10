@@ -213,6 +213,66 @@ input.is-locked:read-only {
   line-height: 1.5;
 }
 
+.scan-label {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  text-align: center;
+}
+
+.id-scan-box {
+  display: block;
+  width: 100%;
+  max-width: 12.5rem;
+  margin: 0 auto;
+  padding: 0.5rem;
+  background: #fafafa;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.id-scan-box:hover,
+.id-scan-box:focus {
+  outline: 0;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-card);
+}
+
+.id-scan-box.is-locked {
+  cursor: default;
+  border-style: solid;
+}
+
+.id-scan-box.is-locked:hover,
+.id-scan-box.is-locked:focus {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.id-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 14rem;
+  object-fit: contain;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.btn-id-cancel {
+  margin-top: 0.75rem;
+}
+
+.form-locked input,
+.form-locked select,
+.form-locked textarea,
+.form-locked .btn {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .selfie-preview {
   display: block;
   max-width: 8rem;

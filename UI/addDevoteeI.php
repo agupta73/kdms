@@ -985,17 +985,31 @@ $is_key_available = false;
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_devotee_key: devoteeKey, tbm_devotee_keys: Array.from(selected), eventId: eventId })
     })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (data.status) {
-          alert('Merged. Survivor: ' + data.Devotee_Key);
+      .then(function (r) {
+        return r.text().then(function (text) {
+          let data = null;
+          try {
+            data = text ? JSON.parse(text) : null;
+          } catch (e) {
+            data = null;
+          }
+          return { ok: r.ok, status: r.status, data: data, text: text };
+        });
+      })
+      .then(function (res) {
+        if (res.data && res.data.status) {
+          alert('Merged. Survivor: ' + res.data.Devotee_Key);
           location.reload();
-        } else {
-          alert(data.message || 'Merge failed');
+          return;
         }
+        if (res.data && res.data.message) {
+          alert(res.data.message);
+          return;
+        }
+        alert('Merge failed (HTTP ' + res.status + ')');
       })
       .catch(function () {
-        alert('Merge request failed');
+        alert('Merge request failed — network error');
       });
   });
 })();

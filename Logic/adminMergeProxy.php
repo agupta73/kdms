@@ -35,11 +35,25 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 kdms_curl_setopt_internal_cookie($ch);
 
 $body = curl_exec($ch);
+$curlErr = curl_error($ch);
 $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 kdms_end_internal_apache_curl();
 
-http_response_code($httpCode > 0 ? $httpCode : 502);
+if ($body === false || $httpCode <= 0) {
+    require_once dirname(__DIR__) . '/includes/kdms_log.php';
+    kdms_log('ERROR', 'adminMergeProxy curl failed', [
+        'url' => $url,
+        'curl_error' => $curlErr !== '' ? $curlErr : '(none)',
+        'http_code' => $httpCode,
+    ]);
+    http_response_code(502);
+    header('Content-Type: application/json');
+    echo json_encode(['status' => false, 'message' => 'Merge proxy failed: could not reach API']);
+    exit;
+}
+
+http_response_code($httpCode);
 header('Content-Type: application/json');
 echo is_string($body) ? $body : json_encode(['status' => false, 'message' => 'Merge proxy failed']);
 exit;

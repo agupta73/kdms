@@ -270,13 +270,23 @@ if (! is_readable($pageMapPath)) {
 $pageMap = require $pageMapPath;
 
 if (! isset($pageMap[$scriptBasename])) {
-    kdms_log('ERROR', 'Missing web page ACL mapping', ['script' => $scriptBasename]);
-    http_response_code(500);
-    echo 'KDMS configuration error: missing page mapping for this URL.';
-    exit;
+    // Logic/*Proxy.php helpers (merge, dedup, photo, OCR) share addDevoteeI permission.
+    $logicDir = realpath(dirname(__DIR__) . '/Logic');
+    $scriptDir = realpath(dirname((string) ($_SERVER['SCRIPT_FILENAME'] ?? '')));
+    if ($logicDir !== false
+        && $scriptDir !== false
+        && $scriptDir === $logicDir
+        && str_ends_with($scriptBasename, 'Proxy.php')) {
+        $current_page_id = 'KD-DVT-I';
+    } else {
+        kdms_log('ERROR', 'Missing web page ACL mapping', ['script' => $scriptBasename]);
+        http_response_code(500);
+        echo 'KDMS configuration error: missing page mapping for this URL.';
+        exit;
+    }
+} else {
+    $current_page_id = $pageMap[$scriptBasename];
 }
-
-$current_page_id = $pageMap[$scriptBasename];
 
 require_once dirname(__DIR__) . '/initialize.php';
 require_once dirname(__DIR__) . '/sessionCheck.php';

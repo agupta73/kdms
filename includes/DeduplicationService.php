@@ -302,6 +302,7 @@ final class DeduplicationService
         try {
             $this->db->beginTransaction();
 
+            $mergedCount = 0;
             foreach ($tbmKeys as $tbmKey) {
                 if (!$this->devoteeExists($tbmKey)) {
                     continue;
@@ -311,6 +312,14 @@ final class DeduplicationService
                 $this->insertAlias($baseKey, $tbmKey, $mergeSource, $mergeScore);
                 $del = $this->db->prepare('DELETE FROM devotee WHERE Devotee_Key = :k');
                 $del->execute(['k' => $tbmKey]);
+                $mergedCount++;
+            }
+
+            if ($mergedCount === 0) {
+                throw new RuntimeException(
+                    'No duplicate records found to merge (keys may already be merged or invalid): '
+                    . implode(', ', $tbmKeys)
+                );
             }
 
             $this->applyIncomingToSurvivor($baseKey, $newData);

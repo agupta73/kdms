@@ -3,6 +3,7 @@
 
   const HIGH = 0.7;
   const MED = 0.4;
+  const ID_PLACEHOLDER = '/pwa/assets/id-placeholder.png';
   const ID_HINTS = {
     Aadhaar: '12-digit number',
     PAN: 'e.g. ABCDE1234F',
@@ -39,6 +40,10 @@
   let reservedDevoteeKey = '';
   let idGcsPath = '';
   let selfieGcsPath = '';
+  let idScanAttempted = false;
+  let idScanLocked = false;
+  let idPreviewObjectUrl = '';
+  let pickingIdFile = false;
 
   const $ = (sel) => document.querySelector(sel);
   const form = $('#reg-form');
@@ -95,6 +100,65 @@
 
   function showSpinner(on) {
     spinner.hidden = !on;
+  }
+
+  function setFormLocked(locked) {
+    if (!form) return;
+    form.classList.toggle('form-locked', locked);
+  }
+
+  function setIdScanLocked(locked) {
+    idScanLocked = locked;
+    const box = $('#btn-id-scan');
+    if (box) {
+      box.classList.toggle('is-locked', locked);
+      box.setAttribute('aria-disabled', locked ? 'true' : 'false');
+    }
+  }
+
+  function markIdScanAttempted() {
+    if (idScanAttempted) return;
+    idScanAttempted = true;
+    setFormLocked(false);
+  }
+
+  function revokeIdPreviewUrl() {
+    if (idPreviewObjectUrl) {
+      URL.revokeObjectURL(idPreviewObjectUrl);
+      idPreviewObjectUrl = '';
+    }
+  }
+
+  function showIdPreview(src) {
+    const img = $('#id-preview');
+    if (!img) return;
+    revokeIdPreviewUrl();
+    img.src = src;
+    if (src.startsWith('blob:')) {
+      idPreviewObjectUrl = src;
+    }
+  }
+
+  function clearOcrFields() {
+    OCR_FIELDS.forEach((name) => {
+      const input = form.elements.namedItem(name);
+      if (!input) return;
+      input.value = '';
+      input.classList.remove('conf-high', 'conf-med');
+      const verify = input.parentElement && input.parentElement.querySelector('.verify');
+      if (verify) verify.remove();
+    });
+  }
+
+  function resetIdScanUi() {
+    revokeIdPreviewUrl();
+    showIdPreview(ID_PLACEHOLDER);
+    idGcsPath = '';
+    setIdScanLocked(false);
+    const cancelBtn = $('#btn-id-cancel');
+    if (cancelBtn) cancelBtn.hidden = true;
+    const status = $('#scan-status');
+    if (status) status.hidden = true;
   }
 
   function toTitleCase(str) {
@@ -166,29 +230,103 @@
     });
   });
 
-  $('#btn-scan').addEventListener('click', () => $('#id-file').click());
+  $('#btn-id-scan').addEventListener('click', () => {
+    if (idScanLocked) return;
+    $('#id-file').click();
+  });
+
+  $('#id-file').addEventListener('click', () => {
+    pickingIdFile = true;
+  });
+
+  window.addEventListener('focus', () => {
+    if (!pickingIdFile) return;
+    setTimeout(() => {
+      if (!pickingIdFile) return;
+      const fileInput = $('#id-file');
+      const file = fileInput.files && fileInput.files[0];
+      if (file) {
+        pickingIdFile = false;
+        return;
+      }
+      pickingIdFile = false;
+      markIdScanAttempted();
+      const status = $('#scan-status');
+      status.hidden = false;
+      status.textContent = 'You can fill in the form manually below.';
+    }, 600);
+  });
 
   $('#id-file').addEventListener('change', async (e) => {
+    pickingIdFile = false;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+
     const status = $('#scan-status');
     status.hidden = false;
     status.textContent = 'Reading ID…';
     showSpinner(true);
+
+    let previewUrl = '';
     try {
+      previewUrl = URL.createObjectURL(file);
+      showIdPreview(previewUrl);
+
       const fd = new FormData();
       fd.append('id_image', file);
       fd.append('Devotee_Key', reservedDevoteeKey);
       const res = await fetch('/api/ocr-extract', { method: 'POST', body: fd });
       const data = await res.json();
       idGcsPath = data.id_gcs_path || '';
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not read ID');
+      }
       OCR_FIELDS.forEach((name) => applyOcrField(name, data[name]));
       status.textContent = 'ID scanned. Please check and complete the form below.';
     } catch (err) {
       status.textContent = 'Could not read ID. Please enter details manually.';
     } finally {
+      markIdScanAttempted();
+      if (idGcsPath) {
+        setIdScanLocked(true);
+        $('#btn-id-cancel').hidden = false;
+      }
       showSpinner(false);
       e.target.value = '';
+    }
+  });
+
+  $('#btn-id-cancel').addEventListener('click', async () => {
+    const pathToDelete = idGcsPath;
+    const cancelBtn = $('#btn-id-cancel');
+    cancelBtn.disabled = true;
+    showSpinner(true);
+    try {
+      if (pathToDelete) {
+        const res = await fetch('/api/id-scan-cancel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({
+            Devotee_Key: reservedDevoteeKey,
+            id_gcs_path: pathToDelete,
+            csrf_token: csrfToken
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Could not remove ID image');
+        }
+      }
+      clearOcrFields();
+      resetIdScanUi();
+    } catch (err) {
+      alert('Could not cancel ID scan. Please try again.');
+    } finally {
+      cancelBtn.disabled = false;
+      showSpinner(false);
     }
   });
 
@@ -233,6 +371,12 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     $('#form-error').hidden = true;
+    if (!idScanAttempted) {
+      $('#scan-status').hidden = false;
+      $('#scan-status').textContent = 'Please scan your ID card to start.';
+      $('#btn-id-scan').focus();
+      return;
+    }
     if (!form.checkValidity()) {
       form.reportValidity();
       return;

@@ -58,7 +58,14 @@ try {
     ]);
 } catch (Throwable $e) {
     require_once __DIR__ . '/../includes/kdms_log.php';
-    kdms_log('ERROR', 'adminMergeDevotees failed', ['error' => $e->getMessage()]);
+    kdms_log('ERROR', 'adminMergeDevotees failed', [
+        'error' => $e->getMessage(),
+        'base_key' => $baseKey,
+        'tbm_keys' => $tbmKeys,
+    ]);
     http_response_code(500);
-    echo json_encode(['status' => false, 'message' => 'Merge failed']);
+    echo json_encode([
+        'status' => false,
+        'message' => 'Merge failed: ' . $e->getMessage(),
+    ]);
 }

@@ -24,12 +24,16 @@
     </header>
 
     <section id="scan-section" class="card">
-      <button type="button" id="btn-scan" class="btn btn-primary btn-large">Scan ID Card</button>
+      <p id="scan-label" class="scan-label">Please scan your ID card to start</p>
+      <button type="button" id="btn-id-scan" class="id-scan-box" aria-label="Scan ID card">
+        <img id="id-preview" class="id-preview-img" src="/pwa/assets/id-placeholder.png" alt="ID card placeholder">
+      </button>
       <input type="file" id="id-file" accept="image/*" capture="environment" hidden>
+      <button type="button" id="btn-id-cancel" class="btn btn-secondary btn-id-cancel" hidden>Cancel</button>
       <p id="scan-status" class="hint" hidden></p>
     </section>
 
-    <form id="reg-form" class="card" novalidate>
+    <form id="reg-form" class="card form-locked" novalidate>
       <label>First Name <span class="req">*</span>
         <input type="text" name="Devotee_First_Name" required maxlength="50" autocomplete="given-name">
       </label>

@@ -100,4 +100,27 @@ final class RegistrationGcs
 
         return (bool) preg_match('#^devotee/' . $key . '/(id|photo)\.jpg$#i', $path);
     }
+
+    public static function deleteObject(string $objectPath): bool
+    {
+        $objectPath = ltrim($objectPath, '/');
+        if ($objectPath === '' || !class_exists(StorageClient::class)) {
+            return false;
+        }
+
+        try {
+            $storage = new StorageClient();
+            $object = $storage->bucket(self::bucketName())->object($objectPath);
+            if (!$object->exists()) {
+                return true;
+            }
+            $object->delete();
+
+            return true;
+        } catch (Throwable $e) {
+            kdms_log('ERROR', 'GCS delete failed', ['error' => $e->getMessage(), 'path' => $objectPath]);
+
+            return false;
+        }
+    }
 }
