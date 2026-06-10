@@ -17,7 +17,33 @@ final class DeduplicationService
 
     private string $updatedBy;
 
+    /** @var 'incoming'|'gap_fill' */
+    private string $fieldMergeMode = 'incoming';
+
+    /** @var 'survivor_first'|'incoming_first'|'latest' */
+    private string $imageMergeMode = 'survivor_first';
+
     /** @var list<string> */
+    private const GAP_FILL_DEVOTEE_COLUMNS = [
+        'Devotee_First_Name',
+        'Devotee_Last_Name',
+        'Devotee_Gender',
+        'Devotee_DOB',
+        'Devotee_Cell_Phone_Number',
+        'Devotee_Email',
+        'Devotee_Referral',
+        'Devotee_Address_1',
+        'Devotee_Address_2',
+        'Devotee_Station',
+        'Devotee_State',
+        'Devotee_Zip',
+        'Devotee_ID_Type',
+        'Devotee_ID_Number',
+        'Devotee_Type',
+        'Devotee_Status',
+    ];
+
+    /** @var list<array{table: string, column: string}> */
     private const CHILD_REPOINT_TABLES = [
         ['table' => 'devotee_accomodation', 'column' => 'Devotee_Key'],
         ['table' => 'devotee_seva', 'column' => 'Devotee_Key'],
@@ -297,6 +323,7 @@ final class DeduplicationService
             throw new RuntimeException('Survivor devotee not found: ' . $baseKey);
         }
 
+        $this->resolveMergeModes($mergeSource, $newData);
         $batchId = $this->uuid4();
 
         try {
@@ -308,6 +335,9 @@ final class DeduplicationService
                     continue;
                 }
                 $this->archiveDevoteeRow($batchId, $baseKey, $tbmKey);
+                if ($this->fieldMergeMode === 'gap_fill') {
+                    $this->fillSurvivorGapsFromTbm($baseKey, $tbmKey);
+                }
                 $this->repointChildRows($baseKey, $tbmKey);
                 $this->insertAlias($baseKey, $tbmKey, $mergeSource, $mergeScore);
                 $del = $this->db->prepare('DELETE FROM devotee WHERE Devotee_Key = :k');
@@ -322,7 +352,9 @@ final class DeduplicationService
                 );
             }
 
-            $this->applyIncomingToSurvivor($baseKey, $newData);
+            if ($this->fieldMergeMode === 'incoming') {
+                $this->applyIncomingToSurvivor($baseKey, $newData);
+            }
             $this->consolidateSurvivorPhotoAndIdRows($baseKey);
             $this->writeMergeAudit($baseKey, $batchId, $tbmKeys, $mergeSource);
 
@@ -439,19 +471,15 @@ final class DeduplicationService
             return;
         }
 
-        $survivorGcs = trim((string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''));
-        $tbmGcs = trim((string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''));
-        $gcs = $survivorGcs !== '' ? $survivorGcs : ($tbmGcs !== '' ? $tbmGcs : '');
-
-        $survivorBlob = $survivor['Devotee_Photo'] ?? null;
-        $tbmBlob = $tbm['Devotee_Photo'] ?? null;
-        if ($gcs !== '') {
-            $blob = null;
-        } elseif ($survivorBlob !== null && (!is_string($survivorBlob) || $survivorBlob !== '')) {
-            $blob = $survivorBlob;
-        } else {
-            $blob = $tbmBlob;
-        }
+        [$gcs, $blob] = $this->mergeImageAssets(
+            $baseKey,
+            $tbmKey,
+            (string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''),
+            $survivor['Devotee_Photo'] ?? null,
+            (string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''),
+            $tbm['Devotee_Photo'] ?? null,
+            'photo'
+        );
 
         $upd = $this->db->prepare(
             'UPDATE devotee_photo SET Devotee_Photo_Gcs_Path = :gcs, Devotee_Photo = :blob WHERE Devotee_Key = :base LIMIT 1'
@@ -494,26 +522,34 @@ final class DeduplicationService
             return;
         }
 
-        $survivorGcs = trim((string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''));
-        $tbmGcs = trim((string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''));
-        // Prefer incoming (TBM) ID scan when staff just uploaded under a reserved key before merge.
-        $gcs = $tbmGcs !== '' ? $tbmGcs : ($survivorGcs !== '' ? $survivorGcs : '');
+        [$gcs, $blob] = $this->mergeImageAssets(
+            $baseKey,
+            $tbmKey,
+            (string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''),
+            $survivor['Devotee_ID_Image'] ?? null,
+            (string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''),
+            $tbm['Devotee_ID_Image'] ?? null,
+            'id'
+        );
 
-        $idType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
+        $idType = trim((string) ($survivor['Devotee_ID_Type'] ?? ''));
         if ($idType === '') {
-            $idType = trim((string) ($survivor['Devotee_ID_Type'] ?? ''));
+            $idType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
         }
-
-        $survivorBlob = $survivor['Devotee_ID_Image'] ?? null;
-        $tbmBlob = $tbm['Devotee_ID_Image'] ?? null;
-        if ($gcs !== '') {
-            $blob = null;
-        } elseif ($tbmBlob !== null && (!is_string($tbmBlob) || $tbmBlob !== '')) {
-            $blob = $tbmBlob;
-        } elseif ($survivorBlob !== null && (!is_string($survivorBlob) || $survivorBlob !== '')) {
-            $blob = $survivorBlob;
-        } else {
-            $blob = null;
+        if ($this->imageMergeMode === 'incoming_first') {
+            $tbmType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
+            if ($tbmType !== '') {
+                $idType = $tbmType;
+            }
+        } elseif ($this->imageMergeMode === 'latest') {
+            $tbmType = trim((string) ($tbm['Devotee_ID_Type'] ?? ''));
+            $survivorType = trim((string) ($survivor['Devotee_ID_Type'] ?? ''));
+            if ($tbmType !== '' && $survivorType === '') {
+                $idType = $tbmType;
+            } elseif ($tbmType !== '' && $survivorType !== '' && $tbmType !== $survivorType) {
+                $winner = $this->pickLatestDevoteeKey($baseKey, $tbmKey);
+                $idType = strcasecmp($winner, $tbmKey) === 0 ? $tbmType : $survivorType;
+            }
         }
 
         $upd = $this->db->prepare(
@@ -720,10 +756,426 @@ final class DeduplicationService
     /**
      * @param list<string> $tbmKeys
      */
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getDevoteeMergeSummary(string $devoteeKey): ?array
+    {
+        $devoteeKey = strtoupper(trim($devoteeKey));
+        if ($devoteeKey === '') {
+            return null;
+        }
+        $stmt = $this->db->prepare('SELECT * FROM devotee WHERE Devotee_Key = :k LIMIT 1');
+        $stmt->execute(['k' => $devoteeKey]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
+        }
+
+        return $this->formatDevoteeSummary($row);
+    }
+
+    /**
+     * @return array{survivor: array<string, mixed>, tbm: array<string, mixed>, fields: list<array<string, string>>, images: array<string, mixed>, child_counts: array<string, array<string, int>>}
+     */
+    public function buildMergePreview(string $survivorKey, string $tbmKey): array
+    {
+        $survivorKey = strtoupper(trim($survivorKey));
+        $tbmKey = strtoupper(trim($tbmKey));
+        $survivor = $this->fetchDevoteeRow($survivorKey);
+        $tbm = $this->fetchDevoteeRow($tbmKey);
+        if ($survivor === null || $tbm === null) {
+            throw new RuntimeException('Survivor or duplicate devotee not found');
+        }
+
+        $fields = [];
+        foreach (self::GAP_FILL_DEVOTEE_COLUMNS as $col) {
+            $sVal = $this->displayFieldValue($col, $survivor);
+            $tVal = $this->displayFieldValue($col, $tbm);
+            $merged = $sVal !== '' ? $sVal : $tVal;
+            $source = 'empty';
+            if ($sVal !== '') {
+                $source = 'survivor';
+            } elseif ($tVal !== '') {
+                $source = 'tbm';
+            }
+            $fields[] = [
+                'field' => $col,
+                'survivor' => $sVal,
+                'tbm' => $tVal,
+                'merged' => $merged,
+                'source' => $source,
+            ];
+        }
+
+        return [
+            'survivor' => $this->formatDevoteeSummary($survivor),
+            'tbm' => $this->formatDevoteeSummary($tbm),
+            'fields' => $fields,
+            'images' => [
+                'photo' => $this->previewImageWinner($survivorKey, $tbmKey, 'photo'),
+                'id' => $this->previewImageWinner($survivorKey, $tbmKey, 'id'),
+            ],
+            'child_counts' => [
+                'survivor' => $this->getChildRecordCounts($survivorKey),
+                'tbm' => $this->getChildRecordCounts($tbmKey),
+            ],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $newData
+     */
+    private function resolveMergeModes(string $mergeSource, array $newData): void
+    {
+        $fieldMode = trim((string) ($newData['merge_field_mode'] ?? ''));
+        $imageMode = trim((string) ($newData['merge_image_mode'] ?? ''));
+
+        if ($fieldMode === 'gap_fill' || $fieldMode === 'incoming') {
+            $this->fieldMergeMode = $fieldMode;
+        } elseif ($mergeSource === 'manual_utility') {
+            $this->fieldMergeMode = 'gap_fill';
+        } else {
+            $this->fieldMergeMode = 'incoming';
+        }
+
+        if (in_array($imageMode, ['survivor_first', 'incoming_first', 'latest'], true)) {
+            $this->imageMergeMode = $imageMode;
+        } elseif ($mergeSource === 'manual_utility') {
+            $this->imageMergeMode = 'latest';
+        } elseif ($mergeSource === 'manual') {
+            $this->imageMergeMode = 'survivor_first';
+        } else {
+            $this->imageMergeMode = 'incoming_first';
+        }
+    }
+
+    private function fillSurvivorGapsFromTbm(string $baseKey, string $tbmKey): void
+    {
+        $survivor = $this->fetchDevoteeRow($baseKey);
+        $tbm = $this->fetchDevoteeRow($tbmKey);
+        if ($survivor === null || $tbm === null) {
+            return;
+        }
+
+        $sets = [];
+        $params = ['k' => $baseKey];
+        foreach (self::GAP_FILL_DEVOTEE_COLUMNS as $col) {
+            if ($this->displayFieldValue($col, $survivor) !== '') {
+                continue;
+            }
+            $incoming = $this->displayFieldValue($col, $tbm);
+            if ($incoming === '') {
+                continue;
+            }
+            $sets[] = "{$col} = :{$col}";
+            $params[$col] = $incoming;
+        }
+        if ($sets === []) {
+            return;
+        }
+        $sets[] = 'Devotee_Record_Update_Date_Time = NOW()';
+        $sets[] = 'Devotee_Record_Updated_By = :updated_by';
+        $params['updated_by'] = $this->updatedBy;
+        $sql = 'UPDATE devotee SET ' . implode(', ', $sets) . ' WHERE Devotee_Key = :k';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+    }
+
+    /**
+     * @return array{0: string, 1: mixed}
+     */
+    private function mergeImageAssets(
+        string $survivorKey,
+        string $tbmKey,
+        string $survivorGcs,
+        mixed $survivorBlob,
+        string $tbmGcs,
+        mixed $tbmBlob,
+        string $assetKind = 'photo'
+    ): array {
+        $survivorGcs = trim($survivorGcs);
+        $tbmGcs = trim($tbmGcs);
+        $survivorHas = $this->imageRowHasAsset($survivorGcs, $survivorBlob);
+        $tbmHas = $this->imageRowHasAsset($tbmGcs, $tbmBlob);
+
+        $mode = $this->imageMergeMode;
+        if ($mode === 'incoming_first' && $assetKind === 'photo') {
+            $mode = 'survivor_first';
+        }
+
+        $pickSurvivor = true;
+        if ($mode === 'incoming_first') {
+            $pickSurvivor = !$tbmHas && $survivorHas;
+            if ($tbmHas) {
+                $pickSurvivor = false;
+            }
+        } elseif ($mode === 'latest') {
+            if ($survivorHas && $tbmHas) {
+                $pickSurvivor = strcasecmp($this->pickLatestDevoteeKey($survivorKey, $tbmKey), $survivorKey) === 0;
+            } elseif ($tbmHas) {
+                $pickSurvivor = false;
+            }
+        } else {
+            $pickSurvivor = $survivorHas || !$tbmHas;
+        }
+
+        $gcs = $pickSurvivor ? $survivorGcs : $tbmGcs;
+        if ($gcs === '') {
+            $gcs = $pickSurvivor ? $tbmGcs : $survivorGcs;
+        }
+        if ($gcs !== '') {
+            return [$gcs, null];
+        }
+
+        $blob = $pickSurvivor ? $survivorBlob : $tbmBlob;
+        if (!$this->imageRowHasAsset('', $blob)) {
+            $blob = $pickSurvivor ? $tbmBlob : $survivorBlob;
+        }
+
+        return ['', $this->imageRowHasAsset('', $blob) ? $blob : null];
+    }
+
+    private function imageRowHasAsset(string $gcsPath, mixed $blob): bool
+    {
+        if (trim($gcsPath) !== '') {
+            return true;
+        }
+        if ($blob === null) {
+            return false;
+        }
+        if (is_string($blob)) {
+            return $blob !== '';
+        }
+
+        return true;
+    }
+
+    private function pickLatestDevoteeKey(string $survivorKey, string $tbmKey): string
+    {
+        $stmt = $this->db->prepare(
+            'SELECT Devotee_Key FROM devotee WHERE Devotee_Key IN (:s, :t)
+             ORDER BY COALESCE(Devotee_Record_Update_Date_Time, \'1970-01-01\') DESC, Devotee_Key DESC
+             LIMIT 1'
+        );
+        $stmt->execute(['s' => $survivorKey, 't' => $tbmKey]);
+        $key = $stmt->fetchColumn();
+
+        return $key === false ? $survivorKey : (string) $key;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetchDevoteeRow(string $devoteeKey): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM devotee WHERE Devotee_Key = :k LIMIT 1');
+        $stmt->execute(['k' => strtoupper(trim($devoteeKey))]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function formatDevoteeSummary(array $row): array
+    {
+        $key = (string) ($row['Devotee_Key'] ?? '');
+        $first = trim((string) ($row['Devotee_First_Name'] ?? ''));
+        $last = trim((string) ($row['Devotee_Last_Name'] ?? ''));
+
+        return [
+            'devotee_key' => $key,
+            'name' => trim($first . ' ' . $last),
+            'first_name' => $first,
+            'last_name' => $last,
+            'id_type' => trim((string) ($row['Devotee_ID_Type'] ?? '')),
+            'id_number' => trim((string) ($row['Devotee_ID_Number'] ?? '')),
+            'dob' => $this->displayFieldValue('Devotee_DOB', $row),
+            'phone' => trim((string) ($row['Devotee_Cell_Phone_Number'] ?? '')),
+            'station' => trim((string) ($row['Devotee_Station'] ?? '')),
+            'status' => trim((string) ($row['Devotee_Status'] ?? '')),
+            'updated_at' => (string) ($row['Devotee_Record_Update_Date_Time'] ?? ''),
+            'has_photo' => $this->devoteeHasImage($key, 'photo'),
+            'has_id_image' => $this->devoteeHasImage($key, 'id'),
+            'child_counts' => $this->getChildRecordCounts($key),
+        ];
+    }
+
+    /**
+     * @return array{seva: int, amenities: int, accommodation_active: int, attendance: int}
+     */
+    private function getChildRecordCounts(string $devoteeKey): array
+    {
+        $devoteeKey = strtoupper(trim($devoteeKey));
+        $counts = [
+            'seva' => 0,
+            'amenities' => 0,
+            'accommodation_active' => 0,
+            'attendance' => 0,
+        ];
+        if ($devoteeKey === '') {
+            return $counts;
+        }
+
+        $queries = [
+            'seva' => 'SELECT COUNT(*) FROM devotee_seva WHERE Devotee_Key = :k',
+            'amenities' => 'SELECT COUNT(*) FROM devotee_amenities_allocation WHERE Devotee_Key = :k',
+            'accommodation_active' => "SELECT COUNT(*) FROM devotee_accomodation WHERE Devotee_Key = :k AND Accomodation_Status = 'Allocated'",
+            'attendance' => 'SELECT COUNT(*) FROM devotee_attendance WHERE devotee_key = :k',
+        ];
+        foreach ($queries as $label => $sql) {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['k' => $devoteeKey]);
+            $counts[$label] = (int) $stmt->fetchColumn();
+        }
+
+        return $counts;
+    }
+
+    private function devoteeHasImage(string $devoteeKey, string $type): bool
+    {
+        if ($type === 'id') {
+            $stmt = $this->db->prepare(
+                'SELECT Devotee_ID_Image_Gcs_Path, Devotee_ID_Image FROM devotee_id WHERE Devotee_Key = :k LIMIT 1'
+            );
+        } else {
+            $stmt = $this->db->prepare(
+                'SELECT Devotee_Photo_Gcs_Path, Devotee_Photo FROM devotee_photo WHERE Devotee_Key = :k LIMIT 1'
+            );
+        }
+        $stmt->execute(['k' => strtoupper(trim($devoteeKey))]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return false;
+        }
+
+        if ($type === 'id') {
+            return $this->imageRowHasAsset(
+                (string) ($row['Devotee_ID_Image_Gcs_Path'] ?? ''),
+                $row['Devotee_ID_Image'] ?? null
+            );
+        }
+
+        return $this->imageRowHasAsset(
+            (string) ($row['Devotee_Photo_Gcs_Path'] ?? ''),
+            $row['Devotee_Photo'] ?? null
+        );
+    }
+
+    /**
+     * @return array{winner: string, source: string, survivor_has: bool, tbm_has: bool}
+     */
+    private function previewImageWinner(string $survivorKey, string $tbmKey, string $type): array
+    {
+        $savedMode = $this->imageMergeMode;
+        $this->imageMergeMode = 'latest';
+        if ($type === 'photo') {
+            $stmt = $this->db->prepare(
+                'SELECT Devotee_Key, Devotee_Photo_Gcs_Path, Devotee_Photo FROM devotee_photo WHERE Devotee_Key IN (:s, :t)'
+            );
+        } else {
+            $stmt = $this->db->prepare(
+                'SELECT Devotee_Key, Devotee_ID_Image_Gcs_Path, Devotee_ID_Image FROM devotee_id WHERE Devotee_Key IN (:s, :t)'
+            );
+        }
+        $stmt->execute(['s' => $survivorKey, 't' => $tbmKey]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $survivor = null;
+        $tbm = null;
+        foreach ($rows as $row) {
+            if (strcasecmp((string) ($row['Devotee_Key'] ?? ''), $survivorKey) === 0) {
+                $survivor = $row;
+            } elseif (strcasecmp((string) ($row['Devotee_Key'] ?? ''), $tbmKey) === 0) {
+                $tbm = $row;
+            }
+        }
+
+        $survivorHas = false;
+        $tbmHas = false;
+        if ($type === 'photo') {
+            $survivorHas = $survivor !== null && $this->imageRowHasAsset(
+                (string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''),
+                $survivor['Devotee_Photo'] ?? null
+            );
+            $tbmHas = $tbm !== null && $this->imageRowHasAsset(
+                (string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''),
+                $tbm['Devotee_Photo'] ?? null
+            );
+            [$gcs, $blob] = $this->mergeImageAssets(
+                $survivorKey,
+                $tbmKey,
+                (string) ($survivor['Devotee_Photo_Gcs_Path'] ?? ''),
+                $survivor['Devotee_Photo'] ?? null,
+                (string) ($tbm['Devotee_Photo_Gcs_Path'] ?? ''),
+                $tbm['Devotee_Photo'] ?? null,
+                'photo'
+            );
+        } else {
+            $survivorHas = $survivor !== null && $this->imageRowHasAsset(
+                (string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''),
+                $survivor['Devotee_ID_Image'] ?? null
+            );
+            $tbmHas = $tbm !== null && $this->imageRowHasAsset(
+                (string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''),
+                $tbm['Devotee_ID_Image'] ?? null
+            );
+            [$gcs, $blob] = $this->mergeImageAssets(
+                $survivorKey,
+                $tbmKey,
+                (string) ($survivor['Devotee_ID_Image_Gcs_Path'] ?? ''),
+                $survivor['Devotee_ID_Image'] ?? null,
+                (string) ($tbm['Devotee_ID_Image_Gcs_Path'] ?? ''),
+                $tbm['Devotee_ID_Image'] ?? null,
+                'id'
+            );
+        }
+        $this->imageMergeMode = $savedMode;
+
+        $winner = 'none';
+        $source = 'empty';
+        if ($this->imageRowHasAsset($gcs, $blob)) {
+            if ($survivorHas && !$tbmHas) {
+                $winner = 'survivor';
+                $source = 'survivor';
+            } elseif ($tbmHas && !$survivorHas) {
+                $winner = 'tbm';
+                $source = 'tbm';
+            } else {
+                $latest = $this->pickLatestDevoteeKey($survivorKey, $tbmKey);
+                $winner = strcasecmp($latest, $survivorKey) === 0 ? 'survivor' : 'tbm';
+                $source = $winner;
+            }
+        }
+
+        return [
+            'winner' => $winner,
+            'source' => $source,
+            'survivor_has' => $survivorHas,
+            'tbm_has' => $tbmHas,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function displayFieldValue(string $column, array $row): string
+    {
+        $value = trim((string) ($row[$column] ?? ''));
+        if ($column === 'Devotee_DOB' && ($value === '' || $value === '1900-01-01')) {
+            return '';
+        }
+
+        return $value;
+    }
+
     private function writeMergeAudit(string $baseKey, string $batchId, array $tbmKeys, string $mergeSource): void
     {
         $ts = date('Y-m-d H:i:s');
-        $short = 'Auto-merged ' . $ts . '. Batch ' . substr($batchId, 0, 8) . '.';
+        $prefix = in_array($mergeSource, ['manual', 'manual_utility'], true) ? 'Manual merge' : 'Auto-merged';
+        $short = $prefix . ' ' . $ts . '. Batch ' . substr($batchId, 0, 8) . '.';
         if (strlen($short) > 250) {
             $short = substr($short, 0, 247) . '...';
         }

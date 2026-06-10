@@ -31,4 +31,4 @@ if ($devoteeKey === null) {
 
 $database = new Database();
 $db = $database->getConnection();
-kdms_stream_devotee_photo($db, $devoteeKey, $type);
+kdms_serve_devotee_image($db, $devoteeKey, $type);

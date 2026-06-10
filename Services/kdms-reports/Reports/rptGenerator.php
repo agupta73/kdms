@@ -19,60 +19,14 @@ function kmreports_devotee_photo_proxy_src(string $devoteeKey, string $type = 'p
     );
 }
 
-/**
- * Copy signed URL fields from API row into report row param (not in column templates).
- *
- * @param array<string, mixed> $rowParam
- * @param array<string, mixed> $rptData
- * @return array<string, mixed>
- */
-function kmreports_merge_devotee_photo_urls(array $rowParam, array $rptData): array
+function kmreports_print_lazy_devotee_photo(string $devoteeKey, bool $wrapLink = false, string $linkDataId = ''): void
 {
-    if (array_key_exists('devotee_photo_url', $rptData)) {
-        $rowParam['devotee_photo_url'] = $rptData['devotee_photo_url'];
-    }
-    if (!empty($rptData['devotee_photo_requires_proxy'])) {
-        $rowParam['devotee_photo_requires_proxy'] = true;
-    }
-
-    return $rowParam;
-}
-
-function kmreports_devotee_photo_img_src(
-    string $devoteeKey,
-    ?string $signedUrl = null,
-    bool $requiresProxy = false
-): string {
-    if (is_string($signedUrl) && $signedUrl !== '') {
-        return htmlspecialchars($signedUrl, ENT_QUOTES, 'UTF-8');
-    }
-    if ($requiresProxy && $devoteeKey !== '') {
-        return kmreports_devotee_photo_proxy_src($devoteeKey, 'photo');
-    }
-
-    return '';
-}
-
-function kmreports_print_lazy_devotee_photo(
-    string $devoteeKey,
-    bool $wrapLink = false,
-    string $linkDataId = '',
-    ?string $signedUrl = null,
-    bool $requiresProxy = false
-): void {
     if ($devoteeKey === '') {
         print_r('<img class="reportDevoteeProfileImage" src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80" width="80"></img>');
 
         return;
     }
-
-    $src = kmreports_devotee_photo_img_src($devoteeKey, $signedUrl, $requiresProxy);
-    if ($src === '') {
-        print_r('<img class="reportDevoteeProfileImage" src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="80" width="80"></img>');
-
-        return;
-    }
-
+    $src = kmreports_devotee_photo_proxy_src($devoteeKey, 'photo');
     $img = '<img class="reportDevoteeProfileImage" src="' . $src . '" loading="lazy" width="80" height="80" alt="devotee image" onerror="this.src=\'../assets/img/faces/devotee.ico\'"></img>';
     if ($wrapLink && $linkDataId !== '') {
         print_r("<a href='#' title='Click to add seva feedback!' data-toggle='modal' class='identifyingClass' data-target='#RemarksModalLong' data-backdrop='static' data-keyboard='false' data-id='" . htmlspecialchars($linkDataId, ENT_QUOTES, 'UTF-8') . "'>");
@@ -126,21 +80,17 @@ function printSuperTitle($param, $debug = false)
 
 }
 
-function printTable($param="" ,$debug=false)
+function printTable($param = "", $debug = false)
 {
-    //echo "<br>From Print Table => ";
-    if($debug){
+    if ($debug) {
         var_dump($param);
     }
 
-    if($param != ""){
-
-        print_r(("<br><form id='F-". $param['table_id'] ."'><table class='reportTable' >"));
-    }
-    else {
+    if (is_array($param) && isset($param['table_id']) && $param['table_id'] !== '') {
+        print_r(("<br><form id='F-" . $param['table_id'] . "'><table class='reportTable' >"));
+    } else {
         print_r(("<br><form><table class='reportTable'>"));
     }
-    
 }
 function printCloseTable($param)
 {
@@ -182,9 +132,7 @@ function printRow($param, $debug = false)
         if (strtolower($paramKey) == 'devotee_photo') {
             print_r("<td class='reportCol reportImageSection'><div>");
             $dk = (string) ($param['devotee_key'] ?? '');
-            $photoUrl = isset($param['devotee_photo_url']) ? (string) $param['devotee_photo_url'] : null;
-            $photoProxy = !empty($param['devotee_photo_requires_proxy']);
-            kmreports_print_lazy_devotee_photo($dk, false, '', $photoUrl, $photoProxy);
+            kmreports_print_lazy_devotee_photo($dk, false);
             print_r('</div>');
         }
         else {
@@ -251,15 +199,7 @@ function printRowWithRem($param, $debug = false)
         switch (strtolower($paramKey)) {
             case 'devotee_photo':
                 print_r("<td class='reportCol reportImageSection'>");
-                $photoUrl = isset($param['devotee_photo_url']) ? (string) $param['devotee_photo_url'] : null;
-                $photoProxy = !empty($param['devotee_photo_requires_proxy']);
-                kmreports_print_lazy_devotee_photo(
-                    (string) ($param['devotee_key'] ?? ''),
-                    true,
-                    (string) ($param['devotee_key'] ?? ''),
-                    $photoUrl,
-                    $photoProxy
-                );
+                kmreports_print_lazy_devotee_photo((string) ($param['devotee_key'] ?? ''), true, (string) ($param['devotee_key'] ?? ''));
                 print_r('</td>');
                 break;
 

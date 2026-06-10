@@ -119,7 +119,21 @@ if (session_status() === PHP_SESSION_DISABLED) {
             $failReasons[] = 'Access_empty';
         } elseif (isset($current_page_id)) {
             $accessParts = explode(',', (string) $_SESSION['Access']);
-            if (! in_array($current_page_id, $accessParts, true)) {
+            $allowedPageIds = [$current_page_id];
+            $scriptForAcl = basename($_SERVER['SCRIPT_FILENAME'] ?? '');
+            if ($scriptForAcl === 'adminMergeProxy.php') {
+                $allowedPageIds[] = 'KD-DVT-SCR';
+                $allowedPageIds[] = 'KD-DVT-I';
+            }
+            $allowedPageIds = array_values(array_unique($allowedPageIds));
+            $pageAllowed = false;
+            foreach ($allowedPageIds as $allowedId) {
+                if (in_array($allowedId, $accessParts, true)) {
+                    $pageAllowed = true;
+                    break;
+                }
+            }
+            if (! $pageAllowed) {
                 require_once __DIR__ . '/includes/kdms_log.php';
                 kdms_log('WARNING', 'KDMS page ACL denied', [
                     'page_id'    => $current_page_id,

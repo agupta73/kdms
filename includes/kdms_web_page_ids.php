@@ -35,6 +35,8 @@ return [
     'addSevaII.php'            => 'KD-SEVA-II',
     'AddSevaII.php'             => 'KD-SEVA-II',
     'devoteeSearchResult.php'  => 'KD-DVT-SCR',
+    'devoteeMergeUtility.php'  => 'KD-DVT-SCR',
+    'devoteeMergeContextProxy.php' => 'KD-DVT-SCR',
     'upsertAmenityI.php'       => 'KD-AMT-I',
     'upsertAmenityII.php'      => 'KD-AMT-II',
     'upsertEventI.php'         => 'KD-EVNT-I',

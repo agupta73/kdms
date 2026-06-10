@@ -181,11 +181,12 @@ Class Devotee {
        
         if($this->debug){ echo "request data from search devotee: ", $requestData, " event Id: ", $eventId; }
 
-        // Grid/reports: signed GCS URLs (30 min TTL). BLOB-only rows fall back to devoteePhoto proxy.
+        // Grid/reports: lightweight has_photo flags; images lazy-load via devoteePhoto.php (302→GCS or stream).
         // Print path (includePhotos) retains eager base64 load.
         $photoSelect = $includePhotos
             ? ', did.Devotee_ID_Image, dp.Devotee_Photo'
-            : '';
+            : ", (dp.Devotee_Photo_Gcs_Path IS NOT NULL OR dp.Devotee_Photo IS NOT NULL) AS has_photo
+               , (did.Devotee_ID_Image_Gcs_Path IS NOT NULL OR did.Devotee_ID_Image IS NOT NULL) AS has_id_image";
         $query = "select " .
                     "d.devotee_key, CONCAT(d.devotee_first_name, ' ', d.devotee_last_name) as Devotee_Name " .
                     ", d.devotee_station, d.devotee_cell_phone_number, d.devotee_status " .
@@ -285,11 +286,8 @@ Class Devotee {
             } else {
                 $row->{'Devotee_Photo'} = '';
                 $row->{'Devotee_ID_Image'} = '';
-                $displayUrls = PhotoStorage::devoteeImageDisplayUrls($this->conn, $devoteeKey);
-                $row->{'devotee_photo_url'} = $displayUrls['photo_url'];
-                $row->{'devotee_id_url'} = $displayUrls['id_url'];
-                $row->{'devotee_photo_requires_proxy'} = $displayUrls['photo_requires_proxy'];
-                $row->{'devotee_id_requires_proxy'} = $displayUrls['id_requires_proxy'];
+                $row->{'has_photo'} = !empty($row->{'has_photo'});
+                $row->{'has_id_image'} = !empty($row->{'has_id_image'});
             }
             $devoteeSearchResult[] = $row;
             $i = $i + 1;
@@ -822,7 +820,8 @@ Class Devotee {
         if ($includePhotoBlobs) {
             $query = $query . ", dp.Devotee_Photo ";
         } else {
-            $query = $query . ", '' AS Devotee_Photo ";
+            $query = $query . ", '' AS Devotee_Photo
+                    , (dp.Devotee_Photo_Gcs_Path IS NOT NULL OR dp.Devotee_Photo IS NOT NULL) AS has_photo ";
         }
         $query = $query . "
                     , sm.Seva_description
@@ -857,14 +856,12 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $devoteeKey = (string) ($row->devotee_key ?? '');
             if ($includePhotoBlobs) {
+                $devoteeKey = (string) ($row->devotee_key ?? '');
                 $row->{'Devotee_Photo'} = PhotoStorage::legacyBase64Photo($this->conn, $devoteeKey, $row->{'Devotee_Photo'} ?? null);
             } else {
                 $row->{'Devotee_Photo'} = '';
-                $displayUrls = PhotoStorage::devoteeImageDisplayUrls($this->conn, $devoteeKey);
-                $row->{'devotee_photo_url'} = $displayUrls['photo_url'];
-                $row->{'devotee_photo_requires_proxy'} = $displayUrls['photo_requires_proxy'];
+                $row->{'has_photo'} = !empty($row->{'has_photo'});
             }
             $devoteeSearchResult[]=$row;
             $i = $i+1;
@@ -907,6 +904,9 @@ Class Devotee {
                     , d.devotee_station
                     , IFNULL(CONCAT('(', SUBSTR(d.devotee_cell_phone_number, 1, 3),')-', SUBSTR(d.devotee_cell_phone_number, 4, 3), '-', SUBSTR(d.devotee_cell_phone_number, 7)),  '(###)-###-####') AS devotee_cell_phone_number ";
                     //, did.Devotee_ID_Image 
+        if ($includePhotos) {
+            $query = $query . ", (dp.Devotee_Photo_Gcs_Path IS NOT NULL OR dp.Devotee_Photo IS NOT NULL) AS has_photo ";
+        }
         $query = $query . ", '' AS Devotee_Photo 
                     , sm.Seva_description
                     , sm.seva_id
@@ -946,12 +946,9 @@ Class Devotee {
         $devoteeSearchResult = array();
         $i = 0;
         while($row = $results->fetchObject()){
-            $devoteeKey = (string) ($row->devotee_key ?? '');
             $row->{'Devotee_Photo'} = '';
-            if ($includePhotos && $devoteeKey !== '') {
-                $displayUrls = PhotoStorage::devoteeImageDisplayUrls($this->conn, $devoteeKey);
-                $row->{'devotee_photo_url'} = $displayUrls['photo_url'];
-                $row->{'devotee_photo_requires_proxy'} = $displayUrls['photo_requires_proxy'];
+            if ($includePhotos) {
+                $row->{'has_photo'} = !empty($row->{'has_photo'});
             }
             $devoteeSearchResult[]=$row;
             $i = $i+1;

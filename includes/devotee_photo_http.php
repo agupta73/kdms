@@ -36,6 +36,33 @@ function kdms_transparent_jpeg_placeholder(): string
 }
 
 /**
+ * Lazy load: 302 to signed GCS URL when path exists; else stream BLOB/GCS bytes.
+ * Missing image → 200 + 1×1 placeholder.
+ */
+function kdms_serve_devotee_image(PDO $db, string $devoteeKey, string $type): void
+{
+    $type = strtolower(trim($type));
+    if ($type !== 'photo' && $type !== 'id') {
+        http_response_code(400);
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo 'Invalid type';
+        exit;
+    }
+
+    $gcsPath = PhotoStorage::resolveGcsObjectPath($db, $devoteeKey, $type);
+    if ($gcsPath !== null) {
+        $signed = PhotoStorage::signedUrl($gcsPath);
+        if ($signed !== null) {
+            header('Cache-Control: private, max-age=300');
+            header('Location: ' . $signed, true, 302);
+            exit;
+        }
+    }
+
+    kdms_stream_devotee_photo($db, $devoteeKey, $type);
+}
+
+/**
  * Stream JPEG bytes for devotee photo or ID image. Missing image → 200 + 1×1 placeholder.
  */
 function kdms_stream_devotee_photo(PDO $db, string $devoteeKey, string $type): void
@@ -65,7 +92,7 @@ function kdms_stream_devotee_photo(PDO $db, string $devoteeKey, string $type): v
 }
 
 /**
- * Proxy stream from kdms-api devoteePhoto.php (session cookie and/or service key).
+ * Proxy from kdms-api devoteePhoto.php. Passes 302 to GCS through to the browser.
  */
 function kdms_proxy_devotee_photo_from_api(string $devoteeKey, string $type, string $apiBaseUrl): void
 {
@@ -83,13 +110,14 @@ function kdms_proxy_devotee_photo_from_api(string $devoteeKey, string $type, str
     kdms_begin_internal_apache_curl();
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+    curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     kdms_curl_setopt_internal_cookie($ch);
 
-    $body = curl_exec($ch);
+    $response = curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+    $headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     curl_close($ch);
     kdms_end_internal_apache_curl();
 
@@ -107,19 +135,48 @@ function kdms_proxy_devotee_photo_from_api(string $devoteeKey, string $type, str
         exit;
     }
 
-    if (!is_string($body) || $body === '') {
+    if (!is_string($response)) {
         http_response_code(502);
         header('Content-Type: text/plain; charset=UTF-8');
         echo 'Photo service unavailable';
         exit;
     }
 
-    header('Cache-Control: private, max-age=300');
-    if ($contentType !== '') {
-        header('Content-Type: ' . $contentType);
-    } else {
-        header('Content-Type: image/jpeg');
+    $rawHeaders = substr($response, 0, $headerSize);
+    $body = substr($response, $headerSize);
+
+    if ($httpCode === 302 || $httpCode === 301) {
+        $location = null;
+        foreach (preg_split('/\r\n|\n|\r/', $rawHeaders) as $line) {
+            if (stripos($line, 'Location:') === 0) {
+                $location = trim(substr($line, 9));
+                break;
+            }
+        }
+        if ($location !== null && $location !== '') {
+            header('Cache-Control: private, max-age=300');
+            header('Location: ' . $location, true, $httpCode);
+            exit;
+        }
     }
+
+    if ($body === '') {
+        http_response_code(502);
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo 'Photo service unavailable';
+        exit;
+    }
+
+    $contentType = 'image/jpeg';
+    foreach (preg_split('/\r\n|\n|\r/', $rawHeaders) as $line) {
+        if (stripos($line, 'Content-Type:') === 0) {
+            $contentType = trim(substr($line, 13));
+            break;
+        }
+    }
+
+    header('Cache-Control: private, max-age=300');
+    header('Content-Type: ' . $contentType);
     echo $body;
     exit;
 }

@@ -73,16 +73,14 @@ include_once("../UI/scriptJS.php");
                 // ===================================
                 // Define report layout
                 // ===================================
-                if (!empty($response)) {
+                if (!empty($response) && is_array($response)) {
                     $recordCount = 0;
                     
-                    if(isset($response["status"])){
-                        if($response["status"] == false){
-                            echo "ERROR MESSAGE: ";
-                            echo $response["message"];
-                            
-                            die;
-                        }
+                    if (isset($response["status"]) && $response["status"] == false) {
+                        echo "ERROR MESSAGE: ";
+                        echo $response["message"];
+                        
+                        die;
                     }
                     generateReport("superTitle", "BABA SHREE NEEM KAROLI MAHARAAJ JI KI JAI");
                     $rptLayout[] = "superTitle";
@@ -189,8 +187,7 @@ include_once("../UI/scriptJS.php");
                                         $rowParamWP[$key] = $rptData[$key];
                                     }
                                 }
-                                $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
-                                printRow($rowParamWP, $key);
+                                printRow($rowParamWP);
 
                             } else {
                                 $rowParamWOP["SN"] = $recordCount;
@@ -212,7 +209,6 @@ include_once("../UI/scriptJS.php");
                                         $rowParamWP[$key] = $rptData[$key];
                                     }
                                 }
-                                $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
                                 printRowWithRem($rowParamWP);
         
                             } else {

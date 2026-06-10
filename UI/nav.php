@@ -92,7 +92,13 @@ $navCanKitchen = kdms_session_has_asset('KD-KITCHEN');
           <i class="material-icons">print</i>
           <p>Recently Printed Cards</p>
         </a>
-      </li>         
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./devoteeMergeUtility.php">
+          <i class="material-icons">merge_type</i>
+          <p>Merge Duplicate Records</p>
+        </a>
+      </li>
       <?php /* KDMS OCR nav removed Phase 6/7 — OCR integrated into Add Devotee form (addDevoteeI.php). */ ?>
       <?php endif; ?>
       <?php if ($navCanKitchen): ?>

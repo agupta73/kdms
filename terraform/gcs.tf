@@ -48,6 +48,13 @@ resource "google_service_account_iam_member" "kdms_registration_sign_blob" {
   member             = "serviceAccount:${google_service_account.kdms_registration.email}"
 }
 
+# Required for lazy 302 redirects to GCS (signBlob on kdms-api / kdms-prod runtime SA).
+resource "google_service_account_iam_member" "kdms_runtime_sign_blob" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.runtime_sa_email}"
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${var.runtime_sa_email}"
+}
+
 output "gcs_photos_bucket_name" {
   description = "GCS bucket for devotee photos and ID images."
   value       = google_storage_bucket.kdms_photos.name

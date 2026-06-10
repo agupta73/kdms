@@ -216,6 +216,43 @@ final class PhotoStorage
     /**
      * Time-limited read-only URL for a private GCS object (grid/report lazy load).
      */
+    /**
+     * GCS object path for lazy redirect (photo or id). Null when only BLOB / missing.
+     */
+    public static function resolveGcsObjectPath(PDO $db, string $devoteeKey, string $type): ?string
+    {
+        $type = strtolower(trim($type));
+        if ($type === 'photo') {
+            $sql = 'SELECT Devotee_Photo_Gcs_Path, Devotee_Photo FROM devotee_photo WHERE Devotee_Key = :key';
+            $pathColumn = 'Devotee_Photo_Gcs_Path';
+            $blobColumn = 'Devotee_Photo';
+            $canonicalPath = self::objectPathForPhoto($devoteeKey);
+        } elseif ($type === 'id') {
+            $sql = 'SELECT Devotee_ID_Image_Gcs_Path, Devotee_ID_Image FROM devotee_id WHERE Devotee_Key = :key';
+            $pathColumn = 'Devotee_ID_Image_Gcs_Path';
+            $blobColumn = 'Devotee_ID_Image';
+            $canonicalPath = self::objectPathForIdImage($devoteeKey);
+        } else {
+            return null;
+        }
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['key' => $devoteeKey]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($rows === []) {
+            return null;
+        }
+
+        $best = self::pickBestChildRow($rows, $pathColumn, $blobColumn, $canonicalPath);
+        if ($best === null) {
+            return null;
+        }
+
+        $gcsPath = isset($best[$pathColumn]) ? trim((string) $best[$pathColumn]) : '';
+
+        return $gcsPath !== '' ? $gcsPath : null;
+    }
+
     public static function signedUrl(string $objectPath, int $ttlSeconds = 1800): ?string
     {
         $objectPath = ltrim($objectPath, '/');
@@ -228,11 +265,8 @@ final class PhotoStorage
         }
 
         try {
-            $storage = new \Google\Cloud\Storage\StorageClient();
+            $storage = self::storageClient();
             $object = $storage->bucket(self::bucketName())->object($objectPath);
-            if (!$object->exists()) {
-                return null;
-            }
 
             return $object->signedUrl(
                 new \DateTimeImmutable('+' . $ttlSeconds . ' seconds'),
@@ -252,83 +286,14 @@ final class PhotoStorage
         }
     }
 
-    /**
-     * Grid/report image URLs: signed GCS when path exists; proxy fallback when BLOB-only.
-     *
-     * @return array{
-     *   photo_url: ?string,
-     *   id_url: ?string,
-     *   photo_requires_proxy: bool,
-     *   id_requires_proxy: bool
-     * }
-     */
-    public static function devoteeImageDisplayUrls(PDO $db, string $devoteeKey, int $ttlSeconds = 1800): array
+    private static function storageClient(): \Google\Cloud\Storage\StorageClient
     {
-        $photoMeta = self::resolveChildImageMeta(
-            $db,
-            $devoteeKey,
-            'SELECT Devotee_Photo_Gcs_Path, Devotee_Photo FROM devotee_photo WHERE Devotee_Key = :key',
-            'Devotee_Photo_Gcs_Path',
-            'Devotee_Photo',
-            self::objectPathForPhoto($devoteeKey),
-            $ttlSeconds
-        );
-        $idMeta = self::resolveChildImageMeta(
-            $db,
-            $devoteeKey,
-            'SELECT Devotee_ID_Image_Gcs_Path, Devotee_ID_Image FROM devotee_id WHERE Devotee_Key = :key',
-            'Devotee_ID_Image_Gcs_Path',
-            'Devotee_ID_Image',
-            self::objectPathForIdImage($devoteeKey),
-            $ttlSeconds
-        );
-
-        return [
-            'photo_url' => $photoMeta['url'],
-            'id_url' => $idMeta['url'],
-            'photo_requires_proxy' => $photoMeta['requires_proxy'],
-            'id_requires_proxy' => $idMeta['requires_proxy'],
-        ];
-    }
-
-    /**
-     * @return array{url: ?string, requires_proxy: bool}
-     */
-    private static function resolveChildImageMeta(
-        PDO $db,
-        string $devoteeKey,
-        string $sql,
-        string $pathColumn,
-        string $blobColumn,
-        string $canonicalPath,
-        int $ttlSeconds
-    ): array {
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['key' => $devoteeKey]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($rows === []) {
-            return ['url' => null, 'requires_proxy' => false];
+        static $client = null;
+        if ($client === null) {
+            $client = new \Google\Cloud\Storage\StorageClient();
         }
 
-        $best = self::pickBestChildRow($rows, $pathColumn, $blobColumn, $canonicalPath);
-        if ($best === null) {
-            return ['url' => null, 'requires_proxy' => false];
-        }
-
-        $gcsPath = isset($best[$pathColumn]) ? trim((string) $best[$pathColumn]) : '';
-        if ($gcsPath !== '') {
-            $signed = self::signedUrl($gcsPath, $ttlSeconds);
-
-            return [
-                'url' => $signed,
-                'requires_proxy' => $signed === null,
-            ];
-        }
-
-        return [
-            'url' => null,
-            'requires_proxy' => self::rowHasBlob($best, $blobColumn),
-        ];
+        return $client;
     }
 
     /**
@@ -379,22 +344,6 @@ final class PhotoStorage
         }
 
         return $best;
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     */
-    private static function rowHasBlob(array $row, string $blobColumn): bool
-    {
-        if (empty($row[$blobColumn])) {
-            return false;
-        }
-        $blob = $row[$blobColumn];
-        if (is_resource($blob)) {
-            $blob = stream_get_contents($blob);
-        }
-
-        return is_string($blob) && strlen($blob) > 64;
     }
 
     public static function readGcsObject(string $objectPath): ?string

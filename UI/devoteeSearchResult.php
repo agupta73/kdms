@@ -457,18 +457,8 @@ if (!empty($response)) {
 
         $photoProxyBase = htmlspecialchars(rtrim((string) $config_data['webroot'], '/') . '/Logic/devoteePhotoProxy.php', ENT_QUOTES, 'UTF-8');
         $escapedKey = htmlspecialchars($devoteeKey, ENT_QUOTES, 'UTF-8');
-        $photoSrc = '';
-        if (!empty($devoteeRecord['devotee_photo_url'])) {
-            $photoSrc = htmlspecialchars((string) $devoteeRecord['devotee_photo_url'], ENT_QUOTES, 'UTF-8');
-        } elseif (!empty($devoteeRecord['devotee_photo_requires_proxy'])) {
-            $photoSrc = $photoProxyBase . '?devotee_key=' . $escapedKey . '&type=photo';
-        }
-        $idSrc = '';
-        if (!empty($devoteeRecord['devotee_id_url'])) {
-            $idSrc = htmlspecialchars((string) $devoteeRecord['devotee_id_url'], ENT_QUOTES, 'UTF-8');
-        } elseif (!empty($devoteeRecord['devotee_id_requires_proxy'])) {
-            $idSrc = $photoProxyBase . '?devotee_key=' . $escapedKey . '&type=id';
-        }
+        $hasPhoto = !empty($devoteeRecord['has_photo']) || !empty($devoteeRecord['Devotee_Photo']);
+        $hasIdImage = !empty($devoteeRecord['has_id_image']) || !empty($devoteeRecord['Devotee_ID_Image']);
 
         if ($devoteeKey != "--Unavailable--") {
             $recordCount = $recordCount + 1;
@@ -482,6 +472,7 @@ if (!empty($response)) {
                         </td>
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeKey . "</a>
+                            <br><a class='small' href='devoteeMergeUtility.php?anchor=" . urlencode($devoteeKey) . "'>Find duplicates</a>
                         </td>
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeStatusDetail . "</a>
@@ -495,18 +486,18 @@ if (!empty($response)) {
                         <td>
                             <a href='addDevoteeI.php?devotee_key=" . $devoteeKey . "'>" . $devoteeCellNumber . "</a>
                         </td><td>");
-            if ($photoSrc === '') {
+            if (!$hasPhoto) {
                 print_r('<img src="../assets/img/faces/devotee.ico" alt="Devotee Image" height="70" width="70"></img>');
             } else {
-                print_r('<img src="' . $photoSrc . '" loading="lazy" width="70" height="70" alt="devotee image" onerror="this.src=\'../assets/img/faces/devotee.ico\'"></img>');
+                print_r('<img src="' . $photoProxyBase . '?devotee_key=' . $escapedKey . '&type=photo" loading="lazy" width="70" height="70" alt="devotee image" onerror="this.src=\'../assets/img/faces/devotee.ico\'"></img>');
             }
 
             print_r("</td> <td>");
 
-            if ($idSrc === '') {
+            if (!$hasIdImage) {
                 print_r('<img src="../assets/img/faces/doc.png" alt="Devotee ID Image" height="65" width="65"></img>');
             } else {
-                print_r('<img src="' . $idSrc . '" loading="lazy" width="70" height="70" alt="devotee ID image" onerror="this.src=\'../assets/img/faces/doc.png\'"></img>');
+                print_r('<img src="' . $photoProxyBase . '?devotee_key=' . $escapedKey . '&type=id" loading="lazy" width="70" height="70" alt="devotee ID image" onerror="this.src=\'../assets/img/faces/doc.png\'"></img>');
             }
 
             print_r("</td> </td> </tr>");

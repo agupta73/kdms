@@ -203,8 +203,7 @@ $debug = false;
                                 $rowParamWP[$key] = $rptData[$key];
                             }
                         }
-                        $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
-                        printRow($rowParamWP, "Devotee_Photo");
+                        printRow($rowParamWP);
 
                     } else {
                         $rowParamWOP["SN"] = $recordCount;
@@ -226,7 +225,6 @@ $debug = false;
                                     $rowParamWP[$key] = $rptData[$key];
                                 }
                             }
-                            $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
                             printRowWithRem($rowParamWP);
     
                         } else {

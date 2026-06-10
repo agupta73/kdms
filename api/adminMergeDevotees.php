@@ -40,8 +40,23 @@ if ($baseKey === '' || $tbmKeys === []) {
     exit;
 }
 
+$mergeMode = trim((string) ($payload['merge_mode'] ?? ''));
+if ($mergeMode === 'utility' && count($tbmKeys) !== 1) {
+    http_response_code(400);
+    echo json_encode(['status' => false, 'message' => 'Utility merge supports one duplicate record at a time']);
+    exit;
+}
+
 $eventId = trim((string) ($payload['eventId'] ?? getenv('KDMS_EVENT_ID') ?: ''));
 $updatedBy = (string) ($_SESSION['LoginID'] ?? 'ADMIN');
+$mergeScore = (int) ($payload['merge_score'] ?? 100);
+if ($mergeScore < 0) {
+    $mergeScore = 0;
+}
+if ($mergeScore > 100) {
+    $mergeScore = 100;
+}
+$mergeSource = $mergeMode === 'utility' ? 'manual_utility' : 'manual';
 
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/../includes/DeduplicationService.php';
@@ -50,7 +65,7 @@ try {
     $database = new Database();
     $db = $database->getConnection();
     $svc = new DeduplicationService($db, $eventId, $updatedBy);
-    $survivor = $svc->mergeRecords($baseKey, $tbmKeys, $payload, 'manual', 100);
+    $survivor = $svc->mergeRecords($baseKey, $tbmKeys, $payload, $mergeSource, $mergeScore);
     echo json_encode([
         'status' => true,
         'action' => 'merged',
