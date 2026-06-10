@@ -194,6 +194,209 @@ final class PhotoStorage
         return is_string($blob) ? $blob : '';
     }
 
+    public static function canSignUrls(): bool
+    {
+        if (!class_exists(\Google\Cloud\Storage\StorageClient::class)) {
+            return false;
+        }
+
+        $creds = getenv('GOOGLE_APPLICATION_CREDENTIALS');
+        if (is_string($creds) && trim($creds) !== '' && is_file($creds)) {
+            return true;
+        }
+
+        // Cloud Run / GCE workload identity (no key file required).
+        if (getenv('K_SERVICE') !== false || getenv('GOOGLE_CLOUD_PROJECT') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Time-limited read-only URL for a private GCS object (grid/report lazy load).
+     */
+    public static function signedUrl(string $objectPath, int $ttlSeconds = 1800): ?string
+    {
+        $objectPath = ltrim($objectPath, '/');
+        if ($objectPath === '' || !self::canSignUrls()) {
+            return null;
+        }
+
+        if (!class_exists(\Google\Cloud\Storage\StorageClient::class)) {
+            return null;
+        }
+
+        try {
+            $storage = new \Google\Cloud\Storage\StorageClient();
+            $object = $storage->bucket(self::bucketName())->object($objectPath);
+            if (!$object->exists()) {
+                return null;
+            }
+
+            return $object->signedUrl(
+                new \DateTimeImmutable('+' . $ttlSeconds . ' seconds'),
+                [
+                    'version' => 'v4',
+                    'method' => 'GET',
+                ]
+            );
+        } catch (Throwable $e) {
+            kdms_log('ERROR', 'PhotoStorage: signed URL failed', [
+                'bucket' => self::bucketName(),
+                'object' => $objectPath,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Grid/report image URLs: signed GCS when path exists; proxy fallback when BLOB-only.
+     *
+     * @return array{
+     *   photo_url: ?string,
+     *   id_url: ?string,
+     *   photo_requires_proxy: bool,
+     *   id_requires_proxy: bool
+     * }
+     */
+    public static function devoteeImageDisplayUrls(PDO $db, string $devoteeKey, int $ttlSeconds = 1800): array
+    {
+        $photoMeta = self::resolveChildImageMeta(
+            $db,
+            $devoteeKey,
+            'SELECT Devotee_Photo_Gcs_Path, Devotee_Photo FROM devotee_photo WHERE Devotee_Key = :key',
+            'Devotee_Photo_Gcs_Path',
+            'Devotee_Photo',
+            self::objectPathForPhoto($devoteeKey),
+            $ttlSeconds
+        );
+        $idMeta = self::resolveChildImageMeta(
+            $db,
+            $devoteeKey,
+            'SELECT Devotee_ID_Image_Gcs_Path, Devotee_ID_Image FROM devotee_id WHERE Devotee_Key = :key',
+            'Devotee_ID_Image_Gcs_Path',
+            'Devotee_ID_Image',
+            self::objectPathForIdImage($devoteeKey),
+            $ttlSeconds
+        );
+
+        return [
+            'photo_url' => $photoMeta['url'],
+            'id_url' => $idMeta['url'],
+            'photo_requires_proxy' => $photoMeta['requires_proxy'],
+            'id_requires_proxy' => $idMeta['requires_proxy'],
+        ];
+    }
+
+    /**
+     * @return array{url: ?string, requires_proxy: bool}
+     */
+    private static function resolveChildImageMeta(
+        PDO $db,
+        string $devoteeKey,
+        string $sql,
+        string $pathColumn,
+        string $blobColumn,
+        string $canonicalPath,
+        int $ttlSeconds
+    ): array {
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['key' => $devoteeKey]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($rows === []) {
+            return ['url' => null, 'requires_proxy' => false];
+        }
+
+        $best = self::pickBestChildRow($rows, $pathColumn, $blobColumn, $canonicalPath);
+        if ($best === null) {
+            return ['url' => null, 'requires_proxy' => false];
+        }
+
+        $gcsPath = isset($best[$pathColumn]) ? trim((string) $best[$pathColumn]) : '';
+        if ($gcsPath !== '') {
+            $signed = self::signedUrl($gcsPath, $ttlSeconds);
+
+            return [
+                'url' => $signed,
+                'requires_proxy' => $signed === null,
+            ];
+        }
+
+        return [
+            'url' => null,
+            'requires_proxy' => self::rowHasBlob($best, $blobColumn),
+        ];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $rows
+     * @return array<string, mixed>|null
+     */
+    private static function pickBestChildRow(
+        array $rows,
+        string $pathColumn,
+        string $blobColumn,
+        string $canonicalPath
+    ): ?array {
+        $canonicalPath = ltrim($canonicalPath, '/');
+        $best = null;
+        $bestScore = -1;
+
+        foreach ($rows as $row) {
+            $gcsPath = isset($row[$pathColumn]) ? trim((string) $row[$pathColumn]) : '';
+            $blobLen = 0;
+            if (!empty($row[$blobColumn])) {
+                $blob = $row[$blobColumn];
+                if (is_resource($blob)) {
+                    $blob = stream_get_contents($blob);
+                }
+                if (is_string($blob)) {
+                    $blobLen = strlen($blob);
+                }
+            }
+
+            $score = 0;
+            if ($gcsPath !== '') {
+                $score += 40;
+                if ($gcsPath === $canonicalPath) {
+                    $score += 60;
+                }
+            }
+            if ($blobLen > 64) {
+                $score += 30 + (int) min($blobLen / 4096, 40);
+            }
+            if ($gcsPath !== '' && $blobLen > 64) {
+                $score += 20;
+            }
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $best = $row;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private static function rowHasBlob(array $row, string $blobColumn): bool
+    {
+        if (empty($row[$blobColumn])) {
+            return false;
+        }
+        $blob = $row[$blobColumn];
+        if (is_resource($blob)) {
+            $blob = stream_get_contents($blob);
+        }
+
+        return is_string($blob) && strlen($blob) > 64;
+    }
+
     public static function readGcsObject(string $objectPath): ?string
     {
         $objectPath = ltrim($objectPath, '/');

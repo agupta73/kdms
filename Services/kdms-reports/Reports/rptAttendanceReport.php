@@ -206,6 +206,7 @@ include_once("../UI/scriptJS.php");
                                         $rowParamWP[$key] = $rptData[str_replace("[h]", "", $key)];
                                     }
                                 }
+                                $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
                                 printRow($rowParamWP, $key);
 
                             } else {
@@ -228,6 +229,7 @@ include_once("../UI/scriptJS.php");
                                         $rowParamWP[$key] = $rptData[str_replace("[h]", "", $key)];                                    
                                     }
                                 }
+                                $rowParamWP = kmreports_merge_devotee_photo_urls($rowParamWP, $rptData);
                                 printRowWithRem($rowParamWP);
         
                             } else {
