@@ -101,6 +101,59 @@ final class RegistrationGcs
         return (bool) preg_match('#^devotee/' . $key . '/(id|photo)\.jpg$#i', $path);
     }
 
+    /**
+     * Copy a registration upload into the survivor's canonical GCS folder when dedup merges
+     * into an existing devotee (reserved candidate key ≠ survivor key).
+     */
+    public static function relocateToSurvivorKey(string $sourcePath, string $survivorKey, bool $isIdImage): string
+    {
+        $sourcePath = ltrim(trim($sourcePath), '/');
+        $survivorKey = self::normalizeKey($survivorKey);
+        if ($sourcePath === '' || $survivorKey === '') {
+            return '';
+        }
+
+        $destPath = $isIdImage ? self::idImagePath($survivorKey) : self::photoPath($survivorKey);
+        if (strcasecmp($sourcePath, $destPath) === 0) {
+            return $destPath;
+        }
+
+        if (!class_exists(StorageClient::class)) {
+            return '';
+        }
+
+        try {
+            $storage = new StorageClient();
+            $bucket = $storage->bucket(self::bucketName());
+            $source = $bucket->object($sourcePath);
+            if (!$source->exists()) {
+                kdms_log('WARNING', 'GCS relocate source missing', [
+                    'source' => $sourcePath,
+                    'survivor' => $survivorKey,
+                ]);
+
+                return '';
+            }
+
+            $dest = $bucket->object($destPath);
+            if ($dest->exists()) {
+                $dest->delete();
+            }
+
+            $source->copy($bucket, ['name' => $destPath]);
+
+            return $destPath;
+        } catch (Throwable $e) {
+            kdms_log('ERROR', 'GCS relocate to survivor failed', [
+                'source' => $sourcePath,
+                'dest' => $destPath,
+                'error' => $e->getMessage(),
+            ]);
+
+            return '';
+        }
+    }
+
     public static function deleteObject(string $objectPath): bool
     {
         $objectPath = ltrim($objectPath, '/');

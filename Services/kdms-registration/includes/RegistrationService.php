@@ -65,6 +65,17 @@ final class RegistrationService
         $survivorKey = $dedup['survivor_key'];
         $action = $dedup['action'];
 
+        if (strcasecmp($candidateKey, $survivorKey) !== 0) {
+            if ($idPath !== '') {
+                $idPath = RegistrationGcs::relocateToSurvivorKey($idPath, $survivorKey, true);
+            }
+            if ($selfiePath !== '') {
+                $selfiePath = RegistrationGcs::relocateToSurvivorKey($selfiePath, $survivorKey, false);
+            }
+        }
+        $idPath = $this->sanitizeGcsPath($idPath, $survivorKey);
+        $selfiePath = $this->sanitizeGcsPath($selfiePath, $survivorKey);
+
         if ($action === 'merged') {
             try {
                 $this->db->beginTransaction();

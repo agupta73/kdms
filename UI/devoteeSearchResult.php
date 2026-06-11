@@ -36,7 +36,7 @@ const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
                 var searchString = "";
                 for (var I = 0; I < searchForm.length; I++) {
                     if (searchForm[I].value != "") {
-                        searchString = searchString + searchForm[I].id + "=" + encodeURI(searchForm[I].value) + ",";
+                        searchString = searchString + searchForm[I].id + "=" + searchForm[I].value + ",";
                     }
                 }
                 if (searchString.length > 1) {
@@ -62,10 +62,21 @@ const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
                 }
 
                 if (filterString !== "") {
-                    window.location = "./devoteeSearchResult.php?mode=CUS&key=" + filterString;
+                    window.location = "./devoteeSearchResult.php?mode=CUS&key=" + encodeURIComponent(filterString);
                 } else {
                     alert("Please specify a search criteria!");
                 }
+            }
+
+            function cancelSearch() {
+                var q = new URLSearchParams(window.location.search);
+                var mode = q.get('mode');
+                var presetKey = q.get('key');
+                if (mode === 'SET' && presetKey && SET_PRESET_KEYS.indexOf(presetKey) !== -1) {
+                    window.location = "./devoteeSearchResult.php?mode=SET&key=" + encodeURIComponent(presetKey);
+                    return;
+                }
+                document.getElementById('searchForm').reset();
             }
 
             function printQueueReturnUrl() {
@@ -380,7 +391,7 @@ const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
                                         </div>
 
                                     </div>                          
-                                    <button type="reset" class="btn btn-success pull-right">Cancel</button>
+                                    <button type="button" class="btn btn-success pull-right" onclick="cancelSearch(); return false;">Cancel</button>
 
                                     <button class="btn btn-success pull-right" onclick="submitSearch('searchForm', 1);
                                             return false;">Search</button>

@@ -465,7 +465,8 @@ Class Devotee {
             
             if($this->debug){ echo "request data from prepare search clause: "; var_dump(explode("=", $subClauses)); }
 
-            list($subKey, $subValue) = explode("=", $subClauses);
+            list($subKey, $subValue) = explode("=", $subClauses, 2);
+            $subValue = urldecode($subValue);
             
                 switch ($subKey) {
                     // First Name
