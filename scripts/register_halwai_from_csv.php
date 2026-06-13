@@ -77,12 +77,13 @@ foreach (findCsvDuplicates($rows) as $w) {
     echo 'NOTE: duplicate CSV row (still processed) — ' . $w . PHP_EOL;
 }
 
-$db = (new Database())->getConnection();
+$db = null;
 if (!$opts['dry_run']) {
+    $db = halwaiConnectDatabase();
     validateEventOptions($db, $eventId, DEFAULT_SEVA_ID, DEFAULT_ACCOMMODATION);
 }
 
-$devotee = new Devotee($db);
+$devotee = $db !== null ? new Devotee($db) : null;
 $results = [];
 $ok = 0;
 $fail = 0;
@@ -126,6 +127,10 @@ foreach ($rows as $index => $row) {
         $results[] = resultRow($lineNum, $row['name'], $address, '', 'dry-run', '', 'dry-run');
         $dryCount++;
         continue;
+    }
+
+    if ($devotee === null) {
+        throw new RuntimeException('Database connection is not available.');
     }
 
     $res = $devotee->upsertDevotee($payload);
@@ -194,6 +199,55 @@ exit($fail > 0 ? 1 : 0);
 
 // ---------------------------------------------------------------------------
 
+function halwaiConnectDatabase(): PDO
+{
+    $database = new Database();
+    $pdo = $database->getConnection();
+    if ($pdo instanceof PDO) {
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+        return $pdo;
+    }
+
+    $dbName = getenv('KDMS_DB_NAME') ?: 'kdms';
+    $user = getenv('KDMS_DB_USER') ?: 'kdms';
+    $password = getenv('KDMS_DB_PASSWORD') ?: 'kdms';
+    $hostSpec = getenv('KDMS_DB_HOST') ?: '127.0.0.1:3306';
+    $socket = getenv('KDMS_DB_SOCKET');
+
+    fwrite(STDERR, 'MySQL connection failed (getConnection returned null).' . PHP_EOL);
+    fwrite(STDERR, '  KDMS_DB_NAME=' . $dbName . PHP_EOL);
+    fwrite(STDERR, '  KDMS_DB_USER=' . $user . PHP_EOL);
+    if (is_string($socket) && $socket !== '') {
+        fwrite(STDERR, '  KDMS_DB_SOCKET=' . $socket . PHP_EOL);
+    } else {
+        fwrite(STDERR, '  KDMS_DB_HOST=' . $hostSpec . PHP_EOL);
+    }
+    fwrite(STDERR, '  Tip (Mac CLI + XAMPP): export KDMS_DB_HOST=127.0.0.1:3306' . PHP_EOL);
+    fwrite(STDERR, '  Tip (prod via proxy): export KDMS_DB_HOST=127.0.0.1:9470 KDMS_DB_NAME=kdms_prod ...' . PHP_EOL);
+    fwrite(STDERR, '  Set KDMS_DB_DEBUG=1 to see connection errors from Database class.' . PHP_EOL);
+
+    try {
+        if (is_string($socket) && $socket !== '') {
+            $dsn = 'mysql:unix_socket=' . $socket . ';dbname=' . $dbName;
+        } elseif (preg_match('/^(.+):(\d+)$/', $hostSpec, $m)) {
+            $dsn = 'mysql:host=' . $m[1] . ';port=' . $m[2] . ';dbname=' . $dbName;
+        } else {
+            $port = getenv('KDMS_DB_PORT') ?: '3306';
+            $dsn = 'mysql:host=' . $hostSpec . ';port=' . $port . ';dbname=' . $dbName;
+        }
+
+        $pdo = new PDO($dsn, $user, $password);
+        $pdo->exec('set names utf8');
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+        return $pdo;
+    } catch (PDOException $e) {
+        fwrite(STDERR, 'PDO error: ' . $e->getMessage() . PHP_EOL);
+        exit(1);
+    }
+}
+
 /**
  * @return array{csv: string, dry_run: bool, limit: int, event_id: string, output: string}
  */
@@ -240,6 +294,12 @@ register_halwai_from_csv.php — batch Halwai permanent devotee registration + p
   --help             Show this help
 
 Defaults: referral=Halwai, seva_id=HLW, accommodation_key=PHB, type=P, status=G, gender=M
+
+DB (required for live runs, not --dry-run):
+  export KDMS_DB_HOST=127.0.0.1:3306
+  export KDMS_DB_NAME=kdms
+  export KDMS_DB_USER=kdms
+  export KDMS_DB_PASSWORD=...
 
 TXT;
 }
