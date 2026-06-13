@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Residents: distinct devotees with a print_log row for the event (any print date),
  *   excluding day visitors (Devotee_Status D + Devotee_Type T) and Prasad Only (Devotee_Status PO).
- * Day visitors: distinct D/T devotees with print_log for the event on the current calendar day only.
+ * Day visitors: distinct D/T devotees with print_log for the event (any print date).
  * Prasad Only: distinct PO devotees with print_log for the event on the current calendar day only.
  *
  * PWA registration queues card_print_log via addToPrintQueue; print_log is append-only and
@@ -54,10 +54,9 @@ class clsKitchenDashboard
                 FROM print_log pl
                 INNER JOIN devotee d ON pl.Devotee_Key = d.Devotee_Key
                 WHERE pl.Event_Id = {$qEvent}
-                    AND DATE(pl.Print_Date_Time) = CURDATE()
                     AND d.Devotee_Status = 'D'
                     AND d.Devotee_Type = 'T'
-            ) AS Day_Visitors_Printed_Today,
+            ) AS Day_Visitors_Printed_For_Event,
             (
                 SELECT COUNT(DISTINCT pl.Devotee_Key)
                 FROM print_log pl
@@ -79,20 +78,20 @@ class clsKitchenDashboard
             return [[
                 'Event_ID' => $eventId,
                 'Residents_Printed_For_Event' => 0,
-                'Day_Visitors_Printed_Today' => 0,
+                'Day_Visitors_Printed_For_Event' => 0,
                 'Prasad_Only_Printed_Today' => 0,
                 'Total_For_Kitchen' => 0,
             ]];
         }
 
         $residents = (int) ($row['Residents_Printed_For_Event'] ?? 0);
-        $dayVisitors = (int) ($row['Day_Visitors_Printed_Today'] ?? 0);
+        $dayVisitors = (int) ($row['Day_Visitors_Printed_For_Event'] ?? 0);
         $prasadOnly = (int) ($row['Prasad_Only_Printed_Today'] ?? 0);
 
         return [[
             'Event_ID' => (string) ($row['Event_ID'] ?? $eventId),
             'Residents_Printed_For_Event' => $residents,
-            'Day_Visitors_Printed_Today' => $dayVisitors,
+            'Day_Visitors_Printed_For_Event' => $dayVisitors,
             'Prasad_Only_Printed_Today' => $prasadOnly,
             'Total_For_Kitchen' => $residents + $dayVisitors,
         ]];
