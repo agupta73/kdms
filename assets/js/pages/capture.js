@@ -133,14 +133,14 @@
         var context = canvas.getContext('2d');
         var image = new Image();
         image.onload = function() {
-            context.drawImage(image, 0, 0, width, height);
-        }
-        canvas.width = width;
-        canvas.height = height;
+            // Use the image's own dimensions so aspect ratio is preserved.
+            // (compressImageFile() has already capped these to MAX_PHOTO_DIM.)
+            canvas.width  = image.naturalWidth  || image.width  || width;
+            canvas.height = image.naturalHeight || image.height || height;
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            photo.setAttribute('src', canvas.toDataURL('image/jpeg', 0.92));
+        };
         image.src = base64_image_data;
-
-        var data = canvas.toDataURL('image/jpeg', 0.92);
-        photo.setAttribute('src', data);
         uploadbutton.style.visibility = 'visible';
     }
 
@@ -193,15 +193,60 @@
           reader.onerror = error => reject(error);
         });
     }
+
+    /**
+     * Compress an image file client-side using an offscreen canvas.
+     * Caps the longest dimension at maxDim (default 1000 px), encodes as
+     * JPEG at the given quality (default 0.88), and returns a data URL.
+     */
+    function compressImageFile(file, maxDim, quality) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var w = img.width;
+                    var h = img.height;
+                    var max = maxDim || 1000;
+                    if (w > max || h > max) {
+                        if (w >= h) {
+                            h = Math.round(h * max / w);
+                            w = max;
+                        } else {
+                            w = Math.round(w * max / h);
+                            h = max;
+                        }
+                    }
+                    var c = document.createElement('canvas');
+                    c.width = w;
+                    c.height = h;
+                    c.getContext('2d').drawImage(img, 0, 0, w, h);
+                    var q = quality || 0.88;
+                    resolve(c.toDataURL('image/jpeg', q));
+                };
+                img.onerror = function () { reject(new Error('Invalid image')); };
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
       
     document
     .getElementById("cameraFileInput")
     .addEventListener("change", function () {
-        getBase64(this.files[0]).then(
-        base64_image_data => {
-            draw(base64_image_data)
-        }
-        );
+        var file = this.files && this.files[0];
+        if (!file) { return; }
+        compressImageFile(file, 1000, 0.88)
+            .then(function (compressedDataUrl) {
+                draw(compressedDataUrl);
+            })
+            .catch(function () {
+                // Canvas API unavailable — fall back to raw file
+                getBase64(file).then(function (base64_image_data) {
+                    draw(base64_image_data);
+                });
+            });
     });
     $('#CameraModalLong').on('show.bs.modal', function () {
         startup();

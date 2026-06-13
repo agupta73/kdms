@@ -4,6 +4,8 @@
     const HIGH = 0.7;
     const MED = 0.4;
     const MAX_ID_DIM = 1600;
+    const MAX_PHOTO_DIM = 1000;   // max dimension for devotee profile photos (px)
+    const PHOTO_QUALITY = 0.88;   // JPEG quality for profile photos (high, minimal artefact)
     const MAX_OCR_BYTES = 5 * 1024 * 1024;
     const OCR_TIMEOUT_MS = 90000;
     const UPLOAD_TIMEOUT_MS = 120000;
@@ -604,9 +606,16 @@
             if (!file) {
                 return;
             }
-            getBase64(file).then(function (base64_image_data) {
-                uploadDevoteeImage(base64_image_data);
-            });
+            compressImageFile(file, MAX_PHOTO_DIM, PHOTO_QUALITY)
+                .then(function (compressed) {
+                    uploadDevoteeImage(compressed.previewUrl);
+                })
+                .catch(function () {
+                    // Canvas API unavailable — fall back to raw file
+                    getBase64(file).then(function (base64_image_data) {
+                        uploadDevoteeImage(base64_image_data);
+                    });
+                });
         });
     }
 
