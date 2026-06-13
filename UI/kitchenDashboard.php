@@ -18,6 +18,7 @@ $row = $rows[0] ?? [];
 
 $residents = (int) ($row['Residents_Printed_For_Event'] ?? 0);
 $dayVisitors = (int) ($row['Day_Visitors_Printed_Today'] ?? 0);
+$prasadOnly = (int) ($row['Prasad_Only_Printed_Today'] ?? 0);
 $total = (int) ($row['Total_For_Kitchen'] ?? 0);
 ?>
 <!DOCTYPE html>
@@ -112,10 +113,11 @@ $total = (int) ($row['Total_For_Kitchen'] ?? 0);
                                         <i class="material-icons kitchen-info-icon" tabindex="0" role="button" aria-label="How kitchen counts are calculated">info</i>
                                         <span class="kitchen-info-bubble" role="tooltip">
                                             <strong>Residents</strong> — distinct devotees with a card print recorded in
-                                            <code>print_log</code> for this event (any date), excluding day visitors (status D, type T).
+                                            <code>print_log</code> for this event (any date), excluding day visitors (status D, type T) and Prasad Only (status PO).
                                             <strong>Day Visitors Today</strong> — distinct D/T devotees with <code>print_log</code> dated today only.
+                                            <strong>Prasad Only Today</strong> — distinct PO devotees with <code>print_log</code> dated today only. Not included in Total.
                                             Queuing via registration does not count until the card is printed.
-                                            <strong>Total for kitchen</strong> is the sum of those two figures (no double-count).
+                                            <strong>Total for kitchen</strong> is Residents + Day Visitors (no double-count; excludes Prasad Only).
                                         </span>
                                     </span>
                                 </h4>
@@ -126,15 +128,19 @@ $total = (int) ($row['Total_For_Kitchen'] ?? 0);
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-4 kitchen-metric">
+                                    <div class="col-md-3 kitchen-metric">
                                         <div class="value" id="metric-residents"><?= $residents; ?></div>
                                         <div class="label">Residents</div>
                                     </div>
-                                    <div class="col-md-4 kitchen-metric">
+                                    <div class="col-md-3 kitchen-metric">
                                         <div class="value" id="metric-day-visitors"><?= $dayVisitors; ?></div>
                                         <div class="label">Day Visitors Today</div>
                                     </div>
-                                    <div class="col-md-4 kitchen-metric">
+                                    <div class="col-md-3 kitchen-metric">
+                                        <div class="value" id="metric-prasad-only"><?= $prasadOnly; ?></div>
+                                        <div class="label">Prasad Only Today</div>
+                                    </div>
+                                    <div class="col-md-3 kitchen-metric">
                                         <div class="value" id="metric-total"><?= $total; ?></div>
                                         <div class="label">Total for kitchen</div>
                                     </div>
@@ -161,6 +167,7 @@ $total = (int) ($row['Total_For_Kitchen'] ?? 0);
                 }
                 document.getElementById('metric-residents').textContent = data.residentsToday;
                 document.getElementById('metric-day-visitors').textContent = data.dayVisitorsPrintedToday;
+                document.getElementById('metric-prasad-only').textContent = data.prasadOnlyToday;
                 document.getElementById('metric-total').textContent = data.totalForKitchen;
                 document.getElementById('kitchen-refresh-time').textContent =
                     'Updated ' + (data.refreshTime || '');

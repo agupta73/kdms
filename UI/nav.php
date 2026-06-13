@@ -76,6 +76,12 @@ $navCanKitchen = kdms_session_has_asset('KD-KITCHEN');
         </a>
       </li>
       <li class="nav-item ">
+        <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=POP">
+          <i class="material-icons">print</i>
+          <p>Prasad Only Print Queue</p>
+        </a>
+      </li>
+      <li class="nav-item ">
         <a class="nav-link" href="./devoteeSearchResult.php?mode=SET&key=RPC">
           <i class="material-icons">print</i>
           <p>Recently Printed Cards</p>
