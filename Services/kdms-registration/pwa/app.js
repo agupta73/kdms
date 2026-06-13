@@ -353,6 +353,7 @@
     const t = form.elements.Devotee_ID_Type.value;
     $('#id-hint').textContent = ID_HINTS[t] || '';
   });
+  $('#id-hint').textContent = ID_HINTS[form.elements.Devotee_ID_Type.value] || '';
 
   $('#btn-selfie').addEventListener('click', () => $('#selfie-file').click());
 
