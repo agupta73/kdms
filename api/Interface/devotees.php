@@ -243,6 +243,15 @@ Class Devotee {
 
                 break;
 
+            case "POP": // Prasad Only print queue
+                $query = $query .
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A' AND d.Devotee_Status = 'PO'"
+                          . $this->presetFilterSql($filter)
+                          . " ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+
+                break;
+
 
 
                 case "RPC": //Recently printed Cards
@@ -400,6 +409,12 @@ Class Devotee {
                 $query = $query .
                             " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
                           . " WHERE cpl.Print_Status = 'A' and d.Devotee_Status = 'D' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
+                break;
+
+            case "POP": // Prasad Only print queue
+                $query = $query .
+                            " LEFT OUTER JOIN card_print_log cpl on d.Devotee_Key = cpl.Devotee_Key "
+                          . " WHERE cpl.Print_Status = 'A' AND d.Devotee_Status = 'PO' ORDER BY d.Devotee_Record_update_date_time Desc  LIMIT 50";
                 break;
             
 //            case "PCD": //Print Cards

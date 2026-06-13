@@ -13,7 +13,7 @@ include_once dirname(__DIR__) . '/Logic/clsOptionHandler.php';
 $eventId = $config_data['event_id'];
 
 /** SET preset keys that support optional filter= deep search (mode=SET only). */
-const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
+const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'POP', 'RPC', 'AR'];
 
 //if($debug){var_dump( $_GET);}
 ?>
@@ -82,7 +82,7 @@ const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
             function printQueueReturnUrl() {
                 var q = new URLSearchParams(window.location.search);
                 var key = q.get('key');
-                if (key !== 'TMP' && key !== 'RPC' && key !== 'CTP') {
+                if (key !== 'TMP' && key !== 'RPC' && key !== 'CTP' && key !== 'POP') {
                     key = 'CTP';
                 }
                 var url = "./devoteeSearchResult.php?mode=SET&key=" + encodeURIComponent(key);
@@ -257,6 +257,11 @@ const SET_PRESET_KEYS = ['PWD', 'DWP', 'CTP', 'TMP', 'RPC', 'AR'];
 
                     case "TMP":
                         $gridTitle = "Day Visitor Devotee Cards to be Printed";
+                        $showSelection = TRUE;
+                        break;
+
+                    case "POP":
+                        $gridTitle = "Prasad Only Devotee Cards to be Printed";
                         $showSelection = TRUE;
                         break;
 

@@ -26,6 +26,7 @@ try {
         'Event_ID' => $eventId,
         'Residents_Printed_For_Event' => 0,
         'Day_Visitors_Printed_Today' => 0,
+        'Prasad_Only_Printed_Today' => 0,
         'Total_For_Kitchen' => 0,
     ];
     $status = 'error';
@@ -37,6 +38,7 @@ echo json_encode([
     'eventId' => (string) ($row['Event_ID'] ?? $eventId),
         'residentsToday' => (int) ($row['Residents_Printed_For_Event'] ?? 0),
     'dayVisitorsPrintedToday' => (int) ($row['Day_Visitors_Printed_Today'] ?? 0),
+    'prasadOnlyToday' => (int) ($row['Prasad_Only_Printed_Today'] ?? 0),
     'totalForKitchen' => (int) ($row['Total_For_Kitchen'] ?? 0),
     'refreshTime' => date('H:i:s'),
     'errorMessage' => isset($errorMessage) ? $errorMessage : null,
